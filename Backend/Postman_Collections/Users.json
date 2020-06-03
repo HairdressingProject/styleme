@@ -1,0 +1,344 @@
+{
+	"info": {
+		"_postman_id": "e9b57200-2fc1-4908-826d-2cb59cf515d4",
+		"name": "Users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /api/users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5000/api/users",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /api/users/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5000/api/users/1",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /api/users/sign_in",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5000/api/users/sign_in",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"sign_in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /api/users/sign_up",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5000/api/users/sign_up",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"sign_up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /api/users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5000/api/users",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /api/users/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5000/api/users/1",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /api/users/1/change_password",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5000/api/users/1/change_password",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"1",
+						"change_password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /api/users/1/change_role",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5000/api/users/1/change_role",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"1",
+						"change_role"
+					]
+				},
+				"description": "TO DO: Implement this route in the backend"
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /api/users/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5000/api/users/1",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

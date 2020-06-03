@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "825d6761-e3be-4006-81a6-a17ee546ae7b",
+		"name": "Skin Tone Links",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /api/skin_tone_links",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5000/api/skin_tone_links",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"skin_tone_links"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /api/skin_tone_links/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5000/api/skin_tone_links/1",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"skin_tone_links",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /api/skin_tone_links",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5000/api/skin_tone_links",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"skin_tone_links"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /api/skin_tone_links/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5000/api/skin_tone_links/1",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"skin_tone_links",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /api/skin_tone_links/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5000/api/skin_tone_links/1",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"skin_tone_links",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
