@@ -5,7 +5,7 @@ namespace AdminApi.Models_v2_1.Validation
 {
     public class ValidatedUserRoleModel
     {
-        [RegularExpression(@"^[1-9]{1}$|^[1-9][0-9]+$", ErrorMessage = @"Skin tone ID must only contain numbers (0 is not allowed)")]
+        [RegularExpression(@"^[1-9]{1}$|^[1-9][0-9]+$", ErrorMessage = @"ID must only contain numbers (0 is not allowed)")]
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
 

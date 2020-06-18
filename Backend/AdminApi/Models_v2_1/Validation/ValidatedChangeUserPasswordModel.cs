@@ -8,7 +8,7 @@ namespace AdminApi.Models_v2_1.Validation
 {
     public class ValidatedChangeUserPasswordModel
     {
-        [Required(ErrorMessage = "ID is required")]
+        [RegularExpression(@"^[1-9]{1}$|^[1-9][0-9]+$", ErrorMessage = @"ID must only contain numbers (0 is not allowed)")]
         public ulong Id { get; set; }
 
         [Required(ErrorMessage = "Username/email is required", AllowEmptyStrings = false)]
