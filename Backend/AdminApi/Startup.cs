@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using AdminApi.Helpers;
-using AdminApi.Models_v2;
+using AdminApi.Models_v2_1;
 using AdminApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;

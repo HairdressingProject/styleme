@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AARIKtJAXxArre1d0rSppOY8DdNtBRZQHYjpMADhghddJVOpulo1S6MMNvwAmP2pgVDrxaahZ4MFm01sXg4sqQ==",
+  "dgSpecHash": "WlsUekSAxqqU58WnGYPp1o5j4N9PyLjKGh6g08p/Uke0gEhyS+1QJPlOg654Pxsfbp46pGZsMrKBOzj4zKPp6w==",
   "success": true,
-  "projectFilePath": "c:\\Users\\diech\\Documents\\HairdressingApp\\Admin\\Backend\\AdminApi\\AdminApi.csproj",
+  "projectFilePath": "c:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\diech\\.nuget\\packages\\google.apis\\1.45.0\\google.apis.1.45.0.nupkg.sha512",
     "C:\\Users\\diech\\.nuget\\packages\\google.apis.auth\\1.45.0\\google.apis.auth.1.45.0.nupkg.sha512",

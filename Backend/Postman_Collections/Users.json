@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e9b57200-2fc1-4908-826d-2cb59cf515d4",
+		"_postman_id": "ec9f6a0b-1c8d-402b-b0a3-90508bb6699b",
 		"name": "Users",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -39,14 +39,7 @@
 			"name": "GET /api/users/1",
 			"request": {
 				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
-							"type": "string"
-						}
-					]
+					"type": "noauth"
 				},
 				"method": "GET",
 				"header": [],
@@ -69,21 +62,17 @@
 		{
 			"name": "POST /api/users/sign_in",
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Origin",
+						"value": "https://localhost:3000",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\n}",
+					"raw": "{ \"UserNameOrEmail\": \"admin\", \"UserPassword\": \"123456\" }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -110,20 +99,19 @@
 			"name": "POST /api/users/sign_up",
 			"request": {
 				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE1ODg3NTkyODUsImV4cCI6MTU4OTM2NDA4NSwiaWF0IjoxNTg4NzU5Mjg1fQ.wxC8iBRCeLt5qCHFHz7ssEnPZIX5hmTk9-RGNALnOUs",
-							"type": "string"
-						}
-					]
+					"type": "noauth"
 				},
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Origin",
+						"value": "https://localhost:3000",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\n}",
+					"raw": "{\n\t\"UserName\": \"admin\",\n    \"UserPassword\": \"123456\",\n    \"UserEmail\": \"admin@mail.com\",\n    \"FirstName\": \"Admin\",\n    \"UserRole\": \"admin\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -324,7 +312,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "https://localhost:5000/api/users/1",
+					"raw": "https://localhost:5000/api/users/2",
 					"protocol": "https",
 					"host": [
 						"localhost"
@@ -333,7 +321,7 @@
 					"path": [
 						"api",
 						"users",
-						"1"
+						"2"
 					]
 				}
 			},

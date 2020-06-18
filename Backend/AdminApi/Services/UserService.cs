@@ -10,14 +10,20 @@ using AdminApi.Entities;
 using AdminApi.Helpers;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2;
+using AdminApi.Models_v2_1;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Security.Cryptography;
+using Microsoft.Extensions.Configuration;
 
 namespace AdminApi.Services
 {
     public interface IUserService
     {
-        Task<User> Authenticate(string usernameOrEmail, string password);
+        string HashPassword(string password, string salt);
+        string GenerateSalt();
+        Task<TokenisedUser> Authenticate(string usernameOrEmail, string password);
         bool ValidateUserToken(string token);
+        bool ValidateUserPassword(string password, string hash, string salt);
         Task<IEnumerable<Users>> GetAll();
     }
 
@@ -25,24 +31,34 @@ namespace AdminApi.Services
     {
         private readonly hair_project_dbContext _context;
         private readonly AppSettings _appSettings;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IOptions<AppSettings> appSettings, hair_project_dbContext context)
+        public UserService(IOptions<AppSettings> appSettings, hair_project_dbContext context, IConfiguration configuration)
         {
             _appSettings = appSettings.Value;
             _context = context;
+            _configuration = configuration;
         }
 
-        public async Task<User> Authenticate(string usernameOrEmail, string password)
+        public async Task<TokenisedUser> Authenticate(string usernameOrEmail, string password)
         {
             var user = await _context.Users.SingleOrDefaultAsync(x =>
-                                                (x.UserName == usernameOrEmail || x.UserEmail == usernameOrEmail) && x.UserPassword == password);
+                                  x.UserName == usernameOrEmail || 
+                                  x.UserEmail == usernameOrEmail
+                                  );
 
             // return null if user not found
             if (user == null)
                 return null;
 
+            // check password
+            if (!ValidateUserPassword(password, user.UserPasswordHash, user.UserPasswordSalt))
+            {
+                return null;
+            }
+
             // authentication successful so generate jwt token
-            var entityUser = new User(user.Id);
+            var entityUser = new TokenisedUser(user.Id);
             var key = Encoding.UTF8.GetBytes(_appSettings.Secret);
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -62,11 +78,39 @@ namespace AdminApi.Services
             return entityUser;
         }
 
+        public string GenerateSalt()
+        {
+            byte[] bytes = new byte[512 / 8];
+            
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(bytes);
+                return Convert.ToBase64String(bytes);
+            }
+        }
+
         public async Task<IEnumerable<Users>> GetAll()
         {
             var users = await _context.Users.ToListAsync();
             return users.WithoutPasswords();
         }
+
+        public string HashPassword(string password, string salt)
+        {
+            string pepper = _appSettings.Pepper;
+
+            var bytes = KeyDerivation.Pbkdf2(
+                password: password,
+                salt: Encoding.UTF8.GetBytes(string.Concat(salt, pepper)),
+                prf: KeyDerivationPrf.HMACSHA512,
+                iterationCount: 10000,
+                numBytesRequested: 512 / 8);
+
+            return Convert.ToBase64String(bytes);
+        }
+
+        public bool ValidateUserPassword(string password, string hash, string salt)
+        => HashPassword(password, salt) == hash;
 
         public bool ValidateUserToken(string token)
         {

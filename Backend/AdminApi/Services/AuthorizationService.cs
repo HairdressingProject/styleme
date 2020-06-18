@@ -41,7 +41,7 @@ namespace AdminApi.Services
 
             if (string.IsNullOrEmpty(origin))
             {
-                throw new Exception("Invalid request origin");
+                throw new UnauthorizedAccessException("Invalid request origin");
             }
 
             response.Cookies.Append("auth", token, cookieOptions);

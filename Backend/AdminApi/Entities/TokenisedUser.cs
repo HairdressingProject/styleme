@@ -1,8 +1,8 @@
-﻿using AdminApi.Models_v2;
+﻿using AdminApi.Models_v2_1;
 
 namespace AdminApi.Entities
 {
-    public class User
+    public class TokenisedUser
     {
         public ulong? Id { get; set; }
 
@@ -11,7 +11,7 @@ namespace AdminApi.Entities
 
         public Users BaseUser { get; set; }
 
-        public User(ulong? id, string token = null, Users baseUser = null)
+        public TokenisedUser(ulong? id, string token = null, Users baseUser = null)
         {
             Id = id;
             Token = token;

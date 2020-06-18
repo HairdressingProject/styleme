@@ -1,17 +1,15 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2;
-using AdminApi.Validation;
+using AdminApi.Models_v2_1;
 using Microsoft.AspNetCore.Cors;
 using AdminApi.Services;
 using AdminApi.Helpers;
-using Microsoft.AspNetCore.Http;
+using AdminApi.Entities;
+using AdminApi.Models_v2_1.Validation;
 using System;
-using AdminApi.Models_v2.Validation;
-using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Http;
 
 namespace AdminApi.Controllers
 {
@@ -42,25 +40,25 @@ namespace AdminApi.Controllers
         }
 
         // GET: api/users
-        [EnableCors("Policy1")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
-        {
-            if (!_authorizationService.ValidateJWTCookie(Request))
-            {
-                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
-            }
+        /* [EnableCors("Policy1")]
+         [HttpGet]
+         public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
+         {
+             if (!_authorizationService.ValidateJWTCookie(Request))
+             {
+                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+             }
 
-            var mappedUsers = await MapFeaturesToUsers();
-            var mappedUsersWithoutPasswords = mappedUsers.WithoutPasswords();
+             var mappedUsers = await MapFeaturesToUsers();
+             var mappedUsersWithoutPasswords = mappedUsers.WithoutPasswords();
 
-            var usersResponse = new
-            {
-                users = mappedUsersWithoutPasswords
-            };
+             var usersResponse = new
+             {
+                 users = mappedUsersWithoutPasswords
+             };
 
-            return Ok(usersResponse);
-        }
+             return Ok(usersResponse);
+         }*/
 
         // GET: api/users/5
         [HttpGet("{id:long}")]
@@ -71,16 +69,16 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var user = await _context.Users.FindAsync(id);
+            var users = await _context.Users.Where(u => u.Id == id).Include(u => u.UserFeatures).ToListAsync();
 
-            if (user == null)
+            if (users.Count < 1)
             {
                 return NotFound();
             }
             else
             {
-                var mappedUser = await MapFeaturesToUsers(user);
-                var userWithoutPassword = mappedUser.WithoutPassword();
+                // var mappedUser = await MapFeaturesToUsers(user);
+                var userWithoutPassword = users[0].WithoutPassword();
                 var userResponse = new
                 {
                     user = userWithoutPassword
@@ -93,7 +91,7 @@ namespace AdminApi.Controllers
         }
 
         // GET: api/users/{guid} - Can be used to get user details based on their recover password token (if valid)
-        [HttpGet("{token:guid}")]
+        /*[HttpGet("{token:guid}")]
         public async Task<ActionResult<Users>> GetUser(Guid token)
         {
             if (token == null || token == Guid.Empty)
@@ -119,7 +117,7 @@ namespace AdminApi.Controllers
             }
 
             return NotFound(new { errors = new { Account = new string[] { "No account associated with the token provided was found" } }, status = 404 });
-        }
+        }*/
 
 
         // GET: /api/users/logout
@@ -185,7 +183,7 @@ namespace AdminApi.Controllers
 
         // PUT: api/users/{guid}/change_password : Method to change user password (based on user's recover password token).
         [HttpPut("{token:guid}/change_password")]
-        public async Task<IActionResult> SetNewPassword(Guid token, [FromBody] AuthenticatedUserModel user)
+        public async Task<IActionResult> SetNewPassword(Guid token, [FromBody] ValidatedChangeUserPasswordModel user)
         {
             var existingToken = await _context.Accounts.FromSqlInterpolated($"SELECT * FROM accounts WHERE recover_password_token = UNHEX(REPLACE({token}, {"-"}, {""}))").ToListAsync();
 
@@ -196,7 +194,12 @@ namespace AdminApi.Controllers
 
                 if (existingUser != null)
                 {
-                    existingUser.UserPassword = user.UserPassword;
+                    string salt = _userService.GenerateSalt();
+                    string hash = _userService.HashPassword(user.UserPassword, salt);
+
+                    existingUser.UserPasswordHash = hash;
+                    existingUser.UserPasswordSalt = salt;
+
                     _context.Entry(existingUser).State = EntityState.Modified;
 
                     // invalidate token, now that the password has changed
@@ -214,14 +217,14 @@ namespace AdminApi.Controllers
 
                     var emailBody = $@"Hi {existingUser.UserName},
 
-Your password has been reset @HairdressingProject Admin Portal. If you have not made this request, please contact us or navigate to the page below to reset it again:
+ Your password has been reset @HairdressingProject Admin Portal. If you have not made this request, please contact us or navigate to the page below to reset it again:
 
-{forgotPasswordLink}
+ {forgotPasswordLink}
 
-Regards,
+ Regards,
 
-HairdressingProject Admin.
-";
+ HairdressingProject Admin.
+ ";
                     try
                     {
                         _emailService.SendEmail(existingUser.UserEmail, existingUser.UserName, "Password successfully reset", emailBody);
@@ -242,14 +245,14 @@ HairdressingProject Admin.
 
         // PUT: api/users/5/change_password : Method to change user password (based on user's ID).
         [HttpPut("{id:long}/change_password")]
-        public async Task<IActionResult> SetNewPassword(ulong id, [FromBody] Users users)
+        public async Task<IActionResult> SetNewPassword(ulong id, [FromBody]ValidatedChangeUserPasswordModel user)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            if (id != users.Id)
+            if (id != user.Id)
             {
                 return BadRequest(new { errors = new { Id = new string[] { "ID sent does not match the one in the endpoint" } }, status = 400 });
             }
@@ -261,7 +264,12 @@ HairdressingProject Admin.
                 return NotFound(new { errors = new { Id = new string[] { "User not found" } }, status = 404 });
             }
 
-            userMod.UserPassword = users.UserPassword;
+            // hash + salt new password
+            string salt = _userService.GenerateSalt();
+            string hash = _userService.HashPassword(user.UserPassword, salt);
+
+            userMod.UserPasswordHash = hash;
+            userMod.UserPasswordSalt = salt;
 
             _context.Entry(userMod).State = EntityState.Modified;
 
@@ -286,7 +294,7 @@ HairdressingProject Admin.
 
         // PUT api/users/5/change_role
         [HttpPut("{id}/change_role")]
-        public async Task<IActionResult> ChangeUserRole(ulong id, [FromBody] ValidatedUserRoleModel user)
+        public async Task<IActionResult> ChangeUserRole(ulong id, [FromBody] Models_v2_1.Validation.ValidatedUserRoleModel user)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -328,30 +336,42 @@ HairdressingProject Admin.
             return NoContent();
         }
 
-// ********************************************************************************************************************************************        
+        // ********************************************************************************************************************************************        
         // POST api/users
         [EnableCors("Policy1")]
         [HttpPost]
-        public async Task<ActionResult<Users>> PostUsers([FromBody] Users users)
+        public async Task<ActionResult<Users>> PostUsers([FromBody] SignUpUser user)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var existingUser = await _context.Users.AnyAsync(u => u.Id == users.Id || u.UserName == users.UserName || u.UserEmail == users.UserEmail);
+            var existingUser = await _context.Users.AnyAsync(u => u.UserName == user.UserName || u.UserEmail == user.UserEmail);
 
             if (!existingUser)
             {
-                if (users.Id != null)
-                {
-                    users.Id = null;
-                }
+                string salt = _userService.GenerateSalt();
+                string hash = _userService.HashPassword(user.UserPassword, salt);
 
-                _context.Users.Add(users);
+                Users userToBeAdded = new Users
+                {
+                    UserName = user.UserName,
+                    UserEmail = user.UserEmail,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    UserRole = user.UserRole,
+                    UserPasswordHash = hash,
+                    UserPasswordSalt = salt
+                };
+
+                _context.Users.Add(userToBeAdded);
+
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction("GetUsers", new { id = users.Id }, users.WithoutPassword());
+                var addedUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userToBeAdded.UserName || u.UserEmail == userToBeAdded.UserEmail);
+
+                return CreatedAtAction("GetUsers", new { id = addedUser.Id }, userToBeAdded.WithoutPassword());
             }
 
             // return Conflict(new { errors =  "User already exists" });
@@ -361,27 +381,41 @@ HairdressingProject Admin.
         // POST api/users/sign_up
         [EnableCors("Policy1")]
         [HttpPost("sign_up")]
-        public async Task<IActionResult> SignUp([FromBody] Users users)
+        public async Task<IActionResult> SignUp([FromBody] SignUpUser newUser)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == users.Id || u.UserName == users.UserName || u.UserEmail == users.UserEmail);
+            if (string.IsNullOrWhiteSpace(Request.Headers["Origin"]))
+            {
+                return Unauthorized(new { errors = new { Origin = new string[] { "Invalid request origin" } }, status = 401 });
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName.Trim().ToLower() == newUser.UserName.Trim().ToLower() || u.UserEmail.Trim().ToLower() == newUser.UserEmail.Trim().ToLower());
 
             if (user == null)
             {
                 // New user, add to DB and authenticate
                 // Also, validate/sanitise properties here
 
-                if (users.Id != null)
-                {
-                    users.Id = null;
-                }
+                string salt = _userService.GenerateSalt();
+                string hash = _userService.HashPassword(newUser.UserPassword, salt);
 
-                _context.Users.Add(users);
+                Users userToBeAdded = new Users
+                {
+                    UserName = newUser.UserName,
+                    UserEmail = newUser.UserEmail,
+                    FirstName = newUser.FirstName,
+                    LastName = newUser.LastName,
+                    UserRole = newUser.UserRole,
+                    UserPasswordHash = hash,
+                    UserPasswordSalt = salt
+                };
+
+                _context.Users.Add(userToBeAdded);
 
                 await _context.SaveChangesAsync();
 
                 // Get newly created user from database to create a new account record
                 // Stored procedures would be preferred in this case in order to avoid making so many calls to the database
-                var savedUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == users.UserName);
+                var savedUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == newUser.UserName);
 
                 // TODO: Handle the opposite case
                 if (savedUser != null)
@@ -390,7 +424,7 @@ HairdressingProject Admin.
                     await _context.SaveChangesAsync();
                 }
 
-                var authenticatedUser = await _userService.Authenticate(users.UserName, users.UserPassword);
+                var authenticatedUser = await _userService.Authenticate(newUser.UserName, newUser.UserPassword);
                 // var baseUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == authenticatedUser.Id);
 
                 authenticatedUser.BaseUser = savedUser.WithoutPassword();
@@ -414,6 +448,11 @@ HairdressingProject Admin.
         [HttpPost("sign_in")]
         public async Task<IActionResult> SignIn([FromBody] AuthenticatedUserModel user)
         {
+            if (string.IsNullOrWhiteSpace(Request.Headers["Origin"]))
+            {
+                return Unauthorized(new { errors = new { Origin = new string[] { "Invalid request origin" } }, status = 401 });
+            }
+
             // Authenticate user
             var authenticatedUser = await _userService.Authenticate(user.UserNameOrEmail, user.UserPassword);
 
@@ -424,10 +463,10 @@ HairdressingProject Admin.
             }
 
             // Return 200 OK with token in cookie
-            var existingUser = await _context.Users.SingleOrDefaultAsync(u => u.Id == authenticatedUser.Id);
-            var mappedExistingUser = await MapFeaturesToUsers(existingUser);
-            authenticatedUser.BaseUser = mappedExistingUser;
-        
+            var existingUser = await _context.Users.Where(u => u.Id == authenticatedUser.Id).Include(u => u.UserFeatures).FirstOrDefaultAsync();
+
+            authenticatedUser.BaseUser = existingUser;
+
             _authorizationService.SetAuthCookie(Request, Response, authenticatedUser.Token);
 
             return Ok();
@@ -475,9 +514,9 @@ HairdressingProject Admin.
 
             var recoverPasswordToken = Guid.NewGuid();
 
-            await _context.Database.ExecuteSqlInterpolatedAsync($"UPDATE accounts SET recover_password_token = UNHEX(REPLACE({recoverPasswordToken}, {"-"}, {""})) WHERE user_id = {existingAccount.UserId}");            
+            await _context.Database.ExecuteSqlInterpolatedAsync($"UPDATE accounts SET recover_password_token = UNHEX(REPLACE({recoverPasswordToken}, {"-"}, {""})) WHERE user_id = {existingAccount.UserId}");
 
-            await _context.SaveChangesAsync();           
+            await _context.SaveChangesAsync();
 
             var recoverPasswordLink = $@"{origin}/reset_password?token={recoverPasswordToken}";
 
@@ -496,7 +535,7 @@ HairdressingProject Admin.
                 _emailService.SendEmail(existingUser.UserEmail, existingUser.UserName, "Recover Password", emailBody);
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Failed to send email:");
                 Console.WriteLine(ex);
@@ -531,7 +570,7 @@ HairdressingProject Admin.
             return _context.Users.Any(e => e.Id == id);
         }
 
-        private async Task<Users> MapFeaturesToUsers(Users user) 
+        /*private async Task<Users> MapFeaturesToUsers(Users user) 
         {
             // map user features to this user
             var userFeatures = await _context.UserFeatures
@@ -542,9 +581,9 @@ HairdressingProject Admin.
 
             return user.WithoutPassword();
 
-        }
+        }*/
 
-        public async Task<IEnumerable<Users>> MapFeaturesToUsers()
+        /*public async Task<IEnumerable<Users>> MapFeaturesToUsers()
         {
             
             var users = await _context.Users.ToListAsync();
@@ -560,6 +599,6 @@ HairdressingProject Admin.
             });
 
             return mappedUsers.WithoutPasswords();
-        }
+        }*/
     }
 }
