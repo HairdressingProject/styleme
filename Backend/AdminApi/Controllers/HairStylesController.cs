@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2;
+using AdminApi.Models_v2_1;
 
 namespace AdminApi.Controllers
 {
@@ -99,11 +99,6 @@ namespace AdminApi.Controllers
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
-            }
-
-            if (hairStyles.Id != null)
-            {
-                hairStyles.Id = null;
             }
 
             _context.HairStyles.Add(hairStyles);

@@ -10,6 +10,7 @@ using AdminApi.Entities;
 using AdminApi.Models_v2_1.Validation;
 using System;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace AdminApi.Controllers
 {
@@ -40,25 +41,25 @@ namespace AdminApi.Controllers
         }
 
         // GET: api/users
-        /* [EnableCors("Policy1")]
-         [HttpGet]
-         public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
-         {
-             if (!_authorizationService.ValidateJWTCookie(Request))
-             {
-                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
-             }
+        [EnableCors("Policy1")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
 
-             var mappedUsers = await MapFeaturesToUsers();
-             var mappedUsersWithoutPasswords = mappedUsers.WithoutPasswords();
+            var users = await _context.Users.Include(u => u.UserFeatures).ToListAsync();
+            var mappedUsersWithoutPasswords = users.WithoutPasswords();
 
-             var usersResponse = new
-             {
-                 users = mappedUsersWithoutPasswords
-             };
+            var usersResponse = new
+            {
+                users = mappedUsersWithoutPasswords
+            };
 
-             return Ok(usersResponse);
-         }*/
+            return Ok(usersResponse);
+        }
 
         // GET: api/users/5
         [HttpGet("{id:long}")]
@@ -91,7 +92,7 @@ namespace AdminApi.Controllers
         }
 
         // GET: api/users/{guid} - Can be used to get user details based on their recover password token (if valid)
-        /*[HttpGet("{token:guid}")]
+        [HttpGet("{token:guid}")]
         public async Task<ActionResult<Users>> GetUser(Guid token)
         {
             if (token == null || token == Guid.Empty)
@@ -108,7 +109,8 @@ namespace AdminApi.Controllers
 
                 if (associatedUser != null)
                 {
-                    return Ok(new {
+                    return Ok(new
+                    {
                         associatedUser.UserEmail
                     });
                 }
@@ -117,7 +119,7 @@ namespace AdminApi.Controllers
             }
 
             return NotFound(new { errors = new { Account = new string[] { "No account associated with the token provided was found" } }, status = 404 });
-        }*/
+        }
 
 
         // GET: /api/users/logout

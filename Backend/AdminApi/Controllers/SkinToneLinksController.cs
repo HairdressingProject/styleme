@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2;
+using AdminApi.Models_v2_1;
 
 namespace AdminApi.Controllers
 {
@@ -113,11 +113,6 @@ namespace AdminApi.Controllers
             if (correspondingSkinTone == null)
             {
                 return NotFound(new { errors = new { SkinToneId = new string[] { "No matching skin tone entry was found" } }, status = 404 });
-            }
-
-            if (skinToneLinks.Id != null)
-            {
-                skinToneLinks.Id = null;
             }
 
             _context.SkinToneLinks.Add(skinToneLinks);

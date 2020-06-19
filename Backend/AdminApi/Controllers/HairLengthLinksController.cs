@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2;
+using AdminApi.Models_v2_1;
 
 namespace AdminApi.Controllers
 {
@@ -113,11 +113,6 @@ namespace AdminApi.Controllers
             if (correspondingHairLength == null)
             {
                 return NotFound(new { errors = new { HairLengthId = new string[] { "No matching hair length entry was found" } }, status = 404 });
-            }
-
-            if (hairLengthLinks.Id != null)
-            {
-                hairLengthLinks.Id = null;
             }
 
             _context.HairLengthLinks.Add(hairLengthLinks);

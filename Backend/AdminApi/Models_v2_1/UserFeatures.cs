@@ -7,11 +7,11 @@ namespace AdminApi.Models_v2_1
     {
         public ulong Id { get; set; }
         public ulong UserId { get; set; }
-        public long FaceShapeId { get; set; }
-        public long SkinToneId { get; set; }
-        public long HairStyleId { get; set; }
-        public long HairLengthId { get; set; }
-        public long HairColourId { get; set; }
+        public ulong FaceShapeId { get; set; }
+        public ulong SkinToneId { get; set; }
+        public ulong HairStyleId { get; set; }
+        public ulong HairLengthId { get; set; }
+        public ulong HairColourId { get; set; }
         public DateTime? DateCreated { get; set; }
         public DateTime? DateModified { get; set; }
 

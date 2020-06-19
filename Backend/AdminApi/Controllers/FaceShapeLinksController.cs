@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2;
+using AdminApi.Models_v2_1;
 
 namespace AdminApi.Controllers
 {
@@ -113,11 +113,6 @@ namespace AdminApi.Controllers
             if (correspondingFaceShape == null)
             {
                 return BadRequest(new { errors = new { FaceShapeId = new string[] { "No matching face shape entry was found" } }, status = 400 });
-            }
-
-            if (faceShapeLinks.Id != null)
-            {
-                faceShapeLinks.Id = null;
             }
 
             _context.FaceShapeLinks.Add(faceShapeLinks);
