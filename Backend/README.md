@@ -51,6 +51,8 @@ Send a `POST /api/users/sign_up` request with a request body in the following fo
 }
 ```
 
+> After you submit your request, notice that the user role was added as "user" instead of "admin". This is intentional, otherwise anyone would be able to register as admin. Similar measures may be implemented in other routes, if time permits.
+
 If you have already registered an account, you can send a `POST /api/users/sign_in` request with the format below to authenticate:
 
 ```json
