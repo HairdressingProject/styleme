@@ -37,15 +37,30 @@ dotnet user-secrets list
 Don't forget to start both back-end and database servers before proceeding to the next step.
 
 ### 3 - Sending requests
-Before testing any route, you will first have to sign in (use the `POST /api/users/sign_in` route for this). Sample admin details are still the same as the old repo:
+Before testing any route, you will first have to create a new sample admin account. That is because all passwords are now hashed by the server before being added to the database, so they should not be directly added with `INSERT` statements. 
+
+Send a `POST /api/users/sign_up` request with a request body in the following format (you may change each property to suit your preferences):
+
+```json
+{
+    "UserName": "admin",
+    "UserPassword": "123456",
+    "UserEmail": "admin@mail.com",
+    "FirstName": "Admin",
+    "UserRole": "admin"
+}
 ```
+
+If you have already registered an account, you can send a `POST /api/users/sign_in` request with the format below to authenticate:
+
+```json
 {
   "UserNameOrEmail": "admin",
   "UserPassword": "123456"
 }
 ```
 
-After you click "Send", you should get a cookie from the server:
+After you click "Send" (whether you signed in or signed up), you should get a cookie from the server:
 
 ![Cookie](https://i.imgur.com/OER135W.png "Cookie")
 
@@ -55,7 +70,7 @@ Now this cookie will be automatically sent back to the server (included in the h
 
 ![Origin](https://i.imgur.com/Q5nFuAp.png "Origin")
 
-All `GET` and `DELETE` requests should work out of the box. You will have to provide a request `body` to `PUT` and `POST` requests (~~check the attributes in the corresponding [Model](/Admin/Backend/AdminApi/Models "Models") file to understand how each property is validated).~~
+All `GET` and `DELETE` requests should work out of the box. You will have to provide a request `body` to `PUT` and `POST` requests (check the attributes in the corresponding [Model](AdminApi/Models_v2_1 "Models v2.1") file to understand how each property is validated).
 
 > Remember: `PUT` requests require an `id` both in the endpoint and in the request `body`. You will also have to include __all__ `[Required]` properties in the request `body` (plus `DateCreated`), not just the ones that you wish to modify.
 
