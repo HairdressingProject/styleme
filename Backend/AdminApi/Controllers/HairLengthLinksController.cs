@@ -35,7 +35,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return await _context.HairLengthLinks.ToListAsync();
+            return await _context.HairLengthLinks.Include(hll => hll.HairLength).ToListAsync();
         }
 
         // GET: api/hair_length_links/5
@@ -47,7 +47,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var hairLengthLinks = await _context.HairLengthLinks.FindAsync(id);
+            var hairLengthLinks = await _context.HairLengthLinks.Include(hll => hll.HairLength).FirstOrDefaultAsync(hll => hll.Id == id);
 
             if (hairLengthLinks == null)
             {
@@ -78,7 +78,16 @@ namespace AdminApi.Controllers
                 return NotFound(new { errors = new { HairLengthId = new string[] { "No matching hair length entry was found" } }, status = 404 });
             }
 
-            _context.Entry(hairLengthLinks).State = EntityState.Modified;
+            HairLengthLinks currentHLL = await _context.HairLengthLinks.FindAsync(id);
+
+            if (currentHLL != null)
+            {
+                currentHLL.LinkName = hairLengthLinks.LinkName;
+                currentHLL.LinkUrl = hairLengthLinks.LinkUrl;
+                currentHLL.HairLengthId = hairLengthLinks.HairLengthId;
+            }
+
+            _context.Entry(currentHLL).State = EntityState.Modified;
 
             try
             {

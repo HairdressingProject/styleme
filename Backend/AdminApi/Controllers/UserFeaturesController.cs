@@ -81,7 +81,19 @@ namespace AdminApi.Controllers
                 return NotFound(errors);
             }
 
-            _context.Entry(userFeatures).State = EntityState.Modified;
+            UserFeatures uf = await _context.UserFeatures.FindAsync(id);
+
+            if (uf != null)
+            {
+                uf.UserId = userFeatures.UserId;
+                uf.FaceShapeId = userFeatures.FaceShapeId;
+                uf.SkinToneId = userFeatures.SkinToneId;
+                uf.HairStyleId = userFeatures.HairStyleId;
+                uf.HairLengthId = userFeatures.HairLengthId;
+                uf.HairColourId = userFeatures.HairColourId;
+            }
+
+            _context.Entry(uf).State = EntityState.Modified;
 
             try
             {

@@ -43,7 +43,8 @@ namespace AdminApi.Models_v2_1
         [Column("last_name", TypeName = "varchar(128)")]
         public string LastName { get; set; }
 
-        [Required]
+        [NotNullOrEmptyOrWhiteSpace(ErrorMessage = @"User role should not be empty or white space")]
+        [RequiredUserRole(AllowEmptyStrings = false, ErrorMessage = "Invalid user role.")]
         [Column("user_role", TypeName = "enum('admin','developer','user')")]
         public string UserRole { get; set; }
 

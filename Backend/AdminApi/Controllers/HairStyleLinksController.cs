@@ -35,7 +35,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return await _context.HairStyleLinks.ToListAsync();
+            return await _context.HairStyleLinks.Include(hsl => hsl.HairStyle).ToListAsync();
         }
 
         // GET: api/hair_style_links/5
@@ -47,7 +47,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var hairStyleLinks = await _context.HairStyleLinks.FindAsync(id);
+            var hairStyleLinks = await _context.HairStyleLinks.Include(hsl => hsl.HairStyle).FirstOrDefaultAsync();
 
             if (hairStyleLinks == null)
             {
@@ -78,7 +78,16 @@ namespace AdminApi.Controllers
                 return NotFound(new { errors = new { HairStyleId = new string[] { "No matching hair style entry was found" } }, status = 404 });
             }
 
-            _context.Entry(hairStyleLinks).State = EntityState.Modified;
+            HairStyleLinks hsl = await _context.HairStyleLinks.FindAsync(id);
+
+            if (hsl != null)
+            {
+                hsl.LinkName = hairStyleLinks.LinkName;
+                hsl.LinkUrl = hairStyleLinks.LinkUrl;
+                hsl.HairStyleId = hairStyleLinks.HairStyleId;
+            }
+
+            _context.Entry(hsl).State = EntityState.Modified;
 
             try
             {

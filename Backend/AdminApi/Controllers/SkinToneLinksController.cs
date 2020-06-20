@@ -35,7 +35,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return await _context.SkinToneLinks.ToListAsync();
+            return await _context.SkinToneLinks.Include(stl => stl.SkinTone).ToListAsync();
         }
 
         // GET: api/skin_tone_links/5
@@ -47,7 +47,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var skinToneLinks = await _context.SkinToneLinks.FindAsync(id);
+            var skinToneLinks = await _context.SkinToneLinks.Include(stl => stl.SkinTone).FirstOrDefaultAsync();
 
             if (skinToneLinks == null)
             {
@@ -78,7 +78,16 @@ namespace AdminApi.Controllers
                 return NotFound(new { errors = new { SkinToneId = new string[] { "No matching skin tone entry was found" } }, status = 404 });
             }
 
-            _context.Entry(skinToneLinks).State = EntityState.Modified;
+            SkinToneLinks stl = await _context.SkinToneLinks.FindAsync(id);
+
+            if (stl != null)
+            {
+                stl.LinkName = skinToneLinks.LinkName;
+                stl.LinkUrl = skinToneLinks.LinkUrl;
+                stl.SkinToneId = skinToneLinks.SkinToneId;
+            }
+
+            _context.Entry(stl).State = EntityState.Modified;
 
             try
             {

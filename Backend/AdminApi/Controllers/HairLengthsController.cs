@@ -73,7 +73,14 @@ namespace AdminApi.Controllers
                 return BadRequest(new { errors = new { Id = new string[] { "ID sent does not match the one in the endpoint" } }, status = 400 });
             }
 
-            _context.Entry(hairLengths).State = EntityState.Modified;
+            HairLengths currentHL = await _context.HairLengths.FindAsync(id);
+
+            if (currentHL != null)
+            {
+                currentHL.HairLengthName = hairLengths.HairLengthName;
+            }
+
+            _context.Entry(currentHL).State = EntityState.Modified;
 
             try
             {

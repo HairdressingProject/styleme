@@ -35,7 +35,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return await _context.FaceShapeLinks.ToListAsync();
+            return await _context.FaceShapeLinks.Include(fsl => fsl.FaceShape).ToListAsync();
         }
 
         // GET: api/face_shape_links/5
@@ -47,7 +47,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var faceShapeLinks = await _context.FaceShapeLinks.FindAsync(id);
+            var faceShapeLinks = await _context.FaceShapeLinks.Include(fsl => fsl.FaceShape).FirstOrDefaultAsync(fsl => fsl.Id == id);
 
             if (faceShapeLinks == null)
             {
@@ -78,7 +78,16 @@ namespace AdminApi.Controllers
                 return NotFound(new { errors = new { FaceShapeId = new string[]{ "No matching face shape entry was found"} }, status = 404 });
             }
 
-            _context.Entry(faceShapeLinks).State = EntityState.Modified;
+            FaceShapeLinks fsl = await _context.FaceShapeLinks.FindAsync(id);
+
+            if (fsl != null)
+            {
+                fsl.LinkName = faceShapeLinks.LinkName;
+                fsl.LinkUrl = faceShapeLinks.LinkUrl;
+                fsl.FaceShapeId = faceShapeLinks.FaceShapeId;
+            }
+
+            _context.Entry(fsl).State = EntityState.Modified;
 
             try
             {
