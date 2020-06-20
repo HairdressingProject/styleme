@@ -1,31 +1,29 @@
-﻿using AdminApi.Models_v2_1.Validation;
+﻿using AdminApi.Helpers;
+using AdminApi.Models_v2_1.Validation;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AdminApi.Models_v2_1
+namespace AdminApi.Entities
 {
-    [Table("users")]
-    public partial class Users
+    public class UpdatedUser
     {
-        public Users()
-        {
-            UserFeatures = new HashSet<UserFeatures>();
-        }
-
         [Key]
         [Column("id")]
-        public ulong? Id { get; set; }
+        [Required(ErrorMessage = "ID is required")]
+        public ulong Id { get; set; }
 
         [Required(ErrorMessage = "Username is required", AllowEmptyStrings = false)]
         [NotNullOrEmptyOrWhiteSpace(ErrorMessage = @"Username should not be empty or white space")]
-        [MaxLength(32)]
+        [MaxLength(32, ErrorMessage = "Username should have a maximum of 32 characters")]
         [Column("user_name", TypeName = "varchar(32)")]
         public string UserName { get; set; }
 
-        public string UserPasswordHash { get; set; }
-        public string UserPasswordSalt { get; set; }
+        [Required(ErrorMessage = "Password is required", AllowEmptyStrings = false)]
+        [NotNullOrEmptyOrWhiteSpace(ErrorMessage = @"Password should not be empty or white space")]
+        [MinLength(6, ErrorMessage = "Password should contain at least 6 characters")]
+        [MaxLength(512, ErrorMessage = "Password cannot exceed 512 characters")]
+        public string UserPassword { get; set; }
 
         [Required(ErrorMessage = "Email is required", AllowEmptyStrings = false)]
         [NotNullOrEmptyOrWhiteSpace(ErrorMessage = @"Email should not be empty or white space")]
@@ -45,18 +43,6 @@ namespace AdminApi.Models_v2_1
 
         [Required]
         [Column("user_role", TypeName = "enum('admin','developer','user')")]
-        public string UserRole { get; set; }
-
-        [Column("date_created", TypeName = "datetime")]
-        public DateTime? DateCreated { get; set; }
-
-        [Column("date_modified", TypeName = "datetime")]
-        public DateTime? DateModified { get; set; }
-
-        [InverseProperty("User")]
-        public virtual Accounts Accounts { get; set; }
-
-        [InverseProperty("User")]
-        public virtual ICollection<UserFeatures> UserFeatures { get; set; }
+        public string UserRole { get; set; } = Enum.GetName(typeof(UserRoles), UserRoles.USER).ToLower();
     }
 }

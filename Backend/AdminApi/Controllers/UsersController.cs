@@ -134,33 +134,51 @@ namespace AdminApi.Controllers
         // ********************************************************************************************************************************************        
         // PUT: api/users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsers(ulong id, [FromBody] Users users)
+        public async Task<IActionResult> PutUsers(ulong id, [FromBody] UpdatedUser user)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            if (id != users.Id)
+            if (id != user.Id)
             {
                 return BadRequest(new { errors = new { Id = new string[] { "ID sent does not match the one in the endpoint" } }, status = 400 });
             }
 
-            var existingUserName = await _context.Users.AnyAsync(u => u.Id != users.Id && u.UserName == users.UserName);
+            var existingUserName = await _context.Users.AnyAsync(u => u.Id != user.Id && u.UserName == user.UserName);
 
             if (existingUserName)
             {
                 return Conflict(new { errors = new { UserName = new string[] { "Username is already taken" } }, status = 409 });
             }
 
-            var existingEmail = await _context.Users.AnyAsync(u => u.Id != users.Id && u.UserEmail == users.UserEmail);
+            var existingEmail = await _context.Users.AnyAsync(u => u.Id != user.Id && u.UserEmail == user.UserEmail);
 
             if (existingEmail)
             {
                 return Conflict(new { errors = new { UserEmail = new string[] { "Email is already registered" } }, status = 409 });
             }
 
-            _context.Entry(users).State = EntityState.Modified;
+            // hash/salt new password
+            string salt = _userService.GenerateSalt();
+            string hash = _userService.HashPassword(user.UserPassword, salt);
+
+            Users currentUser = await _context.Users.FindAsync(user.Id);
+
+            if (currentUser != null)
+            {
+                currentUser.UserName = user.UserName;
+                currentUser.UserPasswordHash = hash;
+                currentUser.UserPasswordSalt = salt;
+                currentUser.FirstName = user.FirstName;
+                currentUser.LastName = user.LastName ?? currentUser?.LastName;
+                currentUser.UserEmail = user.UserEmail;
+                currentUser.UserRole = user.UserRole;
+                currentUser.DateCreated = currentUser?.DateCreated;
+
+                _context.Entry(currentUser).State = EntityState.Modified;
+            }
 
             try
             {
@@ -400,13 +418,14 @@ namespace AdminApi.Controllers
                 string salt = _userService.GenerateSalt();
                 string hash = _userService.HashPassword(newUser.UserPassword, salt);
 
+                // By default, every new user will be registered as "user" in their user role
+                // Their status should only be changed by admins
                 Users userToBeAdded = new Users
                 {
                     UserName = newUser.UserName,
                     UserEmail = newUser.UserEmail,
                     FirstName = newUser.FirstName,
                     LastName = newUser.LastName,
-                    UserRole = newUser.UserRole,
                     UserPasswordHash = hash,
                     UserPasswordSalt = salt
                 };
@@ -571,36 +590,5 @@ HairdressingProject Admin.
         {
             return _context.Users.Any(e => e.Id == id);
         }
-
-        /*private async Task<Users> MapFeaturesToUsers(Users user) 
-        {
-            // map user features to this user
-            var userFeatures = await _context.UserFeatures
-            .Where(uf => uf.UserId == user.Id)
-            .ToListAsync();
-
-            user.UserFeatures = userFeatures;
-
-            return user.WithoutPassword();
-
-        }*/
-
-        /*public async Task<IEnumerable<Users>> MapFeaturesToUsers()
-        {
-            
-            var users = await _context.Users.ToListAsync();
-            var userFeatures = await _context.UserFeatures.ToListAsync();
-
-            var mappedUsers = users.Select(u => 
-            {
-                // map user features to all users
-                var correspondingFeatures = userFeatures.FindAll(uf => (uf.UserId == u.Id));
-                u.UserFeatures = correspondingFeatures;
-
-                return u;
-            });
-
-            return mappedUsers.WithoutPasswords();
-        }*/
     }
 }
