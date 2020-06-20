@@ -1,6 +1,7 @@
 ﻿using AdminApi.Helpers;
 using AdminApi.Models_v2_1.Validation;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -41,8 +42,8 @@ namespace AdminApi.Entities
         [Column("last_name", TypeName = "varchar(128)")]
         public string LastName { get; set; }
 
-        [Required]
+        [RequiredUserRole(AllowEmptyStrings = false, ErrorMessage = "Invalid user role.")]
         [Column("user_role", TypeName = "enum('admin','developer','user')")]
-        public string UserRole { get; set; } = Enum.GetName(typeof(UserRoles), UserRoles.USER).ToLower();
+        public string UserRole { get; set; }
     }
 }

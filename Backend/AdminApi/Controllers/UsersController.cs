@@ -174,7 +174,7 @@ namespace AdminApi.Controllers
                 currentUser.FirstName = user.FirstName;
                 currentUser.LastName = user.LastName ?? currentUser?.LastName;
                 currentUser.UserEmail = user.UserEmail;
-                currentUser.UserRole = user.UserRole;
+                currentUser.UserRole = user.UserRole ?? currentUser?.UserRole;
                 currentUser.DateCreated = currentUser?.DateCreated;
 
                 _context.Entry(currentUser).State = EntityState.Modified;
