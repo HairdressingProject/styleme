@@ -56,7 +56,7 @@ namespace AdminApi
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidAudience = "https://localhost:3000",
+                    ValidAudience = "http://localhost:5500",
                     ValidIssuer = "https://localhost:5000"
                 };
             })
@@ -94,7 +94,7 @@ namespace AdminApi
                     builder =>
                     {
                         builder.AllowCredentials()
-                                .WithOrigins("https://localhost:3000")
+                                .WithOrigins("http://localhost:5500")
                                 .WithMethods("GET", "POST", "PUT", "DELETE")
                                 .WithHeaders("Origin", "Content-Type");
                     });

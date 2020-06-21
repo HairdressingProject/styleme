@@ -4,6 +4,13 @@
  * @param {string} message 
  */
 function showAlert(type, message) {
+    // remove previous alerts first
+    const existingAlert = document.getElementById('alert');
+
+    if (existingAlert) {
+        existingAlert.parentNode.removeChild(existingAlert);
+    }
+
     const alertContainer = document.createElement('div');
     alertContainer.classList.add('alert');
 

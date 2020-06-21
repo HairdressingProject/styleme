@@ -34,7 +34,7 @@ namespace AdminApi.Services
                 Path = "/",
                 SameSite = SameSiteMode.Strict,
                 Domain = "localhost",
-                Secure = true
+                Secure = false
             };
 
             var origin = request.Headers["Origin"];

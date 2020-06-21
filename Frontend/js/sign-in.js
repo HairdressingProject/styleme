@@ -230,28 +230,43 @@ async function signIn(e) {
 
         const data = { UserNameOrEmail: usernameInput, UserPassword: passwordInput };
 
-        console.log('sending to the server:');
-        console.dir(data);
-
         const response = await fetch(url, {
             method: 'POST',
             mode: 'cors',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Origin': 'https://localhost:3000/'
+                'Origin': 'http://localhost:5500/'
             },
             body: JSON.stringify(data)
         });
 
-        response.json()
-            .then(v => {
-                console.log('From the server:');
-                console.dir(v);
-            })
-            .catch(ex => {
-                console.log('error:');
-                console.dir(ex);
-            });
+        if (!response.ok) {
+            if (response.status === 401) {
+                const msg = await parseResponse(response);
+
+                // show errors
+                if (msg.errors.authentication.length) {
+                    showAlert('error', msg.errors.authentication[0]);
+                }
+            }
+        }
+        else {
+            showAlert('success', 'Successfully signed in!');
+        }
+    }
+}
+
+/**
+ * Tries to parse HTTP responses as JSON
+ * @param {Response} res 
+ */
+async function parseResponse(res) {
+    try {
+        const msg = await res.json();
+        return msg;
+    }
+    catch (err) {
+        console.log('could not parse response');
     }
 }
