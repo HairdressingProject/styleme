@@ -52,4 +52,88 @@ table {
   border-spacing: 0;
 }
 
+body {
+  position: relative;
+  min-height: 100vh;
+  background: center top/cover no-repeat url("../img/background_top.svg"), center bottom/cover no-repeat url("../img/background_bottom.svg");
+}
+
+.sign-in {
+  position: relative;
+}
+.sign-in-container {
+  background-color: #F7FAFC;
+  padding: 5rem 1rem 10rem 1rem;
+}
+.sign-in-title {
+  font-size: 1.4rem;
+  letter-spacing: 0.05rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+.sign-in-subtitle {
+  font-size: 1.2rem;
+  letter-spacing: 0.03rem;
+  margin-bottom: 4rem;
+}
+.sign-in-title, .sign-in-subtitle {
+  text-align: center;
+}
+.sign-in-input {
+  font-size: 1.2rem;
+  letter-spacing: 0.05rem;
+  padding: 2.5rem 1.5rem;
+  border: none;
+  box-shadow: none;
+}
+.sign-in-input:hover, .sign-in-input:active {
+  border: none;
+  box-shadow: none;
+}
+.sign-in-input:active {
+  -webkit-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
+  -moz-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
+  box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
+}
+.sign-in-input:placeholder-shown {
+  font-size: 1.4rem;
+}
+.sign-in-input-group {
+  border-radius: 2px;
+  margin-bottom: 4rem;
+  -webkit-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
+  -moz-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
+  box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
+}
+.sign-in-input-group-last {
+  margin-bottom: 6rem;
+}
+.sign-in-input-icon {
+  color: #172B4D;
+}
+.sign-in-input-label {
+  background-color: white;
+  border: none;
+}
+.sign-in-submit {
+  text-align: center;
+}
+.sign-in-submit-btn {
+  font-size: 1.2rem;
+  letter-spacing: 0.05rem;
+  background-color: #11CDEF;
+  color: white;
+  padding: 1.5rem 4rem;
+  border-radius: 4px;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  font-size: 1rem;
+}
+
 /*# sourceMappingURL=index.css.map */
