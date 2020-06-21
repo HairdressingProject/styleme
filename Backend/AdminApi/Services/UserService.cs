@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -14,6 +13,7 @@ using AdminApi.Models_v2_1;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace AdminApi.Services
 {
@@ -25,6 +25,7 @@ namespace AdminApi.Services
         bool ValidateUserToken(string token);
         bool ValidateUserPassword(string password, string hash, string salt);
         Task<IEnumerable<Users>> GetAll();
+        string GetUserIdFromToken(string token);
     }
 
     public class UserService : IUserService
@@ -70,7 +71,7 @@ namespace AdminApi.Services
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = "https://localhost:5000",
-                Audience = "https://localhost:3000"                
+                Audience = "http://localhost:5500"                
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             entityUser.Token = tokenHandler.WriteToken(token);           
@@ -126,7 +127,7 @@ namespace AdminApi.Services
                     ValidateIssuer = true,
                     ValidIssuer = "https://localhost:5000",
                     ValidateAudience = true,
-                    ValidAudience = "https://localhost:3000"
+                    ValidAudience = "http://localhost:5500"
                 }, out SecurityToken validatedToken);
             }
             catch
@@ -135,6 +136,16 @@ namespace AdminApi.Services
             }
 
             return true;
+        }
+
+        public string GetUserIdFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var t = handler.ReadJwtToken(token);
+
+            var vals = t.Payload.Values.FirstOrDefault();
+
+            return vals.ToString();
         }
     }
 }

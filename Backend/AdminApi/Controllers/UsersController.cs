@@ -496,7 +496,7 @@ namespace AdminApi.Controllers
         // POST: api/users/authenticate
         // This method is an alternative to sign in that validates the token directly
         [EnableCors("Policy1")]
-        [HttpPost("authenticate")]
+        [HttpGet("authenticate")]
         public IActionResult AuthenticateUser()
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
@@ -504,7 +504,13 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return Ok();
+            var id = _userService.GetUserIdFromToken(Request.Cookies["auth"]);
+
+            if (id != null)
+            {
+                return Ok(new { What = id });
+            }
+            return NotFound();
         }
 
         // POST: api/users/forgot_password

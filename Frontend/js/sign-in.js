@@ -252,7 +252,8 @@ async function signIn(e) {
             }
         }
         else {
-            showAlert('success', 'Successfully signed in!');
+            // successfully signed in
+            window.location.replace('http://localhost:5500/database.html');
         }
     }
 }
