@@ -8,6 +8,8 @@ let passwordValid = false;
 const signInUsername = document.getElementById('sign-in-username');
 const signInPassword = document.getElementById('sign-in-password');
 
+const signInForm = document.getElementById('sign-in-form');
+
 document.addEventListener('DOMContentLoaded', function () {
     username.addEventListener('focus', function () {
         if (!usernameTouched) {
@@ -26,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     password.addEventListener('input', validatePassword);
     password.addEventListener('blur', validatePassword);
+
+    signInForm.addEventListener('submit', signIn);
 
     updateSignInBtn();
 });
@@ -211,5 +215,43 @@ function removeErrorInputs(className, parent) {
 
     for (let i = 0; i < currentErrors.length; i++) {
         parent.removeChild(currentErrors[i]);
+    }
+}
+
+async function signIn(e) {
+    e.preventDefault();
+    const url = e.target.action;
+
+    const formValid = usernameTouched && passwordTouched && usernameValid && passwordValid;
+
+    if (formValid) {
+        const { value: usernameInput } = username;
+        const { value: passwordInput } = password;
+
+        const data = { UserNameOrEmail: usernameInput, UserPassword: passwordInput };
+
+        console.log('sending to the server:');
+        console.dir(data);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Origin': 'https://localhost:3000/'
+            },
+            body: JSON.stringify(data)
+        });
+
+        response.json()
+            .then(v => {
+                console.log('From the server:');
+                console.dir(v);
+            })
+            .catch(ex => {
+                console.log('error:');
+                console.dir(ex);
+            });
     }
 }

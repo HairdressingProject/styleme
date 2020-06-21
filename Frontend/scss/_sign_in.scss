@@ -10,6 +10,7 @@ body {
 
 .sign-in {
     position: relative;
+    z-index: 0;
 
     &-container {
         background-color: c.$lighter-slate-gray;

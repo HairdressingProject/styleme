@@ -13,12 +13,14 @@
 </head>
 
 <body>
+    <noscript>Please enable JavaScript for this page to work</noscript>
+
     <div class="sign-in grid-x">
         <div class="cell small-12 medium-6 large-4 medium-offset-3 large-offset-4 sign-in-container">
             <h1 class="sign-in-title">Hairdressing Application - Admin Portal</h1>
             <p class="sign-in-subtitle">Welcome back! Please login to continue.</p>
 
-            <form action="#">
+            <form action="https://localhost:5000/api/users/sign_in" method="POST" id="sign-in-form">
                 <div class="sign-in-username" id="sign-in-username">
                     <div class="input-group sign-in-input-group" id="sign-in-username-group">
                         <span class="input-group-label sign-in-input-label">
@@ -59,6 +61,7 @@
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 
     <script src="js/index.js"></script>
+    <script src="js/alert.js"></script>
     <script src="js/sign-in.js"></script>
 </body>
 
