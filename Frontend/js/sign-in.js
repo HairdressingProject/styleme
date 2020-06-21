@@ -1,7 +1,10 @@
+const signInBtn = document.getElementById('sign-in-btn');
 const username = document.getElementById('username');
 let usernameTouched = false;
+let usernameValid = false;
 const password = document.getElementById('password');
 let passwordTouched = false;
+let passwordValid = false;
 const signInUsername = document.getElementById('sign-in-username');
 const signInPassword = document.getElementById('sign-in-password');
 
@@ -23,7 +26,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     password.addEventListener('input', validatePassword);
     password.addEventListener('blur', validatePassword);
+
+    updateSignInBtn();
 });
+
+/**
+ * Enables or disables the sign in button depending on the status of input fields
+ */
+function updateSignInBtn() {
+    if (!usernameTouched || !passwordTouched) {
+        signInBtn.setAttribute('disabled', true);
+    } else {
+        if (usernameValid && passwordValid) {
+            signInBtn.removeAttribute('disabled');
+        } else {
+            signInBtn.setAttribute('disabled', true);
+        }
+    }
+}
 
 /**
  * Validates username/email input
@@ -37,6 +57,8 @@ function validateUsername(e) {
         required: true,
         maxLength: 512
     });
+
+    usernameValid = usernameValidation.isValid;
 
     if (!usernameValidation.isValid) {
         if (usernameValidation.errors.required) {
@@ -57,6 +79,8 @@ function validateUsername(e) {
     if (error != null) {
         signInUsername.appendChild(error);
     }
+
+    updateSignInBtn();
 }
 
 /**
@@ -73,18 +97,26 @@ function validatePassword(e) {
         maxLength: 512
     });
 
+    passwordValid = passwordValidation.isValid;
+
     if (!passwordValidation.isValid) {
         if (passwordValidation.errors.required) {
-            removeErrorInputs('input-error-password', signInPassword);
-            error = createErrorInput(passwordValidation.errors.required, 'password');
+            if (!document.getElementById('password-required')) {
+                removeErrorInputs('input-error-password', signInPassword);
+                error = createErrorInput(passwordValidation.errors.required, 'password', 'password-required');
+            }
         }
         else if (passwordValidation.errors.minLength) {
-            removeErrorInputs('input-error-password', signInPassword);
-            error = createErrorInput(passwordValidation.errors.minLength, 'password');
+            if (!document.getElementById('password-minlength')) {
+                removeErrorInputs('input-error-password', signInPassword);
+                error = createErrorInput(passwordValidation.errors.minLength, 'password', 'password-minlength');
+            }
         }
         else if (passwordValidation.errors.maxLength) {
-            removeErrorInputs('input-error-password', signInPassword);
-            error = createErrorInput(passwordValidation.errors.maxLength, 'password');
+            if (!document.getElementById('password-maxlength')) {
+                removeErrorInputs('input-error-password', signInPassword);
+                error = createErrorInput(passwordValidation.errors.maxLength, 'password', 'password-maxlength');
+            }
         }
     } else {
         if (e.type !== 'blur') {
@@ -95,6 +127,8 @@ function validatePassword(e) {
     if (error != null) {
         signInPassword.appendChild(error);
     }
+
+    updateSignInBtn();
 }
 
 /**
@@ -144,17 +178,22 @@ function validateInput(input, { required, minLength, maxLength }) {
 /**
  * Creates an error message (as "p")
  * @param {string} text 
- * @param {"username" | "password"} type
+ * @param {"username" | "password"} inputType
+ * @param {string} errorId
  */
-function createErrorInput(text, type) {
+function createErrorInput(text, inputType, errorId) {
     const error = document.createElement('p');
     error.classList.add('input-error');
 
-    if (type === 'username') {
+    if (inputType === 'username') {
         error.classList.add('input-error-username');
     }
-    else if (type === 'password') {
+    else if (inputType === 'password') {
         error.classList.add('input-error-password');
+    }
+
+    if (errorId) {
+        error.id = errorId;
     }
 
     error.textContent = text;
