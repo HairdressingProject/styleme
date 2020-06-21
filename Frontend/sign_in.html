@@ -14,23 +14,29 @@
 
 <body>
     <div class="sign-in grid-x">
-        <div class="cell small-12 medium-6 medium-offset-3 sign-in-container">
+        <div class="cell small-12 medium-6 large-4 medium-offset-3 large-offset-4 sign-in-container">
             <h1 class="sign-in-title">Hairdressing Application - Admin Portal</h1>
             <p class="sign-in-subtitle">Welcome back! Please login to continue.</p>
 
             <form action="#">
-                <div class="input-group sign-in-input-group">
-                    <span class="input-group-label sign-in-input-label">
-                        <img src="./img/icons/mail.svg" alt="Username or email" class="sign-in-input-icon" />
-                    </span>
-                    <input type="text" class="input-group-field sign-in-input" placeholder="Username or email" />
+                <div class="sign-in-username" id="sign-in-username">
+                    <div class="input-group sign-in-input-group" id="sign-in-username-group">
+                        <span class="input-group-label sign-in-input-label">
+                            <img src="./img/icons/mail.svg" alt="Username or email" class="sign-in-input-icon" />
+                        </span>
+                        <input type="text" class="input-group-field sign-in-input" placeholder="Username or email"
+                            id="username" required maxlength="512" />
+                    </div>
                 </div>
 
-                <div class="input-group sign-in-input-group sign-in-input-group-last">
-                    <span class="input-group-label sign-in-input-label">
-                        <img src="./img/icons/password.svg" alt="Password" class="sign-in-input-icon" />
-                    </span>
-                    <input type="password" class="input-group-field sign-in-input" placeholder="Password" />
+                <div class="sign-in-password" id="sign-in-password">
+                    <div class="input-group sign-in-input-group sign-in-input-group-last" id="sign-in-password-group">
+                        <span class="input-group-label sign-in-input-label">
+                            <img src="./img/icons/password.svg" alt="Password" class="sign-in-input-icon" />
+                        </span>
+                        <input type="password" class="input-group-field sign-in-input" placeholder="Password"
+                            id="password" required minlength="6" maxlength="512" />
+                    </div>
                 </div>
 
                 <div class="sign-in-submit">
@@ -38,6 +44,11 @@
                 </div>
         </div>
         </form>
+    </div>
+
+
+    <div class="grid-x new-user">
+        <p class="cell text-center new-user-text">New user? <a href="sign_up.html">Sign up</a></p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
@@ -48,6 +59,7 @@
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 
     <script src="js/index.js"></script>
+    <script src="js/sign-in.js"></script>
 </body>
 
 </html>

@@ -13,7 +13,8 @@ body {
 
     &-container {
         background-color: c.$lighter-slate-gray;
-        padding: 5rem 1rem 10rem 1rem;
+        padding: 5rem 1rem 5rem 1rem;
+        border-radius: 5px;
     }
 
     &-title {
@@ -33,20 +34,28 @@ body {
         text-align: center;
     }
 
+    &-username {
+        margin-bottom: 4rem;
+    }
+
+    &-password {
+        margin-bottom: 8rem;
+    }
+
     &-input {
-        font-size: 1.2rem;
-        letter-spacing: .05rem;
+        font-size: 1.4rem;
+        letter-spacing: .1rem;
         padding: 2.5rem 1.5rem;
         border: none;
         box-shadow: none;
         
 
-        &:hover, &:active {
+        &:hover, &:active, &:focus, &:visited {
             border: none;
             box-shadow: none;           
         }
 
-        &:active {
+        &:focus {
             -webkit-box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
             -moz-box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
             box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
@@ -58,13 +67,15 @@ body {
 
         &-group {
             border-radius: 2px;
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
             -webkit-box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
             -moz-box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
             box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
 
-            &-last {
-                margin-bottom: 6rem;
+            &-error {
+                -webkit-box-shadow: 0px 5px 10px 0px rgba(250,220,220,1);
+                -moz-box-shadow: 0px 5px 10px 0px rgba(250,220,220,1);
+                box-shadow: 0px 5px 10px 0px rgba(250,220,220,1);
             }
         }
 
@@ -81,12 +92,57 @@ body {
     &-submit {
         text-align: center;
         &-btn {
-            font-size: 1.2rem;
-            letter-spacing: .05rem;
+            font-size: 1.4rem;
+            letter-spacing: .1rem;
             background-color: c.$blue;
             color: white;
             padding: 1.5rem 4rem;
             border-radius: 4px;
+            -webkit-box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
+            -moz-box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
+            box-shadow: 0px 5px 10px 0px rgba(201,201,201,0.5);
         }
+    }
+}
+
+.input-error {
+    font-size: 1.2rem;
+    letter-spacing: .05rem;
+    color: red;
+}
+
+.new-user {
+    position: absolute;
+    background-color: c.$brown;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-200%);
+
+    &-text {
+        color: white;
+        font-size: 1.4rem;
+        letter-spacing: .12rem;
+
+         & a, & a:focus, & a:visited, & a:hover {
+            color: c.$blue;
+        }
+    }
+}
+
+// MEDIA QUERIES
+
+@media only screen and (min-width: 768px) {
+    .sign-in {
+        padding-top: 10vh;
+    }
+
+    form {
+        padding: 0 2rem;
+    }
+}
+
+@media only screen and (min-width: 1920px) {
+    form {
+        padding: 0 15rem;
     }
 }

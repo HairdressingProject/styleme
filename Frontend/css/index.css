@@ -63,7 +63,8 @@ body {
 }
 .sign-in-container {
   background-color: #F7FAFC;
-  padding: 5rem 1rem 10rem 1rem;
+  padding: 5rem 1rem 5rem 1rem;
+  border-radius: 5px;
 }
 .sign-in-title {
   font-size: 1.4rem;
@@ -79,18 +80,24 @@ body {
 .sign-in-title, .sign-in-subtitle {
   text-align: center;
 }
+.sign-in-username {
+  margin-bottom: 4rem;
+}
+.sign-in-password {
+  margin-bottom: 8rem;
+}
 .sign-in-input {
-  font-size: 1.2rem;
-  letter-spacing: 0.05rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.1rem;
   padding: 2.5rem 1.5rem;
   border: none;
   box-shadow: none;
 }
-.sign-in-input:hover, .sign-in-input:active {
+.sign-in-input:hover, .sign-in-input:active, .sign-in-input:focus, .sign-in-input:visited {
   border: none;
   box-shadow: none;
 }
-.sign-in-input:active {
+.sign-in-input:focus {
   -webkit-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
   -moz-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
   box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
@@ -100,13 +107,15 @@ body {
 }
 .sign-in-input-group {
   border-radius: 2px;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
   -webkit-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
   -moz-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
   box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
 }
-.sign-in-input-group-last {
-  margin-bottom: 6rem;
+.sign-in-input-group-error {
+  -webkit-box-shadow: 0px 5px 10px 0px #fadcdc;
+  -moz-box-shadow: 0px 5px 10px 0px #fadcdc;
+  box-shadow: 0px 5px 10px 0px #fadcdc;
 }
 .sign-in-input-icon {
   color: #172B4D;
@@ -119,14 +128,53 @@ body {
   text-align: center;
 }
 .sign-in-submit-btn {
-  font-size: 1.2rem;
-  letter-spacing: 0.05rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.1rem;
   background-color: #11CDEF;
   color: white;
   padding: 1.5rem 4rem;
   border-radius: 4px;
+  -webkit-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
+  -moz-box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
+  box-shadow: 0px 5px 10px 0px rgba(201, 201, 201, 0.5);
 }
 
+.input-error {
+  font-size: 1.2rem;
+  letter-spacing: 0.05rem;
+  color: red;
+}
+
+.new-user {
+  position: absolute;
+  background-color: #291528;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-200%);
+}
+.new-user-text {
+  color: white;
+  font-size: 1.4rem;
+  letter-spacing: 0.12rem;
+}
+.new-user-text a, .new-user-text a:focus, .new-user-text a:visited, .new-user-text a:hover {
+  color: #11CDEF;
+}
+
+@media only screen and (min-width: 768px) {
+  .sign-in {
+    padding-top: 10vh;
+  }
+
+  form {
+    padding: 0 2rem;
+  }
+}
+@media only screen and (min-width: 1920px) {
+  form {
+    padding: 0 15rem;
+  }
+}
 html {
   font-size: 62.5%;
 }
