@@ -9,12 +9,88 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
         integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css" />
 </head>
 
 <body>
-    <h1>Hello, world!</h1>
+    <noscript>Please enable JavaScript for this page to work</noscript>
+
+    <!-- TOP BAR -->
+    <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
+        <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+        <div class="title-bar-title">Hairdressing Project</div>
+    </div>
+
+    <div class="top-bar" id="responsive-menu">
+        <div class="top-bar-left">
+            <img src="img/logo.svg" alt="Hairdressing Project" class="logo">
+            <h1 class="text-center title">Database</h1>
+        </div>
+        <div class="top-bar-right">
+            <ul class="dropdown menu _right-menu" data-dropdown-menu>
+                <li>
+                    <button>
+                        <img src="img/icons/settings-dark.svg" alt="Settings" class="_menu-icon" />
+                    </button>
+                    <ul class="menu _settings-dropdown">
+                        <li class="_menu-item">
+                            <a href="#" class="_dropdown-link">Privacy Policy</a>
+                        </li>
+                        <li class="_menu-item">
+                            <a href="#" class="_dropdown-link">Pictures storage</a>
+                        </li>
+                        <li class="_menu-item">
+                            <span class="_dropdown-link">
+                                <span class="_dark-mode-title">Show notifications</span>
+                                <span class="switch _dark-mode-toggle">
+                                    <input class="switch-input" id="notifications" type="checkbox" name="exampleSwitch">
+                                    <label class="switch-paddle" for="notifications">
+                                        <span class="show-for-sr">Show notifications?</span>
+                                        <span class="switch-active" aria-hidden="true">Yes</span>
+                                        <span class="switch-inactive" aria-hidden="true">No</span>
+                                    </label>
+                                </span>
+                            </span>
+                        </li>
+                        <li class="_menu-item">
+                            <span class="_dropdown-link">
+                                <span class="_dark-mode-title">Dark mode</span>
+                                <span class="switch _dark-mode-toggle">
+                                    <input class="switch-input" id="dark-mode" type="checkbox" name="exampleSwitch">
+                                    <label class="switch-paddle" for="dark-mode">
+                                        <span class="show-for-sr">Dark mode?</span>
+                                        <span class="switch-active" aria-hidden="true">Yes</span>
+                                        <span class="switch-inactive" aria-hidden="true">No</span>
+                                    </label>
+                                </span>
+                            </span>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <button>
+                        <img src="img/icons/notifications-dark.svg" alt="Notifications" class="_menu-icon" />
+                    </button>
+                    <ul class="menu">
+                        <li class="_menu-item"><a href="#" class="_dropdown-link">Example notification</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <button>
+                        <img src="img/icons/user.svg" alt="User" class="_menu-icon" />
+                        <span id="user-name">User</span>
+                        <img src="img/icons/caret-down.svg" alt="User menu" />
+                    </button>
+                    <ul class="menu">
+                        <li class="_menu-item"><a href="account.html" class="_dropdown-link">My account</a></li>
+                        <li class="_menu-item">
+                            <a href="sign_in.html" class="_dropdown-link" id="logout">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>

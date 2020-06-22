@@ -64,3 +64,20 @@ function handleError(response) {
 
     return ({});
 }
+
+async function logout() {
+    const url = `https://localhost:5000/api/users/logout`;
+
+    const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+        headers: {
+            'Origin': 'http://localhost:5500'
+        }
+    });
+
+    if (response.ok) {
+        window.location.replace('/sign_in.html');
+    }
+}

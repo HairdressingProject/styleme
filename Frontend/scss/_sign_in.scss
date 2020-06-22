@@ -1,11 +1,14 @@
 @use 'colours' as c;
 
-body {
-    position: relative;
-    min-height: 100vh;
+.landing-background {
     background: 
         center top / cover no-repeat url('../img/background_top.svg'), 
         center bottom / cover no-repeat url('../img/background_bottom.svg');
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
 }
 
 .sign-in {

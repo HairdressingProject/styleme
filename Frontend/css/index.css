@@ -83,10 +83,13 @@ table {
   width: 100%;
 }
 
+.landing-background {
+  background: center top/cover no-repeat url("../img/background_top.svg"), center bottom/cover no-repeat url("../img/background_bottom.svg");
+}
+
 body {
   position: relative;
   min-height: 100vh;
-  background: center top/cover no-repeat url("../img/background_top.svg"), center bottom/cover no-repeat url("../img/background_bottom.svg");
 }
 
 .sign-in {
@@ -346,6 +349,79 @@ body {
     padding: 0 15rem;
   }
 }
+.top-bar {
+  position: relative;
+}
+
+#responsive-menu, .top-bar ul {
+  background-color: #FAFEFF;
+}
+
+.title {
+  position: absolute;
+  font-size: 1.8rem;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+  top: 0;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+._right-menu li {
+  margin-right: 7rem;
+}
+._right-menu button {
+  cursor: pointer;
+}
+._right-menu ._dropdown-link {
+  font-size: 1.4rem;
+  letter-spacing: 0.05rem;
+}
+._right-menu ._dropdown-link:last-child {
+  padding: 0 1rem;
+}
+._right-menu ._menu-item:not(:last-child) {
+  margin-bottom: 2rem;
+}
+._right-menu .menu {
+  padding: 2rem 0;
+}
+._right-menu ._dark-mode-toggle {
+  margin-left: 2rem;
+  position: relative;
+  vertical-align: middle;
+}
+._right-menu ._dark-mode-title {
+  position: relative;
+  vertical-align: middle;
+}
+
+#user-name {
+  margin-left: 2rem;
+  margin-right: 2rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.05rem;
+}
+
+._settings-dropdown {
+  min-width: 25rem;
+}
+
+@media only screen and (max-width: 960px) {
+  .title {
+    display: none;
+  }
+}
+@media only screen and (max-width: 640px) {
+  ._right-menu li {
+    margin-right: 4rem;
+  }
+}
+body {
+  background: #71A2B6;
+}
+
 html {
   font-size: 62.5%;
 }

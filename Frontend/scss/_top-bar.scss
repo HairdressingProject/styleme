@@ -1,0 +1,84 @@
+@use 'colours' as c;
+
+.top-bar {
+    position: relative;
+}
+
+#responsive-menu, .top-bar ul {
+    background-color: c.$light-blue;
+}
+
+.title {
+    position: absolute;
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: .1rem;
+    top: 0;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+._right-menu {
+    & li {
+        margin-right: 7rem;
+    }    
+
+    & button {
+        cursor: pointer;
+    }
+
+    ._dropdown-link {
+        font-size: 1.4rem;
+        letter-spacing: .05rem;
+
+        &:last-child {
+            padding: 0 1rem;
+        }
+    }
+    
+    ._menu-item:not(:last-child) {
+        margin-bottom: 2rem;
+    }
+
+    .menu {
+        padding: 2rem 0;
+    }
+
+    ._dark-mode-toggle {
+        margin-left: 2rem;
+        position: relative;
+        vertical-align: middle;
+    }
+
+    ._dark-mode-title {
+        position: relative;
+        vertical-align: middle;
+    }
+}
+
+#user-name {
+    margin-left: 2rem;
+    margin-right: 2rem;
+    font-size: 1.4rem;
+    letter-spacing: .05rem;
+}
+
+._settings-dropdown {
+    min-width: 25rem;
+}
+
+// MEDIA QUERIES
+@media only screen and (max-width: 960px) {
+    .title {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 640px) {
+    ._right-menu {
+        & li {
+            margin-right: 4rem;
+        }
+    }
+}
