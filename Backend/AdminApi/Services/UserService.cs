@@ -145,7 +145,12 @@ namespace AdminApi.Services
 
             var vals = t.Payload.Values.FirstOrDefault();
 
-            return vals.ToString();
+            if (vals != null)
+            {
+                return vals.ToString();
+            }
+
+            return null;
         }
     }
 }

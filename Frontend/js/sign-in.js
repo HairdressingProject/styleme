@@ -220,6 +220,7 @@ function removeErrorInputs(className, parent) {
 
 async function signIn(e) {
     e.preventDefault();
+    signInBtn.setAttribute('disabled', true);
     const url = e.target.action;
 
     const formValid = usernameTouched && passwordTouched && usernameValid && passwordValid;
@@ -256,6 +257,7 @@ async function signIn(e) {
             window.location.replace('http://localhost:5500/database.html');
         }
     }
+    signInBtn.removeAttribute('disabled');
 }
 
 /**

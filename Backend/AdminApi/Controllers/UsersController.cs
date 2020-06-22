@@ -59,6 +59,16 @@ namespace AdminApi.Controllers
             };
 
             return Ok(usersResponse);
+
+            // Use the code below to restrict access to this route to admins or developers
+            // Can also be used as middleware
+            /*var isAdminOrDeveloper = await _authorizationService.IsAdminOrDeveloper(Request);
+
+            if (isAdminOrDeveloper)
+            {
+                return Unauthorized(new { errors = new { Authorisation = new string[] { "Insufficient permissions" } }, status = 401 });
+            }
+            return Ok(usersResponse);*/
         }
 
         // GET: api/users/5
@@ -508,7 +518,7 @@ namespace AdminApi.Controllers
 
             if (id != null)
             {
-                return Ok(new { What = id });
+                return Ok(new { Id = id });
             }
             return NotFound();
         }

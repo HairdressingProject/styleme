@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AdminApi.Models_v2_1;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AdminApi.Services
 {
@@ -9,15 +12,18 @@ namespace AdminApi.Services
         string GetAuthCookie(HttpRequest request);
         void SetAuthCookie(HttpRequest request, HttpResponse response, string token);
         bool ValidateJWTCookie(HttpRequest request);
+        Task<bool> IsAdminOrDeveloper(HttpRequest request);
     }
 
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IUserService _userService;
+        private readonly hair_project_dbContext _context;
 
-        public AuthorizationService(IUserService userService)
+        public AuthorizationService(IUserService userService, hair_project_dbContext context)
         {
             _userService = userService;
+            _context = context;
         }
 
         public string GetAuthCookie(HttpRequest request)
@@ -54,6 +60,32 @@ namespace AdminApi.Services
         {
             var token = GetAuthCookie(request);
             return _userService.ValidateUserToken(token);
+        }
+
+        public async Task<bool> IsAdminOrDeveloper(HttpRequest request)
+        {
+            if (ValidateJWTCookie(request))
+            {
+                var authCookie = GetAuthCookie(request);
+                string id = _userService.GetUserIdFromToken(authCookie);
+
+                if (ulong.TryParse(id, out ulong idParsed))
+                {
+                    Users u = await _context.Users
+                                        .FirstOrDefaultAsync(user => user.Id == idParsed);
+
+                    if (u != null)
+                    {
+                        // check whether user making the request is admin or developer
+                        if (u.UserRole == "admin" || u.UserRole == "developer")
+                        {
+                            // authorised!
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
     }
 }

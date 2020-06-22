@@ -94,19 +94,10 @@ namespace AdminApi
                     builder =>
                     {
                         builder.AllowCredentials()
-                                .WithOrigins("http://localhost:5500")
+                                .WithOrigins("http://localhost:5500", "127.0.0.1:5500/")
                                 .WithMethods("GET", "POST", "PUT", "DELETE")
                                 .WithHeaders("Origin", "Content-Type");
                     });
-
-                /*options.AddPolicy(name: AllowedOriginsConf,
-                    builder =>
-                    {
-                        builder.AllowCredentials()
-                                .WithOrigins("http://localhost:3000")
-                                .WithMethods("GET", "POST", "PUT", "DELETE")
-                                .WithHeaders("Origin", "Content-Type");
-                    });*/
             });
         }
 
