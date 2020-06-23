@@ -58,11 +58,11 @@ async function fetchResource(resourceName) {
 }
 
 async function fetchAll() {
-    let all = [];
+    let all = {};
 
     for (let i = 0; i < resources.length; i++) {
         const r = await fetchResource(resources[i]);
-        all.push(r);
+        all[resources[i]] = r[resources[i]];
     }
 
     console.dir(all);
