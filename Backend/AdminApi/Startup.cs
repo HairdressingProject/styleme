@@ -94,7 +94,7 @@ namespace AdminApi
                     builder =>
                     {
                         builder.AllowCredentials()
-                                .WithOrigins("http://localhost:5500", "127.0.0.1:5500/")
+                                .WithOrigins("http://localhost:5500", "http://127.0.0.1:5500")
                                 .WithMethods("GET", "POST", "PUT", "DELETE")
                                 .WithHeaders("Origin", "Content-Type");
                     });

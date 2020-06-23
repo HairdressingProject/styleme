@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj": {}
+    "c:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj": {
+    "c:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj",
+        "projectUniqueName": "c:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj",
         "projectName": "AdminApi",
-        "projectPath": "C:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj",
+        "projectPath": "c:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\AdminApi.csproj",
         "packagesPath": "C:\\Users\\diech\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\obj\\",
+        "outputPath": "c:\\Users\\diech\\Documents\\Admin-Portal-v2\\Backend\\AdminApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
