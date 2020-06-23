@@ -3,3 +3,22 @@
 body {
     background: c.$teal;
 }
+
+.footer {
+    background-color: c.$dark-gray;
+    color: white;
+    text-align: center;
+    padding: 3rem 0;
+    font-size: 1.4rem;
+    letter-spacing: .15rem;
+}
+
+.main {
+    position: relative;
+    transform: translateX(0);
+    transition: transform 500ms;
+
+    &-sidebar-closed {
+        transform: translateX(-220%);
+    }
+}

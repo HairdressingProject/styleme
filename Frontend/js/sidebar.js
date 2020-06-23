@@ -3,6 +3,7 @@ const sidebarOpen = document.getElementById('sidebar-open');
 const sidebarClose = document.getElementById('sidebar-close');
 const icons = document.getElementsByClassName('_sidebar-item-icon');
 const linkTexts = document.getElementsByClassName('_sidebar-item-text');
+const mainContent = document.getElementsByClassName('main')[0];
 
 document.addEventListener('DOMContentLoaded', function () {
     sidebarClose.addEventListener('click', closeSidebar);
@@ -17,6 +18,8 @@ function closeSidebar() {
 
     addSlideIconsLeft();
     hideLinksText();
+
+    mainContent.classList.add('main-sidebar-closed');
 }
 
 function openSidebar() {
@@ -28,6 +31,8 @@ function openSidebar() {
 
     removeSlideIconsLeft();
     unhideLinksText();
+
+    mainContent.classList.remove('main-sidebar-closed');
 }
 
 function addSlideIconsLeft() {
