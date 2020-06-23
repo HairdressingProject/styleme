@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if (id) {
         const { user } = await getUser(id) || { firstName: 'User' };
-        console.dir(user);
         userName.textContent = `${user.firstName} ${user.lastName || ""}`;
     }
     else {
