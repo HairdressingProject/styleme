@@ -96,11 +96,46 @@
 
     <!-- SIDE BAR -->
 
-    <ul class="vertical menu">
-        <li><a href="#">One</a></li>
-        <li><a href="#">Two</a></li>
-        <li><a href="#">Three</a></li>
-        <li><a href="#">Four</a></li>
+    <ul class="vertical menu _sidebar" id="sidebar">
+        <li class="_sidebar-item">
+            <a href="#" class="grid-x _sidebar-item-link">
+                <img src="img/icons/home-dark.svg" alt="Dashboard" class="_sidebar-item-icon">
+                <span class="_sidebar-item-text">Dashboard</span>
+            </a>
+        </li>
+        <li class="_sidebar-item _sidebar-item-selected">
+            <a href="#" class="grid-x _sidebar-item-link">
+                <img src="img/icons/databases-dark.svg" alt="Database" class="_sidebar-item-icon">
+                <span class="_sidebar-item-text">Database</span>
+            </a>
+        </li>
+        <li class="_sidebar-item">
+            <a href="#" class="grid-x _sidebar-item-link">
+                <img src="img/icons/traffic-dark.svg" alt="Traffic" class="_sidebar-item-icon">
+                <span class="_sidebar-item-text">Traffic</span>
+            </a>
+        </li>
+        <li class="_sidebar-item">
+            <a href="#" class="grid-x _sidebar-item-link">
+                <img src="img/icons/permissions-dark.svg" alt="Permissions" class="_sidebar-item-icon">
+                <span class="_sidebar-item-text">Permissions</span>
+            </a>
+        </li>
+        <li class="_sidebar-item">
+            <a href="#" class="grid-x _sidebar-item-link">
+                <img src="img/icons/pictures-dark.svg" alt="Pictures" class="_sidebar-item-icon">
+                <span class="_sidebar-item-text">Pictures</span>
+            </a>
+        </li>
+        <li class="_sidebar-controls">
+            <button id="sidebar-close">
+                <img src="img/icons/caret-left.svg" alt="Close">
+            </button>
+
+            <button class="hide" id="sidebar-open">
+                <img src="img/icons/caret-right-dark.svg" alt="Open">
+            </button>
+        </li>
     </ul>
 
     <!-- END OF SIDE BAR -->
@@ -115,6 +150,7 @@
     <script src="js/index.js"></script>
     <script src="js/alert.js"></script>
     <script src="js/authenticate.js"></script>
+    <script src="js/sidebar.js"></script>
     <script src="js/database.js"></script>
 </body>
 

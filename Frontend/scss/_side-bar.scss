@@ -1,0 +1,80 @@
+@use 'colours' as c;
+
+._sidebar {
+    position: relative;
+    background: rgb(234,255,250);
+    background: linear-gradient(180deg, rgba(234,255,250,1) 0%, rgba(218,250,255,1) 100%);
+    max-width: 20rem;
+    padding: 2rem 0;
+    min-height: 100vh;
+    transform: translateX(0);
+    transition: transform 500ms;
+
+    &-item {
+        background-color: c.$white;
+        height: 6rem;
+        padding: 0;
+        border-radius: 30px;
+        transition: background-color 500ms;
+
+        &:hover {
+            background-color: c.$blue;
+
+            & span {
+                color: c.$white;
+            }
+        }
+
+        span {
+            position: relative;
+            font-size: 1.4rem;
+            letter-spacing: .05rem;
+            margin: 0 auto;
+            color: c.$dark-blue;
+            transition: color 200ms;
+            
+        }
+
+        &:not(:last-child) {
+            margin-bottom: 5rem;
+        }
+
+        &-selected {
+            background-color: c.$teal;
+
+            & span {
+                color: c.$white;
+            }
+        }
+
+        & &-link {
+            position: relative;
+            display: flex;
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            align-items: center;
+        }
+
+        &-icon {
+            position: relative;
+            margin-left: 2rem;
+
+            &.slide-left {
+                transform: translateX(550%);
+            }
+        }
+    }
+
+    &-closed {
+        transform: translateX(-70%);
+    }
+}
+
+#sidebar-open, #sidebar-close {
+    position: relative;
+    cursor: pointer;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: translate 200ms;
+}
