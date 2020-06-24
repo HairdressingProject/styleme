@@ -1,5 +1,15 @@
 @use 'colours' as c;
 
+.main-sidebar-closed {
+    // transform: translateX(-40%);
+
+    /* &.account-main {
+        min-width: 300px;
+        margin: 1rem auto;
+        margin-left: 2rem;
+    }   */ 
+}
+
 ._sidebar {
     position: relative;
     background: rgb(234,255,250);
@@ -77,4 +87,12 @@
     left: 50%;
     transform: translateX(-50%);
     transition: translate 200ms;
+}
+
+@media only screen and (max-width: 536px) {
+    ._sidebar {
+        position: absolute;
+        min-height: 100vh;
+        z-index: 2;
+    }
 }

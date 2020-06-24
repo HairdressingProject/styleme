@@ -19,10 +19,6 @@ body {
     transform: translateX(0);
     transition: transform 500ms, width 500ms;
     padding-top: 5rem;
-
-    &-sidebar-closed {
-        transform: translateX(-5%);
-    }
 }
 
 ._tables {
@@ -212,7 +208,7 @@ body {
             margin-left: 0;
 
             &-sidebar-closed {
-                transform: translateX(-50%);
+                // transform: translateX(-50%);
             }
         }
         
@@ -227,7 +223,7 @@ body {
             margin-left: 0;
 
             &-sidebar-closed {
-                transform: translateX(-100%);
+                // transform: translateX(-100%);
             }
         }
         

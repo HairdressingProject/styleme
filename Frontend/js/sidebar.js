@@ -3,9 +3,11 @@ const sidebarOpen = document.getElementById('sidebar-open');
 const sidebarClose = document.getElementById('sidebar-close');
 const icons = document.getElementsByClassName('_sidebar-item-icon');
 const linkTexts = document.getElementsByClassName('_sidebar-item-text');
-const mainContent = document.getElementsByClassName('main')[0];
+const mainContent = document.getElementsByClassName('main')[0] || document.getElementsByClassName('account-main')[0];
 
 document.addEventListener('DOMContentLoaded', function () {
+    sidebar.style.height = (document.body.offsetHeight - 100) + 'px';
+
     sidebarClose.addEventListener('click', closeSidebar);
     sidebarOpen.addEventListener('click', openSidebar);
 });

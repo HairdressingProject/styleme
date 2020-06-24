@@ -14,7 +14,209 @@
 </head>
 
 <body>
-    <h1>Hello, world!</h1>
+    <noscript>Please enable JavaScript for this page to work</noscript>
+
+    <!-- TOP BAR -->
+    <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
+        <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+        <div class="title-bar-title">Hairdressing Project</div>
+    </div>
+
+    <div class="top-bar" id="responsive-menu">
+        <div class="top-bar-left">
+            <img src="img/logo.svg" alt="Hairdressing Project" class="logo">
+            <h1 class="text-center title">My account</h1>
+        </div>
+        <div class="top-bar-right">
+            <ul class="dropdown menu _right-menu" data-dropdown-menu>
+                <li>
+                    <button>
+                        <img src="img/icons/settings-dark.svg" alt="Settings" class="_menu-icon" />
+                    </button>
+                    <ul class="menu _settings-dropdown">
+                        <li class="_menu-item">
+                            <a href="#" class="_dropdown-link">Privacy Policy</a>
+                        </li>
+                        <li class="_menu-item">
+                            <a href="#" class="_dropdown-link">Pictures storage</a>
+                        </li>
+                        <li class="_menu-item">
+                            <span class="_dropdown-link">
+                                <span class="_dark-mode-title">Show notifications</span>
+                                <span class="switch _dark-mode-toggle">
+                                    <input class="switch-input" id="notifications" type="checkbox" name="exampleSwitch">
+                                    <label class="switch-paddle" for="notifications">
+                                        <span class="show-for-sr">Show notifications?</span>
+                                        <span class="switch-active" aria-hidden="true">Yes</span>
+                                        <span class="switch-inactive" aria-hidden="true">No</span>
+                                    </label>
+                                </span>
+                            </span>
+                        </li>
+                        <li class="_menu-item">
+                            <span class="_dropdown-link">
+                                <span class="_dark-mode-title">Dark mode</span>
+                                <span class="switch _dark-mode-toggle">
+                                    <input class="switch-input" id="dark-mode" type="checkbox" name="exampleSwitch">
+                                    <label class="switch-paddle" for="dark-mode">
+                                        <span class="show-for-sr">Dark mode?</span>
+                                        <span class="switch-active" aria-hidden="true">Yes</span>
+                                        <span class="switch-inactive" aria-hidden="true">No</span>
+                                    </label>
+                                </span>
+                            </span>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <button>
+                        <img src="img/icons/notifications-dark.svg" alt="Notifications" class="_menu-icon" />
+                    </button>
+                    <ul class="menu">
+                        <li class="_menu-item"><a href="#" class="_dropdown-link">Example notification</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <button>
+                        <img src="img/icons/user.svg" alt="User" class="_menu-icon" />
+                        <span id="user-name">User</span>
+                        <img src="img/icons/caret-down.svg" alt="User menu" />
+                    </button>
+                    <ul class="menu">
+                        <li class="_menu-item"><a href="account.html" class="_dropdown-link">My account</a></li>
+                        <li class="_menu-item">
+                            <a href="sign_in.html" class="_dropdown-link" id="logout">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- END OF TOP BAR -->
+    <div class="grid-x">
+        <!-- SIDE BAR -->
+        <ul class="vertical menu _sidebar" id="sidebar">
+            <li class="_sidebar-item">
+                <a href="#" class="grid-x _sidebar-item-link">
+                    <img src="img/icons/home-dark.svg" alt="Dashboard" class="_sidebar-item-icon">
+                    <span class="_sidebar-item-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="_sidebar-item">
+                <a href="database.html" class="grid-x _sidebar-item-link">
+                    <img src="img/icons/databases-dark.svg" alt="Database" class="_sidebar-item-icon">
+                    <span class="_sidebar-item-text">Database</span>
+                </a>
+            </li>
+            <li class="_sidebar-item">
+                <a href="#" class="grid-x _sidebar-item-link">
+                    <img src="img/icons/traffic-dark.svg" alt="Traffic" class="_sidebar-item-icon">
+                    <span class="_sidebar-item-text">Traffic</span>
+                </a>
+            </li>
+            <li class="_sidebar-item">
+                <a href="#" class="grid-x _sidebar-item-link">
+                    <img src="img/icons/permissions-dark.svg" alt="Permissions" class="_sidebar-item-icon">
+                    <span class="_sidebar-item-text">Permissions</span>
+                </a>
+            </li>
+            <li class="_sidebar-item">
+                <a href="#" class="grid-x _sidebar-item-link">
+                    <img src="img/icons/pictures-dark.svg" alt="Pictures" class="_sidebar-item-icon">
+                    <span class="_sidebar-item-text">Pictures</span>
+                </a>
+            </li>
+            <li class="_sidebar-controls">
+                <button id="sidebar-close">
+                    <img src="img/icons/caret-left.svg" alt="Close">
+                </button>
+
+                <button class="hide" id="sidebar-open">
+                    <img src="img/icons/caret-right-dark.svg" alt="Open">
+                </button>
+            </li>
+        </ul>
+
+        <!-- END OF SIDE BAR -->
+
+        <!-- MAIN CONTENT -->
+        <main class="account-main">
+            <div class="account-basic-info grid-x">
+                <div class="cell small-6 account-pic-container">
+                    <button class="account-pic-attachment-btn">
+                        <img src="img/icons/attachment.svg" alt="Attachment" class="account-pic-attachment">
+                    </button>
+                    <img src="img/icons/user.svg" alt="User" class="account-pic">
+                </div>
+                <div class="cell small-6 account-fullname-username">
+                    <h1 id="account-fullname" class="account-fullname">User</h1>
+                    <p id="account-username" class="account-username">User</p>
+                </div>
+            </div>
+            <form>
+                <div class="grid-container">
+                    <div class="grid-x">
+                        <div class="cell account-field-cell">
+                            <label class="account-field">user_name<span class="account-required">*</span>
+                                <input type="text" placeholder="user_name" required class="account-input">
+                            </label>
+                        </div>
+                        <div class="cell account-field-cell">
+                            <label class="account-field">user_email<span class="account-required">*</span>
+                                <input type="email" placeholder="user_email" required class="account-input">
+                            </label>
+                        </div>
+                        <div class="cell account-field-cell">
+                            <label class="account-field">first_name<span class="account-required">*</span>
+                                <input type="text" placeholder="first_name" required class="account-input">
+                            </label>
+                        </div>
+                        <div class="cell account-field-cell">
+                            <label class="account-field">last_name
+                                <input type="text" placeholder="last_name" class="account-input">
+                            </label>
+                        </div>
+                        <div class="cell account-field-cell">
+                            <label class="account-field">user_password<span class="account-required">*</span>
+                                <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                                    class="account-input">
+                                <button class="account-reveal-password">
+                                    <img src="img/icons/eye.svg" alt="Reveal password">
+                                </button>
+                            </label>
+                        </div>
+                        <div class="cell account-field-cell">
+                            <label class="account-field">Confirm password<span class="account-required">*</span>
+                                <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                                    class="account-input">
+                                <button class="account-reveal-password account-reveal-password-active">
+                                    <img src="img/icons/eye.svg" alt="Reveal password">
+                                </button>
+                            </label>
+                        </div>
+                        <div class="account-btns grid-x">
+                            <div class="cell small-12 medium-6">
+                                <button class="account-restore-btn account-btn">Restore</button>
+                            </div>
+                            <div class="cell small-12 medium-6">
+                                <button class="account-save-btn account-btn" type="submit">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </main>
+        <!-- END OF MAIN CONTENT -->
+    </div>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>Copyright &copy; 2020 Hairdressing Project</p>
+    </footer>
+    <!-- END OF FOOTER -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
@@ -24,6 +226,10 @@
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 
     <script src="js/index.js"></script>
+    <script src="js/alert.js"></script>
+    <script src="js/authenticate.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/account.js"></script>
 </body>
 
 </html>
