@@ -18,7 +18,13 @@ After all collections have been successfully imported, you can now explore all r
 
 ![Browsing routes](https://i.imgur.com/XK7KDcj.png "Browsing routes")
 
-### 2 - Generating pepper
+### 2 - Setting up the database
+From the [Database](/Database "Database") folder, run:
+```
+mysql -u root -p < database_v.2.1.sql
+```
+
+### 3 - Generating pepper
 The back-end uses a [pepper](https://en.wikipedia.org/wiki/Pepper_(cryptography) "Pepper") that is added to hashed passwords. It is the same for all passwords, but stored outside of the application and the database. 
 
 Choose a secret (can be any string) and run the commands below (from the __AdminApi__ folder) to store it in your computer:
@@ -36,7 +42,9 @@ dotnet user-secrets list
 
 Don't forget to start both back-end and database servers before proceeding to the next step.
 
-### 3 - Sending requests
+> Run `dotnet watch run` from the AdminApi folder to start the server
+
+### 4 - Sending requests
 Before testing any route, you will first have to create a new sample admin account. That is because all passwords are now hashed by the server before being added to the database, so they should not be directly added with `INSERT` statements. 
 
 Send a `POST /api/users/sign_up` request with a request body in the following format (you may change each property to suit your preferences):
