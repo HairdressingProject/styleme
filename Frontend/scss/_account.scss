@@ -78,6 +78,7 @@
         border-color: c.$dark-blue;
         border-width: .3px;
         background-color: white;
+        text-align: center;
 
         &::placeholder {
             color: c.$dark-blue;
@@ -138,5 +139,13 @@
     .account-restore-btn {
         margin-right: 0;
         margin-bottom: 3rem;
+    }
+}
+
+@media only screen and (max-width: 320px) {
+    .account-main {
+        min-width: 300px;
+        margin: 1rem auto;
+        margin-left: 2rem;
     }
 }

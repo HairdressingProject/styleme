@@ -6,7 +6,7 @@ const linkTexts = document.getElementsByClassName('_sidebar-item-text');
 const mainContent = document.getElementsByClassName('main')[0] || document.getElementsByClassName('account-main')[0];
 
 document.addEventListener('DOMContentLoaded', function () {
-    sidebar.style.height = (document.body.offsetHeight - 100) + 'px';
+    sidebar.style.height = document.body.offsetHeight + 'px';
 
     sidebarClose.addEventListener('click', closeSidebar);
     sidebarOpen.addEventListener('click', openSidebar);
@@ -60,3 +60,4 @@ function unhideLinksText() {
         linkTexts[i].classList.remove('hide');
     }
 }
+

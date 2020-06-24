@@ -2,6 +2,7 @@
 
 .top-bar {
     position: relative;
+    z-index:3;
 }
 
 #responsive-menu, .top-bar ul {
@@ -76,6 +77,11 @@
 }
 
 @media only screen and (max-width: 640px) {
+    .title-bar {
+        position: relative;
+        z-index: 3;
+    }
+
     ._right-menu {
         & li {
             margin-right: 4rem;
