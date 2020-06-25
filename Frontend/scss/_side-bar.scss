@@ -85,6 +85,13 @@
     transition: translate 200ms;
 }
 
+#sidebar-open {
+    &-active, &-focus {
+        border: none;
+    }
+    
+}
+
 @media only screen and (max-height: 736px) {
     ._sidebar {
         padding-top: 5rem;

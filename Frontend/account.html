@@ -157,30 +157,34 @@
             <form>
                 <div class="grid-container">
                     <div class="grid-x">
-                        <div class="cell account-field-cell">
+                        <div class="cell account-field-cell" id="account-username">
                             <label class="account-field">user_name<span class="account-required">*</span>
-                                <input type="text" placeholder="user_name" required class="account-input">
+                                <input type="text" placeholder="user_name" required class="account-input" id="username"
+                                    maxlength="32">
                             </label>
                         </div>
-                        <div class="cell account-field-cell">
+                        <div class="cell account-field-cell" id="account-email">
                             <label class="account-field">user_email<span class="account-required">*</span>
-                                <input type="email" placeholder="user_email" required class="account-input">
+                                <input type="email" placeholder="user_email" required class="account-input" id="email"
+                                    maxlength="512">
                             </label>
                         </div>
-                        <div class="cell account-field-cell">
+                        <div class="cell account-field-cell" id="account-given-name">
                             <label class="account-field">first_name<span class="account-required">*</span>
-                                <input type="text" placeholder="first_name" required class="account-input">
+                                <input type="text" placeholder="first_name" required class="account-input"
+                                    maxlength="128">
                             </label>
                         </div>
-                        <div class="cell account-field-cell">
+                        <div class="cell account-field-cell" id="account-family-name">
                             <label class="account-field">last_name
-                                <input type="text" placeholder="last_name" class="account-input">
+                                <input type="text" placeholder="last_name" class="account-input" id="family-name"
+                                    maxlength="128">
                             </label>
                         </div>
-                        <div class="cell account-field-cell">
+                        <div class="cell account-field-cell" id="account-given-name">
                             <label class="account-field">user_password<span class="account-required">*</span>
                                 <input type="password" placeholder="******" required minlength="6" maxlength="512"
-                                    class="account-input">
+                                    class="account-input" id="password">
                                 <button class="account-reveal-password">
                                     <img src="img/icons/eye.svg" alt="Reveal password">
                                 </button>
@@ -189,7 +193,7 @@
                         <div class="cell account-field-cell">
                             <label class="account-field">Confirm password<span class="account-required">*</span>
                                 <input type="password" placeholder="******" required minlength="6" maxlength="512"
-                                    class="account-input">
+                                    class="account-input" id="confirm-password">
                                 <button class="account-reveal-password account-reveal-password-active">
                                     <img src="img/icons/eye.svg" alt="Reveal password">
                                 </button>
