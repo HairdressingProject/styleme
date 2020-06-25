@@ -15,6 +15,8 @@ sass scss/index.scss css/index.css --watch --color
 Now when you edit any of the files in the `scss` folder, they will be automatically compiled to `css/index.css` (all the style rules will be bundled together, which can then be minified for production).
 
 ### 2 - Install the Live Server extension
+__Note: Make sure you have the [Frontend](/Frontend "Frontend") folder open directly in VSCode, not the root project folder.__
+
 If you're using VSCode and have not installed it yet, search for "live server" under the extensions tab as illustrated in the picture below and it should be the first result.
 
 ![Live Server](https://i.imgur.com/6nOHYJE.png "Live Server")
