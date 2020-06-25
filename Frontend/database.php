@@ -342,8 +342,8 @@ if (isset($_COOKIE["auth"])) {
                             <td><?= $user->firstName ?></td>
                             <td><?= $user->lastName ?></td>
                             <td><?= $user->userRole ?></td>
-                            <td><?= $user->dateCreated ?></td>
-                            <td><?= $user->dateModified ?></td>
+                            <td><?= date('F jS, Y h:i:s', strtotime($user->dateCreated)) ?></td>
+                            <td><?= isset($user->dateModified) ? date('F jS, Y h:i:s', strtotime($user->dateModified)) : 'Never' ?></td>
                         </tr>
                     <?php } ?>
                     </tbody>
