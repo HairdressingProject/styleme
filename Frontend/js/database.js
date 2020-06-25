@@ -31,9 +31,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         await logout();
     });
 
-    fetchAll();
+    // await fetchAll();
 });
 
+// Not needed at the moment, because fetching data is now being handled by PHP
+/*
 async function fetchResource(resourceName) {
     const url = `https://localhost:5000/api/${resourceName}`;
 
@@ -66,4 +68,4 @@ async function fetchAll() {
     }
 
     console.dir(all);
-}
+}*/
