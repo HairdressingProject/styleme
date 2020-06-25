@@ -56,7 +56,7 @@ if (isset($_COOKIE["auth"])) {
             if ($resourceData) {
                 $parsedResource = json_decode($resourceData);
 
-                $fetched[] = $parsedResource;
+                $fetched[$r] = is_object($parsedResource) ? $parsedResource->$r : $parsedResource;
             }
             else {
                 echo 'could not fetch ' . $key;
@@ -332,7 +332,7 @@ if (isset($_COOKIE["auth"])) {
                     </thead>
                     <tbody>
                     <?php
-                    $allUsers = end($fetched)->users;
+                    $allUsers = $fetched['users'];
 
                     for ($i = 0; $i < count($allUsers); $i++) { $user = $allUsers[$i]; ?>
                         <tr class="_tables-row">
