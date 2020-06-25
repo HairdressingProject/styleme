@@ -1,77 +1,10 @@
 <?php
+require_once 'helpers/fetch.php';
 
-define("API_URL", "https://localhost:5000");
+$users = [];
 
 if (isset($_COOKIE["auth"])) {
-    $protocol = 'http://';
-
-    // haxx to check whether the application is running under HTTPS or HTTP
-    if (isset($_SERVER['HTTPS']) &&
-        ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
-        isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
-        $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
-        $protocol = 'https://';
-    }
-
-    $opts = array(
-        'http' => array(
-            'method' => "GET",
-            'origin' => $protocol.$_SERVER["HTTP_HOST"],
-            'header' => "Accept-language: en\r\n".
-                "Cookie: auth=".$_COOKIE['auth']."\r\n"
-        )
-    );
-
-    $context = stream_context_create($opts);
-
-// Open the file using the HTTP headers set above
-    $authUrl = API_URL . '/api/users/authenticate';
-
-    $userData = @file_get_contents($authUrl, false, $context);
-
-    if ($userData) {
-        // user is authenticated
-        // fetch data
-
-        $resources = [
-            'colours',
-            'face_shape_links',
-            'face_shapes',
-            'hair_length_links',
-            'hair_lengths',
-            'hair_style_links',
-            'hair_styles',
-            'skin_tone_links',
-            'skin_tones',
-            'user_features',
-            'users'
-        ];
-
-        $fetched = [];
-
-        foreach ($resources as $key => $r) {
-            $resourceUrl = API_URL . '/api/' . $r;
-            $resourceData = @file_get_contents($resourceUrl, false, $context);
-
-            if ($resourceData) {
-                $parsedResource = json_decode($resourceData);
-
-                $fetched[$r] = is_object($parsedResource) ? $parsedResource->$r : $parsedResource;
-            }
-            else {
-                echo 'could not fetch ' . $key;
-            }
-        }
-
-    } else {
-        // user is NOT authenticated
-        // in this case, the auth cookie is either expired or invalid
-        // the case when the auth cookie does not exist is already being handled by javascript (by redirecting to /sign_in.php)
-        // NOTE: the code below is not quite working at the moment, probably because some redirects are already being made by javascript
-        // Needs further investigation
-        // header('Location: '. $protocol . $_SERVER["HTTP_HOST"] . '/sign_in.php');
-        // exit();
-    }
+    $users = fetchResource('users');
 }
 ?>
 
@@ -332,9 +265,7 @@ if (isset($_COOKIE["auth"])) {
                     </thead>
                     <tbody>
                     <?php
-                    $allUsers = $fetched['users'];
-
-                    for ($i = 0; $i < count($allUsers); $i++) { $user = $allUsers[$i]; ?>
+                    for ($i = 0; $i < count($users); $i++) { $user = $users[$i]; ?>
                         <tr class="_tables-row">
                             <td><?= $user->id ?></td>
                             <td><?= $user->userName ?></td>
@@ -348,6 +279,9 @@ if (isset($_COOKIE["auth"])) {
                     <?php } ?>
                     </tbody>
                 </table>
+                <div class="grid-x">
+                    <button class="button">Add</button>
+                </div>
                 <nav aria-label="Pagination" class="_pagination">
                     <ul class="pagination text-center">
                         <li class="pagination-previous disabled">Previous</li>
