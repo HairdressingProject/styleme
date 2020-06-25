@@ -31,7 +31,7 @@ function showAlert(type, message) {
     closeBtn.id = 'alert-close-btn';
 
     const img = document.createElement('img');
-    img.src = "img/icons/close.svg";
+    img.src = "/img/icons/close.svg";
     img.alt = "close";
 
     closeBtn.appendChild(img);

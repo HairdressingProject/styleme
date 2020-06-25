@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     else {
         // not authenticated
-        window.location.replace('/sign_in.html');
+        window.location.replace('/sign_in.php');
     }
 
     logoutLink.addEventListener('click', async function (e) {

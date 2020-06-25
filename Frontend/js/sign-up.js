@@ -596,7 +596,7 @@ async function signUp(e) {
         }
         else {
             // successfully signed in
-            window.location.replace('http://localhost:5500/database.html');
+            window.location.replace('http://localhost:5500/database.php');
         }
     }
     signUpBtn.removeAttribute('disabled');

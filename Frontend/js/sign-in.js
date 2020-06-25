@@ -254,7 +254,7 @@ async function signIn(e) {
         }
         else {
             // successfully signed in
-            window.location.replace('http://localhost:5500/database.html');
+            window.location.replace('http://localhost:5500/database.php');
         }
     }
     signInBtn.removeAttribute('disabled');

@@ -83,9 +83,9 @@
                         <img src="img/icons/caret-down.svg" alt="User menu" />
                     </button>
                     <ul class="menu">
-                        <li class="_menu-item"><a href="account.html" class="_dropdown-link">My account</a></li>
+                        <li class="_menu-item"><a href="account.php" class="_dropdown-link">My account</a></li>
                         <li class="_menu-item">
-                            <a href="sign_in.html" class="_dropdown-link" id="logout">Logout</a>
+                            <a href="sign_in.php" class="_dropdown-link" id="logout">Logout</a>
                         </li>
                     </ul>
                 </li>
@@ -104,7 +104,7 @@
                 </a>
             </li>
             <li class="_sidebar-item">
-                <a href="database.html" class="grid-x _sidebar-item-link">
+                <a href="database.php" class="grid-x _sidebar-item-link">
                     <img src="img/icons/databases-dark.svg" alt="Database" class="_sidebar-item-icon">
                     <span class="_sidebar-item-text">Database</span>
                 </a>

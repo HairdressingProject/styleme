@@ -92,7 +92,7 @@
 
 
     <div class="grid-x returning-user">
-        <p class="cell text-center returning-user-text">Returning user? <a href="sign_in.html">Sign in</a></p>
+        <p class="cell text-center returning-user-text">Returning user? <a href="sign_in.php">Sign in</a></p>
     </div>
 
 

@@ -82,9 +82,9 @@
                         <img src="img/icons/caret-down.svg" alt="User menu" />
                     </button>
                     <ul class="menu">
-                        <li class="_menu-item"><a href="account.html" class="_dropdown-link">My account</a></li>
+                        <li class="_menu-item"><a href="account.php" class="_dropdown-link">My account</a></li>
                         <li class="_menu-item">
-                            <a href="sign_in.html" class="_dropdown-link" id="logout">Logout</a>
+                            <a href="sign_in.php" class="_dropdown-link" id="logout">Logout</a>
                         </li>
                     </ul>
                 </li>

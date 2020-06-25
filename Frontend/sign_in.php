@@ -50,7 +50,7 @@
 
 
     <div class="grid-x new-user">
-        <p class="cell text-center new-user-text">New user? <a href="sign_up.html">Sign up</a></p>
+        <p class="cell text-center new-user-text">New user? <a href="sign_up.php">Sign up</a></p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
