@@ -89,6 +89,18 @@
         }
     }
 
+    &-user_role {
+        margin-bottom: 4rem;
+
+        & option {
+            font-size: 1.4rem;
+        }
+        &-container {
+            max-width: 200px;
+            margin: 2rem auto;
+        }
+    }
+
     &-reveal-password {
         cursor: pointer;
         position: relative;
@@ -129,6 +141,12 @@
         background-color: c.$yellow;
         color: c.$dark-blue;
     }
+
+    &-delete-btn {
+        background-color: red;
+        color: c.$white;
+        margin-left: 2rem;
+    }
 }
 
 @media only screen and (max-width: 640px) {
@@ -139,6 +157,10 @@
     .account-restore-btn {
         margin-right: 0;
         margin-bottom: 3rem;
+    }
+
+    .account-delete-btn {
+        margin: 0;
     }
 }
 

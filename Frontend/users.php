@@ -25,6 +25,211 @@ if (isset($_COOKIE["auth"])) {
 <body>
 <noscript>Please enable JavaScript for this page to work</noscript>
 
+<!-- ADD MODAL -->
+<div class="reveal large _table-modal" id="add-modal" data-reveal>
+    <h3 class="_table-modal-title">Add a new user</h3>
+    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+    <form>
+        <div class="grid-container">
+            <div class="grid-x">
+                <div class="cell account-field-cell" id="account-username">
+                    <label class="account-field">user_name<span class="account-required">*</span>
+                        <input type="text" placeholder="user_name" required class="account-input" id="selected-username-add"
+                               maxlength="32">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-email">
+                    <label class="account-field">user_email<span class="account-required">*</span>
+                        <input type="email" placeholder="user_email" required class="account-input" id="selected-email-add"
+                               maxlength="512">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-given-name">
+                    <label class="account-field">first_name<span class="account-required">*</span>
+                        <input type="text" placeholder="first_name" required class="account-input"
+                               maxlength="128" id="selected-first_name-add">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-family-name">
+                    <label class="account-field">last_name
+                        <input type="text" placeholder="last_name" class="account-input" id="selected-last_name-add"
+                               maxlength="128">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-given-name">
+                    <label class="account-field">user_password<span class="account-required">*</span>
+                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                               class="account-input" id="selected-password-add">
+                        <button class="account-reveal-password">
+                            <img src="img/icons/eye.svg" alt="Reveal password">
+                        </button>
+                    </label>
+                </div>
+                <div class="cell account-field-cell">
+                    <label class="account-field">Confirm password<span class="account-required">*</span>
+                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                               class="account-input" id="selected-confirm-password-add">
+                        <button class="account-reveal-password account-reveal-password-active">
+                            <img src="img/icons/eye.svg" alt="Reveal password">
+                        </button>
+                    </label>
+                </div>
+                <div class="account-btns grid-x">
+                    <div class="cell small-12 medium-6">
+                        <button class="account-restore-btn account-btn">Clear</button>
+                    </div>
+                    <div class="cell small-12 medium-6">
+                        <button class="account-save-btn account-btn" type="submit">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- END OF ADD MODAL -->
+
+<!-- EDIT MODAL -->
+<div class="reveal large _table-modal" id="edit-modal" data-reveal>
+    <h3 class="_table-modal-title">Edit a user</h3>
+    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <form>
+        <div class="grid-container">
+            <div class="grid-x">
+                <div class="cell account-field-cell" id="account-username">
+                    <label class="account-field">user_name<span class="account-required">*</span>
+                        <input type="text" placeholder="user_name" required class="account-input" id="selected-username-edit"
+                               maxlength="32">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-email">
+                    <label class="account-field">user_email<span class="account-required">*</span>
+                        <input type="email" placeholder="user_email" required class="account-input" id="selected-user_email-edit"
+                               maxlength="512">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-given-name">
+                    <label class="account-field">first_name<span class="account-required">*</span>
+                        <input type="text" placeholder="first_name" required class="account-input"
+                               maxlength="128" id="selected-first_name-edit">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-family-name">
+                    <label class="account-field">last_name
+                        <input type="text" placeholder="last_name" class="account-input" id="selected-last_name-edit"
+                               maxlength="128">
+                    </label>
+                </div>
+                <div class="cell account-field-cell">
+                    <label class="account-field">user_role<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                            <select name="user_role" class="account-user_role" id="selected-user_role-edit" required>
+                                <option value="user">User</option>
+                                <option value="developer">Developer</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </span>
+
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-given-name">
+                    <label class="account-field">user_password<span class="account-required">*</span>
+                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                               class="account-input" id="selected-password-edit">
+                        <button class="account-reveal-password">
+                            <img src="img/icons/eye.svg" alt="Reveal password">
+                        </button>
+                    </label>
+                </div>
+                <div class="cell account-field-cell">
+                    <label class="account-field">Confirm password<span class="account-required">*</span>
+                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                               class="account-input" id="selected-confirm-password-edit">
+                        <button class="account-reveal-password account-reveal-password-active">
+                            <img src="img/icons/eye.svg" alt="Reveal password">
+                        </button>
+                    </label>
+                </div>
+                <div class="account-btns grid-x">
+                    <div class="cell small-12 medium-6">
+                        <button class="account-restore-btn account-btn">Restore</button>
+                    </div>
+                    <div class="cell small-12 medium-6">
+                        <button class="account-save-btn account-btn" type="submit">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- END OF EDIT MODAL -->
+
+<!-- DELETE MODAL -->
+<div class="reveal large _table-modal" id="delete-modal" data-reveal>
+    <h3 class="_table-modal-title" id="delete-user">Confirm delete user</h3>
+    <form>
+        <div class="grid-container">
+            <div class="grid-x">
+                <table class="_table-modal-delete">
+                    <tbody>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">id:</td>
+                        <td id="selected-id-delete" class="_table-modal-delete-val">user_id</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">user_name:</td>
+                        <td id="selected-username-delete" class="_table-modal-delete-val">user_name</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">user_email:</td>
+                        <td id="selected-user_email-delete" class="_table-modal-delete-val">user_email</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">first_name:</td>
+                        <td id="selected-first_name-delete" class="_table-modal-delete-val">first_name</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">last_name:</td>
+                        <td id="selected-last_name-delete" class="_table-modal-delete-val">last_name</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">user_role:</td>
+                        <td id="selected-user_role-delete" class="_table-modal-delete-val">user_role</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">date_created:</td>
+                        <td id="selected-date_created-delete" class="_table-modal-delete-val">date_created</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">date_modified:</td>
+                        <td id="selected-date_modified-delete" class="_table-modal-delete-val">date_modified</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="account-btns grid-x">
+                    <div class="cell small-12 medium-6">
+                        <button class="account-restore-btn account-btn">Cancel</button>
+                    </div>
+                    <div class="cell small-12 medium-6">
+                        <form>
+                            <button class="account-delete-btn account-btn" type="submit">Confirm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<!-- END OF DELETE MODAL -->
+
+
 <!-- TOP BAR -->
 <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
     <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
@@ -161,7 +366,19 @@ if (isset($_COOKIE["auth"])) {
                     <img src="img/icons/search.svg" alt="Search" class="_tables-search-icon">
                 </div>
 
-                <table class="_users-table">
+                <div class="grid-x _table-btn-container">
+                    <div class="cell small-12 medium-2 text-center">
+                        <button class="_table-btn _table-btn-add" data-open="add-modal">Add</button>
+                    </div>
+                    <div class="cell small-12 medium-2 text-center">
+                        <button class="_table-btn _table-btn-edit _table-btn-disabled" data-open="edit-modal">Edit</button>
+                    </div>
+                    <div class="cell small-12 medium-2 text-center">
+                        <button class="_table-btn _table-btn-delete _table-btn-disabled" data-open="delete-modal">Delete</button>
+                    </div>
+                </div>
+
+                <table class="_resource-table _users-table">
                     <thead>
                     <tr>
                         <th>id</th>
@@ -178,21 +395,18 @@ if (isset($_COOKIE["auth"])) {
                     <?php
                     for ($i = 0; $i < count($users); $i++) { $user = $users[$i]; ?>
                         <tr class="_tables-row">
-                            <td><?= $user->id ?></td>
-                            <td><?= $user->userName ?></td>
-                            <td><?= $user->userEmail ?></td>
-                            <td><?= $user->firstName ?></td>
-                            <td><?= $user->lastName ?></td>
-                            <td><?= $user->userRole ?></td>
-                            <td><?= date('F jS, Y h:i:s', strtotime($user->dateCreated)) ?></td>
-                            <td><?= isset($user->dateModified) ? date('F jS, Y h:i:s', strtotime($user->dateModified)) : 'Never' ?></td>
+                            <td class="_tables-cell id"><?= $user->id ?></td>
+                            <td class="_tables-cell username"><?= $user->userName ?></td>
+                            <td class="_tables-cell user_email"><?= $user->userEmail ?></td>
+                            <td class="_tables-cell first_name"><?= $user->firstName ?></td>
+                            <td class="_tables-cell last_name"><?= $user->lastName ?></td>
+                            <td class="_tables-cell user_role"><?= $user->userRole ?></td>
+                            <td class="_tables-cell date_created"><?= date('F jS, Y h:i:s', strtotime($user->dateCreated)) ?></td>
+                            <td class="_tables-cell date_modified"><?= isset($user->dateModified) ? date('F jS, Y h:i:s', strtotime($user->dateModified)) : 'Never' ?></td>
                         </tr>
                     <?php } ?>
                     </tbody>
                 </table>
-                <div class="grid-x">
-                    <button class="button">Add</button>
-                </div>
                 <nav aria-label="Pagination" class="_pagination">
                     <ul class="pagination text-center">
                         <li class="pagination-previous disabled">Previous</li>

@@ -593,6 +593,16 @@ body {
 .account-input:focus, .account-input:hover, .account-input:active {
   border-width: 0.3px;
 }
+.account-user_role {
+  margin-bottom: 4rem;
+}
+.account-user_role option {
+  font-size: 1.4rem;
+}
+.account-user_role-container {
+  max-width: 200px;
+  margin: 2rem auto;
+}
 .account-reveal-password {
   cursor: pointer;
   position: relative;
@@ -627,6 +637,11 @@ body {
   background-color: #E5F31F;
   color: #172B4D;
 }
+.account-delete-btn {
+  background-color: red;
+  color: #FCFCFC;
+  margin-left: 2rem;
+}
 
 @media only screen and (max-width: 640px) {
   .account-btns {
@@ -636,6 +651,10 @@ body {
   .account-restore-btn {
     margin-right: 0;
     margin-bottom: 3rem;
+  }
+
+  .account-delete-btn {
+    margin: 0;
   }
 }
 @media only screen and (max-width: 320px) {
@@ -664,101 +683,6 @@ body {
   transition: transform 500ms, width 500ms;
   padding-top: 5rem;
   width: 100%;
-}
-
-._tables {
-  background-color: #FCFCFC;
-  margin: 0 auto 5rem auto;
-  padding: 4rem 2rem;
-}
-._tables table th {
-  text-align: center;
-  text-transform: uppercase;
-  padding: 2rem 0;
-  background-color: #DFE2F0;
-  color: #A3A6B4;
-  font-size: 1.2rem;
-}
-._tables table td {
-  text-align: center;
-  font-size: 1.2rem;
-  padding: 2rem 0;
-  font-size: 1.2rem;
-  letter-spacing: 0.05rem;
-  color: #172B4D;
-  transition: color 300ms;
-}
-._tables table ._row-selected {
-  background-color: #3B86FF;
-}
-._tables table ._row-selected td {
-  color: #FCFCFC;
-}
-._tables table tr > td:first-of-type {
-  font-weight: bold;
-}
-._tables-row {
-  cursor: pointer;
-  transition: background-color 300ms;
-}
-._tables-row:hover {
-  background-color: #3B86FF;
-}
-._tables-row:hover td {
-  color: white;
-}
-._tables-title {
-  font-size: 1.6rem;
-  letter-spacing: 0.12rem;
-  word-spacing: 0.5rem;
-  text-align: center;
-  margin-bottom: 4rem;
-  color: #172B4D;
-  font-weight: bold;
-}
-._tables-search {
-  position: relative;
-  display: inline-block;
-  max-width: 25rem;
-  margin: 0;
-  padding: 2.5rem 3rem;
-  font-size: 1.4rem;
-  letter-spacing: 0.1rem;
-  border: 0;
-  -webkit-box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
-  box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
-  color: #172B4D;
-  border-radius: 100px;
-  text-align: center;
-  background-color: white;
-}
-._tables-search:hover, ._tables-search:active, ._tables-search:focus {
-  border: 0;
-  -webkit-box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.1);
-  box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.1);
-}
-._tables-search::placeholder {
-  font-style: italic;
-  color: #707070;
-}
-._tables-search-icon {
-  position: relative;
-  left: -3rem;
-}
-._tables-search-input-container {
-  margin-bottom: 5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-._pagination {
-  margin-top: 4rem;
-}
-._pagination li, ._pagination a {
-  font-size: 1.6rem;
 }
 
 /*
@@ -839,6 +763,182 @@ body {
   margin-bottom: 2rem;
 }
 
+._tables {
+  background-color: #FCFCFC;
+  margin: 0 auto 5rem auto;
+  padding: 4rem 2rem;
+}
+._tables table th {
+  text-align: center;
+  text-transform: uppercase;
+  padding: 2rem 0;
+  background-color: #DFE2F0;
+  color: #A3A6B4;
+  font-size: 1.2rem;
+}
+._tables table td {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 2rem 0;
+  letter-spacing: 0.05rem;
+  color: #172B4D;
+  transition: color 300ms;
+}
+._tables table ._row-selected {
+  background-color: #10A033;
+}
+._tables table ._row-selected td {
+  color: #FCFCFC;
+}
+._tables table tr > td:first-of-type {
+  font-weight: bold;
+}
+._tables-row {
+  cursor: pointer;
+  transition: background-color 300ms;
+}
+._tables-row:hover {
+  background-color: #3B86FF;
+}
+._tables-row:hover td {
+  color: white;
+}
+._tables-title {
+  font-size: 1.6rem;
+  letter-spacing: 0.12rem;
+  word-spacing: 0.5rem;
+  text-align: center;
+  margin-bottom: 4rem;
+  color: #172B4D;
+  font-weight: bold;
+}
+._tables-search {
+  position: relative;
+  display: inline-block;
+  max-width: 25rem;
+  margin: 0;
+  padding: 2.5rem 3rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.1rem;
+  border: 0;
+  -webkit-box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
+  color: #172B4D;
+  border-radius: 100px;
+  text-align: center;
+  background-color: white;
+}
+._tables-search:hover, ._tables-search:active, ._tables-search:focus {
+  border: 0;
+  -webkit-box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.1);
+}
+._tables-search::placeholder {
+  font-style: italic;
+  color: #707070;
+}
+._tables-search-icon {
+  position: relative;
+  left: -3rem;
+}
+._tables-search-input-container {
+  margin-bottom: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+._pagination {
+  margin-top: 4rem;
+}
+._pagination li, ._pagination a {
+  font-size: 1.6rem;
+}
+
+._table-modal {
+  padding: 5rem 0;
+}
+._table-modal-title {
+  text-align: center;
+  font-size: 1.6rem;
+  letter-spacing: 0.1rem;
+  margin-bottom: 5rem;
+}
+._table-modal-close {
+  font-size: 4rem;
+}
+._table-modal-delete {
+  margin-bottom: 5rem;
+}
+._table-modal-delete-prop {
+  text-align: right;
+  font-size: 1.4rem;
+}
+._table-modal-delete-val {
+  text-align: left;
+  font-size: 1.4rem;
+}
+._table-modal-delete-prop, ._table-modal-delete-val {
+  border-collapse: separate;
+  padding: 2rem;
+}
+._table-modal-delete-row {
+  color: #172B4D;
+  text-align: center;
+}
+._table-modal-delete-row:nth-child(even) {
+  background-color: transparent;
+}
+
+._table-btn {
+  padding: 1.5rem 2.5rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.05rem;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 5px 0px gray;
+  transition: box-shadow 150ms, background-color 300ms;
+}
+._table-btn:hover {
+  box-shadow: 0 0 10px 0px gray;
+}
+._table-btn-container {
+  justify-content: center;
+  margin-bottom: 5rem;
+}
+._table-btn-add {
+  background-color: #3B86FF;
+  color: #FCFCFC;
+}
+._table-btn-edit {
+  color: #172B4D;
+  background-color: #E5F31F;
+}
+._table-btn-delete {
+  background-color: red;
+  color: #FCFCFC;
+}
+._table-btn-disabled {
+  background-color: #707070;
+  cursor: not-allowed;
+  color: #FCFCFC;
+}
+
+._resource-table {
+  margin-bottom: 8rem;
+}
+
+@media only screen and (max-width: 640px) {
+  ._table-btn-edit {
+    margin: 4rem 0;
+  }
+
+  ._table-modal-delete-prop, ._table-modal-delete-val {
+    text-align: center;
+  }
+}
 html {
   font-size: 62.5%;
 }
