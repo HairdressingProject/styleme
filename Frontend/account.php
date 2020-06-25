@@ -96,47 +96,49 @@
     <!-- END OF TOP BAR -->
     <div class="grid-x">
         <!-- SIDE BAR -->
-        <ul class="vertical menu _sidebar" id="sidebar">
+        <ul class="vertical menu _sidebar _sidebar-closed" id="sidebar">
             <li class="_sidebar-item">
                 <a href="#" class="grid-x _sidebar-item-link">
-                    <img src="img/icons/home-dark.svg" alt="Dashboard" class="_sidebar-item-icon">
-                    <span class="_sidebar-item-text">Dashboard</span>
+                    <img src="img/icons/home-dark.svg" alt="Dashboard" class="_sidebar-item-icon slide-left">
+                    <span class="_sidebar-item-text hide">Dashboard</span>
                 </a>
             </li>
-            <li class="_sidebar-item">
-                <a href="database.php" class="grid-x _sidebar-item-link">
-                    <img src="img/icons/databases-dark.svg" alt="Database" class="_sidebar-item-icon">
-                    <span class="_sidebar-item-text">Database</span>
-                </a>
-            </li>
-            <li class="_sidebar-item">
-                <a href="#" class="grid-x _sidebar-item-link">
-                    <img src="img/icons/traffic-dark.svg" alt="Traffic" class="_sidebar-item-icon">
-                    <span class="_sidebar-item-text">Traffic</span>
+            <li class="_sidebar-item _sidebar-item-selected">
+                <a href="/database.php" class="grid-x _sidebar-item-link">
+                    <img src="img/icons/databases-dark.svg" alt="Database" class="_sidebar-item-icon slide-left">
+                    <span class="_sidebar-item-text hide">Database</span>
                 </a>
             </li>
             <li class="_sidebar-item">
                 <a href="#" class="grid-x _sidebar-item-link">
-                    <img src="img/icons/permissions-dark.svg" alt="Permissions" class="_sidebar-item-icon">
-                    <span class="_sidebar-item-text">Permissions</span>
+                    <img src="img/icons/traffic-dark.svg" alt="Traffic" class="_sidebar-item-icon slide-left">
+                    <span class="_sidebar-item-text hide">Traffic</span>
                 </a>
             </li>
             <li class="_sidebar-item">
                 <a href="#" class="grid-x _sidebar-item-link">
-                    <img src="img/icons/pictures-dark.svg" alt="Pictures" class="_sidebar-item-icon">
-                    <span class="_sidebar-item-text">Pictures</span>
+                    <img src="img/icons/permissions-dark.svg" alt="Permissions" class="_sidebar-item-icon slide-left">
+                    <span class="_sidebar-item-text hide">Permissions</span>
+                </a>
+            </li>
+            <li class="_sidebar-item">
+                <a href="#" class="grid-x _sidebar-item-link">
+                    <img src="img/icons/pictures-dark.svg" alt="Pictures" class="_sidebar-item-icon slide-left">
+                    <span class="_sidebar-item-text hide">Pictures</span>
                 </a>
             </li>
             <li class="_sidebar-controls">
-                <button id="sidebar-close">
+                <button id="sidebar-close" class="hide">
                     <img src="img/icons/caret-left.svg" alt="Close">
                 </button>
 
-                <button class="hide" id="sidebar-open">
+                <button id="sidebar-open" style="transform: translateX(250%)">
                     <img src="img/icons/caret-right-dark.svg" alt="Open">
                 </button>
             </li>
         </ul>
+
+        <!-- END OF SIDE BAR -->
 
         <!-- END OF SIDE BAR -->
 

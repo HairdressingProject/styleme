@@ -1,3 +1,13 @@
+<?php
+require_once 'helpers/fetch.php';
+
+$users = [];
+
+if (isset($_COOKIE["auth"])) {
+    $users = fetchResource('users');
+}
+?>
+
 <!doctype html>
 <html class="no-js" lang="en">
 
@@ -5,7 +15,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Database</title>
+    <title>Users</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
           integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous"/>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
@@ -141,95 +151,61 @@
     <!-- END OF SIDE BAR -->
 
     <!-- MAIN CONTENT -->
-    <main class="main main-sidebar-closed">
+    <main class="main">
         <div class="grid-x _tables-grid">
-            <div class="cell small-12 large-8 large-offset-4 _tables">
-                <h2 class="_tables-title">hair_project_db tables</h2>
+            <div class="cell small-12 large-11 large-offset-4 _tables">
+                <h2 class="_tables-title">Users</h2>
                 <div class="_tables-search-input-container">
-                    <input type="text" placeholder="Search for a table..." id="tables-search-input"
+                    <input type="text" placeholder="Search for an entry..." id="entries-search-input"
                            class="_tables-search"/>
                     <img src="img/icons/search.svg" alt="Search" class="_tables-search-icon">
                 </div>
 
-                <!-- YOU MIGHT WANT TO RE-USE THIS TABLE -->
-                <table>
+                <table class="_users-table">
                     <thead>
                     <tr>
-                        <th>#</th>
-                        <th>table name</th>
-                        <th>created</th>
-                        <th>last updated</th>
+                        <th>id</th>
+                        <th>user_name</th>
+                        <th>user_email</th>
+                        <th>first_name</th>
+                        <th>last_name</th>
+                        <th>user_role</th>
+                        <th>date_created</th>
+                        <th>date_modified</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="_tables-row" data-href="/users.php">
-                        <td>1</td>
-                        <td>Users</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/colours.php">
-                        <td>2</td>
-                        <td>Colours</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/face_shapes.php">
-                        <td>3</td>
-                        <td>Face shapes</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/face_shape_links.php">
-                        <td>4</td>
-                        <td>Face shape links</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/hair_lengths.php">
-                        <td>5</td>
-                        <td>Hair lengths</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/hair_length_links.php">
-                        <td>6</td>
-                        <td>Hair length links</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/hair_styles.php">
-                        <td>7</td>
-                        <td>Hair styles</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/hair_style_links.php">
-                        <td>8</td>
-                        <td>Hair style links</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/skin_tones.php">
-                        <td>9</td>
-                        <td>Skin tones</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/skin_tone_links.php">
-                        <td>10</td>
-                        <td>Skin tone links</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="user_features.php">
-                        <td>11</td>
-                        <td>User features</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
+                    <?php
+                    for ($i = 0; $i < count($users); $i++) { $user = $users[$i]; ?>
+                        <tr class="_tables-row">
+                            <td><?= $user->id ?></td>
+                            <td><?= $user->userName ?></td>
+                            <td><?= $user->userEmail ?></td>
+                            <td><?= $user->firstName ?></td>
+                            <td><?= $user->lastName ?></td>
+                            <td><?= $user->userRole ?></td>
+                            <td><?= date('F jS, Y h:i:s', strtotime($user->dateCreated)) ?></td>
+                            <td><?= isset($user->dateModified) ? date('F jS, Y h:i:s', strtotime($user->dateModified)) : 'Never' ?></td>
+                        </tr>
+                    <?php } ?>
                     </tbody>
                 </table>
+                <div class="grid-x">
+                    <button class="button">Add</button>
+                </div>
+                <nav aria-label="Pagination" class="_pagination">
+                    <ul class="pagination text-center">
+                        <li class="pagination-previous disabled">Previous</li>
+                        <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
+                        <li><a href="#" aria-label="Page 2">2</a></li>
+                        <li><a href="#" aria-label="Page 3">3</a></li>
+                        <li><a href="#" aria-label="Page 4">4</a></li>
+                        <li class="ellipsis"></li>
+                        <li><a href="#" aria-label="Page 12">12</a></li>
+                        <li><a href="#" aria-label="Page 13">13</a></li>
+                        <li class="pagination-next"><a href="#" aria-label="Next page">Next</a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </main>
@@ -254,8 +230,8 @@
 <script src="js/alert.js"></script>
 <script src="js/authenticate.js"></script>
 <script src="js/sidebar.js"></script>
-<script src="js/database.js"></script>
 <script src="js/redirect.js"></script>
+<script src="js/users.js"></script>
 </body>
 
 </html>

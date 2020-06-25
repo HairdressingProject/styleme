@@ -835,6 +835,10 @@ body {
     margin: 0 0 2rem 0;
   }
 }
+._users-table {
+  margin-bottom: 2rem;
+}
+
 html {
   font-size: 62.5%;
 }

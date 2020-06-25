@@ -1,6 +1,4 @@
-const logoutLink = document.getElementById('logout');
-const userName = document.getElementById('user-name');
-const resources = [
+/*const resources = [
     'colours',
     'face_shape_links',
     'face_shapes',
@@ -12,27 +10,27 @@ const resources = [
     'skin_tones',
     'user_features',
     'users'
-];
+];*/
 
-document.addEventListener('DOMContentLoaded', async function () {
-    const id = await authenticate();
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('[data-href]');
 
-    if (id) {
-        const { user } = await getUser(id) || { firstName: 'User' };
-        userName.textContent = `${user.firstName} ${user.lastName || ""}`;
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].addEventListener('click', function () {
+            let href = rows[i].dataset.href;
+            redirectTo(href);
+        });
     }
-    else {
-        // not authenticated
-        window.location.replace('/sign_in.php');
-    }
+    /*const href = usersRow.dataset.href;
 
-    logoutLink.addEventListener('click', async function (e) {
-        e.preventDefault();
-        await logout();
-    });
-
-    // await fetchAll();
+    usersRow.addEventListener('click', function() {
+        redirectTo(href);
+    });*/
 });
+
+function redirectTo(href) {
+    window.location.href = href;
+}
 
 // Not needed at the moment, because fetching data is now being handled by PHP
 /*

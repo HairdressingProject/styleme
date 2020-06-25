@@ -60,4 +60,3 @@ function unhideLinksText() {
         linkTexts[i].classList.remove('hide');
     }
 }
-
