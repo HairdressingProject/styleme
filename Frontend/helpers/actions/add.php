@@ -12,16 +12,26 @@
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/headers.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/authentication.php';
 
-function addResource($resourceName, $resource) {
-    $data = [];
+/**
+ * Add a new resource of type $resourceName
+ * @param string $resourceName
+ * @param array $data
+ * @return bool Result of the operation
+ */
+function addResource($resourceName, $data) {
+    $opts = generateHeaders('POST', $data);
+    $context = stream_context_create($opts);
+    $resourceAdded = false;
 
     if (isAuthenticated()) {
         $resourceUrl = API_URL . '/api/' . $resourceName;
+        $resourceData = @file_get_contents($resourceUrl, false, $context);
 
-
-
+        if ($resourceData) {
+            // the newly created resource was successfully added
+            $resourceAdded = true;
+        }
     }
 
-    // user is not authenticated
-    return null;
+    return $resourceAdded;
 }

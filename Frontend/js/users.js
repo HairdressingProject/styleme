@@ -59,6 +59,10 @@ function deselectRow(selected) {
 
 function updateEditFields() {
     if (selectedRow) {
+        // id
+        const id = document.getElementById('selected-id-edit');
+        id.value = selectedRow.cells[0].textContent;
+
         // username
         const username = document.getElementById('selected-username-edit');
         username.value = selectedRow.cells[1].textContent;
@@ -86,6 +90,9 @@ function updateDeleteFields() {
         // id
         const id = document.getElementById('selected-id-delete');
         id.textContent = selectedRow.cells[0].textContent;
+
+        const formID = document.getElementById('delete_id');
+        formID.value = selectedRow.cells[0].textContent;
 
         // username
         const username = document.getElementById('selected-username-delete');

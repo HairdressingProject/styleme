@@ -4,10 +4,10 @@ require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/authentication.php';
 
 /**
  * Gets all resources of type $resourceName. For example: 'users', 'user_features', 'colours', etc. Use snake_case here.
- * @param $resourceName
+ * @param string $resourceName
  * @return array|null
  */
-function browseResource($resourceName) {
+function browseResource(string $resourceName) {
     $opts = generateHeaders('GET');
     $context = stream_context_create($opts);
     $data = [];

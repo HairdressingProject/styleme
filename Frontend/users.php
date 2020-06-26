@@ -5,6 +5,79 @@ require_once $_SERVER['DOCUMENT_ROOT']. '/classes/User.php';
 $u = new User();
 $users = [];
 
+if (isset($_POST['_method'])) {
+    if ($_POST['_method'] === 'PUT') {
+        // PUT request
+        if (isset($_POST['put_password']) && isset($_POST['put_confirm_password'])) {
+            if ($_POST['put_password'] === $_POST['put_confirm_password']) {
+                if (isset($_POST['put_id']) && is_numeric($_POST['put_id'])) {
+                    $u->id = $_POST['put_id'];
+                    $u->username = $_POST['put_username'];
+                    $u->email = $_POST['put_user_email'];
+                    $u->firstName = $_POST['put_first_name'];
+                    $u->lastName = $_POST['put_last_name'];
+                    $u->password = $_POST['put_password'];
+                    $u->userRole = $_POST['put_user_role'];
+
+                    $result = $u->edit();
+
+                    if ($result) {
+                        // user was successfully updated
+
+                    }
+                }
+                else {
+                    // invalid id
+                }
+            }
+            else {
+                // passwords do not match
+            }
+        }
+        else {
+            // password fields were tampered with
+        }
+    }
+    else if ($_POST['_method'] === 'DELETE') {
+        // DELETE request
+        if (isset($_POST['delete_id']) && is_numeric($_POST['delete_id'])) {
+            $u->id = intval($_POST['delete_id']);
+            $u->delete();
+        }
+        else {
+            // invalid id
+        }
+    }
+    else {
+        // _method was tampered with
+    }
+}
+else {
+    // POST request
+    if (isset($_POST['add_password']) && isset($_POST['add_confirm_password'])) {
+        if ($_POST['add_password'] === $_POST['add_confirm_password']) {
+            $u->username = $_POST['add_username'];
+            $u->email = $_POST['add_email'];
+            $u->firstName = $_POST['add_first_name'];
+            $u->lastName = $_POST['add_last_name'];
+            $u->password = $_POST['add_password'];
+            $u->userRole = 'user';
+
+            $result = $u->add();
+
+            if (!$result) {
+                var_dump(array('got' => 'error'));
+            }
+        }
+        else {
+            // passwords do not match
+        }
+    }
+    else {
+        // passwords fields were tampered with
+    }
+}
+
 if (isset($_COOKIE["auth"])) {
     $users = $u->browse();
 }
@@ -34,36 +107,36 @@ if (isset($_COOKIE["auth"])) {
         <span aria-hidden="true">&times;</span>
     </button>
 
-    <form>
+    <form action="users.php" method="POST">
         <div class="grid-container">
             <div class="grid-x">
                 <div class="cell account-field-cell" id="account-username">
                     <label class="account-field">user_name<span class="account-required">*</span>
-                        <input type="text" placeholder="user_name" required class="account-input" id="selected-username-add"
+                        <input name="add_username" type="text" placeholder="user_name" required class="account-input" id="selected-username-add"
                                maxlength="32">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-email">
                     <label class="account-field">user_email<span class="account-required">*</span>
-                        <input type="email" placeholder="user_email" required class="account-input" id="selected-email-add"
+                        <input name="add_email" type="email" placeholder="user_email" required class="account-input" id="selected-email-add"
                                maxlength="512">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-given-name">
                     <label class="account-field">first_name<span class="account-required">*</span>
-                        <input type="text" placeholder="first_name" required class="account-input"
+                        <input name="add_first_name" type="text" placeholder="first_name" required class="account-input"
                                maxlength="128" id="selected-first_name-add">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-family-name">
                     <label class="account-field">last_name
-                        <input type="text" placeholder="last_name" class="account-input" id="selected-last_name-add"
+                        <input name="add_last_name" type="text" placeholder="last_name" class="account-input" id="selected-last_name-add"
                                maxlength="128">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-given-name">
                     <label class="account-field">user_password<span class="account-required">*</span>
-                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                        <input name="add_password" type="password" placeholder="******" required minlength="6" maxlength="512"
                                class="account-input" id="selected-password-add">
                         <button class="account-reveal-password">
                             <img src="img/icons/eye.svg" alt="Reveal password">
@@ -72,7 +145,7 @@ if (isset($_COOKIE["auth"])) {
                 </div>
                 <div class="cell account-field-cell">
                     <label class="account-field">Confirm password<span class="account-required">*</span>
-                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                        <input name="add_confirm_password" type="password" placeholder="******" required minlength="6" maxlength="512"
                                class="account-input" id="selected-confirm-password-add">
                         <button class="account-reveal-password account-reveal-password-active">
                             <img src="img/icons/eye.svg" alt="Reveal password">
@@ -99,37 +172,39 @@ if (isset($_COOKIE["auth"])) {
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form>
+    <form action="users.php" method="POST">
+        <input type="hidden" name="_method" value="PUT" />
+        <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
         <div class="grid-container">
             <div class="grid-x">
                 <div class="cell account-field-cell" id="account-username">
                     <label class="account-field">user_name<span class="account-required">*</span>
-                        <input type="text" placeholder="user_name" required class="account-input" id="selected-username-edit"
+                        <input type="text" placeholder="user_name" name="put_username" required class="account-input" id="selected-username-edit"
                                maxlength="32">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-email">
                     <label class="account-field">user_email<span class="account-required">*</span>
-                        <input type="email" placeholder="user_email" required class="account-input" id="selected-user_email-edit"
+                        <input type="email" placeholder="user_email" name="put_user_email" required class="account-input" id="selected-user_email-edit"
                                maxlength="512">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-given-name">
                     <label class="account-field">first_name<span class="account-required">*</span>
-                        <input type="text" placeholder="first_name" required class="account-input"
+                        <input type="text" placeholder="first_name" name="put_first_name" required class="account-input"
                                maxlength="128" id="selected-first_name-edit">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-family-name">
                     <label class="account-field">last_name
-                        <input type="text" placeholder="last_name" class="account-input" id="selected-last_name-edit"
+                        <input type="text" placeholder="last_name" name="put_last_name" class="account-input" id="selected-last_name-edit"
                                maxlength="128">
                     </label>
                 </div>
                 <div class="cell account-field-cell">
                     <label class="account-field">user_role<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                            <select name="user_role" class="account-user_role" id="selected-user_role-edit" required>
+                            <select name="put_user_role" class="account-user_role" id="selected-user_role-edit" required>
                                 <option value="user">User</option>
                                 <option value="developer">Developer</option>
                                 <option value="admin">Admin</option>
@@ -140,7 +215,7 @@ if (isset($_COOKIE["auth"])) {
                 </div>
                 <div class="cell account-field-cell" id="account-given-name">
                     <label class="account-field">user_password<span class="account-required">*</span>
-                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                        <input type="password" name="put_password" placeholder="******" required minlength="6" maxlength="512"
                                class="account-input" id="selected-password-edit">
                         <button class="account-reveal-password">
                             <img src="img/icons/eye.svg" alt="Reveal password">
@@ -150,7 +225,7 @@ if (isset($_COOKIE["auth"])) {
                 <div class="cell account-field-cell">
                     <label class="account-field">Confirm password<span class="account-required">*</span>
                         <input type="password" placeholder="******" required minlength="6" maxlength="512"
-                               class="account-input" id="selected-confirm-password-edit">
+                               class="account-input" name="put_confirm_password" id="selected-confirm-password-edit">
                         <button class="account-reveal-password account-reveal-password-active">
                             <img src="img/icons/eye.svg" alt="Reveal password">
                         </button>
@@ -173,7 +248,9 @@ if (isset($_COOKIE["auth"])) {
 <!-- DELETE MODAL -->
 <div class="reveal large _table-modal" id="delete-modal" data-reveal>
     <h3 class="_table-modal-title" id="delete-user">Confirm delete user</h3>
-    <form>
+    <form method="POST" action="users.php">
+        <input type="hidden" name="_method" value="DELETE" />
+        <input id="delete_id" type="hidden" name="delete_id" value="0" />
         <div class="grid-container">
             <div class="grid-x">
                 <table class="_table-modal-delete">

@@ -19,13 +19,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/constants.php';
  *
  * $method = 'POST' and $data =
  * [
- *  'Id' => 1,
  *  'UserName' => 'user',
  *  'UserPassword' => 'password',
  *  'UserEmail' => 'user@mail.com',
  *  'FirstName' => 'user',
  *  'LastName' => 'user again',
- *  'UserRole => 'developer'
+ *  'UserRole' => 'developer'
  * ]
  *
  * @return array[] Request headers
@@ -41,6 +40,7 @@ function generateHeaders(string $method, array $data = null) {
     }
 
     if (isset($data)) {
+        // POST, PUT
         return array(
             'http' => array(
                 'method' => $method,
@@ -54,6 +54,7 @@ function generateHeaders(string $method, array $data = null) {
     }
 
     return array(
+        // GET, DELETE
         'http' => array(
             'method' => $method,
             'origin' => $protocol.$_SERVER["HTTP_HOST"],
@@ -62,4 +63,3 @@ function generateHeaders(string $method, array $data = null) {
         )
     );
 }
-
