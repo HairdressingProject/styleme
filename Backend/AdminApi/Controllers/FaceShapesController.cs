@@ -75,30 +75,21 @@ namespace AdminApi.Controllers
 
             FaceShapes currentFaceShape = await _context.FaceShapes.FindAsync(id);
 
-            if (currentFaceShape != null)
-            {
-                currentFaceShape.ShapeName = faceShapes.ShapeName;
-            }
-
-             _context.Entry(currentFaceShape).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (currentFaceShape != null)
+                {
+                    currentFaceShape.ShapeName = faceShapes.ShapeName;
+                    _context.Entry(currentFaceShape).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!FaceShapesExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/face_shapes

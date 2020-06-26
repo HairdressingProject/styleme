@@ -78,34 +78,25 @@ namespace AdminApi.Controllers
                 return NotFound(new { errors = new { HairStyleId = new string[] { "No matching hair style entry was found" } }, status = 404 });
             }
 
-            HairStyleLinks hsl = await _context.HairStyleLinks.FindAsync(id);
-
-            if (hsl != null)
-            {
-                hsl.LinkName = hairStyleLinks.LinkName;
-                hsl.LinkUrl = hairStyleLinks.LinkUrl;
-                hsl.HairStyleId = hairStyleLinks.HairStyleId;
-            }
-
-            _context.Entry(hsl).State = EntityState.Modified;
+            HairStyleLinks hsl = await _context.HairStyleLinks.FindAsync(id);            
 
             try
             {
-                await _context.SaveChangesAsync();
+                if (hsl != null)
+                {
+                    hsl.LinkName = hairStyleLinks.LinkName;
+                    hsl.LinkUrl = hairStyleLinks.LinkUrl;
+                    hsl.HairStyleId = hairStyleLinks.HairStyleId;
+                    _context.Entry(hsl).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!HairStyleLinksExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST /api/hair_style_links

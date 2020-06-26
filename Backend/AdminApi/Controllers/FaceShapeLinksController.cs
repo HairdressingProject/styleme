@@ -78,34 +78,26 @@ namespace AdminApi.Controllers
                 return NotFound(new { errors = new { FaceShapeId = new string[]{ "No matching face shape entry was found"} }, status = 404 });
             }
 
-            FaceShapeLinks fsl = await _context.FaceShapeLinks.FindAsync(id);
-
-            if (fsl != null)
-            {
-                fsl.LinkName = faceShapeLinks.LinkName;
-                fsl.LinkUrl = faceShapeLinks.LinkUrl;
-                fsl.FaceShapeId = faceShapeLinks.FaceShapeId;
-            }
-
-            _context.Entry(fsl).State = EntityState.Modified;
+            FaceShapeLinks fsl = await _context.FaceShapeLinks.FindAsync(id);            
 
             try
             {
-                await _context.SaveChangesAsync();
+                if (fsl != null)
+                {
+                    fsl.LinkName = faceShapeLinks.LinkName;
+                    fsl.LinkUrl = faceShapeLinks.LinkUrl;
+                    fsl.FaceShapeId = faceShapeLinks.FaceShapeId;
+
+                    _context.Entry(fsl).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();                
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!FaceShapeLinksExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/face_shape_links

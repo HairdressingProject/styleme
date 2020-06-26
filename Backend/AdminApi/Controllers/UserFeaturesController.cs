@@ -83,35 +83,26 @@ namespace AdminApi.Controllers
 
             UserFeatures uf = await _context.UserFeatures.FindAsync(id);
 
-            if (uf != null)
-            {
-                uf.UserId = userFeatures.UserId;
-                uf.FaceShapeId = userFeatures.FaceShapeId;
-                uf.SkinToneId = userFeatures.SkinToneId;
-                uf.HairStyleId = userFeatures.HairStyleId;
-                uf.HairLengthId = userFeatures.HairLengthId;
-                uf.HairColourId = userFeatures.HairColourId;
-            }
-
-            _context.Entry(uf).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (uf != null)
+                {
+                    uf.UserId = userFeatures.UserId;
+                    uf.FaceShapeId = userFeatures.FaceShapeId;
+                    uf.SkinToneId = userFeatures.SkinToneId;
+                    uf.HairStyleId = userFeatures.HairStyleId;
+                    uf.HairLengthId = userFeatures.HairLengthId;
+                    uf.HairColourId = userFeatures.HairColourId;
+                    _context.Entry(uf).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserFeaturesExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/user_features

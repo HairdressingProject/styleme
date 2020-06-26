@@ -73,31 +73,22 @@ namespace AdminApi.Controllers
 
             Colours currentColour = await _context.Colours.FindAsync(id);
 
-            if (currentColour != null)
-            {
-                currentColour.ColourName = colours.ColourName;
-                currentColour.ColourHash = colours.ColourHash;
-            }
-
-            _context.Entry(currentColour).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (currentColour != null)
+                {
+                    currentColour.ColourName = colours.ColourName;
+                    currentColour.ColourHash = colours.ColourHash;
+                    _context.Entry(currentColour).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ColoursExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/colours
@@ -136,9 +127,9 @@ namespace AdminApi.Controllers
             return colours;
         }
 
-        private bool ColoursExists(ulong id)
+        private Task<bool> ColoursExists(ulong id)
         {
-            return _context.Colours.Any(e => e.Id == id);
+            return _context.Colours.AnyAsync(e => e.Id == id);
         }
     }
 }

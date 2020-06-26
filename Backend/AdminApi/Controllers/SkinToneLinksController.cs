@@ -80,32 +80,23 @@ namespace AdminApi.Controllers
 
             SkinToneLinks stl = await _context.SkinToneLinks.FindAsync(id);
 
-            if (stl != null)
-            {
-                stl.LinkName = skinToneLinks.LinkName;
-                stl.LinkUrl = skinToneLinks.LinkUrl;
-                stl.SkinToneId = skinToneLinks.SkinToneId;
-            }
-
-            _context.Entry(stl).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (stl != null)
+                {
+                    stl.LinkName = skinToneLinks.LinkName;
+                    stl.LinkUrl = skinToneLinks.LinkUrl;
+                    stl.SkinToneId = skinToneLinks.SkinToneId;
+                    _context.Entry(stl).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SkinToneLinksExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/skin_tone_links

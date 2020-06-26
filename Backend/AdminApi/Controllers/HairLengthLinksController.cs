@@ -80,32 +80,25 @@ namespace AdminApi.Controllers
 
             HairLengthLinks currentHLL = await _context.HairLengthLinks.FindAsync(id);
 
-            if (currentHLL != null)
-            {
-                currentHLL.LinkName = hairLengthLinks.LinkName;
-                currentHLL.LinkUrl = hairLengthLinks.LinkUrl;
-                currentHLL.HairLengthId = hairLengthLinks.HairLengthId;
-            }
-
-            _context.Entry(currentHLL).State = EntityState.Modified;
+            
 
             try
             {
-                await _context.SaveChangesAsync();
+                if (currentHLL != null)
+                {
+                    currentHLL.LinkName = hairLengthLinks.LinkName;
+                    currentHLL.LinkUrl = hairLengthLinks.LinkUrl;
+                    currentHLL.HairLengthId = hairLengthLinks.HairLengthId;
+                    _context.Entry(currentHLL).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!HairLengthLinksExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/hair_length_links

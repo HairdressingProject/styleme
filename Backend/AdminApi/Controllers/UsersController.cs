@@ -176,37 +176,28 @@ namespace AdminApi.Controllers
 
             Users currentUser = await _context.Users.FindAsync(user.Id);
 
-            if (currentUser != null)
-            {
-                currentUser.UserName = user.UserName;
-                currentUser.UserPasswordHash = hash;
-                currentUser.UserPasswordSalt = salt;
-                currentUser.FirstName = user.FirstName;
-                currentUser.LastName = user.LastName ?? currentUser?.LastName;
-                currentUser.UserEmail = user.UserEmail;
-                currentUser.UserRole = user.UserRole ?? currentUser?.UserRole;
-                currentUser.DateCreated = currentUser?.DateCreated;
-            }
-
-            _context.Entry(currentUser).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (currentUser != null)
+                {
+                    currentUser.UserName = user.UserName;
+                    currentUser.UserPasswordHash = hash;
+                    currentUser.UserPasswordSalt = salt;
+                    currentUser.FirstName = user.FirstName;
+                    currentUser.LastName = user.LastName ?? currentUser?.LastName;
+                    currentUser.UserEmail = user.UserEmail;
+                    currentUser.UserRole = user.UserRole ?? currentUser?.UserRole;
+                    currentUser.DateCreated = currentUser?.DateCreated;
+                    _context.Entry(currentUser).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UsersExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // ********************************************************************************************************************************************

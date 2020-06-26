@@ -75,30 +75,21 @@ namespace AdminApi.Controllers
 
             SkinTones st = await _context.SkinTones.FindAsync(id);
 
-            if (st != null)
-            {
-                st.SkinToneName = skinTones.SkinToneName;
-            }
-
-            _context.Entry(st).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (st != null)
+                {
+                    st.SkinToneName = skinTones.SkinToneName;
+                    _context.Entry(st).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SkinTonesExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/skin_tones

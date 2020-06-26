@@ -73,32 +73,23 @@ namespace AdminApi.Controllers
                 return BadRequest(new { errors = new { Id = new string[] { "ID sent does not match the one in the endpoint" } }, status = 400 });
             }
 
-            HairLengths currentHL = await _context.HairLengths.FindAsync(id);
-
-            if (currentHL != null)
-            {
-                currentHL.HairLengthName = hairLengths.HairLengthName;
-            }
-
-            _context.Entry(currentHL).State = EntityState.Modified;
+            HairLengths currentHL = await _context.HairLengths.FindAsync(id);            
 
             try
             {
-                await _context.SaveChangesAsync();
+                if (currentHL != null)
+                {
+                    currentHL.HairLengthName = hairLengths.HairLengthName;
+                    _context.Entry(currentHL).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!HairLengthsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/hair_lengths

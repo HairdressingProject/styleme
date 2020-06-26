@@ -73,30 +73,21 @@ namespace AdminApi.Controllers
 
             HairStyles hs = await _context.HairStyles.FindAsync(id);
 
-            if (hs != null)
-            {
-                hs.HairStyleName = hairStyles.HairStyleName;
-            }
-
-            _context.Entry(hs).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (hs != null)
+                {
+                    hs.HairStyleName = hairStyles.HairStyleName;
+                    _context.Entry(hs).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!HairStylesExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500);
             }
-
-            return NoContent();
         }
 
         // POST: api/hair_styles
