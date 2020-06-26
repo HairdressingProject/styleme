@@ -1,5 +1,9 @@
 const tableRows = document.getElementsByClassName('_tables-row');
 let selectedRow;
+const clearBtn = document.getElementById('btn-clear');
+const restoreBtn = document.getElementById('btn-restore');
+const cancelBtn = document.getElementById('btn-cancel');
+const editForm = document.getElementById('edit-form');
 
 const btns = document.getElementsByClassName('_table-btn');
 
@@ -8,6 +12,18 @@ const openEditModalBtn = document.querySelector('[data-open="edit-modal"]');
 
 // delete modal
 const openDeleteModalBtn = document.querySelector('[data-open="delete-modal"]');
+
+// currently selected user
+let user = {
+    id: '',
+    username: '',
+    firstName: '',
+    lastName: '',
+    userEmail: '',
+    userRole: '',
+    dateCreated: '',
+    dateModified: ''
+}
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -24,8 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    openEditModalBtn.addEventListener('click', updateEditFields);
+    openEditModalBtn.addEventListener('click', function() {
+        if (selectedRow) {
+            updateEditFields();
+        }
+    });
     openDeleteModalBtn.addEventListener('click', updateDeleteFields);
+    restoreBtn.addEventListener('click', restoreEditFields);
+    clearBtn.addEventListener('click', clearAddFields);
+    cancelBtn.addEventListener('click', closeDeleteForm);
 });
 
 function selectRow(selected) {
@@ -35,6 +58,8 @@ function selectRow(selected) {
     }
 
     selected.classList.add('_row-selected');
+    user = {};
+    updateFields();
 
     // enable btns
     for (let i = 0; i < btns.length; i++) {
@@ -58,68 +83,123 @@ function deselectRow(selected) {
 }
 
 function updateEditFields() {
-    if (selectedRow) {
+        updateFields();
+
         // id
         const id = document.getElementById('selected-id-edit');
-        id.value = selectedRow.cells[0].textContent;
+        id.value = user.id;
 
         // username
         const username = document.getElementById('selected-username-edit');
-        username.value = selectedRow.cells[1].textContent;
+        username.value = user.username;
 
         // user_email
         const userEmail = document.getElementById('selected-user_email-edit');
-        userEmail.value = selectedRow.cells[2].textContent;
+        userEmail.value = user.userEmail;
 
         // first_name
         const firstName = document.getElementById('selected-first_name-edit');
-        firstName.value = selectedRow.cells[3].textContent;
+        firstName.value = user.firstName;
 
         // last_name
         const lastName = document.getElementById('selected-last_name-edit');
-        lastName.value = selectedRow.cells[4].textContent;
+        lastName.value = user.lastName;
 
         // user role
         const userRole = document.getElementById('selected-user_role-edit');
-        userRole.value = selectedRow.cells[5].textContent;
-    }
+        userRole.value = user.userRole;
 }
 
 function updateDeleteFields() {
     if (selectedRow) {
-        // id
-        const id = document.getElementById('selected-id-delete');
-        id.textContent = selectedRow.cells[0].textContent;
+        updateFields();
 
-        const formID = document.getElementById('delete_id');
-        formID.value = selectedRow.cells[0].textContent;
+        // id
+        document.getElementById('selected-id-delete').textContent = user.id;
+        document.getElementById('delete_id').value = user.id;
 
         // username
-        const username = document.getElementById('selected-username-delete');
-        username.textContent = selectedRow.cells[1].textContent;
+        document.getElementById('selected-username-delete').textContent = user.username;
 
         // user_email
-        const userEmail = document.getElementById('selected-user_email-delete');
-        userEmail.textContent = selectedRow.cells[2].textContent;
+        document.getElementById('selected-user_email-delete').textContent = user.userEmail;
 
         // first_name
-        const firstName = document.getElementById('selected-first_name-delete');
-        firstName.textContent = selectedRow.cells[3].textContent;
+        document.getElementById('selected-first_name-delete').textContent = user.firstName;
 
         // last_name
-        const lastName = document.getElementById('selected-last_name-delete');
-        lastName.textContent = selectedRow.cells[4].textContent;
+        document.getElementById('selected-last_name-delete').textContent = user.lastName;
 
         // user role
-        const userRole = document.getElementById('selected-user_role-delete');
-        userRole.textContent = selectedRow.cells[5].textContent;
+        document.getElementById('selected-user_role-delete').textContent = user.userRole;
 
         // date created
-        const dateCreated = document.getElementById('selected-date_created-delete');
-        dateCreated.textContent = selectedRow.cells[6].textContent;
+        document.getElementById('selected-date_created-delete').textContent = user.dateCreated;
 
         // date modified
-        const dateModified = document.getElementById('selected-date_modified-delete');
-        dateModified.textContent = selectedRow.cells[7].textContent;
+        document.getElementById('selected-date_modified-delete').textContent = user.dateModified;
     }
+}
+
+function updateFields() {
+    // id
+    const id = user.id || selectedRow.cells[0].textContent;
+
+    // username
+    const username = user.username || selectedRow.cells[1].textContent;
+
+    // user_email
+    const userEmail = user.userEmail || selectedRow.cells[2].textContent;
+
+    // first_name
+    const firstName = user.firstName || selectedRow.cells[3].textContent;
+
+    // last_name
+    const lastName = user.lastName || selectedRow.cells[4].textContent;
+
+    // user role
+    const userRole = user.userRole || selectedRow.cells[5].textContent;
+
+    // date created
+    const dateCreated = user.dateCreated || selectedRow.cells[6].textContent;
+
+    // date modified
+    const dateModified = user.dateModified || selectedRow.cells[7].textContent;
+
+    user = {
+        id,
+        username,
+        userEmail,
+        firstName,
+        lastName,
+        userRole,
+        dateCreated,
+        dateModified
+    };
+}
+
+function restoreEditFields(e) {
+    e.preventDefault();
+
+    updateEditFields();
+    document.getElementById('selected-password-edit').value = '';
+    document.getElementById('selected-confirm-password-edit').value = '';
+}
+
+function clearAddFields(e) {
+    e.preventDefault();
+
+    document.getElementById('selected-username-add').value = '';
+    document.getElementById('selected-email-add').value = '';
+    document.getElementById('selected-first_name-add').value = '';
+    document.getElementById('selected-last_name-add').value = '';
+    document.getElementById('selected-password-add').value = '';
+    document.getElementById('selected-confirm-password-add').value = '';
+}
+
+function closeDeleteForm(e) {
+    e.preventDefault();
+
+    const closeDeleteModalBtn = document.getElementById('close-delete-modal');
+    closeDeleteModalBtn.click();
 }

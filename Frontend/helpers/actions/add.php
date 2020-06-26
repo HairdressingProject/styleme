@@ -9,29 +9,16 @@
  * Description: add short description of file's purpose
  **********************************************************/
 
-require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/headers.php';
-require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/authentication.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 
 /**
  * Add a new resource of type $resourceName
  * @param string $resourceName
  * @param array $data
- * @return bool Result of the operation
+ * @return array Response from the API as an associative array
  */
 function addResource($resourceName, $data) {
     $opts = generateHeaders('POST', $data);
-    $context = stream_context_create($opts);
-    $resourceAdded = false;
-
-    if (isAuthenticated()) {
-        $resourceUrl = API_URL . '/api/' . $resourceName;
-        $resourceData = @file_get_contents($resourceUrl, false, $context);
-
-        if ($resourceData) {
-            // the newly created resource was successfully added
-            $resourceAdded = true;
-        }
-    }
-
-    return $resourceAdded;
+    $resourceUrl = API_URL . '/api/' . $resourceName;
+    return Utils::getResponse($resourceUrl, $opts);
 }

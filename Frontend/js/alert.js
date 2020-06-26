@@ -1,3 +1,13 @@
+const existingAlert = document.getElementById('alert');
+
+if (existingAlert) {
+    const alertCloseBtn = document.getElementById('alert-close-btn');
+
+    if (alertCloseBtn) {
+        alertCloseBtn.addEventListener('click', dismissAlert);
+    }
+}
+
 /**
  * Displays a dismissable alert message
  * @param {"error" | "success"} type 

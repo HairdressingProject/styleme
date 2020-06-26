@@ -9,29 +9,16 @@
  * Description: add short description of file's purpose
  **********************************************************/
 
-require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/headers.php';
-require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/authentication.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 
 /**
  * Delete a resource of type $resourceName with $id
  * @param string $resourceName
  * @param int|string $id
- * @return bool Result of the operation
+ * @return array Response from the API as an associative array
  */
 function deleteResource(string $resourceName, $id) {
     $opts = generateHeaders('DELETE');
-    $context = stream_context_create($opts);
-    $resourceDeleted = false;
-
-    if (isAuthenticated()) {
-        $resourceUrl = API_URL . '/api/' . $resourceName . '/' . $id;
-        $resourceData = @file_get_contents($resourceUrl, false, $context);
-
-        if ($resourceData) {
-            // the resource was successfully deleted
-            $resourceDeleted = true;
-        }
-    }
-
-    return $resourceDeleted;
+    $resourceUrl = API_URL . '/api/' . $resourceName . '/' . $id;
+    return Utils::getResponse($resourceUrl, $opts);
 }

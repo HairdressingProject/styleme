@@ -1,85 +1,24 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/actions/browse.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/classes/User.php';
 
+$token = Utils::addCSRFToken();
+$alert = null;
 $u = new User();
 $users = [];
 
-if (isset($_POST['_method'])) {
-    if ($_POST['_method'] === 'PUT') {
-        // PUT request
-        if (isset($_POST['put_password']) && isset($_POST['put_confirm_password'])) {
-            if ($_POST['put_password'] === $_POST['put_confirm_password']) {
-                if (isset($_POST['put_id']) && is_numeric($_POST['put_id'])) {
-                    $u->id = $_POST['put_id'];
-                    $u->username = $_POST['put_username'];
-                    $u->email = $_POST['put_user_email'];
-                    $u->firstName = $_POST['put_first_name'];
-                    $u->lastName = $_POST['put_last_name'];
-                    $u->password = $_POST['put_password'];
-                    $u->userRole = $_POST['put_user_role'];
-
-                    $result = $u->edit();
-
-                    if ($result) {
-                        // user was successfully updated
-
-                    }
-                }
-                else {
-                    // invalid id
-                }
-            }
-            else {
-                // passwords do not match
-            }
-        }
-        else {
-            // password fields were tampered with
-        }
-    }
-    else if ($_POST['_method'] === 'DELETE') {
-        // DELETE request
-        if (isset($_POST['delete_id']) && is_numeric($_POST['delete_id'])) {
-            $u->id = intval($_POST['delete_id']);
-            $u->delete();
-        }
-        else {
-            // invalid id
-        }
-    }
-    else {
-        // _method was tampered with
-    }
-}
-else {
-    // POST request
-    if (isset($_POST['add_password']) && isset($_POST['add_confirm_password'])) {
-        if ($_POST['add_password'] === $_POST['add_confirm_password']) {
-            $u->username = $_POST['add_username'];
-            $u->email = $_POST['add_email'];
-            $u->firstName = $_POST['add_first_name'];
-            $u->lastName = $_POST['add_last_name'];
-            $u->password = $_POST['add_password'];
-            $u->userRole = 'user';
-
-            $result = $u->add();
-
-            if (!$result) {
-                var_dump(array('got' => 'error'));
-            }
-        }
-        else {
-            // passwords do not match
-        }
-    }
-    else {
-        // passwords fields were tampered with
+if ($_POST && Utils::verifyCSRFToken()) {
+    if (isset($_POST['_method'])) {
+        $alert = $u->handleSubmit($_POST['_method']);
+    } else {
+        $alert = $u->handleSubmit();
     }
 }
 
 if (isset($_COOKIE["auth"])) {
-    $users = $u->browse();
+    $browseResponse = $u->browse();
+    $users = $browseResponse['users'];
 }
 ?>
 
@@ -100,6 +39,7 @@ if (isset($_COOKIE["auth"])) {
 <body>
 <noscript>Please enable JavaScript for this page to work</noscript>
 
+<?php if(isset($alert)) echo $alert; ?>
 <!-- ADD MODAL -->
 <div class="reveal large _table-modal" id="add-modal" data-reveal>
     <h3 class="_table-modal-title">Add a new user</h3>
@@ -108,6 +48,7 @@ if (isset($_COOKIE["auth"])) {
     </button>
 
     <form action="users.php" method="POST">
+        <input type="hidden" name="token" value="<?=$token?>">
         <div class="grid-container">
             <div class="grid-x">
                 <div class="cell account-field-cell" id="account-username">
@@ -154,7 +95,7 @@ if (isset($_COOKIE["auth"])) {
                 </div>
                 <div class="account-btns grid-x">
                     <div class="cell small-12 medium-6">
-                        <button class="account-restore-btn account-btn">Clear</button>
+                        <button id="btn-clear" class="account-restore-btn account-btn">Clear</button>
                     </div>
                     <div class="cell small-12 medium-6">
                         <button class="account-save-btn account-btn" type="submit">Save changes</button>
@@ -172,7 +113,8 @@ if (isset($_COOKIE["auth"])) {
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form action="users.php" method="POST">
+    <form action="users.php" method="POST" id="edit-form">
+        <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="PUT" />
         <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
         <div class="grid-container">
@@ -233,7 +175,7 @@ if (isset($_COOKIE["auth"])) {
                 </div>
                 <div class="account-btns grid-x">
                     <div class="cell small-12 medium-6">
-                        <button class="account-restore-btn account-btn">Restore</button>
+                        <button id="btn-restore" class="account-restore-btn account-btn">Restore</button>
                     </div>
                     <div class="cell small-12 medium-6">
                         <button class="account-save-btn account-btn" type="submit">Save changes</button>
@@ -249,6 +191,7 @@ if (isset($_COOKIE["auth"])) {
 <div class="reveal large _table-modal" id="delete-modal" data-reveal>
     <h3 class="_table-modal-title" id="delete-user">Confirm delete user</h3>
     <form method="POST" action="users.php">
+        <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="DELETE" />
         <input id="delete_id" type="hidden" name="delete_id" value="0" />
         <div class="grid-container">
@@ -291,7 +234,7 @@ if (isset($_COOKIE["auth"])) {
                 </table>
                 <div class="account-btns grid-x">
                     <div class="cell small-12 medium-6">
-                        <button class="account-restore-btn account-btn">Cancel</button>
+                        <button id="btn-cancel" class="account-restore-btn account-btn">Cancel</button>
                     </div>
                     <div class="cell small-12 medium-6">
                         <form>
@@ -302,7 +245,7 @@ if (isset($_COOKIE["auth"])) {
             </div>
         </div>
     </form>
-    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
+    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button" id="close-delete-modal">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>

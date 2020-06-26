@@ -54,7 +54,7 @@ table {
 
 .alert {
   position: absolute;
-  z-index: 1;
+  z-index: 1000;
   text-align: center;
   padding: 1.5rem 0;
   width: 100%;
