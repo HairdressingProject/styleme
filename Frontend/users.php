@@ -1,10 +1,12 @@
 <?php
-require_once 'helpers/fetch.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/actions/browse.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/User.php';
 
+$u = new User();
 $users = [];
 
 if (isset($_COOKIE["auth"])) {
-    $users = fetchResource('users');
+    $users = $u->browse();
 }
 ?>
 
