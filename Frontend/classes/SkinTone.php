@@ -1,0 +1,135 @@
+<?php
+/**********************************************************
+ * Package: HairdressingProject
+ * Project: Admin-Portal-v2
+ * File: SkinTone.php
+ * Author: Diego <20026893@tafe.wa.edu.au>
+ * Date: 2020-06-28
+ * Version: 1.0.0
+ * Description: add short description of file's purpose
+ **********************************************************/
+
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/browse.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/read.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/edit.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/add.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/delete.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
+
+class SkinTone
+{
+    public int $id;
+    public string $skinToneName;
+    public string $dateCreated;
+    public string $dateModified;
+
+    public function browse() {
+        $this->sanitise();
+        return browseResource('skin_tones');
+    }
+
+    public function read() {
+        return readResource('skin_tones', Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT));
+    }
+
+    public function edit() {
+        return editResource('skin_tones', array(
+            'Id' => Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT),
+            'SkinToneName' => Utils::sanitiseField($this->skinToneName, FILTER_SANITIZE_STRING),
+        ));
+    }
+
+    public function add() {
+        return addResource('skin_tones', array(
+            'SkinToneName' => Utils::sanitiseField($this->skinToneName, FILTER_SANITIZE_STRING),
+        ));
+    }
+
+    public function delete() {
+        return deleteResource('skin_tones', Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT));
+    }
+
+    /**
+     * Sanitises all relevant fields/properties of this class, including the ID
+     */
+    public function sanitise() {
+        if (isset($this->id) &&
+            isset($this->skinToneName)
+        ) {
+            $this->id = Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT);
+            $this->skinToneName = Utils::sanitiseField($this->skinToneName, FILTER_SANITIZE_STRING);
+        }
+    }
+
+    /**
+     * Handles form submission for the skin tones page
+     * @param  string  $method One of: 'POST', 'PUT' or 'DELETE'
+     * @return string|null Alert message
+     */
+    public function handleSubmit($method = 'POST')
+    {
+        switch ($method) {
+            case 'POST':
+                if (Utils::validateField('add_skinToneName', 'string')) {
+                    // all good
+                    $this->skinToneName = $_POST['add_skinToneName'];
+                    $response = $this->add();
+
+                    return Utils::handleResponse($response, [
+                        '400'=> 'Invalid skin tone name field',
+                        '500' => 'Could not add skin tone. Please try again later',
+                        '200' => 'Skin tone successfully added'
+                    ]);
+                }
+                else {
+                    // add_skinToneName field was removed from form
+                    return Utils::createAlert('Skin tone name cannot be empty', 'error');
+                }
+                break;
+
+            case 'PUT':
+                if (Utils::validateField('put_id', 'number')) {
+                    if (Utils::validateField('put_hairLength_skinToneName', 'string')) {
+                        $this->id = $_POST['put_id'];
+                        $this->skinToneName = $_POST['put_hairLength_skinToneName'];
+                        $response = $this->edit();
+
+                        return Utils::handleResponse($response, [
+                            '400' => 'Invalid skin tone name. It cannot exceed 128 characters.',
+                            '404' => 'Skin tone not found.',
+                            '500' => 'Could not updated skin tone. Please try again later.',
+                            '200' => 'Skin tone successfully updated'
+                        ]);
+                    }
+                    else {
+                        return Utils::createAlert('Skin tone cannot be empty', 'error');
+                    }
+                }
+                else {
+                    return Utils::createAlert('Invalid skin tone ID', 'error');
+                }
+                break;
+
+            case 'DELETE':
+                if (Utils::validateField('delete_id', 'number')) {
+                    $this->id = $_POST['delete_id'];
+
+                    $response = $this->delete();
+
+                    return Utils::handleResponse($response, [
+                        '404' => 'Skin tone was not found',
+                        '400' => 'Invalid skin tone ID',
+                        '500' => 'Could not update skin tone. Please try again later',
+                        '200' => 'Skin tone successfully deleted'
+                    ]);
+                }
+                else {
+                    return Utils::createAlert('Invalid skin tone ID field', 'error');
+                }
+                break;
+
+            default:
+                return Utils::createAlert('Invalid request method', 'error');
+        }
+    }
+}
