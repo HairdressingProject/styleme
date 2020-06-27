@@ -57,5 +57,20 @@ namespace AdminApi.Models_v2_1
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(Users.UserFeatures))]
         public virtual Users User { get; set; }
+
+        [ForeignKey(nameof(FaceShapeId))]
+        public virtual FaceShapes FaceShape { get; set; }
+
+        [ForeignKey(nameof(SkinToneId))]
+        public virtual SkinTones SkinTone { get; set; }
+
+        [ForeignKey(nameof(HairStyleId))]
+        public virtual HairStyles HairStyle { get; set; }
+
+        [ForeignKey(nameof(HairLengthId))]
+        public virtual HairLengths HairLength { get; set; }
+
+        [ForeignKey(nameof(HairColourId))]
+        public virtual Colours HairColour { get; set; }
     }
 }

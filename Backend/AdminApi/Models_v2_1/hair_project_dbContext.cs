@@ -490,6 +490,32 @@ namespace AdminApi.Models_v2_1
                     .WithMany(p => p.UserFeatures)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("user_features_ibfk_1");
+
+                entity.HasOne(d => d.HairColour)
+                       .WithMany()
+                       .HasForeignKey(d => d.HairColourId)
+                       .IsRequired();
+
+                entity.HasOne(d => d.HairStyle)
+                       .WithMany()
+                       .HasForeignKey(d => d.HairStyleId)
+                       .IsRequired();
+
+                entity.HasOne(d => d.HairLength)
+                       .WithMany()
+                       .HasForeignKey(d => d.HairLengthId)
+                       .IsRequired();
+
+                entity.HasOne(d => d.FaceShape)
+                       .WithMany()
+                       .HasForeignKey(d => d.FaceShapeId)
+                       .IsRequired();
+
+                entity.HasOne(d => d.SkinTone)
+                       .WithMany()
+                       .HasForeignKey(d => d.SkinToneId)
+                       .IsRequired();
+
             });
 
             modelBuilder.Entity<Users>(entity =>

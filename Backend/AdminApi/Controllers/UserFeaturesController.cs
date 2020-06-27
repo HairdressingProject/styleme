@@ -38,7 +38,24 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var userFeatures = await _context.UserFeatures.ToListAsync();
+            var userFeatures = await _context.UserFeatures
+                                                .Include(uf => uf.User)
+                                                .Include(uf => uf.HairColour)
+                                                .Include(uf => uf.HairStyle)
+                                                .Include(uf => uf.HairLength)
+                                                .Include(uf => uf.SkinTone)
+                                                .Include(uf => uf.FaceShape)
+                                                .ToListAsync();
+
+            if (userFeatures.Count > 0)
+            {
+                // remove user passwords
+                userFeatures.ForEach(uf =>
+                {
+                    uf.User = uf.User.WithoutPassword();
+                });
+            }
+
             return Ok(new { userFeatures });
         }
 
@@ -50,14 +67,19 @@ namespace AdminApi.Controllers
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
-            var userFeatures = await _context.UserFeatures.FindAsync(id);
+            var userFeatures = await _context.UserFeatures.Where(uf => uf.Id == id).Include(uf => uf.User).ToListAsync();
 
-            if (userFeatures == null)
+            if (userFeatures.Count < 1)
             {
                 return NotFound();
             }
 
-            return userFeatures;
+            userFeatures.ForEach(uf =>
+            {
+                uf.User = uf.User.WithoutPassword();
+            });
+
+            return userFeatures[0];
         }
 
         // PUT: api/user_features/5
