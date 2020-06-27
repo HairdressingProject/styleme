@@ -47,6 +47,19 @@ class Utils
     }
 
     /**
+     * Sanitises an individual property/field of this class
+     * @param $field
+     * @param  int  $type ID from the filter constants of filter_var (see docs for more info)
+     * @return string
+     */
+    public static function sanitiseField($field, $type) {
+        if (isset($field)) {
+            return filter_var($field, $type);
+        }
+        return '';
+    }
+
+    /**
      * Adds a new CSRF token to $_SESSION
      * @return string The CSRF created
      */
@@ -110,5 +123,17 @@ class Utils
             return $alert;
         }
         return '';
+    }
+
+    /**
+     * Formats date/time as follows: June 27th, 2020 03:05:11 PM
+     * @param $dateTime
+     * @return false|string Formatted date/time as a string, 'Never' if $dateTime is null or false, if it wasn't able to format
+     */
+    public static function prettyPrintDateTime($dateTime) {
+        if (isset($dateTime)) {
+            return date('F jS, Y h:i:s A', strtotime($dateTime));
+        }
+        return 'Never';
     }
 }

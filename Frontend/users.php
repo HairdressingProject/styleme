@@ -423,8 +423,8 @@ if (isset($_COOKIE["auth"])) {
                             <td class="_tables-cell first_name"><?= $user->firstName ?></td>
                             <td class="_tables-cell last_name"><?= $user->lastName ?></td>
                             <td class="_tables-cell user_role"><?= $user->userRole ?></td>
-                            <td class="_tables-cell date_created"><?= date('F jS, Y h:i:s', strtotime($user->dateCreated)) ?></td>
-                            <td class="_tables-cell date_modified"><?= isset($user->dateModified) ? date('F jS, Y h:i:s', strtotime($user->dateModified)) : 'Never' ?></td>
+                            <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime($user->dateCreated) ?></td>
+                            <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime($user->dateModified) ?></td>
                         </tr>
                     <?php } ?>
                     </tbody>

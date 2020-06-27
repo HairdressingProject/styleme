@@ -35,7 +35,8 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return await _context.SkinToneLinks.Include(stl => stl.SkinTone).ToListAsync();
+            var skinToneLinks = await _context.SkinToneLinks.Include(stl => stl.SkinTone).ToListAsync();
+            return Ok(new { skinToneLinks });
         }
 
         // GET: api/skin_tone_links/5

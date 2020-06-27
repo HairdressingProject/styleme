@@ -35,7 +35,9 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return await _context.HairStyleLinks.Include(hsl => hsl.HairStyle).ToListAsync();
+            var hairStyleLinks = await _context.HairStyleLinks.Include(hsl => hsl.HairStyle).ToListAsync();
+
+            return Ok(new { hairStyleLinks });
         }
 
         // GET: api/hair_style_links/5

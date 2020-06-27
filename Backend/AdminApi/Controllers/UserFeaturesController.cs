@@ -38,7 +38,8 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return await _context.UserFeatures.ToListAsync();
+            var userFeatures = await _context.UserFeatures.ToListAsync();
+            return Ok(new { userFeatures });
         }
 
         // GET: api/user_features/5

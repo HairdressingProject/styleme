@@ -1,7 +1,7 @@
 # Admin Portal - Backend
 
 ## Testing routes
-The [Postman_Collections](/Admin/Backend/Postman_Collections "Postman Collections") folder contains several `json` files, each including all routes to perform BREAD operations on the respective table in the database. You can use them to test any route in Postman.
+The [Postman_Collections](/Backend/Postman_Collections "Postman Collections") folder contains several `json` files, each including all routes to perform BREAD operations on the respective table in the database. You can use them to test any route in Postman.
 
 Follow the instructions below to do so:
 
