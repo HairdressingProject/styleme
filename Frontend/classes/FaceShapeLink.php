@@ -117,7 +117,7 @@ class FaceShapeLink
                         '404' => 'Face shape link was not found',
                         '400' => 'Invalid face shape link ID',
                         '500' => 'Could not delete face shape link. Please try again later',
-                        '200' => 'Face shape successfully deleted'
+                        '200' => 'Face shape link successfully deleted'
                     ]);
                 }
                 else {

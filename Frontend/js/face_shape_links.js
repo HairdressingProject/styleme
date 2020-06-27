@@ -17,6 +17,7 @@ const openDeleteModalBtn = document.querySelector('[data-open="delete-modal"]');
 let faceShapeLink = {
     id: '',
     faceShapeId: '',
+    faceShapeName: '',
     linkName: '',
     linkUrl: '',
     dateCreated: '',
@@ -109,7 +110,7 @@ function updateDeleteFields() {
         document.getElementById('delete_id').value = faceShapeLink.id;
 
         // face shape name
-        document.getElementById('selected-faceShape-delete').textContent = faceShapeLink.faceShapeId;
+        document.getElementById('selected-faceShape-delete').textContent = faceShapeLink.faceShapeName;
 
         // link name
         document.getElementById('selected-linkName-delete').textContent = faceShapeLink.linkName;
@@ -132,6 +133,12 @@ function updateFields() {
     // face shape id
     const faceShapeId = faceShapeLink.faceShapeId || selectedRow.cells[1].dataset['faceShapeId'];
 
+    // get name from rows
+    const allRows = document.querySelectorAll('[data-face-shape-id]');
+    const faceShape = [...allRows].filter(r => r.dataset['faceShapeId'] === faceShapeId)[0];
+
+    const faceShapeName = faceShapeLink.faceShapeName || faceShape.textContent;
+
     // link name
     const linkName = faceShapeLink.linkName || selectedRow.cells[2].textContent;
 
@@ -147,6 +154,7 @@ function updateFields() {
     faceShapeLink = {
         id,
         faceShapeId,
+        faceShapeName,
         linkName,
         linkUrl,
         dateCreated,
