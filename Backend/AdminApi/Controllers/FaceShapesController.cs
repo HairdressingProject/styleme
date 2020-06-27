@@ -37,7 +37,9 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            return await _context.FaceShapes.ToListAsync();
+            var faceShapes = await _context.FaceShapes.ToListAsync();
+
+            return Ok(new { faceShapes });
         }
 
         // GET: api/face_shapes/5

@@ -34,7 +34,7 @@ class User
    }
 
    public function read() {
-        $this->id = $this->sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT);
+        $this->id = Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT);
         return readResource('users', $this->id);
    }
 
@@ -53,17 +53,17 @@ class User
 
    public function add() {
         return addResource('users', array(
-            'UserName' => $this->sanitiseField($this->username, FILTER_SANITIZE_STRING),
-            'UserEmail' => $this->sanitiseField($this->email, FILTER_SANITIZE_EMAIL),
-            'UserPassword' => $this->sanitiseField($this->password, FILTER_SANITIZE_STRING),
-            'FirstName' => $this->sanitiseField($this->firstName, FILTER_SANITIZE_STRING),
-            'LastName' => $this->sanitiseField($this->lastName, FILTER_SANITIZE_STRING),
-            'UserRole' => $this->sanitiseField($this->userRole, FILTER_SANITIZE_STRING)
+            'UserName' => Utils::sanitiseField($this->username, FILTER_SANITIZE_STRING),
+            'UserEmail' => Utils::sanitiseField($this->email, FILTER_SANITIZE_EMAIL),
+            'UserPassword' => Utils::sanitiseField($this->password, FILTER_SANITIZE_STRING),
+            'FirstName' => Utils::sanitiseField($this->firstName, FILTER_SANITIZE_STRING),
+            'LastName' => Utils::sanitiseField($this->lastName, FILTER_SANITIZE_STRING),
+            'UserRole' => Utils::sanitiseField($this->userRole, FILTER_SANITIZE_STRING)
         ));
    }
 
    public function delete() {
-        $this->id = $this->sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT);
+        $this->id = Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT);
         return deleteResource('users', $this->id);
    }
 
@@ -78,12 +78,12 @@ class User
            isset($this->lastName) &&
            isset($this->userRole)
        ) {
-           $this->id = $this->sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT);
-           $this->username = $this->sanitiseField($this->username, FILTER_SANITIZE_STRING);
-           $this->email = $this->sanitiseField($this->email, FILTER_SANITIZE_EMAIL);
-           $this->firstName = $this->sanitiseField($this->firstName, FILTER_SANITIZE_STRING);
-           $this->lastName = $this->sanitiseField($this->lastName, FILTER_SANITIZE_STRING);
-           $this->userRole = $this->sanitiseField($this->userRole, FILTER_SANITIZE_STRING);
+           $this->id = Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT);
+           $this->username = Utils::sanitiseField($this->username, FILTER_SANITIZE_STRING);
+           $this->email = Utils::sanitiseField($this->email, FILTER_SANITIZE_EMAIL);
+           $this->firstName = Utils::sanitiseField($this->firstName, FILTER_SANITIZE_STRING);
+           $this->lastName = Utils::sanitiseField($this->lastName, FILTER_SANITIZE_STRING);
+           $this->userRole = Utils::sanitiseField($this->userRole, FILTER_SANITIZE_STRING);
 
            if ($this->userRole !== 'user' && $this->userRole !== 'developer' && $this->userRole !== 'admin') {
                $this->userRole = 'user';
@@ -92,19 +92,6 @@ class User
 
        // passwords are not sanitised because right now any character is allowed
        // this can be limited in the future
-   }
-
-    /**
-     * Sanitises an individual property/field of this class
-     * @param $field
-     * @param  int  $type ID from the filter constants of filter_var (see docs for more info)
-     * @return string
-     */
-   public function sanitiseField($field, $type) {
-       if (isset($field)) {
-           return filter_var($field, $type);
-       }
-       return '';
    }
 
     /**
