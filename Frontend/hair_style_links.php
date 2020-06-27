@@ -70,7 +70,7 @@ if (isset($_COOKIE["auth"])) {
             <div class="grid-x">
 
                 <div class="cell account-field-cell">
-                    <label class="account-field">hair_length<span class="account-required">*</span>
+                    <label class="account-field">hair_style<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
                             <select name="add_hairStyleId" class="account-user_role" id="selected-hairStyle-add" required>
                                 <?php
