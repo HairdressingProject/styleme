@@ -28,7 +28,7 @@ if ($_POST && Utils::verifyCSRFToken()) {
 if (isset($_COOKIE["auth"])) {
     $browseResponse = $fs->browse();
     //var_dump($browseResponse);
-    $faceShapes = $browseResponse;
+    $faceShapes = $browseResponse['faceShapes'];
     //var_dump($faceShapes);
 }
 ?>
@@ -327,7 +327,7 @@ if (isset($_COOKIE["auth"])) {
                     </thead>
                     <tbody>
                     <?php
-                    for ($i = 0; $i < count($faceShapes) -1; $i++) { $faceShape = $faceShapes[$i]; ?>
+                    for ($i = 0; $i < count($faceShapes); $i++) { $faceShape = $faceShapes[$i]; ?>
                         <tr class="_tables-row">
                             <td class="_tables-cell id"><?= $faceShape->id ?></td>
                             <td class="_tables-cell shapeName"><?= $faceShape->shapeName ?></td>
