@@ -393,10 +393,10 @@ if (isset($_COOKIE["auth"])) {
                         <button class="_table-btn _table-btn-add" data-open="add-modal">Add</button>
                     </div>
                     <div class="cell small-12 medium-2 text-center">
-                        <button class="_table-btn _table-btn-edit _table-btn-disabled" data-open="edit-modal">Edit</button>
+                        <button class="_table-btn _table-btn-edit _table-btn-disabled" data-open="edit-modal" disabled>Edit</button>
                     </div>
                     <div class="cell small-12 medium-2 text-center">
-                        <button class="_table-btn _table-btn-delete _table-btn-disabled" data-open="delete-modal">Delete</button>
+                        <button class="_table-btn _table-btn-delete _table-btn-disabled" data-open="delete-modal" disabled>Delete</button>
                     </div>
                 </div>
 

@@ -14,16 +14,7 @@ const openEditModalBtn = document.querySelector('[data-open="edit-modal"]');
 const openDeleteModalBtn = document.querySelector('[data-open="delete-modal"]');
 
 // currently selected user
-let user = {
-    id: '',
-    username: '',
-    firstName: '',
-    lastName: '',
-    userEmail: '',
-    userRole: '',
-    dateCreated: '',
-    dateModified: ''
-}
+let user = {};
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -155,7 +146,7 @@ function updateFields() {
     const firstName = user.firstName || selectedRow.cells[3].textContent;
 
     // last_name
-    const lastName = user.lastName || selectedRow.cells[4].textContent;
+    const lastName = user.lastName || selectedRow ? selectedRow.cells[4].textContent : '';
 
     // user role
     const userRole = user.userRole || selectedRow.cells[5].textContent;
