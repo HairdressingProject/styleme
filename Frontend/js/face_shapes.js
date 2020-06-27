@@ -87,7 +87,7 @@ function updateEditFields() {
 
     // shape_name
     const shapeName = document.getElementById('selected-shapeName-edit');
-    faceShape.value = faceShape.shapeName;
+    shapeName.value = faceShape.shapeName;
 
 }
 
@@ -118,10 +118,10 @@ function updateFields() {
     const shapeName = faceShape.shapeName || selectedRow.cells[1].textContent;
 
     // date created
-    const dateCreated = faceShape.dateCreated || selectedRow.cells[6].textContent;
+    const dateCreated = faceShape.dateCreated || selectedRow.cells[2].textContent;
 
     // date modified
-    const dateModified = faceShape.dateModified || selectedRow.cells[7].textContent;
+    const dateModified = faceShape.dateModified || selectedRow.cells[3].textContent;
 
     faceShape = {
         id,
@@ -135,8 +135,6 @@ function restoreEditFields(e) {
     e.preventDefault();
 
     updateEditFields();
-    document.getElementById('selected-password-edit').value = '';
-    document.getElementById('selected-confirm-password-edit').value = '';
 }
 
 function clearAddFields(e) {
