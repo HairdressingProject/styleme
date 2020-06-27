@@ -99,7 +99,7 @@ if (isset($_COOKIE["auth"])) {
 
                 <div class="cell account-field-cell" id="HairLength-hairLengthName">
                     <label class="account-field">hair_length<span class="account-required">*</span>
-                        <input type="text" placeholder="hair_length" name="put_HairLength_hairLengthName" required class="account-input" id="selected-hairLengthName-edit"
+                        <input type="text" placeholder="hair_length" name="put_hairLength_hairLengthName" required class="account-input" id="selected-hairLengthName-edit"
                                maxlength="512">
                     </label>
                 </div>
