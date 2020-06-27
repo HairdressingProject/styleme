@@ -2,7 +2,7 @@
 /**********************************************************
  * Package: HairdressingProject
  * Project: Admin-Portal-v2
- * File: Colours.php
+ * File: Colour.php
  * Author: Diego <20026893@tafe.wa.edu.au>
  * Date: 2020-06-26
  * Version: 1.0.0
@@ -16,7 +16,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/add.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/delete.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
 
-class Colours
+class Colour
 {
     public int $id;
     public string $colourName;
@@ -83,7 +83,7 @@ class Colours
 
             case 'PUT':
                 if (Utils::validateField('put_id', 'number')) {
-                    if (Utils::validateField('put_colourName', 'string')) {
+                    if (Utils::validateField('put_colourName', 'string') && Utils::validateField('put_colourHash', 'string')) {
                         $this->id = $_POST['put_id'];
                         $this->colourHash = $_POST['put_colourHash'];
                         $this->colourName = $_POST['put_colourName'];
@@ -101,11 +101,11 @@ class Colours
                         );
                     }
                     else {
-                        return Utils::createAlert('Shape name cannot be empty', 'error');
+                        return Utils::createAlert('Colour name and hash cannot be empty', 'error');
                     }
                 }
                 else {
-                    return Utils::createAlert('Invalid face shape ID', 'error');
+                    return Utils::createAlert('Invalid colour ID', 'error');
                 }
                 break;
 
