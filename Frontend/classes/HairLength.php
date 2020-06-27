@@ -99,7 +99,6 @@ class HairLength
                 if (isset($_POST['put_id']) && is_numeric($_POST['put_id'])) {
                     if ($this->validateHairLengthName('put_hairLength_hairLengthName')) {
                         $this->id = $_POST['put_id'];
-                        var_dump($this->hairLengthName);
                         $this->hairLengthName = $_POST['put_hairLength_hairLengthName'];
                         $response = $this->edit();
 
