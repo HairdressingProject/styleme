@@ -33,3 +33,9 @@ Notice that I have already changed it, that's why it's showing `C:\laragon\www\A
 Now you may open the project (from the root folder or from Frontend) in PHPStorm and start working on it. Check the console for errors and confirm that you're still successfully fetching data from the API (when you get to the Database page). 
 
 > Make sure that you have already set up the backend (including the database) and started it as well, by running `dotnet watch run` from the AdminApi folder.
+
+## Naming Convention
+- Classes : PascalCase, singular
+- Tables in database: snake_case, plural
+- Properties: camelCase
+- Constants: UPPERCASE_SEPARATED_BY_UNDERSCORES
