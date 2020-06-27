@@ -62,7 +62,7 @@ class FaceShape
     }
 
     /**
-     * Handles form submission for the users page
+     * Handles form submission for the face shapes page
      * @param  string  $method One of: 'POST', 'PUT' or 'DELETE'
      * @return string|null Alert message
      */
@@ -119,7 +119,7 @@ class FaceShape
                         return Utils::handleResponse($response, [
                             '404' => 'Face shape was not found',
                             '400' => 'Invalid face shape ID',
-                            '500' => 'Could not update face shape. Please try again later',
+                            '500' => 'Could not delete face shape. Please try again later',
                             '200' => 'Face shape successfully deleted'
                         ]);
                     }

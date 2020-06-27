@@ -1,35 +1,40 @@
 <?php
-/*******************************************************
- * Project:     Admin-Portal-v2
- * File:        hair_lengths.php
- * Author:      Your name
- * Date:        2020-06-27
- * Version:     1.0.0
- * Description:
- *******************************************************/
+/**********************************************************
+ * Package: ${PACKAGE_NAME}
+ * Project: Admin-Portal-v2
+ * File: face_shape_links.php
+ * Author: Diego <20026893@tafe.wa.edu.au>
+ * Date: 2020-06-28
+ * Version: 1.0.0
+ * Description: add short description of file's purpose
+ **********************************************************/
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/actions/browse.php';
-require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairLength.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/FaceShapeLink.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/FaceShape.php';
 
 $token = Utils::addCSRFToken();
 $alert = null;
-$fs = new HairLength();
-$HairLengths = [];
+$faceShapeLink = new FaceShapeLink();
+$faceShape = new FaceShape();
+$faceShapeLinks = [];
+$faceShapes = [];
 
 if ($_POST && Utils::verifyCSRFToken()) {
     if (isset($_POST['_method'])) {
-        $alert = $fs->handleSubmit($_POST['_method']);
+        $alert = $faceShapeLink->handleSubmit($_POST['_method']);
     } else {
-        $alert = $fs->handleSubmit();
+        $alert = $faceShapeLink->handleSubmit();
     }
 }
 
 if (isset($_COOKIE["auth"])) {
-    $browseResponse = $fs->browse();
-    //var_dump($browseResponse);
-    $HairLengths = $browseResponse['hairLengths'];
-    //var_dump($HairLengths);
+    $browseResponse = $faceShapeLink->browse();
+    $faceShapeLinks = $browseResponse['faceShapeLinks'];
+
+    $browseFaceShapes = $faceShape->browse();
+    $faceShapes = $browseFaceShapes['faceShapes'];
 }
 ?>
 
@@ -41,7 +46,7 @@ if (isset($_COOKIE["auth"])) {
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Hair Lengths</title>
+    <title>Face Shape Links</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
           integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous"/>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
@@ -54,19 +59,44 @@ if (isset($_COOKIE["auth"])) {
 <?php if(isset($alert)) echo $alert; ?>
 <!-- ADD MODAL -->
 <div class="reveal large _table-modal" id="add-modal" data-reveal>
-    <h3 class="_table-modal-title">Add a new Hair Length</h3>
+    <h3 class="_table-modal-title">Add a new Face Shape Link</h3>
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
 
-    <form action="hair_lengths.php" method="POST">
+    <form action="face_shape_links.php" method="POST">
         <input type="hidden" name="token" value="<?=$token?>">
         <div class="grid-container">
             <div class="grid-x">
-                <div class="cell account-field-cell" id="HairLength-hairLengthName">
-                    <label class="account-field">hair_length<span class="account-required">*</span>
-                        <input name="add_hairLengthName" type="text" placeholder="hairLengthName" required class="account-input" id="selected-hairLengthName-add"
-                               maxlength="32">
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">face_shape<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                            <select name="add_faceShapeId" class="account-user_role" id="selected-faceShape-add" required>
+                                <?php
+                                    for ($i = 0; $i < count($faceShapes); $i++) {
+                                ?>
+                                        <option value="<?= $faceShapes[$i]->id ?>">
+                                            <?= $faceShapes[$i]->shapeName ?>
+                                        </option>
+                                <?php } ?>
+                            </select>
+                        </span>
+
+                    </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">Link name<span class="account-required">*</span>
+                        <input name="add_linkName" type="text" placeholder="link name" required class="account-input" id="selected-linkName-add"
+                               maxlength="128">
+                    </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">Link URL<span class="account-required">*</span>
+                        <input name="add_linkUrl" type="text" placeholder="link url" required class="account-input" id="selected-linkUrl-add"
+                               maxlength="512">
                     </label>
                 </div>
 
@@ -86,20 +116,44 @@ if (isset($_COOKIE["auth"])) {
 
 <!-- EDIT MODAL -->
 <div class="reveal large _table-modal" id="edit-modal" data-reveal>
-    <h3 class="_table-modal-title">Edit a Hair Length</h3>
+    <h3 class="_table-modal-title">Edit a Face Shape Link</h3>
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form action="hair_lengths.php" method="POST" id="edit-form">
+    <form action="face_shape_links.php" method="POST" id="edit-form">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="PUT" />
         <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
         <div class="grid-container">
             <div class="grid-x">
 
-                <div class="cell account-field-cell" id="HairLength-hairLengthName">
-                    <label class="account-field">hair_length<span class="account-required">*</span>
-                        <input type="text" placeholder="hair_length" name="put_hairLength_hairLengthName" required class="account-input" id="selected-hairLengthName-edit"
+                <div class="cell account-field-cell">
+                    <label class="account-field">face_shape<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                            <select name="put_faceShapeId" class="account-user_role" id="selected-faceShape-edit" required>
+                                <?php
+                                for ($i = 0; $i < count($faceShapes); $i++) {
+                                    ?>
+                                    <option value="<?= $faceShapes[$i]->id ?>">
+                                            <?= $faceShapes[$i]->shapeName ?>
+                                        </option>
+                                <?php } ?>
+                            </select>
+                        </span>
+
+                    </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">Link name<span class="account-required">*</span>
+                        <input name="put_linkName" type="text" placeholder="link name" required class="account-input" id="selected-linkName-edit"
+                               maxlength="128">
+                    </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">Link URL<span class="account-required">*</span>
+                        <input name="put_linkUrl" type="text" placeholder="link url" required class="account-input" id="selected-linkUrl-edit"
                                maxlength="512">
                     </label>
                 </div>
@@ -120,8 +174,8 @@ if (isset($_COOKIE["auth"])) {
 
 <!-- DELETE MODAL -->
 <div class="reveal large _table-modal" id="delete-modal" data-reveal>
-    <h3 class="_table-modal-title" id="delete-hair_length">Confirm delete Hair Length</h3>
-    <form method="POST" action="hair_lengths.php">
+    <h3 class="_table-modal-title" id="delete-hair_length">Confirm delete face shape link</h3>
+    <form method="POST" action="face_shape_links.php">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="DELETE" />
         <input id="delete_id" type="hidden" name="delete_id" value="0" />
@@ -131,11 +185,19 @@ if (isset($_COOKIE["auth"])) {
                     <tbody>
                     <tr class="_table-modal-delete-row">
                         <td class="_table-modal-delete-prop">id:</td>
-                        <td id="selected-id-delete" class="_table-modal-delete-val">HairLength_id</td>
+                        <td id="selected-id-delete" class="_table-modal-delete-val">id</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">hair_length:</td>
-                        <td id="selected-hairLengthName-delete" class="_table-modal-delete-val">hair_length</td>
+                        <td class="_table-modal-delete-prop">face_shape:</td>
+                        <td id="selected-faceShape-delete" class="_table-modal-delete-val">face_shape</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">link_name:</td>
+                        <td id="selected-linkName-delete" class="_table-modal-delete-val">link_name</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">link_url:</td>
+                        <td id="selected-linkUrl-delete" class="_table-modal-delete-val">link_url</td>
                     </tr>
 
                     <tr class="_table-modal-delete-row">
@@ -297,7 +359,7 @@ if (isset($_COOKIE["auth"])) {
     <main class="main">
         <div class="grid-x _tables-grid">
             <div class="cell small-12 large-11 large-offset-4 _tables">
-                <h2 class="_tables-title">Hair Lengths</h2>
+                <h2 class="_tables-title">Face shape links</h2>
                 <div class="_tables-search-input-container">
                     <input type="text" placeholder="Search for an entry..." id="entries-search-input"
                            class="_tables-search"/>
@@ -320,19 +382,23 @@ if (isset($_COOKIE["auth"])) {
                     <thead>
                     <tr>
                         <th>id</th>
-                        <th>hair_length</th>
+                        <th>face_shape</th>
+                        <th>link_name</th>
+                        <th>link_url</th>
                         <th>date_created</th>
                         <th>date_modified</th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php
-                    for ($i = 0; $i < count($HairLengths); $i++) { $HairLength = $HairLengths[$i]; ?>
+                    for ($i = 0; $i < count($faceShapeLinks); $i++) { $faceShapeLink = $faceShapeLinks[$i]; ?>
                         <tr class="_tables-row">
-                            <td class="_tables-cell id"><?= $HairLength->id ?></td>
-                            <td class="_tables-cell hairLengthName"><?= $HairLength->hairLengthName ?></td>
-                            <td class="_tables-cell date_created"><?= date('F jS, Y h:i:s', strtotime($HairLength->dateCreated)) ?></td>
-                            <td class="_tables-cell date_modified"><?= isset($HairLength->dateModified) ? date('F jS, Y h:i:s', strtotime($HairLength->dateModified)) : 'Never' ?></td>
+                            <td class="_tables-cell id"><?= $faceShapeLink->id ?></td>
+                            <td class="_tables-cell linkName" data-face-shape-id="<?=$faceShapeLink->faceShapeId?>"><?= $faceShapeLink->faceShape->shapeName ?></td>
+                            <td class="_tables-cell linkName"><?= $faceShapeLink->linkName ?></td>
+                            <td class="_tables-cell linkUrl"><?= $faceShapeLink->linkUrl ?></td>
+                            <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime($faceShapeLink->dateCreated) ?></td>
+                            <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime($faceShapeLink->dateModified) ?></td>
                         </tr>
                     <?php } ?>
                     </tbody>
@@ -375,7 +441,7 @@ if (isset($_COOKIE["auth"])) {
 <script src="js/authenticate.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/redirect.js"></script>
-<script src="js/hair_lengths.js"></script>
+<script src="js/face_shape_links.js"></script>
 </body>
 
 </html>

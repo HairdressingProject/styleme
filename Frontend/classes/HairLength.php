@@ -69,25 +69,16 @@ class HairLength
     {
         switch ($method) {
             case 'POST':
-                if ($this->validateHairLengthName('add_hairLengthName')) {
+                if (Utils::validateField('add_hairLengthName', 'string')) {
                     // all good
                     $this->hairLengthName = $_POST['add_hairLengthName'];
                     $response = $this->add();
 
-                    if (isset($response['status'])) {
-                        switch($response['status']) {
-                            case 400:
-                                return Utils::createAlert('Invalid hair length name field', 'error');
-                            case 500:
-                                return Utils::createAlert('Could not add hair length. Please try again later', 'error');
-                            case 200:
-                            case 201:
-                                return Utils::createAlert('Hair length successfully added', 'success');
-                            default:
-                                // unknown status
-                                break;
-                        }
-                    }
+                    return Utils::handleResponse($response, [
+                        '400'=> 'Invalid hair length name field',
+                        '500' => 'Could not add hair length. Please try again later',
+                        '200' => 'Hair length successfully added'
+                    ]);
                 }
                 else {
                     // add_hairLengthName field was removed from form
@@ -96,27 +87,18 @@ class HairLength
                 break;
 
             case 'PUT':
-                if (isset($_POST['put_id']) && is_numeric($_POST['put_id'])) {
-                    if ($this->validateHairLengthName('put_hairLength_hairLengthName')) {
+                if (Utils::validateField('put_id', 'number')) {
+                    if (Utils::validateField('put_hairLength_hairLengthName', 'string')) {
                         $this->id = $_POST['put_id'];
-                        var_dump($this->hairLengthName);
                         $this->hairLengthName = $_POST['put_hairLength_hairLengthName'];
                         $response = $this->edit();
 
-                        if (isset($response['status'])) {
-                            switch ($response['status']) {
-                                case 400:
-                                    return Utils::createAlert('Invalid hair length name. It cannot exceed 128 characters.', 'error');
-                                case 404:
-                                    return Utils::createAlert('Hair length not found.', 'error');
-                                case 500:
-                                    return Utils::createAlert('Could not updated hair length. Please try again later.', 'error');
-                                case 200:
-                                    return Utils::createAlert('Hair length successfully updated', 'success');
-                                default:
-                                    break;
-                            }
-                        }
+                        return Utils::handleResponse($response, [
+                            '400' => 'Invalid hair length name. It cannot exceed 128 characters.',
+                            '404' => 'Hair length not found.',
+                            '500' => 'Could not updated hair length. Please try again later.',
+                            '200' => 'Hair length successfully updated'
+                        ]);
                     }
                     else {
                         return Utils::createAlert('Hair length cannot be empty', 'error');
@@ -128,25 +110,17 @@ class HairLength
                 break;
 
             case 'DELETE':
-                if (isset($_POST['delete_id']) && is_numeric($_POST['delete_id'])) {
+                if (Utils::validateField('delete_id', 'number')) {
                     $this->id = $_POST['delete_id'];
 
                     $response = $this->delete();
 
-                    if (isset($response['status'])) {
-                        switch ($response['status']) {
-                            case 404:
-                                return Utils::createAlert('Hair length was not found', 'error');
-                            case 400:
-                                return Utils::createAlert('Invalid hair length ID', 'error');
-                            case 500:
-                                return Utils::createAlert('Could not update hair length. Please try again later', 'error');
-                            case 200:
-                                return Utils::createAlert('Hair length successfully deleted', 'success');
-                            default:
-                                break;
-                        }
-                    }
+                    return Utils::handleResponse($response, [
+                        '404' => 'Hair length was not found',
+                        '400' => 'Invalid hair length ID',
+                        '500' => 'Could not update hair length. Please try again later',
+                        '200' => 'Hair length successfully deleted'
+                    ]);
                 }
                 else {
                     return Utils::createAlert('Invalid hair length ID field', 'error');
@@ -156,10 +130,5 @@ class HairLength
             default:
                 return Utils::createAlert('Invalid request method', 'error');
         }
-        return null;
-    }
-
-    public function validateHairLengthName($hairLengthName) {
-        return isset($_POST[$hairLengthName]) && is_string($_POST[$hairLengthName]) && !empty(trim($_POST[$hairLengthName]));
     }
 }

@@ -57,9 +57,23 @@ class Utils
      */
     public static function handleResponse(array $response, array $messages) {
         if (isset($response) && isset($response['status'])) {
+            $alertMessages = [];
+            if (isset($response['errors'])) {
+                $alertMessages = self::flattenErrorMessages($response['errors']);
+            }
             switch ($response['status']) {
                 case 400:
                     // bad request, invalid fields
+                    $alerts = '';
+                    for ($i = 0; $i < count($alertMessages); $i++) {
+                        $alerts = $alerts . self::createAlert($alertMessages[$i], 'error');
+                    }
+
+                    if (!empty($alerts)) {
+                        return $alerts;
+                    }
+
+                    // fallback message
                     return Utils::createAlert($messages['400'], 'error');
 
                 case 404:
@@ -83,6 +97,33 @@ class Utils
             }
         }
         return null;
+    }
+
+    /**
+     * Flattens error messages contained in responses
+     * @param array $errors
+     * @return array Single-dimensional array containing all error messages
+     */
+    public static function flattenErrorMessages(array $errors) {
+        $msgs = [];
+
+        foreach ($errors as &$values) {
+            for ($i = 0; $i < count($values); $i++) {
+                $msgs[] = &$values[$i];
+            }
+        }
+
+        return $msgs;
+    }
+
+    private static function getErrorMessagesFromResponse($response) {
+        $errorMessages = [];
+
+        if (isset($response['errors'])) {
+            for ($i = 0; $i < count($response['errors']); $i++) {
+                $errorMessages[] = $response['errors'][$i];
+            }
+        }
     }
 
     /**
