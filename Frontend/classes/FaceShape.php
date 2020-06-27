@@ -70,25 +70,16 @@ class FaceShape
     {
         switch ($method) {
             case 'POST':
-                if ($this->validateShapeName('add_shapeName')) {
+                if (Utils::validateField('add_shapeName', 'string')) {
                     // all good
                     $this->shapeName = $_POST['add_shapeName'];
                     $response = $this->add();
 
-                    if (isset($response['status'])) {
-                        switch($response['status']) {
-                            case 400:
-                                return Utils::createAlert('Invalid shape name field', 'error');
-                            case 500:
-                                return Utils::createAlert('Could not add face shape. Please try again later', 'error');
-                            case 200:
-                            case 201:
-                                return Utils::createAlert('Face shape successfully added', 'success');
-                            default:
-                                // unknown status
-                                break;
-                        }
-                    }
+                    return Utils::handleResponse($response, [
+                        '400' => 'Invalid shape name field',
+                        '500' => 'Could not add face shape. Please try again later',
+                        '200' => 'Face shape successfully added'
+                    ]);
                 }
                 else {
                     // add_shapeName field was removed from form
@@ -97,26 +88,18 @@ class FaceShape
                 break;
 
             case 'PUT':
-                    if (isset($_POST['put_id']) && is_numeric($_POST['put_id'])) {
-                        if ($this->validateShapeName('put_faceShape_shapeName')) {
+                    if (Utils::validateField('put_id', 'number')) {
+                        if (Utils::validateField('put_faceShape_shapeName', 'string')) {
                             $this->id = $_POST['put_id'];
                             $this->shapeName = $_POST['put_faceShape_shapeName'];
                             $response = $this->edit();
 
-                            if (isset($response['status'])) {
-                                switch ($response['status']) {
-                                    case 400:
-                                        return Utils::createAlert('Invalid shape name. It cannot exceed 128 characters.', 'error');
-                                    case 404:
-                                        return Utils::createAlert('Face shape not found.', 'error');
-                                    case 500:
-                                        return Utils::createAlert('Could not updated face shape. Please try again later.', 'error');
-                                    case 200:
-                                        return Utils::createAlert('Face shape successfully updated', 'success');
-                                    default:
-                                        break;
-                                }
-                            }
+                            return Utils::handleResponse($response, [
+                                '400' => 'Invalid shape name. It cannot exceed 128 characters.',
+                                '404' => 'Face shape not found.',
+                                '500' => 'Could not updated face shape. Please try again later.',
+                                '200' => 'Face shape successfully updated'
+                            ]);
                         }
                         else {
                             return Utils::createAlert('Shape name cannot be empty', 'error');
@@ -128,25 +111,17 @@ class FaceShape
                 break;
 
             case 'DELETE':
-                    if (isset($_POST['delete_id']) && is_numeric($_POST['delete_id'])) {
+                    if (Utils::validateField('delete_id', 'number')) {
                         $this->id = $_POST['delete_id'];
 
                         $response = $this->delete();
 
-                        if (isset($response['status'])) {
-                            switch ($response['status']) {
-                                case 404:
-                                    return Utils::createAlert('Face shape was not found', 'error');
-                                case 400:
-                                    return Utils::createAlert('Invalid face shape ID', 'error');
-                                case 500:
-                                    return Utils::createAlert('Could not update face shape. Please try again later', 'error');
-                                case 200:
-                                    return Utils::createAlert('Face shape successfully deleted', 'success');
-                                default:
-                                    break;
-                            }
-                        }
+                        return Utils::handleResponse($response, [
+                            '404' => 'Face shape was not found',
+                            '400' => 'Invalid face shape ID',
+                            '500' => 'Could not update face shape. Please try again later',
+                            '200' => 'Face shape successfully deleted'
+                        ]);
                     }
                     else {
                         return Utils::createAlert('Invalid face shape ID field', 'error');
@@ -156,10 +131,5 @@ class FaceShape
             default:
                 return Utils::createAlert('Invalid request method', 'error');
         }
-        return null;
-    }
-
-    public function validateShapeName($shapeName) {
-        return isset($_POST[$shapeName]) && is_string($_POST[$shapeName]) && !empty(trim($_POST[$shapeName]));
     }
 }

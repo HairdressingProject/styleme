@@ -114,31 +114,12 @@ class User
 
                        $response = $this->add();
 
-                       if (isset($response['status'])) {
-                           switch ($response['status']) {
-                               case 400:
-                                   // bad request, invalid fields
-                                   return Utils::createAlert('Could not add user: invalid fields', 'error');
-                                   break;
-                               case 409:
-                                   // conflict, user already exists
-                                   return Utils::createAlert('User already exists', 'error');
-                                   break;
-
-                               case 500:
-                                   // something went wrong with the API server
-                                   return Utils::createAlert('Could not add user. Please try again later', 'error');
-                                   break;
-                               case 200:
-                               case 201:
-                                   // all good!
-                                   return Utils::createAlert('User successfully added', 'success');
-                                   break;
-                               default:
-                                   // unknown status
-                                   break;
-                           }
-                       }
+                       return Utils::handleResponse($response, [
+                           '400' => 'Could not add user: invalid fields',
+                           '409' => 'User already exists',
+                           '500' => 'Could not add user. Please try again later',
+                           '200' => 'User successfully added'
+                       ]);
                    } else {
                        // passwords do not match
                        return Utils::createAlert('Passwords do not match', 'error');
@@ -160,31 +141,12 @@ class User
 
                            $response = $this->edit();
 
-                           if (isset($response['status'])) {
-                               switch ($response['status']) {
-                                   case 400:
-                                       // bad request, invalid fields
-                                       return Utils::createAlert('Could not edit user: invalid fields', 'error');
-                                       break;
-                                   case 409:
-                                       // conflict, user already exists
-                                       return Utils::createAlert('User already exists', 'error');
-                                       break;
-
-                                   case 500:
-                                       // something went wrong with the API server
-                                       return Utils::createAlert('Could not add user. Please try again later', 'error');
-                                       break;
-                                   case 200:
-                                   case 201:
-                                       // all good!
-                                       return Utils::createAlert('User successfully updated', 'success');
-                                       break;
-                                   default:
-                                       // unknown status
-                                       break;
-                               }
-                           }
+                           return Utils::handleResponse($response, [
+                               '400' => 'Could not edit user: invalid fields',
+                               '409' => 'User already exists',
+                               '500' => 'Could not add user. Please try again later',
+                               '200' => 'User successfully updated'
+                           ]);
                        } else {
                            // invalid id
                            return Utils::createAlert('Invalid user ID', 'error');

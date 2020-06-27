@@ -42,8 +42,47 @@ class Utils
         return $response;
     }
 
-    // To be implemented
-    public static function handleResponse($response) {
+    /**
+     * Handles a variety of HTTP responses based on their status code
+     * @param  array  $response Associative array containing status code of the response
+     * @param  array  $messages Associative array of messages to be echo'ed to the DOM as alerts.
+     *
+     * Example:
+     *      $messages = [
+     *          '400' => 'Invalid fields',
+     *          '404' => 'Not found',
+     *          ...
+     *      ]
+     * @return string|null Alert message - if both $response and $messages are valid - or null otherwise
+     */
+    public static function handleResponse(array $response, array $messages) {
+        if (isset($response) && isset($response['status'])) {
+            switch ($response['status']) {
+                case 400:
+                    // bad request, invalid fields
+                    return Utils::createAlert($messages['400'], 'error');
+
+                case 404:
+                    return Utils::createAlert($messages['404'], 'error');
+                case 409:
+                    // conflict, user already exists
+                    return Utils::createAlert($messages['409'], 'error');
+
+                case 500:
+                    // something went wrong with the API server
+                    return Utils::createAlert($messages['500'], 'error');
+
+                case 200:
+                case 201:
+                    // all good!
+                    return Utils::createAlert(isset($messages['200']) ? $messages['200'] : $messages['201'], 'success');
+                default:
+                    // unknown status
+                    break;
+
+            }
+        }
+        return null;
     }
 
     /**
@@ -123,6 +162,30 @@ class Utils
             return $alert;
         }
         return '';
+    }
+
+    /**
+     * Validates an individual field based on its value and type.
+     * Returns false if parameters are invalid.
+     * @param string $field 'name' attribute in the HTML form associated with this field
+     * @param string $type One of: 'string' or 'number'
+     * @return bool Validation result
+     */
+    public static function validateField(string $field, string $type) {
+        if (isset($field) && isset($type)) {
+            switch ($type) {
+                case 'string':
+                    return isset($_POST[$field]) && is_string($_POST[$field]) && !empty(trim($_POST[$field]));
+
+                case 'number':
+                    return isset($_POST[$field]) && is_numeric($_POST[$field]) && intval($_POST[$field]) > 0;
+
+                default:
+                    return false;
+            }
+        }
+
+        return false;
     }
 
     /**
