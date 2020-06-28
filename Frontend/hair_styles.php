@@ -70,7 +70,7 @@ if (isset($_COOKIE["auth"])) {
         <span aria-hidden="true">&times;</span>
     </button>
 
-    <form action="hair_styles.php" method="POST">
+    <form action="<?= 'hair_styles.php?page=' . $page ?>" method="POST">
         <input type="hidden" name="token" value="<?=$token?>">
         <div class="grid-container">
             <div class="grid-x">
@@ -101,7 +101,7 @@ if (isset($_COOKIE["auth"])) {
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form action="hair_styles.php" method="POST" id="edit-form">
+    <form action="<?= 'hair_styles.php?page=' . $page ?>" method="POST" id="edit-form">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="PUT" />
         <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
@@ -132,7 +132,7 @@ if (isset($_COOKIE["auth"])) {
 <!-- DELETE MODAL -->
 <div class="reveal large _table-modal" id="delete-modal" data-reveal>
     <h3 class="_table-modal-title" id="delete-hair_style">Confirm delete Hair Style</h3>
-    <form method="POST" action="hair_styles.php">
+    <form method="POST" action="<?= 'hair_styles.php?page=' . $page ?>">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="DELETE" />
         <input id="delete_id" type="hidden" name="delete_id" value="0" />

@@ -284,7 +284,7 @@ class Utils
         $countResponse = $resource->count();
         $count = $countResponse['count'];
 
-        $totalNumberOfPages = $count < $itemsPerPage ? 1 : $count % $itemsPerPage;
+        $totalNumberOfPages = $count < $itemsPerPage ? 1 : (($count - 1) / $itemsPerPage) + 1;
 
         // get current page
         if (isset($_GET['page']) && is_numeric($_GET['page'])) {
