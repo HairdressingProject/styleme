@@ -30,15 +30,53 @@ namespace AdminApi.Controllers
         // GET: api/hair_lengths
         [EnableCors("Policy1")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HairLengths>>> GetHairLengths()
+        public async Task<ActionResult<IEnumerable<HairLengths>>> GetHairLengths(
+            [FromQuery(Name = "limit")] string limit,
+            [FromQuery(Name = "offset")] string offset)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedHairLengths = await _context
+                                                    .HairLengths
+                                                    .Skip(o)
+                                                    .Take(l)
+                                                    .ToListAsync();
+
+                    return Ok(new
+                    {
+                        hairLengths = limitedHairLengths
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var hairLengths = await _context.HairLengths.ToListAsync();
             return Ok(new { hairLengths });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetHairLengthsCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var hairLengths = await _context.HairLengths.CountAsync();
+            return Ok(new
+            {
+                count = hairLengths
+            });
         }
 
         // GET: api/hair_lengths/5

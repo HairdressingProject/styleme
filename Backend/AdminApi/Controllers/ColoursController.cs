@@ -28,16 +28,52 @@ namespace AdminApi.Controllers
 
         // GET: api/colours
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Colours>>> GetColours()
+        public async Task<ActionResult<IEnumerable<Colours>>> GetColours([FromQuery(Name = "limit")] string limit, [FromQuery(Name = "offset")] string offset)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedColours = await _context
+                                                .Colours
+                                                .Skip(o)
+                                                .Take(l)
+                                                .ToListAsync();
+
+                    return Ok(new
+                    {
+                        colours = limitedColours
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var colours = await _context.Colours.ToListAsync();
 
             return Ok(new {colours});
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetColoursCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var coloursCount = await _context.Colours.CountAsync();
+            return Ok(new
+            {
+                count = coloursCount
+            });
         }
 
         // GET: api/colours/5

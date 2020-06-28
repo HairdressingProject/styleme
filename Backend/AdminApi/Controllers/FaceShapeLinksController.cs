@@ -28,16 +28,56 @@ namespace AdminApi.Controllers
 
         // GET: api/face_shape_links
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FaceShapeLinks>>> GetFaceShapeLinks()
+        public async Task<ActionResult<IEnumerable<FaceShapeLinks>>> GetFaceShapeLinks(
+            [FromQuery(Name = "limit")] string limit, 
+            [FromQuery(Name = "offset")] string offset
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedFaceShapeLinks = await _context
+                                                .FaceShapeLinks
+                                                .Include(fsl => fsl.FaceShape)
+                                                .Skip(o)
+                                                .Take(l)
+                                                .ToListAsync();
+
+                    return Ok(new
+                    {
+                        faceShapeLinks = limitedFaceShapeLinks
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var faceShapeLinks = await _context.FaceShapeLinks.Include(fsl => fsl.FaceShape).ToListAsync();
 
             return Ok(new { faceShapeLinks });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetFaceShapeLinksCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var faceShapeLinksCount = await _context.FaceShapeLinks.CountAsync();
+            return Ok(new
+            {
+                count = faceShapeLinksCount
+            });
         }
 
         // GET: api/face_shape_links/5

@@ -28,15 +28,53 @@ namespace AdminApi.Controllers
 
         // GET: api/hair_styles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HairStyles>>> GetHairStyles()
+        public async Task<ActionResult<IEnumerable<HairStyles>>> GetHairStyles(
+            [FromQuery(Name = "limit")] string limit,
+             [FromQuery(Name = "offset")] string offset)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedHairStyles = await _context
+                                                    .HairStyles
+                                                    .Skip(o)
+                                                    .Take(l)
+                                                    .ToListAsync();
+
+                    return Ok(new
+                    {
+                        hairStyles = limitedHairStyles
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var hairStyles = await _context.HairStyles.ToListAsync();
             return Ok(new { hairStyles });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetHairStylesCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var hairStylesCount = await _context.HairStyles.CountAsync();
+            return Ok(new
+            {
+                count = hairStylesCount
+            });
         }
 
         // GET: api/hair_styles/5

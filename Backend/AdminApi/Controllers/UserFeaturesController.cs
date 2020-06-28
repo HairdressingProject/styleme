@@ -31,11 +31,40 @@ namespace AdminApi.Controllers
         // GET: api/user_features
         [EnableCors("Policy1")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserFeatures>>> GetUserFeatures()
+        public async Task<ActionResult<IEnumerable<UserFeatures>>> GetUserFeatures(
+            [FromQuery(Name = "limit")] string limit,
+             [FromQuery(Name = "offset")] string offset)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedUserFeatures = await _context
+                                                    .UserFeatures
+                                                    .Include(uf => uf.User)
+                                                    .Include(uf => uf.HairColour)
+                                                    .Include(uf => uf.HairStyle)
+                                                    .Include(uf => uf.HairLength)
+                                                    .Include(uf => uf.SkinTone)
+                                                    .Include(uf => uf.FaceShape)
+                                                    .Skip(o)
+                                                    .Take(l)
+                                                    .ToListAsync();
+
+                    return Ok(new
+                    {
+                        userFeatures = limitedUserFeatures
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
             }
 
             var userFeatures = await _context.UserFeatures
@@ -57,6 +86,21 @@ namespace AdminApi.Controllers
             }
 
             return Ok(new { userFeatures });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetUserFeaturesCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var userFeaturesCount = await _context.UserFeatures.CountAsync();
+            return Ok(new
+            {
+                count = userFeaturesCount
+            });
         }
 
         // GET: api/user_features/5

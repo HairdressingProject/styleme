@@ -4,11 +4,13 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/browse.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.php';
 
-define('ITEMS_PER_PAGE', 5);
+
 $token = Utils::addCSRFToken();
 $alert = null;
 $u = new User();
 $users = [];
+// for pagination
+define('ITEMS_PER_PAGE', 5);
 $count = 0;
 $page = 1;
 $offset = 0;
@@ -57,7 +59,7 @@ if (isset($_COOKIE["auth"])) {
         exit();
     }
 
-    $offset = ($page - 1) * 5;
+    $offset = ($page - 1) * ITEMS_PER_PAGE;
     $browseResponse = $u->browse(ITEMS_PER_PAGE, $offset);
     $users = $browseResponse['users'];
 }
@@ -541,6 +543,8 @@ if (isset($alert)) {
                         <?php } ?>
                     </ul>
                 </nav>
+
+                <!-- END OF PAGINATION -->
             </div>
         </div>
     </main>

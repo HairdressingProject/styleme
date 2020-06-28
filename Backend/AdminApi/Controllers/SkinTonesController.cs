@@ -30,16 +30,54 @@ namespace AdminApi.Controllers
         // GET: api/skin_tones
         [EnableCors("Policy1")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SkinTones>>> GetSkinTones()
+        public async Task<ActionResult<IEnumerable<SkinTones>>> GetSkinTones(
+            [FromQuery(Name = "limit")] string limit,
+             [FromQuery(Name = "offset")] string offset)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedSkinTones = await _context
+                                                    .SkinTones
+                                                    .Skip(o)
+                                                    .Take(l)
+                                                    .ToListAsync();
+
+                    return Ok(new
+                    {
+                        skinTones = limitedSkinTones
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var skinTones = await _context.SkinTones.ToListAsync();
 
             return Ok(new { skinTones });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetSkinTonesCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var skinTonesCount = await _context.SkinTones.CountAsync();
+            return Ok(new
+            {
+                count = skinTonesCount
+            });
         }
 
         // GET: api/skin_tones/5

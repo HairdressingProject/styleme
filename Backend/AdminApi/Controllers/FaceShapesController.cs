@@ -30,16 +30,55 @@ namespace AdminApi.Controllers
         // GET: api/face_shapes
         [EnableCors("Policy1")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FaceShapes>>> GetFaceShapes()
+        public async Task<ActionResult<IEnumerable<FaceShapes>>> GetFaceShapes(
+            [FromQuery(Name = "limit")] string limit,
+            [FromQuery(Name = "offset")] string offset
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedFaceShapes = await _context
+                                                    .FaceShapes
+                                                    .Skip(o)
+                                                    .Take(l)
+                                                    .ToListAsync();
+
+                    return Ok(new
+                    {
+                        faceShapes = limitedFaceShapes
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var faceShapes = await _context.FaceShapes.ToListAsync();
 
             return Ok(new { faceShapes });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetFaceShapesCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var faceShapes = await _context.FaceShapes.CountAsync();
+            return Ok(new
+            {
+                count = faceShapes
+            });
         }
 
         // GET: api/face_shapes/5
