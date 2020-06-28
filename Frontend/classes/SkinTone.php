@@ -9,12 +9,7 @@
  * Description: add short description of file's purpose
  **********************************************************/
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/browse.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/read.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/edit.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/add.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/delete.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/actions.php';
 
 class SkinTone
 {
@@ -23,9 +18,24 @@ class SkinTone
     public string $dateCreated;
     public string $dateModified;
 
-    public function browse() {
-        $this->sanitise();
-        return browseResource('skin_tones');
+    /**
+     * Requests the total number of skin tones available in the database
+     * @return array
+     */
+    public function count()
+    {
+        return countResource('skin_tones');
+    }
+
+    /**
+     * Browses skin tones, with optional pagination
+     * @param  int|null  $limit Limit the number of results retrieved
+     * @param  int|null  $offset Offset from which results should be retrieved
+     * @return array
+     */
+    public function browse(int $limit = null, int $offset = null)
+    {
+        return browseResource('skin_tones', $limit, $offset);
     }
 
     public function read() {

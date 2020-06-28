@@ -20,6 +20,15 @@ $skinToneLink = new skinToneLink();
 $skinTone = new SkinTone();
 $skinToneLinks = [];
 $skinTones = [];
+// for pagination
+define('ITEMS_PER_PAGE', 5);
+$count = 0;
+$page = 1;
+$offset = 0;
+$totalNumberOfPages = 1;
+
+$parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
 
 if ($_POST && Utils::verifyCSRFToken()) {
     if (isset($_POST['_method'])) {
@@ -30,8 +39,11 @@ if ($_POST && Utils::verifyCSRFToken()) {
 }
 
 if (isset($_COOKIE["auth"])) {
-    $browseResponse = $skinToneLink->browse();
-    $skinToneLinks = $browseResponse['skinToneLinks'];
+    $p = Utils::paginateResource($skinToneLink, 'skinToneLinks', ITEMS_PER_PAGE, $currentBaseUrl);
+    $skinToneLinks = $p['resources'];
+    $count = $p['count'];
+    $page = $p['page'];
+    $totalNumberOfPages = $p['totalNumberOfPages'];
 
     $browseSkinTones = $skinTone->browse();
     $skinTones = $browseSkinTones['skinTones'];
@@ -403,19 +415,54 @@ if (isset($_COOKIE["auth"])) {
                     <?php } ?>
                     </tbody>
                 </table>
+                <!-- PAGINATION -->
                 <nav aria-label="Pagination" class="_pagination">
                     <ul class="pagination text-center">
-                        <li class="pagination-previous disabled">Previous</li>
-                        <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
-                        <li><a href="#" aria-label="Page 2">2</a></li>
-                        <li><a href="#" aria-label="Page 3">3</a></li>
-                        <li><a href="#" aria-label="Page 4">4</a></li>
-                        <li class="ellipsis"></li>
-                        <li><a href="#" aria-label="Page 12">12</a></li>
-                        <li><a href="#" aria-label="Page 13">13</a></li>
-                        <li class="pagination-next"><a href="#" aria-label="Next page">Next</a></li>
+                        <?php if ($page <= 1) {?>
+                            <li class="pagination-previous disabled">Previous</li>
+                        <?php } else { ?>
+                            <li
+                                    class="pagination-previous">
+                                <a href="<?= $currentBaseUrl . '?page='. ($page - 1) ?>">
+                                    Previous
+                                </a>
+                            </li>
+                        <?php } ?>
+
+                        <?php
+                        for ($i = 1; $i <= $totalNumberOfPages; $i++) {
+                            ?>
+                            <li>
+                                <?php if ($i === $page) { ?>
+                                    <a
+                                            class="current"
+                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                        <?= $i ?>
+                                    </a>
+                                <?php } else { ?>
+                                    <a
+                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                        <?= $i ?>
+                                    </a>
+                                <?php } ?>
+                            </li>
+                        <?php } ?>
+
+                        <?php if ($page >= $totalNumberOfPages) {?>
+                            <li class="pagination-next disabled">
+                                Next
+                            </li>
+                        <?php } else {?>
+                            <li class="pagination-next">
+                                <a href="<?= $currentBaseUrl . '?page=' . ($page + 1) ?>">
+                                    Next
+                                </a>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </nav>
+
+                <!-- END OF PAGINATION -->
             </div>
         </div>
     </main>

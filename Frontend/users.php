@@ -13,7 +13,6 @@ $users = [];
 define('ITEMS_PER_PAGE', 5);
 $count = 0;
 $page = 1;
-$offset = 0;
 $totalNumberOfPages = 1;
 
 $parsedUrl = parse_url($_SERVER['REQUEST_URI']);
@@ -28,40 +27,11 @@ if ($_POST && Utils::verifyCSRFToken()) {
 }
 
 if (isset($_COOKIE["auth"])) {
-    // pagination: 5 items per page
-    // get total number of users
-    $countResponse = $u->count();
-    $count = $countResponse['count'];
-
-    $totalNumberOfPages = $count % ITEMS_PER_PAGE;
-
-    // get current page
-    if (isset($_GET['page']) && is_numeric($_GET['page'])) {
-        $page = intval(Utils::sanitiseField($_GET['page'], FILTER_SANITIZE_NUMBER_INT));
-    }
-
-    else {
-        // invalid page query, redirect to the first one
-        // redirect to first page
-        echo '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
-        exit();
-    }
-
-    if ($page > $totalNumberOfPages) {
-        // redirect to last page
-        echo '<script>window.location.href="' . $currentBaseUrl . '?page=' . $totalNumberOfPages . '";</script>';
-        exit();
-    }
-
-    if ($page <= 0) {
-        // redirect to first page
-        echo '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
-        exit();
-    }
-
-    $offset = ($page - 1) * ITEMS_PER_PAGE;
-    $browseResponse = $u->browse(ITEMS_PER_PAGE, $offset);
-    $users = $browseResponse['users'];
+    $p = Utils::paginateResource($u, 'users', ITEMS_PER_PAGE, $currentBaseUrl);
+    $users = $p['resources'];
+    $count = $p['count'];
+    $page = $p['page'];
+    $totalNumberOfPages = $p['totalNumberOfPages'];
 }
 ?>
 

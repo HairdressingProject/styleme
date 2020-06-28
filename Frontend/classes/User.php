@@ -9,13 +9,7 @@
  * Description: add short description of file's purpose
  **********************************************************/
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/count.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/browse.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/read.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/edit.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/add.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/delete.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/actions.php';
 
 class User
 {

@@ -11,6 +11,11 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 
+/**
+ * Requests the total count of $resourceName
+ * @param  string  $resourceName plural snake_case representation of a resource, e.g. 'user_features' or 'hair_style_links'
+ * @return array HTTP response with status included
+ */
 function countResource(string $resourceName) {
     $opts = generateHeaders('GET');
 

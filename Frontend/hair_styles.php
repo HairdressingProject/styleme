@@ -15,8 +15,8 @@ require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairStyle.php';
 
 $token = Utils::addCSRFToken();
 $alert = null;
-$fs = new HairStyle();
-$HairStyles = [];
+$hairStyle = new HairStyle();
+$hairStyles = [];
 // for pagination
 define('ITEMS_PER_PAGE', 5);
 $count = 0;
@@ -29,17 +29,18 @@ $currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['
 
 if ($_POST && Utils::verifyCSRFToken()) {
     if (isset($_POST['_method'])) {
-        $alert = $fs->handleSubmit($_POST['_method']);
+        $alert = $hairStyle->handleSubmit($_POST['_method']);
     } else {
-        $alert = $fs->handleSubmit();
+        $alert = $hairStyle->handleSubmit();
     }
 }
 
 if (isset($_COOKIE["auth"])) {
-    $browseResponse = $fs->browse();
-    //var_dump($browseResponse);
-    $HairStyles = $browseResponse['hairStyles'];
-    //var_dump($HairStyles);
+    $p = Utils::paginateResource($hairStyle, 'hairStyles', ITEMS_PER_PAGE, $currentBaseUrl);
+    $hairStyles = $p['resources'];
+    $count = $p['count'];
+    $page = $p['page'];
+    $totalNumberOfPages = $p['totalNumberOfPages'];
 }
 ?>
 
@@ -337,7 +338,7 @@ if (isset($_COOKIE["auth"])) {
                     </thead>
                     <tbody>
                     <?php
-                    for ($i = 0; $i < count($HairStyles); $i++) { $HairStyle = $HairStyles[$i]; ?>
+                    for ($i = 0; $i < count($hairStyles); $i++) { $HairStyle = $hairStyles[$i]; ?>
                         <tr class="_tables-row">
                             <td class="_tables-cell id"><?= $HairStyle->id ?></td>
                             <td class="_tables-cell hairStyleName"><?= $HairStyle->hairStyleName ?></td>

@@ -9,12 +9,7 @@
  * Description: add short description of file's purpose
  **********************************************************/
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/browse.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/read.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/edit.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/add.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/delete.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/actions.php';
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/User.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/FaceShape.php';
@@ -42,8 +37,24 @@ class UserFeature
     public HairLength $hairLength;
     public Colour $hairColour;
 
-    public function browse() {
-        return browseResource('user_features');
+    /**
+     * Requests the total number of user features available in the database
+     * @return array
+     */
+    public function count()
+    {
+        return countResource('user_features');
+    }
+
+    /**
+     * Browses user features, with optional pagination
+     * @param  int|null  $limit Limit the number of results retrieved
+     * @param  int|null  $offset Offset from which results should be retrieved
+     * @return array
+     */
+    public function browse(int $limit = null, int $offset = null)
+    {
+        return browseResource('user_features', $limit, $offset);
     }
 
     public function read() {
