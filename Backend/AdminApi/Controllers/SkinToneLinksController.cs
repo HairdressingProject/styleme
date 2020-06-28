@@ -28,15 +28,54 @@ namespace AdminApi.Controllers
 
         // GET: api/skin_tone_links
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SkinToneLinks>>> GetSkinToneLinks()
+        public async Task<ActionResult<IEnumerable<SkinToneLinks>>> GetSkinToneLinks(
+            [FromQuery(Name = "limit")] string limit,
+             [FromQuery(Name = "offset")] string offset)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedSkinToneLinks = await _context
+                                                    .SkinToneLinks
+                                                    .Include(stl => stl.SkinTone)
+                                                    .Skip(o)
+                                                    .Take(l)
+                                                    .ToListAsync();
+
+                    return Ok(new
+                    {
+                        skinToneLinks = limitedSkinToneLinks
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var skinToneLinks = await _context.SkinToneLinks.Include(stl => stl.SkinTone).ToListAsync();
             return Ok(new { skinToneLinks });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetSkinToneLinksCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var skinToneLinksCount = await _context.SkinToneLinks.CountAsync();
+            return Ok(new
+            {
+                count = skinToneLinksCount
+            });
         }
 
         // GET: api/skin_tone_links/5

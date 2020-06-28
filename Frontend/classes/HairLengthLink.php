@@ -9,13 +9,7 @@
  * Description: add short description of file's purpose
  **********************************************************/
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/browse.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/read.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/edit.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/add.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/delete.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/HairLength.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/actions.php';
 
 class HairLengthLink
 {
@@ -28,8 +22,24 @@ class HairLengthLink
 
     public HairLength $hairLength;
 
-    public function browse() {
-        return browseResource('hair_length_links');
+    /**
+     * Requests the total number of hair length links available in the database
+     * @return array
+     */
+    public function count()
+    {
+        return countResource('hair_length_links');
+    }
+
+    /**
+     * Browses hair length links, with optional pagination
+     * @param  int|null  $limit Limit the number of results retrieved
+     * @param  int|null  $offset Offset from which results should be retrieved
+     * @return array
+     */
+    public function browse(int $limit = null, int $offset = null)
+    {
+        return browseResource('hair_length_links', $limit, $offset);
     }
 
     public function read() {

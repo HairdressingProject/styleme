@@ -240,4 +240,84 @@ class Utils
         }
         return 'Never';
     }
+
+    /**
+     * Determines the current protocol, i.e. HTTP or HTTPS
+     * @return string Either 'http://' or 'https://'
+     */
+    public static function getUrlProtocol() {
+        $protocol = 'http://';
+        // haxx to check whether the application is running under HTTPS or HTTP
+        if (isset($_SERVER['HTTPS']) &&
+            ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
+            isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+            $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+            $protocol = 'https://';
+        }
+
+        return $protocol;
+    }
+
+    /**
+     * Paginates a resource based on given parameters, such as the number of items to display
+     * @param  User|Colour|FaceShape|FaceShapeLink|HairLength|HairLengthLink|HairLength|HairLengthLink|SkinTone|SkinToneLink|UserFeature  $resource The resource object to be paginated
+     * @param  string  $resourceName Name of the resource to be requested in API endpoints
+     * @param  int  $itemsPerPage Maximum number of items to display per page
+     * @param  string  $currentBaseUrl Current URL of the page without query strings such as ?page=1
+     * @return array Associative array with pagination results, in the following format:
+     *
+     * Example:
+     *      $results = [
+     *          'resources' => [],
+     *          'count' => 0,
+     *          'page' => 1,
+     *          'totalNumberOfPages' => 1
+     *      ]
+     */
+    public static function paginateResource(
+        object $resource,
+        string $resourceName,
+        int $itemsPerPage,
+        string $currentBaseUrl
+    ) {
+        // get total number of users
+        $countResponse = $resource->count();
+        $count = $countResponse['count'];
+
+        $totalNumberOfPages = $count < $itemsPerPage ? 1 : (($count - 1) / $itemsPerPage) + 1;
+
+        // get current page
+        if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+            $page = intval(Utils::sanitiseField($_GET['page'], FILTER_SANITIZE_NUMBER_INT));
+        }
+
+        else {
+            // invalid page query, redirect to the first one
+            // redirect to first page
+            echo '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
+            exit();
+        }
+
+        if ($page > $totalNumberOfPages) {
+            // redirect to last page
+            echo '<script>window.location.href="' . $currentBaseUrl . '?page=' . $totalNumberOfPages . '";</script>';
+            exit();
+        }
+
+        if ($page <= 0) {
+            // redirect to first page
+            echo '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
+            exit();
+        }
+
+        $offset = ($page - 1) * $itemsPerPage;
+        $browseResponse = $resource->browse($itemsPerPage, $offset);
+
+        return array(
+            'resources' => $browseResponse[$resourceName],
+            'count' => $count,
+            'page' => $page,
+            'totalNumberOfPages' => $totalNumberOfPages
+        );
+    }
 }

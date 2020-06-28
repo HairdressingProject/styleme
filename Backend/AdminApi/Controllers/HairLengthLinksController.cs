@@ -28,16 +28,56 @@ namespace AdminApi.Controllers
 
         // GET: api/hair_length_links
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HairLengthLinks>>> GetHairLengthLinks()
+        public async Task<ActionResult<IEnumerable<HairLengthLinks>>> GetHairLengthLinks(
+            [FromQuery(Name = "limit")] string limit,
+            [FromQuery(Name = "offset")] string offset
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedHairLengthLinks = await _context
+                                                    .HairLengthLinks
+                                                    .Include(hll => hll.HairLength)
+                                                    .Skip(o)
+                                                    .Take(l)
+                                                    .ToListAsync();
+
+                    return Ok(new
+                    {
+                        hairLengthLinks = limitedHairLengthLinks
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var hairLengthLinks = await _context.HairLengthLinks.Include(hll => hll.HairLength).ToListAsync();
 
             return Ok(new { hairLengthLinks });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetHairLengthLinksCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var hairLengthLinks = await _context.HairLengthLinks.CountAsync();
+            return Ok(new
+            {
+                count = hairLengthLinks
+            });
         }
 
         // GET: api/hair_length_links/5

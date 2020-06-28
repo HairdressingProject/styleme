@@ -15,22 +15,32 @@ require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairStyle.php';
 
 $token = Utils::addCSRFToken();
 $alert = null;
-$fs = new HairStyle();
-$HairStyles = [];
+$hairStyle = new HairStyle();
+$hairStyles = [];
+// for pagination
+define('ITEMS_PER_PAGE', 5);
+$count = 0;
+$page = 1;
+$offset = 0;
+$totalNumberOfPages = 1;
+
+$parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
 
 if ($_POST && Utils::verifyCSRFToken()) {
     if (isset($_POST['_method'])) {
-        $alert = $fs->handleSubmit($_POST['_method']);
+        $alert = $hairStyle->handleSubmit($_POST['_method']);
     } else {
-        $alert = $fs->handleSubmit();
+        $alert = $hairStyle->handleSubmit();
     }
 }
 
 if (isset($_COOKIE["auth"])) {
-    $browseResponse = $fs->browse();
-    //var_dump($browseResponse);
-    $HairStyles = $browseResponse['hairStyles'];
-    //var_dump($HairStyles);
+    $p = Utils::paginateResource($hairStyle, 'hairStyles', ITEMS_PER_PAGE, $currentBaseUrl);
+    $hairStyles = $p['resources'];
+    $count = $p['count'];
+    $page = $p['page'];
+    $totalNumberOfPages = $p['totalNumberOfPages'];
 }
 ?>
 
@@ -60,7 +70,7 @@ if (isset($_COOKIE["auth"])) {
         <span aria-hidden="true">&times;</span>
     </button>
 
-    <form action="hair_styles.php" method="POST">
+    <form action="<?= 'hair_styles.php?page=' . $page ?>" method="POST">
         <input type="hidden" name="token" value="<?=$token?>">
         <div class="grid-container">
             <div class="grid-x">
@@ -91,7 +101,7 @@ if (isset($_COOKIE["auth"])) {
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form action="hair_styles.php" method="POST" id="edit-form">
+    <form action="<?= 'hair_styles.php?page=' . $page ?>" method="POST" id="edit-form">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="PUT" />
         <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
@@ -122,7 +132,7 @@ if (isset($_COOKIE["auth"])) {
 <!-- DELETE MODAL -->
 <div class="reveal large _table-modal" id="delete-modal" data-reveal>
     <h3 class="_table-modal-title" id="delete-hair_style">Confirm delete Hair Style</h3>
-    <form method="POST" action="hair_styles.php">
+    <form method="POST" action="<?= 'hair_styles.php?page=' . $page ?>">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="DELETE" />
         <input id="delete_id" type="hidden" name="delete_id" value="0" />
@@ -328,7 +338,7 @@ if (isset($_COOKIE["auth"])) {
                     </thead>
                     <tbody>
                     <?php
-                    for ($i = 0; $i < count($HairStyles); $i++) { $HairStyle = $HairStyles[$i]; ?>
+                    for ($i = 0; $i < count($hairStyles); $i++) { $HairStyle = $hairStyles[$i]; ?>
                         <tr class="_tables-row">
                             <td class="_tables-cell id"><?= $HairStyle->id ?></td>
                             <td class="_tables-cell hairStyleName"><?= $HairStyle->hairStyleName ?></td>
@@ -338,19 +348,55 @@ if (isset($_COOKIE["auth"])) {
                     <?php } ?>
                     </tbody>
                 </table>
+
+                <!-- PAGINATION -->
                 <nav aria-label="Pagination" class="_pagination">
                     <ul class="pagination text-center">
-                        <li class="pagination-previous disabled">Previous</li>
-                        <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
-                        <li><a href="#" aria-label="Page 2">2</a></li>
-                        <li><a href="#" aria-label="Page 3">3</a></li>
-                        <li><a href="#" aria-label="Page 4">4</a></li>
-                        <li class="ellipsis"></li>
-                        <li><a href="#" aria-label="Page 12">12</a></li>
-                        <li><a href="#" aria-label="Page 13">13</a></li>
-                        <li class="pagination-next"><a href="#" aria-label="Next page">Next</a></li>
+                        <?php if ($page <= 1) {?>
+                            <li class="pagination-previous disabled">Previous</li>
+                        <?php } else { ?>
+                            <li
+                                    class="pagination-previous">
+                                <a href="<?= $currentBaseUrl . '?page='. ($page - 1) ?>">
+                                    Previous
+                                </a>
+                            </li>
+                        <?php } ?>
+
+                        <?php
+                        for ($i = 1; $i <= $totalNumberOfPages; $i++) {
+                            ?>
+                            <li>
+                                <?php if ($i === $page) { ?>
+                                    <a
+                                            class="current"
+                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                        <?= $i ?>
+                                    </a>
+                                <?php } else { ?>
+                                    <a
+                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                        <?= $i ?>
+                                    </a>
+                                <?php } ?>
+                            </li>
+                        <?php } ?>
+
+                        <?php if ($page >= $totalNumberOfPages) {?>
+                            <li class="pagination-next disabled">
+                                Next
+                            </li>
+                        <?php } else {?>
+                            <li class="pagination-next">
+                                <a href="<?= $currentBaseUrl . '?page=' . ($page + 1) ?>">
+                                    Next
+                                </a>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </nav>
+
+                <!-- END OF PAGINATION -->
             </div>
         </div>
     </main>

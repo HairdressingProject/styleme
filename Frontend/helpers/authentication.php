@@ -11,18 +11,21 @@
 
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/constants.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/headers.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 
 /**
  * Verifies if the user is authenticated
- * @return bool Whether the user is authenticated
+ * @return int|bool ID of authenticated user or false (if not authenticated)
  */
 function isAuthenticated() {
     $opts = generateHeaders('GET');
-
-    $context = stream_context_create($opts);
     $authUrl = API_URL . '/api/users/authenticate';
 
-    $userData = @file_get_contents($authUrl, false, $context);
+    $ctx = stream_context_create($opts);
 
-    return isset($userData);
+    $response = @file_get_contents($authUrl, false, $ctx);
+
+    $r = (array) json_decode($response);
+
+    return isset($r['id']) ? $r['id'] : false;
 }

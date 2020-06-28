@@ -9,12 +9,7 @@
  * Description:
  *******************************************************/
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/browse.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/read.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/edit.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/add.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/delete.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/actions.php';
 
 class FaceShape
 {
@@ -23,9 +18,24 @@ class FaceShape
     public string $dateCreated;
     public string $dateModified;
 
-    public function browse() {
-        $this->sanitise();
-        return browseResource('face_shapes');
+    /**
+     * Requests the total number of face shapes available in the database
+     * @return array
+     */
+    public function count()
+    {
+        return countResource('face_shapes');
+    }
+
+    /**
+     * Browses face shapes, with optional pagination
+     * @param  int|null  $limit Limit the number of results retrieved
+     * @param  int|null  $offset Offset from which results should be retrieved
+     * @return array
+     */
+    public function browse(int $limit = null, int $offset = null)
+    {
+        return browseResource('face_shapes', $limit, $offset);
     }
 
     public function read() {

@@ -28,16 +28,55 @@ namespace AdminApi.Controllers
 
         // GET: api/hair_style_links
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HairStyleLinks>>> GetHairStyleLinks()
+        public async Task<ActionResult<IEnumerable<HairStyleLinks>>> GetHairStyleLinks(
+             [FromQuery(Name = "limit")] string limit,
+             [FromQuery(Name = "offset")] string offset)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedHairStyleLinks = await _context
+                                                    .HairStyleLinks
+                                                    .Include(hsl => hsl.HairStyle)
+                                                    .Skip(o)
+                                                    .Take(l)
+                                                    .ToListAsync();
+
+                    return Ok(new
+                    {
+                        hairStyleLinks = limitedHairStyleLinks
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
+            }
+
             var hairStyleLinks = await _context.HairStyleLinks.Include(hsl => hsl.HairStyle).ToListAsync();
 
             return Ok(new { hairStyleLinks });
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetHairStyleLinksCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var hairStyleLinks = await _context.HairStyleLinks.CountAsync();
+            return Ok(new
+            {
+                count = hairStyleLinks
+            });
         }
 
         // GET: api/hair_style_links/5
@@ -80,7 +119,7 @@ namespace AdminApi.Controllers
                 return NotFound(new { errors = new { HairStyleId = new string[] { "No matching hair style entry was found" } }, status = 404 });
             }
 
-            HairStyleLinks hsl = await _context.HairStyleLinks.FindAsync(id);            
+            HairStyleLinks hsl = await _context.HairStyleLinks.FindAsync(id);
 
             try
             {

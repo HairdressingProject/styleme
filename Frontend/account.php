@@ -1,3 +1,56 @@
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/authentication.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/User.php';
+
+$token = Utils::addCSRFToken();
+$alert = null;
+$user = new User();
+
+function readUser($user) {
+    $id = isAuthenticated();
+
+    if ($id) {
+        // user is authenticated
+        $user->id = intval($id);
+
+        $response = $user->read();
+
+        if (isset($response['user'])) {
+            $u = $response['user'];
+
+            // map fields
+            $user->id = $u->id;
+            $user->username = $u->userName;
+            $user->email = $u->userEmail;
+            $user->firstName = $u->firstName;
+            $user->lastName = $u->lastName;
+            $user->userRole = $u->userRole;
+        }
+    }
+
+    return $user;
+}
+
+if (isset($_COOKIE['auth'])) {
+    $user = readUser($user);
+}
+else {
+    echo '<script>window.location.href = "/sign_in.php"</script>';
+    exit();
+}
+
+if ($_POST && Utils::verifyCSRFToken()) {
+    $results = $user->handleUpdateAccount();
+
+    $alert = $results['alert'];
+
+    if (isset($results['status']) && $results['status'] !== 200) {
+        $user = readUser($user);
+    }
+}
+?>
+
 <!doctype html>
 <html class="no-js" lang="en">
 
@@ -15,6 +68,7 @@
 
 <body>
     <noscript>Please enable JavaScript for this page to work</noscript>
+    <?php if (isset($alert)) echo $alert; ?>
 
     <!-- TOP BAR -->
     <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
@@ -140,8 +194,6 @@
 
         <!-- END OF SIDE BAR -->
 
-        <!-- END OF SIDE BAR -->
-
         <!-- MAIN CONTENT -->
         <main class="account-main">
             <div class="account-basic-info grid-x">
@@ -152,41 +204,83 @@
                     <img src="img/icons/user.svg" alt="User" class="account-pic">
                 </div>
                 <div class="cell small-6 account-fullname-username">
-                    <h1 id="account-fullname" class="account-fullname">User</h1>
-                    <p id="account-username" class="account-username">User</p>
+                    <h1 id="account-fullname" class="account-fullname">
+                        <?= $user->firstName . ' ' . $user->lastName ?>
+                    </h1>
+                    <p id="account-username" class="account-username"><?= ucfirst($user->userRole) ?></p>
                 </div>
             </div>
-            <form>
+            <form action="account.php" method="POST">
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="token" value="<?= $token ?>">
                 <div class="grid-container">
                     <div class="grid-x">
                         <div class="cell account-field-cell" id="account-username">
                             <label class="account-field">user_name<span class="account-required">*</span>
-                                <input type="text" placeholder="user_name" required class="account-input" id="username"
-                                    maxlength="32">
+                                <input
+                                        type="text"
+                                        placeholder="user_name"
+                                        required
+                                        name="username"
+                                        class="account-input"
+                                        id="username"
+                                        maxlength="32"
+                                        value="<?= $user->username ?>"
+                                >
                             </label>
                         </div>
                         <div class="cell account-field-cell" id="account-email">
                             <label class="account-field">user_email<span class="account-required">*</span>
-                                <input type="email" placeholder="user_email" required class="account-input" id="email"
-                                    maxlength="512">
+                                <input
+                                        type="email"
+                                        placeholder="user_email"
+                                        required
+                                        name="email"
+                                        class="account-input"
+                                        id="email"
+                                        maxlength="512"
+                                        value="<?= $user->email ?>"
+                                >
                             </label>
                         </div>
                         <div class="cell account-field-cell" id="account-given-name">
                             <label class="account-field">first_name<span class="account-required">*</span>
-                                <input type="text" placeholder="first_name" required class="account-input"
-                                    maxlength="128">
+                                <input
+                                        type="text"
+                                        placeholder="first_name"
+                                        required
+                                        name="first_name"
+                                        class="account-input"
+                                        maxlength="128"
+                                        id="first_name"
+                                        value="<?= $user->firstName ?>"
+                                >
                             </label>
                         </div>
                         <div class="cell account-field-cell" id="account-family-name">
                             <label class="account-field">last_name
-                                <input type="text" placeholder="last_name" class="account-input" id="family-name"
-                                    maxlength="128">
+                                <input
+                                        type="text"
+                                        placeholder="last_name"
+                                        class="account-input"
+                                        name="last_name"
+                                        id="last_name"
+                                        maxlength="128"
+                                        value="<?= $user->lastName ?>"
+                                >
                             </label>
                         </div>
                         <div class="cell account-field-cell" id="account-given-name">
                             <label class="account-field">user_password<span class="account-required">*</span>
-                                <input type="password" placeholder="******" required minlength="6" maxlength="512"
-                                    class="account-input" id="password">
+                                <input
+                                        type="password"
+                                        placeholder="******"
+                                        required
+                                        name="password"
+                                        minlength="6"
+                                        maxlength="512"
+                                        class="account-input"
+                                        id="password">
                                 <button class="account-reveal-password">
                                     <img src="img/icons/eye.svg" alt="Reveal password">
                                 </button>
@@ -194,7 +288,13 @@
                         </div>
                         <div class="cell account-field-cell">
                             <label class="account-field">Confirm password<span class="account-required">*</span>
-                                <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                                <input
+                                        type="password"
+                                        placeholder="******"
+                                        required
+                                        name="confirm_password"
+                                        minlength="6"
+                                        maxlength="512"
                                     class="account-input" id="confirm-password">
                                 <button class="account-reveal-password account-reveal-password-active">
                                     <img src="img/icons/eye.svg" alt="Reveal password">
@@ -203,7 +303,7 @@
                         </div>
                         <div class="account-btns grid-x">
                             <div class="cell small-12 medium-6">
-                                <button class="account-restore-btn account-btn">Restore</button>
+                                <button class="account-restore-btn account-btn" id="btn-restore">Restore</button>
                             </div>
                             <div class="cell small-12 medium-6">
                                 <button class="account-save-btn account-btn" type="submit">Save changes</button>
