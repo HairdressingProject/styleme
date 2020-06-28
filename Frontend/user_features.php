@@ -15,13 +15,15 @@ require_once $_SERVER['DOCUMENT_ROOT']. '/classes/UserFeature.php';
 $token = Utils::addCSRFToken();
 $alert = null;
 $uf = new UserFeature();
+$fs = new FaceShape();
+$st = new SkinTone();
+$hs = new HairStyle();
 
-$faceShape = new FaceShape();
-$skinTone = new SkinTone();
-$hairStyle = new HairStyle();
-$hairColour = new Colour();
 
 $userFeatures = [];
+$faceShapes = [];
+$skinTones = [];
+$hairStyles = [];
 
 if ($_POST && Utils::verifyCSRFToken()) {
     if (isset($_POST['_method'])) {
@@ -34,6 +36,14 @@ if ($_POST && Utils::verifyCSRFToken()) {
 if (isset($_COOKIE["auth"])) {
     $browseResponse = $uf->browse();
     $userFeatures = $browseResponse['userFeatures'];
+
+    $browseFaceShapesResponse = $fs->browse();
+    $faceShapes = $browseFaceShapesResponse['faceShapes'];
+
+    $browseSkinTonesResponse = $st->browse();
+    $skinTones = $browseSkinTonesResponse['skinTones'];
+
+    $hairStyles = $hs->browse()['hairStyles'];
 }
 ?>
 
@@ -124,7 +134,7 @@ if (isset($_COOKIE["auth"])) {
 
 <!-- EDIT MODAL -->
 <div class="reveal large _table-modal" id="edit-modal" data-reveal>
-    <h3 class="_table-modal-title">Edit a user</h3>
+    <h3 class="_table-modal-title">Edit a user feature</h3>
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -140,12 +150,65 @@ if (isset($_COOKIE["auth"])) {
                                maxlength="32">
                     </label>
                 </div>
-                <div class="cell account-field-cell" id="account-email">
-                    <label class="account-field">user_email<span class="account-required">*</span>
-                        <input type="email" placeholder="user_email" name="put_user_email" required class="account-input" id="selected-user_email-edit"
-                               maxlength="512">
+
+
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">face shape<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                            <select name="put_faceShapeId" class="account-user_role" id="selected-faceShape-edit" required>
+                                <?php
+                                // loop trough all face shapes
+                                for ($i = 0; $i < count($faceShapes); $i++) {
+                                    ?>
+                                    <option value="<?= $faceShapes[$i]->id //id?>">
+                                            <?= $faceShapes[$i]->shapeName //name?>
+                                        </option>
+                                <?php } ?>
+                            </select>
+                        </span>
+
                     </label>
                 </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">skin tone<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                            <select name="put_skinToneId" class="account-user_role" id="selected-skinTone-edit" required>
+                                <?php
+                                // loop trough all skin tones
+                                for ($i = 0; $i < count($skinTones); $i++) {
+                                    ?>
+                                    <option value="<?= $skinTones[$i]->id //id?>">
+                                            <?= $skinTones[$i]->skinToneName //name?>
+                                        </option>
+                                <?php } ?>
+                            </select>
+                        </span>
+
+                    </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">hair style<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                            <select name="put_hairStyleId" class="account-user_role" id="selected-hairStyle-edit" required>
+                                <?php
+                                // loop trough all hair styles
+                                for ($i = 0; $i < count($hairStyles); $i++) {
+                                    ?>
+                                    <option value="<?= $hairStyles[$i]->id //id?>">
+                                            <?= $hairStyles[$i]->hairStyleName //name?>
+                                        </option>
+                                <?php } ?>
+                            </select>
+                        </span>
+
+                    </label>
+                </div>
+
+
+
                 <div class="cell account-field-cell" id="account-given-name">
                     <label class="account-field">first_name<span class="account-required">*</span>
                         <input type="text" placeholder="first_name" name="put_first_name" required class="account-input"
@@ -204,8 +267,8 @@ if (isset($_COOKIE["auth"])) {
 
 <!-- DELETE MODAL -->
 <div class="reveal large _table-modal" id="delete-modal" data-reveal>
-    <h3 class="_table-modal-title" id="delete-user">Confirm delete user</h3>
-    <form method="POST" action="users.php">
+    <h3 class="_table-modal-title" id="delete-user">Confirm delete user feature</h3>
+    <form method="POST" action="user_features.php">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="DELETE" />
         <input id="delete_id" type="hidden" name="delete_id" value="0" />
@@ -215,27 +278,31 @@ if (isset($_COOKIE["auth"])) {
                     <tbody>
                     <tr class="_table-modal-delete-row">
                         <td class="_table-modal-delete-prop">id:</td>
-                        <td id="selected-id-delete" class="_table-modal-delete-val">user_id</td>
+                        <td id="selected-id-delete" class="_table-modal-delete-val">user_feature_id</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
                         <td class="_table-modal-delete-prop">user_name:</td>
-                        <td id="selected-username-delete" class="_table-modal-delete-val">user_name</td>
+                        <td id="selected-user_name-delete" class="_table-modal-delete-val">user_name</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">user_email:</td>
-                        <td id="selected-user_email-delete" class="_table-modal-delete-val">user_email</td>
+                        <td class="_table-modal-delete-prop">face_shape_name:</td>
+                        <td id="selected-face_shape_name-delete" class="_table-modal-delete-val">face_shape_name</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">first_name:</td>
-                        <td id="selected-first_name-delete" class="_table-modal-delete-val">first_name</td>
+                        <td class="_table-modal-delete-prop">skin_tone_name:</td>
+                        <td id="selected-skin_tone_name-delete" class="_table-modal-delete-val">skin_tone_name</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">last_name:</td>
-                        <td id="selected-last_name-delete" class="_table-modal-delete-val">last_name</td>
+                        <td class="_table-modal-delete-prop">hair_style_name:</td>
+                        <td id="selected-hair_style_name-delete" class="_table-modal-delete-val">hair_style_name</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">user_role:</td>
-                        <td id="selected-user_role-delete" class="_table-modal-delete-val">user_role</td>
+                        <td class="_table-modal-delete-prop">hair_length_name:</td>
+                        <td id="selected-hair_length_name-delete" class="_table-modal-delete-val">hair_length_name</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">hair_colour_name:</td>
+                        <td id="selected-hair_colour_name-delete" class="_table-modal-delete-val">hair_colour_name</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
                         <td class="_table-modal-delete-prop">date_created:</td>

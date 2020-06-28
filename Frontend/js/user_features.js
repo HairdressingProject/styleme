@@ -98,7 +98,7 @@ function updateEditFields() {
 
     // userName
     const userName = document.getElementById('selected-userName-edit');
-    userName.value = userFeature.userName;
+    userName.value = userFeature.userId;
 
     // face shape name
     const faceShapeName = document.getElementById('selected-')
@@ -114,20 +114,28 @@ function updateDeleteFields() {
         document.getElementById('delete_id').value = userFeature.id;
 
         // userName
-        document.getElementById('selected-shapeName-delete').textContent = faceShape.shapeName;
+        document.getElementById('selected-user_name-delete').textContent = userFeature.userName;
 
         // face shape name
-        document.getElementById('')
+        document.getElementById('selected-face_shape_name-delete').textContent = userFeature.faceShapeName;
+
         // skin tone name
+        document.getElementById('selected-skin_tone_name-delete').textContent = userFeature.skinToneName;
+
         // hair style name
+        document.getElementById('selected-hair_style_name-delete').textContent = userFeature.hairStyleName;
+
         // hair length name
+        document.getElementById('selected-hair_length_name-delete').textContent = userFeature.hairStyleName;
+
         // hair colour name
+        document.getElementById('selected-hair_colour_name-delete').textContent = userFeature.hairColourName;
 
         // date created
-        document.getElementById('selected-date_created-delete').textContent = faceShape.dateCreated;
+        document.getElementById('selected-date_created-delete').textContent = userFeature.dateCreated;
 
         // date modified
-        document.getElementById('selected-date_modified-delete').textContent = faceShape.dateModified;
+        document.getElementById('selected-date_modified-delete').textContent = userFeature.dateModified;
     }
 }
 
@@ -187,6 +195,7 @@ function updateFields() {
 
     userFeature = {
         id,
+        userName,
         faceShapeId,
         faceShapeName,
         skinToneId,
