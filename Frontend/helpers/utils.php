@@ -240,4 +240,21 @@ class Utils
         }
         return 'Never';
     }
+
+    /**
+     * Determines the current protocol, i.e. HTTP or HTTPS
+     * @return string Either 'http://' or 'https://'
+     */
+    public static function getUrlProtocol() {
+        $protocol = 'http://';
+        // haxx to check whether the application is running under HTTPS or HTTP
+        if (isset($_SERVER['HTTPS']) &&
+            ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
+            isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+            $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+            $protocol = 'https://';
+        }
+
+        return $protocol;
+    }
 }

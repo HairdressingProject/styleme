@@ -10,6 +10,7 @@
  **********************************************************/
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/constants.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 
 /**
  * @param string $method One of: 'GET', 'POST', 'PUT', 'DELETE'
@@ -30,14 +31,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/constants.php';
  * @return array[] Request headers
  */
 function generateHeaders(string $method, array $data = null) {
-    $protocol = 'http://';
-    // haxx to check whether the application is running under HTTPS or HTTP
-    if (isset($_SERVER['HTTPS']) &&
-        ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
-        isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
-        $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
-        $protocol = 'https://';
-    }
+    $protocol = Utils::getUrlProtocol();
 
     if (isset($data)) {
         // POST, PUT

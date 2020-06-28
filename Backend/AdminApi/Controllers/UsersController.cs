@@ -41,13 +41,36 @@ namespace AdminApi.Controllers
         }
 
         // GET: api/users
+        // GET: api/users?limit=5&offset=0 (optional pagination)
         [EnableCors("Policy1")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Users>>> GetUsers([FromQuery(Name = "limit")] string limit, [FromQuery(Name = "offset")] string offset)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            if (limit != null && offset != null)
+            {
+                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
+                {
+                    var limitedUsers = await _context
+                                                .Users
+                                                .Include(u => u.UserFeatures)
+                                                .Skip(o)
+                                                .Take(l)
+                                                .ToListAsync();
+
+                    return Ok(new
+                    {
+                        users = limitedUsers.WithoutPasswords()
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                }
             }
 
             var users = await _context.Users.Include(u => u.UserFeatures).ToListAsync();
@@ -69,6 +92,21 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Authorisation = new string[] { "Insufficient permissions" } }, status = 401 });
             }
             return Ok(usersResponse);*/
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetUsersCount()
+        {
+            if (!_authorizationService.ValidateJWTCookie(Request))
+            {
+                return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            var usersCount = await _context.Users.CountAsync();
+            return Ok(new
+            {
+                count = usersCount
+            });
         }
 
         // GET: api/users/5

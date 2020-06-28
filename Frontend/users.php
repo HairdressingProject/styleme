@@ -1,12 +1,21 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
-require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/actions/browse.php';
-require_once $_SERVER['DOCUMENT_ROOT']. '/classes/User.php';
 
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/browse.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.php';
+
+define('ITEMS_PER_PAGE', 5);
 $token = Utils::addCSRFToken();
 $alert = null;
 $u = new User();
 $users = [];
+$count = 0;
+$page = 1;
+$offset = 0;
+$totalNumberOfPages = 1;
+
+$parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
 
 if ($_POST && Utils::verifyCSRFToken()) {
     if (isset($_POST['_method'])) {
@@ -17,7 +26,39 @@ if ($_POST && Utils::verifyCSRFToken()) {
 }
 
 if (isset($_COOKIE["auth"])) {
-    $browseResponse = $u->browse();
+    // pagination: 5 items per page
+    // get total number of users
+    $countResponse = $u->count();
+    $count = $countResponse['count'];
+
+    $totalNumberOfPages = $count % ITEMS_PER_PAGE;
+
+    // get current page
+    if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+        $page = intval(Utils::sanitiseField($_GET['page'], FILTER_SANITIZE_NUMBER_INT));
+    }
+
+    else {
+        // invalid page query, redirect to the first one
+        // redirect to first page
+        echo '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
+        exit();
+    }
+
+    if ($page > $totalNumberOfPages) {
+        // redirect to last page
+        echo '<script>window.location.href="' . $currentBaseUrl . '?page=' . $totalNumberOfPages . '";</script>';
+        exit();
+    }
+
+    if ($page <= 0) {
+        // redirect to first page
+        echo '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
+        exit();
+    }
+
+    $offset = ($page - 1) * 5;
+    $browseResponse = $u->browse(ITEMS_PER_PAGE, $offset);
     $users = $browseResponse['users'];
 }
 ?>
@@ -39,7 +80,10 @@ if (isset($_COOKIE["auth"])) {
 <body>
 <noscript>Please enable JavaScript for this page to work</noscript>
 
-<?php if(isset($alert)) echo $alert; ?>
+<?php
+if (isset($alert)) {
+    echo $alert;
+} ?>
 <!-- ADD MODAL -->
 <div class="reveal large _table-modal" id="add-modal" data-reveal>
     <h3 class="_table-modal-title">Add a new user</h3>
@@ -48,18 +92,20 @@ if (isset($_COOKIE["auth"])) {
     </button>
 
     <form action="users.php" method="POST">
-        <input type="hidden" name="token" value="<?=$token?>">
+        <input type="hidden" name="token" value="<?= $token ?>">
         <div class="grid-container">
             <div class="grid-x">
                 <div class="cell account-field-cell" id="account-username">
                     <label class="account-field">user_name<span class="account-required">*</span>
-                        <input name="add_username" type="text" placeholder="user_name" required class="account-input" id="selected-username-add"
+                        <input name="add_username" type="text" placeholder="user_name" required class="account-input"
+                               id="selected-username-add"
                                maxlength="32">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-email">
                     <label class="account-field">user_email<span class="account-required">*</span>
-                        <input name="add_email" type="email" placeholder="user_email" required class="account-input" id="selected-email-add"
+                        <input name="add_email" type="email" placeholder="user_email" required class="account-input"
+                               id="selected-email-add"
                                maxlength="512">
                     </label>
                 </div>
@@ -71,13 +117,15 @@ if (isset($_COOKIE["auth"])) {
                 </div>
                 <div class="cell account-field-cell" id="account-family-name">
                     <label class="account-field">last_name
-                        <input name="add_last_name" type="text" placeholder="last_name" class="account-input" id="selected-last_name-add"
+                        <input name="add_last_name" type="text" placeholder="last_name" class="account-input"
+                               id="selected-last_name-add"
                                maxlength="128">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-given-name">
                     <label class="account-field">user_password<span class="account-required">*</span>
-                        <input name="add_password" type="password" placeholder="******" required minlength="6" maxlength="512"
+                        <input name="add_password" type="password" placeholder="******" required minlength="6"
+                               maxlength="512"
                                class="account-input" id="selected-password-add">
                         <button class="account-reveal-password">
                             <img src="img/icons/eye.svg" alt="Reveal password">
@@ -86,7 +134,8 @@ if (isset($_COOKIE["auth"])) {
                 </div>
                 <div class="cell account-field-cell">
                     <label class="account-field">Confirm password<span class="account-required">*</span>
-                        <input name="add_confirm_password" type="password" placeholder="******" required minlength="6" maxlength="512"
+                        <input name="add_confirm_password" type="password" placeholder="******" required minlength="6"
+                               maxlength="512"
                                class="account-input" id="selected-confirm-password-add">
                         <button class="account-reveal-password account-reveal-password-active">
                             <img src="img/icons/eye.svg" alt="Reveal password">
@@ -114,20 +163,22 @@ if (isset($_COOKIE["auth"])) {
         <span aria-hidden="true">&times;</span>
     </button>
     <form action="users.php" method="POST" id="edit-form">
-        <input type="hidden" name="token" value="<?=$token?>">
-        <input type="hidden" name="_method" value="PUT" />
-        <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
+        <input type="hidden" name="token" value="<?= $token ?>">
+        <input type="hidden" name="_method" value="PUT"/>
+        <input id="selected-id-edit" type="hidden" name="put_id" value="0"/>
         <div class="grid-container">
             <div class="grid-x">
                 <div class="cell account-field-cell" id="account-username">
                     <label class="account-field">user_name<span class="account-required">*</span>
-                        <input type="text" placeholder="user_name" name="put_username" required class="account-input" id="selected-username-edit"
+                        <input type="text" placeholder="user_name" name="put_username" required class="account-input"
+                               id="selected-username-edit"
                                maxlength="32">
                     </label>
                 </div>
                 <div class="cell account-field-cell" id="account-email">
                     <label class="account-field">user_email<span class="account-required">*</span>
-                        <input type="email" placeholder="user_email" name="put_user_email" required class="account-input" id="selected-user_email-edit"
+                        <input type="email" placeholder="user_email" name="put_user_email" required
+                               class="account-input" id="selected-user_email-edit"
                                maxlength="512">
                     </label>
                 </div>
@@ -139,14 +190,16 @@ if (isset($_COOKIE["auth"])) {
                 </div>
                 <div class="cell account-field-cell" id="account-family-name">
                     <label class="account-field">last_name
-                        <input type="text" placeholder="last_name" name="put_last_name" class="account-input" id="selected-last_name-edit"
+                        <input type="text" placeholder="last_name" name="put_last_name" class="account-input"
+                               id="selected-last_name-edit"
                                maxlength="128">
                     </label>
                 </div>
                 <div class="cell account-field-cell">
                     <label class="account-field">user_role<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                            <select name="put_user_role" class="account-user_role" id="selected-user_role-edit" required>
+                            <select name="put_user_role" class="account-user_role" id="selected-user_role-edit"
+                                    required>
                                 <option value="user">User</option>
                                 <option value="developer">Developer</option>
                                 <option value="admin">Admin</option>
@@ -157,7 +210,8 @@ if (isset($_COOKIE["auth"])) {
                 </div>
                 <div class="cell account-field-cell" id="account-given-name">
                     <label class="account-field">user_password<span class="account-required">*</span>
-                        <input type="password" name="put_password" placeholder="******" required minlength="6" maxlength="512"
+                        <input type="password" name="put_password" placeholder="******" required minlength="6"
+                               maxlength="512"
                                class="account-input" id="selected-password-edit">
                         <button class="account-reveal-password">
                             <img src="img/icons/eye.svg" alt="Reveal password">
@@ -191,9 +245,9 @@ if (isset($_COOKIE["auth"])) {
 <div class="reveal large _table-modal" id="delete-modal" data-reveal>
     <h3 class="_table-modal-title" id="delete-user">Confirm delete user</h3>
     <form method="POST" action="users.php">
-        <input type="hidden" name="token" value="<?=$token?>">
-        <input type="hidden" name="_method" value="DELETE" />
-        <input id="delete_id" type="hidden" name="delete_id" value="0" />
+        <input type="hidden" name="token" value="<?= $token ?>">
+        <input type="hidden" name="_method" value="DELETE"/>
+        <input id="delete_id" type="hidden" name="delete_id" value="0"/>
         <div class="grid-container">
             <div class="grid-x">
                 <table class="_table-modal-delete">
@@ -245,7 +299,8 @@ if (isset($_COOKIE["auth"])) {
             </div>
         </div>
     </form>
-    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button" id="close-delete-modal">
+    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button"
+            id="close-delete-modal">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
@@ -393,10 +448,14 @@ if (isset($_COOKIE["auth"])) {
                         <button class="_table-btn _table-btn-add" data-open="add-modal">Add</button>
                     </div>
                     <div class="cell small-12 medium-2 text-center">
-                        <button class="_table-btn _table-btn-edit _table-btn-disabled" data-open="edit-modal" disabled>Edit</button>
+                        <button class="_table-btn _table-btn-edit _table-btn-disabled" data-open="edit-modal" disabled>
+                            Edit
+                        </button>
                     </div>
                     <div class="cell small-12 medium-2 text-center">
-                        <button class="_table-btn _table-btn-delete _table-btn-disabled" data-open="delete-modal" disabled>Delete</button>
+                        <button class="_table-btn _table-btn-delete _table-btn-disabled" data-open="delete-modal"
+                                disabled>Delete
+                        </button>
                     </div>
                 </div>
 
@@ -415,7 +474,8 @@ if (isset($_COOKIE["auth"])) {
                     </thead>
                     <tbody>
                     <?php
-                    for ($i = 0; $i < count($users); $i++) { $user = $users[$i]; ?>
+                    for ($i = 0; $i < count($users); $i++) {
+                        $user = $users[$i]; ?>
                         <tr class="_tables-row">
                             <td class="_tables-cell id"><?= $user->id ?></td>
                             <td class="_tables-cell username"><?= $user->userName ?></td>
@@ -423,23 +483,62 @@ if (isset($_COOKIE["auth"])) {
                             <td class="_tables-cell first_name"><?= $user->firstName ?></td>
                             <td class="_tables-cell last_name"><?= $user->lastName ?></td>
                             <td class="_tables-cell user_role"><?= $user->userRole ?></td>
-                            <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime($user->dateCreated) ?></td>
-                            <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime($user->dateModified) ?></td>
+                            <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime(
+                                    $user->dateCreated
+                                ) ?></td>
+                            <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime(
+                                    $user->dateModified
+                                ) ?></td>
                         </tr>
-                    <?php } ?>
+                    <?php
+                    } ?>
                     </tbody>
                 </table>
+
+                <!-- PAGINATION -->
                 <nav aria-label="Pagination" class="_pagination">
                     <ul class="pagination text-center">
-                        <li class="pagination-previous disabled">Previous</li>
-                        <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
-                        <li><a href="#" aria-label="Page 2">2</a></li>
-                        <li><a href="#" aria-label="Page 3">3</a></li>
-                        <li><a href="#" aria-label="Page 4">4</a></li>
-                        <li class="ellipsis"></li>
-                        <li><a href="#" aria-label="Page 12">12</a></li>
-                        <li><a href="#" aria-label="Page 13">13</a></li>
-                        <li class="pagination-next"><a href="#" aria-label="Next page">Next</a></li>
+                        <?php if ($page <= 1) {?>
+                            <li class="pagination-previous disabled">Previous</li>
+                        <?php } else { ?>
+                            <li
+                                    class="pagination-previous">
+                                <a href="<?= $currentBaseUrl . '?page='. ($page - 1) ?>">
+                                    Previous
+                                </a>
+                            </li>
+                        <?php } ?>
+
+                        <?php
+                        for ($i = 1; $i <= $totalNumberOfPages; $i++) {
+                        ?>
+                        <li>
+                            <?php if ($i === $page) { ?>
+                            <a
+                                class="current"
+                                href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                <?= $i ?>
+                            </a>
+                            <?php } else { ?>
+                                <a
+                                    href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                    <?= $i ?>
+                                </a>
+                            <?php } ?>
+                        </li>
+                        <?php } ?>
+
+                        <?php if ($page >= $totalNumberOfPages) {?>
+                        <li class="pagination-next disabled">
+                            Next
+                        </li>
+                        <?php } else {?>
+                            <li class="pagination-next">
+                                <a href="<?= $currentBaseUrl . '?page=' . ($page + 1) ?>">
+                                    Next
+                                </a>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </nav>
             </div>
