@@ -199,7 +199,7 @@ if (isset($_COOKIE["auth"])) {
                         <td id="selected-id-delete" class="_table-modal-delete-val">id</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">face_shape:</td>
+                        <td class="_table-modal-delete-prop">hair_length:</td>
                         <td id="selected-hairLength-delete" class="_table-modal-delete-val">hair_length</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
