@@ -15,6 +15,12 @@ require_once $_SERVER['DOCUMENT_ROOT']. '/classes/UserFeature.php';
 $token = Utils::addCSRFToken();
 $alert = null;
 $uf = new UserFeature();
+
+$faceShape = new FaceShape();
+$skinTone = new SkinTone();
+$hairStyle = new HairStyle();
+$hairColour = new Colour();
+
 $userFeatures = [];
 
 if ($_POST && Utils::verifyCSRFToken()) {
@@ -122,7 +128,7 @@ if (isset($_COOKIE["auth"])) {
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form action="users.php" method="POST" id="edit-form">
+    <form action="user_features.php" method="POST" id="edit-form">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="PUT" />
         <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
@@ -413,12 +419,12 @@ if (isset($_COOKIE["auth"])) {
                     <thead>
                     <tr>
                         <th>id</th>
-                        <th>user_id</th>
-                        <th>face_shape_id</th>
-                        <th>skin_tone_id</th>
-                        <th>hair_style_id</th>
-                        <th>hair_length_id</th>
-                        <th>hair_colour_id</th>
+                        <th>user_name</th>
+                        <th>face_shape_name</th>
+                        <th>skin_tone_name</th>
+                        <th>hair_style_name</th>
+                        <th>hair_length_name</th>
+                        <th>hair_colour_name</th>
                         <th>date_created</th>
                         <th>date_modified</th>
                     </tr>
@@ -428,12 +434,12 @@ if (isset($_COOKIE["auth"])) {
                     for ($i = 0; $i < count($userFeatures); $i++) { $userFeatures = $userFeatures[$i]; ?>
                         <tr class="_tables-row">
                             <td class="_tables-cell id"><?= $userFeatures->id ?></td>
-                            <td class="_tables-cell user_id"><?= $userFeatures->user->userName ?></td>
-                            <td class="_tables-cell face_shape_id"><?= $userFeatures->faceShape->shapeName ?></td>
-                            <td class="_tables-cell skin_tone_id"><?= $userFeatures->skinTone->skinToneName ?></td>
-                            <td class="_tables-cell hair_style_id"><?= $userFeatures->hairStyle->hairStyleName ?></td>
-                            <td class="_tables-cell hair_length_id"><?= $userFeatures->hairLength->hairLengthName ?></td>
-                            <td class="_tables-cell hair_colour_id"><?= $userFeatures->hairColour->colourName ?></td>
+                            <td class="_tables-cell user_id" data-user-id="<?=$userFeatures->userId?>"><?= $userFeatures->user->userName ?></td>
+                            <td class="_tables-cell face_shape_name" data-face-shape-id="<?=$userFeatures->faceShapeId?>"><?= $userFeatures->faceShape->shapeName ?></td>
+                            <td class="_tables-cell skin_tone_name" data-skin-tone-id="<?=$userFeatures->skinToneId?>"><?= $userFeatures->skinTone->skinToneName ?></td>
+                            <td class="_tables-cell hair_style_name" data-hair-style-id="<?=$userFeatures->hairStyleId?>"><?= $userFeatures->hairStyle->hairStyleName ?></td>
+                            <td class="_tables-cell hair_length_name" data-hair-length-id="<?=$userFeatures->hairLengthId?>"><?= $userFeatures->hairLength->hairLengthName ?></td>
+                            <td class="_tables-cell hair_colour_name" data-hair-colour-id="<?=$userFeatures->hairColourId?>"><?= $userFeatures->hairColour->colourName ?></td>
                             <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime($userFeatures->dateCreated) ?></td>
                             <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime($userFeatures->dateModified) ?></td>
                         </tr>
