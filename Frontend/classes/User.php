@@ -46,23 +46,21 @@ class User
 
     public function read()
     {
-        $this->id = Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT);
-        return readResource('users', $this->id);
+        return readResource('users', Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT));
     }
 
     public function edit()
     {
-        $this->sanitise();
         return editResource(
             'users',
             array(
-                'Id' => $this->id,
-                'UserName' => $this->username,
-                'UserEmail' => $this->email,
+                'Id' => Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT),
+                'UserName' => Utils::sanitiseField($this->username, FILTER_SANITIZE_STRING),
+                'UserEmail' => Utils::sanitiseField($this->email, FILTER_SANITIZE_EMAIL),
                 'UserPassword' => $this->password,
-                'FirstName' => $this->firstName,
-                'LastName' => $this->lastName,
-                'UserRole' => $this->userRole
+                'FirstName' => Utils::sanitiseField($this->firstName, FILTER_SANITIZE_STRING),
+                'LastName' => Utils::sanitiseField($this->lastName, FILTER_SANITIZE_STRING),
+                'UserRole' => Utils::sanitiseField($this->userRole, FILTER_SANITIZE_STRING)
             )
         );
     }
@@ -171,7 +169,7 @@ class User
                                 [
                                     '400' => 'Could not edit user: invalid fields',
                                     '409' => 'User already exists',
-                                    '500' => 'Could not add user. Please try again later',
+                                    '500' => 'Could not update user. Please try again later',
                                     '200' => 'User successfully updated'
                                 ]
                             );
@@ -209,5 +207,65 @@ class User
                 return Utils::createAlert('Invalid request method', 'error');
         }
         return null;
+    }
+
+    /**
+     * Updates the current user's account details
+     * @return array Results in the format:
+     *
+     *      $results = [
+     *          'oldUser' => old User object
+     *          'status' => status code of the response,
+     *          'alert' => alert message ready to be printed to the DOM
+     *      ]
+     *
+     */
+    public function handleUpdateAccount() {
+        $results = [];
+        $results['oldUser'] = $this;
+
+        if (
+            isset($_POST['username']) &&
+            isset($_POST['email']) &&
+            isset($_POST['first_name']) &&
+            isset($_POST['last_name']) &&
+            isset($_POST['password']) &&
+            isset($_POST['confirm_password'])
+        ) {
+            $username = Utils::sanitiseField($_POST['username'], FILTER_SANITIZE_STRING);
+            $email = Utils::sanitiseField($_POST['email'], FILTER_SANITIZE_EMAIL);
+            $firstName = Utils::sanitiseField($_POST['first_name'], FILTER_SANITIZE_STRING);
+            $lastName = Utils::sanitiseField($_POST['last_name'], FILTER_SANITIZE_STRING);
+
+            if ($_POST['password'] !== $_POST['confirm_password']) {
+                $results['alert'] = Utils::createAlert('Passwords do not match', 'error');
+            }
+            else {
+                $this->username = $username;
+                $this->email = $email;
+                $this->firstName = $firstName;
+                $this->lastName = $lastName;
+                $this->password = $_POST['password'];
+
+                $response = $this->edit();
+
+                $results['alert'] = Utils::handleResponse(
+                    $response,
+                    [
+                        '400' => 'Could not update account: invalid fields',
+                        '409' => 'User already exists',
+                        '500' => 'Could not update your account. Please try again later',
+                        '200' => 'Account successfully updated'
+                    ]
+                );
+
+                $results['status'] = $response['status'];
+            }
+        }
+        else {
+            $results['alert'] = Utils::createAlert('Could not update account: one or more fields are invalid', 'error');
+        }
+
+        return $results;
     }
 }
