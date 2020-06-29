@@ -97,7 +97,6 @@ class UserFeature
     {
         switch ($method) {
             case 'POST':
-                var_dump(Utils::validateField('add_userId', 'number'));
                 if (Utils::validateField('add_userId', 'number') &&
                     Utils::validateField('add_faceShapeId', 'number') &&
                     Utils::validateField('add_skinToneId', 'number') &&
@@ -141,7 +140,6 @@ class UserFeature
                     $this->hairColourId = $_POST['put_hairColourId'];
 
                     $response = $this->edit();
-                    var_dump($response);
 
                     return Utils::handleResponse($response, [
                         '400' => 'Invalid fields',

@@ -87,7 +87,6 @@ if (isset($_COOKIE["auth"])) {
 </head>
 
 <body>
-<?php echo $_SERVER["HTTP_HOST"]; ?>
 <noscript>Please enable JavaScript for this page to work</noscript>
 
 <?php if(isset($alert)) echo $alert; ?>
@@ -598,7 +597,6 @@ if (isset($_COOKIE["auth"])) {
                     </thead>
                     <tbody>
                     <?php
-                    //echo '<pre>'; var_dump($userFeatures); echo '</pre>';
                     for ($i = 0; $i < count($userFeatures); $i++) { $userFeature = $userFeatures[$i]; ?>
                         <tr class="_tables-row">
                             <td class="_tables-cell id"><?= $userFeature->id ?></td>
