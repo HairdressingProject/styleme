@@ -13,9 +13,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/actions/browse.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairStyleLink.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairStyle.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/page_features.php';
 
 $token = Utils::addCSRFToken();
 $alert = null;
+$search = null;
 $hairStyleLink = new hairStyleLink();
 $hairStyle = new hairStyle();
 $hairStyleLinks = [];
@@ -29,21 +31,22 @@ $totalNumberOfPages = 1;
 $parsedUrl = parse_url($_SERVER['REQUEST_URI']);
 $currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
 
-if ($_POST && Utils::verifyCSRFToken()) {
-    if (isset($_POST['_method'])) {
-        $alert = $hairStyleLink->handleSubmit($_POST['_method']);
-    } else {
-        $alert = $hairStyleLink->handleSubmit();
-    }
-}
+$f = implementDefaultPageFeatures(
+    'hairStyleLinks',
+    $hairStyleLink,
+    ITEMS_PER_PAGE,
+    $currentBaseUrl
+);
+
+$alert = $f['alert'];
+$hairStyleLinks = $f['resources'];
+$count = $f['count'];
+$page = $f['page'];
+$totalNumberOfPages = $f['totalNumberOfPages'];
+$search = $f['search'];
+
 
 if (isset($_COOKIE["auth"])) {
-    $p = Utils::paginateResource($hairStyleLink, 'hairStyleLinks', ITEMS_PER_PAGE, $currentBaseUrl);
-    $hairStyleLinks = $p['resources'];
-    $count = $p['count'];
-    $page = $p['page'];
-    $totalNumberOfPages = $p['totalNumberOfPages'];
-
     $browseHairStyles = $hairStyle->browse();
     $hairStyles = $browseHairStyles['hairStyles'];
 }
@@ -371,11 +374,19 @@ if (isset($_COOKIE["auth"])) {
         <div class="grid-x _tables-grid">
             <div class="cell small-12 large-11 large-offset-4 _tables">
                 <h2 class="_tables-title">Hair style links</h2>
-                <div class="_tables-search-input-container">
-                    <input type="text" placeholder="Search for an entry..." id="entries-search-input"
-                           class="_tables-search"/>
-                    <img src="img/icons/search.svg" alt="Search" class="_tables-search-icon">
-                </div>
+                <form
+                        action="<?= 'hair_style_links.php?page='. $page ?>"
+                        method="POST"
+                        class="_tables-search-input-container">
+                    <input type="hidden" name="token" value="<?= $token ?>">
+                    <input type="text" placeholder="Search for an entry..."
+                           name="search"
+                           class="_tables-search _search-field"/>
+
+                    <button class="_search-btn" data-search="users" type="submit">
+                        <img src="img/icons/search.svg" alt="Search" class="_tables-search-icon">
+                    </button>
+                </form>
 
                 <div class="grid-x _table-btn-container">
                     <div class="cell small-12 medium-2 text-center">
@@ -388,6 +399,21 @@ if (isset($_COOKIE["auth"])) {
                         <button class="_table-btn _table-btn-delete _table-btn-disabled" data-open="delete-modal" disabled>Delete</button>
                     </div>
                 </div>
+
+                <?php
+                if (isset($search)) {
+                    ?>
+                    <div class="text-center" style="margin-bottom: 5rem">
+                        <h2 style="margin-bottom: 2.5rem; font-size: 2rem">
+                            Search results for: <?= Utils::sanitiseField($search, FILTER_SANITIZE_STRING) ?>
+                        </h2>
+                        <a      style="font-size: 1.5rem"
+                                href="hair_style_links.php"
+                        >
+                            Show all results
+                        </a>
+                    </div>
+                <?php } ?>
 
                 <table class="_resource-table _hairStyles-table">
                     <thead>
@@ -422,9 +448,17 @@ if (isset($_COOKIE["auth"])) {
                         <?php } else { ?>
                             <li
                                     class="pagination-previous">
-                                <a href="<?= $currentBaseUrl . '?page='. ($page - 1) ?>">
-                                    Previous
-                                </a>
+                                <?php
+                                if (isset($search)) {
+                                    ?>
+                                    <a href="<?= $currentBaseUrl . '?page='. ($page - 1) . '&search=' . $search ?>">
+                                        Previous
+                                    </a>
+                                <?php } else { ?>
+                                    <a href="<?= $currentBaseUrl . '?page='. ($page - 1) ?>">
+                                        Previous
+                                    </a>
+                                <?php } ?>
                             </li>
                         <?php } ?>
 
@@ -433,16 +467,33 @@ if (isset($_COOKIE["auth"])) {
                             ?>
                             <li>
                                 <?php if ($i === $page) { ?>
-                                    <a
-                                            class="current"
-                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
-                                        <?= $i ?>
-                                    </a>
+                                    <?php if (isset($search)) { ?>
+                                        <a
+                                                class="current"
+                                                href="<?= $currentBaseUrl . '?page=' . $i . '&search=' . $search?>" aria-label="<?= 'Page ' . $page ?>">
+                                            <?= $i ?>
+                                        </a>
+                                    <?php } else {?>
+
+                                        <a
+                                                class="current"
+                                                href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                            <?= $i ?>
+                                        </a>
+                                    <?php } ?>
                                 <?php } else { ?>
-                                    <a
-                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
-                                        <?= $i ?>
-                                    </a>
+
+                                    <?php if (isset($search)) { ?>
+                                        <a
+                                                href="<?= $currentBaseUrl . '?page=' . $i . '&search=' . $search ?>" aria-label="<?= 'Page ' . $page ?>">
+                                            <?= $i ?>
+                                        </a>
+                                    <?php } else { ?>
+                                        <a
+                                                href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                            <?= $i ?>
+                                        </a>
+                                    <?php } ?>
                                 <?php } ?>
                             </li>
                         <?php } ?>
@@ -453,9 +504,15 @@ if (isset($_COOKIE["auth"])) {
                             </li>
                         <?php } else {?>
                             <li class="pagination-next">
-                                <a href="<?= $currentBaseUrl . '?page=' . ($page + 1) ?>">
-                                    Next
-                                </a>
+                                <?php if (isset($search)) { ?>
+                                    <a href="<?= $currentBaseUrl . '?page=' . ($page + 1) . '&search=' . $search ?>">
+                                        Next
+                                    </a>
+                                <?php } else { ?>
+                                    <a href="<?= $currentBaseUrl . '?page=' . ($page + 1) ?>">
+                                        Next
+                                    </a>
+                                <?php } ?>
                             </li>
                         <?php } ?>
                     </ul>

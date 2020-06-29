@@ -74,11 +74,29 @@ namespace AdminApi.Controllers
         }
 
         [HttpGet("count")]
-        public async Task<ActionResult<int>> GetSkinToneLinksCount()
+        public async Task<ActionResult<int>> GetSkinToneLinksCount([FromQuery(Name = "search")] string search = "")
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchCount = await _context.SkinToneLinks.Where(
+                                                    stl =>
+                                                        stl
+                                                        .LinkName
+                                                        .Trim()
+                                                        .ToLower()
+                                                        .Contains(search.Trim().ToLower()) ||
+                                                                stl.LinkUrl.Trim().ToLower().Contains(search.Trim().ToLower())
+                                                ).CountAsync();
+
+                return Ok(new
+                {
+                    count = searchCount
+                });
             }
 
             var skinToneLinksCount = await _context.SkinToneLinks.CountAsync();

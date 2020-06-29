@@ -260,10 +260,11 @@ class Utils
 
     /**
      * Paginates a resource based on given parameters, such as the number of items to display
-     * @param  User|Colour|FaceShape|FaceShapeLink|HairLength|HairLengthLink|HairLength|HairLengthLink|SkinTone|SkinToneLink|UserFeature  $resource The resource object to be paginated
-     * @param  string  $resourceName Name of the resource to be requested in API endpoints
-     * @param  int  $itemsPerPage Maximum number of items to display per page
-     * @param  string  $currentBaseUrl Current URL of the page without query strings such as ?page=1
+     * @param  object  $resource  The resource object to be paginated
+     * @param  string  $resourceName  Name of the resource to be requested in API endpoints
+     * @param  int  $itemsPerPage  Maximum number of items to display per page
+     * @param  string  $currentBaseUrl  Current URL of the page without query strings such as ?page=1
+     * @param  string|null  $search Optional parameter to search for a resource
      * @return array Associative array with pagination results, in the following format:
      *
      * Example:
@@ -271,20 +272,27 @@ class Utils
      *          'resources' => [],
      *          'count' => 0,
      *          'page' => 1,
-     *          'totalNumberOfPages' => 1
+     *          'totalNumberOfPages' => 1,
+     *          'search' => 'query string'
      *      ]
      */
     public static function paginateResource(
         object $resource,
         string $resourceName,
         int $itemsPerPage,
-        string $currentBaseUrl
+        string $currentBaseUrl,
+        string $search = null
     ) {
         // get total number of users
-        $countResponse = $resource->count();
+        $countResponse = $resource->count($search);
         $count = $countResponse['count'];
 
         $totalNumberOfPages = $count < $itemsPerPage ? 1 : (($count - 1) / $itemsPerPage) + 1;
+
+        $totalNumberOfPages = intval($totalNumberOfPages);
+
+        $redirectScript = '';
+        $page = 1;
 
         // get current page
         if (isset($_GET['page']) && is_numeric($_GET['page'])) {
@@ -294,30 +302,41 @@ class Utils
         else {
             // invalid page query, redirect to the first one
             // redirect to first page
-            echo '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
-            exit();
+            $redirectScript = '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
         }
 
         if ($page > $totalNumberOfPages) {
             // redirect to last page
-            echo '<script>window.location.href="' . $currentBaseUrl . '?page=' . $totalNumberOfPages . '";</script>';
-            exit();
+            $redirectScript = '<script>window.location.href="' . $currentBaseUrl . '?page=' . $totalNumberOfPages . '";</script>';
         }
 
         if ($page <= 0) {
             // redirect to first page
-            echo '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
+            $redirectScript = '<script>window.location.href="' . $currentBaseUrl . '?page=1";</script>';
+        }
+
+        if (!empty($redirectScript)) {
+            echo $redirectScript;
             exit();
         }
 
         $offset = ($page - 1) * $itemsPerPage;
-        $browseResponse = $resource->browse($itemsPerPage, $offset);
+        $browseResponse = '';
+
+        if (isset($search)) {
+            $browseResponse = $resource->search($search, $itemsPerPage, $offset);
+            $count = count($browseResponse[$resourceName]);
+        }
+        else {
+            $browseResponse = $resource->browse($itemsPerPage, $offset);
+        }
 
         return array(
             'resources' => $browseResponse[$resourceName],
             'count' => $count,
             'page' => $page,
-            'totalNumberOfPages' => $totalNumberOfPages
+            'totalNumberOfPages' => $totalNumberOfPages,
+            'search' => $search
         );
     }
 }

@@ -763,6 +763,10 @@ body {
   margin-bottom: 2rem;
 }
 
+._search-btn {
+  cursor: pointer;
+}
+
 ._tables {
   background-color: #FCFCFC;
   margin: 0 auto 5rem auto;

@@ -13,13 +13,18 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 
 /**
  * Requests the total count of $resourceName
- * @param  string  $resourceName plural snake_case representation of a resource, e.g. 'user_features' or 'hair_style_links'
+ * @param  string  $resourceName  plural snake_case representation of a resource, e.g. 'user_features' or 'hair_style_links'
+ * @param  string|null  $search Optional query string to count results obtained
  * @return array HTTP response with status included
  */
-function countResource(string $resourceName) {
+function countResource(string $resourceName, string $search = null) {
     $opts = generateHeaders('GET');
 
     $resourceUrl = API_URL . '/api/' . $resourceName . '/count';
+
+    if (isset($search)) {
+        $resourceUrl .= '?search=' . Utils::sanitiseField($search, FILTER_SANITIZE_STRING);
+    }
 
     return Utils::getResponse($resourceUrl, $opts);
 }

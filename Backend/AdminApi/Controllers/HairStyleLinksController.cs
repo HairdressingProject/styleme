@@ -75,11 +75,29 @@ namespace AdminApi.Controllers
         }
 
         [HttpGet("count")]
-        public async Task<ActionResult<int>> GetHairStyleLinksCount()
+        public async Task<ActionResult<int>> GetHairStyleLinksCount([FromQuery(Name = "search")] string search = "")
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchCount = await _context.HairStyleLinks.Where(
+                                                    hsl =>
+                                                        hsl
+                                                        .LinkName
+                                                        .Trim()
+                                                        .ToLower()
+                                                        .Contains(search.Trim().ToLower()) ||
+                                                                hsl.LinkUrl.Trim().ToLower().Contains(search.Trim().ToLower())
+                                                ).CountAsync();
+
+                return Ok(new
+                {
+                    count = searchCount
+                });
             }
 
             var hairStyleLinks = await _context.HairStyleLinks.CountAsync();

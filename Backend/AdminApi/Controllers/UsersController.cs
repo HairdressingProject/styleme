@@ -101,11 +101,26 @@ namespace AdminApi.Controllers
         }
 
         [HttpGet("count")]
-        public async Task<ActionResult<int>> GetUsersCount()
+        public async Task<ActionResult<int>> GetUsersCount([FromQuery(Name = "search")] string search = "")
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchUsersCount = await _context.Users.Where(
+                    u => 
+                    u.UserName.Trim().ToLower().Contains(search.Trim().ToLower()) || 
+                    u.UserEmail.Trim().ToLower().Contains(search.Trim().ToLower())
+                    )
+                    .CountAsync();
+
+                return Ok(new
+                {
+                    count = searchUsersCount
+                });
             }
 
             var usersCount = await _context.Users.CountAsync();

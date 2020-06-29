@@ -16,4 +16,5 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/read.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/edit.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/add.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/delete.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/search.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/utils.php';

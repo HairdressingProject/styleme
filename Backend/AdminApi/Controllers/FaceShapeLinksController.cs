@@ -76,11 +76,29 @@ namespace AdminApi.Controllers
         }
 
         [HttpGet("count")]
-        public async Task<ActionResult<int>> GetFaceShapeLinksCount()
+        public async Task<ActionResult<int>> GetFaceShapeLinksCount([FromQuery(Name = "search")] string search = "")
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchCount = await _context.FaceShapeLinks.Where(
+                                                    fsl =>
+                                                        fsl
+                                                        .LinkName
+                                                        .Trim()
+                                                        .ToLower()
+                                                        .Contains(search.Trim().ToLower()) ||
+                                                                fsl.LinkUrl.Trim().ToLower().Contains(search.Trim().ToLower())
+                                                ).CountAsync();
+
+                return Ok(new
+                {
+                    count = searchCount
+                });
             }
 
             var faceShapeLinksCount = await _context.FaceShapeLinks.CountAsync();

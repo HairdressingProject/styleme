@@ -24,10 +24,14 @@ class SkinToneLink
 
     /**
      * Requests the total number of skin tone links available in the database
+     * @param  string|null  $search Optional search query to count number of results
      * @return array
      */
-    public function count()
+    public function count(string $search = null)
     {
+        if (isset($search)) {
+            return countResource('skin_tone_links', $search);
+        }
         return countResource('skin_tone_links');
     }
 
@@ -65,6 +69,17 @@ class SkinToneLink
 
     public function delete() {
         return deleteResource('skin_tone_links', Utils::sanitiseField($this->id, FILTER_SANITIZE_NUMBER_INT));
+    }
+
+    /**
+     * Search based on a given $query, with support for pagination
+     * @param string $query Query string to search
+     * @param  int|null  $limit Limit the number of results
+     * @param  int|null  $offset Offset the results
+     * @return array Response from the API
+     */
+    public function search(string $query, int $limit = null, int $offset = null) {
+        return searchResource('skin_tone_links', $query, $limit, $offset);
     }
 
     /**

@@ -39,10 +39,14 @@ class UserFeature
 
     /**
      * Requests the total number of user features available in the database
+     * @param  string|null  $search Optional search query to count number of results
      * @return array
      */
-    public function count()
+    public function count(string $search = null)
     {
+        if (isset($search)) {
+            return countResource('user_features', $search);
+        }
         return countResource('user_features');
     }
 
@@ -89,6 +93,17 @@ class UserFeature
     }
 
     /**
+     * Search based on a given $query, with support for pagination
+     * @param string $query Query string to search
+     * @param  int|null  $limit Limit the number of results
+     * @param  int|null  $offset Offset the results
+     * @return array Response from the API
+     */
+    public function search(string $query, int $limit = null, int $offset = null) {
+        return searchResource('user_features', $query, $limit, $offset);
+    }
+
+    /**
      * Handles form submission for the user features page
      * @param  string  $method One of: 'POST', 'PUT' or 'DELETE'
      * @return string|null Alert message
@@ -97,7 +112,6 @@ class UserFeature
     {
         switch ($method) {
             case 'POST':
-                var_dump(Utils::validateField('add_userId', 'number'));
                 if (Utils::validateField('add_userId', 'number') &&
                     Utils::validateField('add_faceShapeId', 'number') &&
                     Utils::validateField('add_skinToneId', 'number') &&
@@ -116,6 +130,7 @@ class UserFeature
 
                     return Utils::handleResponse($response, [
                         '400' => 'Invalid fields',
+                        '404' => 'Could not find user associated with this feature',
                         '500' => 'Could not add user feature. Please try again later',
                         '200' => 'User feature successfully added'
                     ]);
@@ -141,7 +156,6 @@ class UserFeature
                     $this->hairColourId = $_POST['put_hairColourId'];
 
                     $response = $this->edit();
-                    var_dump($response);
 
                     return Utils::handleResponse($response, [
                         '400' => 'Invalid fields',

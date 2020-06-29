@@ -1,5 +1,9 @@
 @use 'colours' as c;
 
+._search-btn {
+  cursor: pointer;
+}
+
 ._tables {
   background-color: c.$white;
   margin: 0 auto 5rem auto;
