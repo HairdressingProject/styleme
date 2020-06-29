@@ -25,6 +25,16 @@ $faceShapes = [];
 $skinTones = [];
 $hairStyles = [];
 
+// for pagination
+define('ITEMS_PER_PAGE', 5);
+$count = 0;
+$page = 1;
+$totalNumberOfPages = 1;
+
+$parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
+
+
 if ($_POST && Utils::verifyCSRFToken()) {
     if (isset($_POST['_method'])) {
         $alert = $uf->handleSubmit($_POST['_method']);
@@ -34,6 +44,12 @@ if ($_POST && Utils::verifyCSRFToken()) {
 }
 
 if (isset($_COOKIE["auth"])) {
+    $p = Utils::paginateResource($uf, 'userFeatures', ITEMS_PER_PAGE, $currentBaseUrl);
+    //$userFeatures = $p['resources'];
+    $count = $p['count'];
+    $page = $p['page'];
+    $totalNumberOfPages = $p['totalNumberOfPages'];
+
     $browseResponse = $uf->browse();
     $userFeatures = $browseResponse['userFeatures'];
 
@@ -72,7 +88,7 @@ if (isset($_COOKIE["auth"])) {
         <span aria-hidden="true">&times;</span>
     </button>
 
-    <form action="user_features.php" method="POST">
+    <form action="<?= 'user_features.php?page=' . $page ?>" method="POST">
         <input type="hidden" name="token" value="<?=$token?>">
         <div class="grid-container">
             <div class="grid-x">
@@ -138,7 +154,7 @@ if (isset($_COOKIE["auth"])) {
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form action="user_features.php" method="POST" id="edit-form">
+    <form action="<?= 'user_features.php?page=' . $page ?>" method="POST" id="edit-form">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="PUT" />
         <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
@@ -498,34 +514,70 @@ if (isset($_COOKIE["auth"])) {
                     </thead>
                     <tbody>
                     <?php
-                    for ($i = 0; $i < count($userFeatures); $i++) { $userFeatures = $userFeatures[$i]; ?>
+                    //echo '<pre>'; var_dump($userFeatures); echo '</pre>';
+                    for ($i = 0; $i < count($userFeatures); $i++) { $userFeature = $userFeatures[$i]; ?>
                         <tr class="_tables-row">
-                            <td class="_tables-cell id"><?= $userFeatures->id ?></td>
-                            <td class="_tables-cell user_id" data-user-id="<?=$userFeatures->userId?>"><?= $userFeatures->user->userName ?></td>
-                            <td class="_tables-cell face_shape_name" data-face-shape-id="<?=$userFeatures->faceShapeId?>"><?= $userFeatures->faceShape->shapeName ?></td>
-                            <td class="_tables-cell skin_tone_name" data-skin-tone-id="<?=$userFeatures->skinToneId?>"><?= $userFeatures->skinTone->skinToneName ?></td>
-                            <td class="_tables-cell hair_style_name" data-hair-style-id="<?=$userFeatures->hairStyleId?>"><?= $userFeatures->hairStyle->hairStyleName ?></td>
-                            <td class="_tables-cell hair_length_name" data-hair-length-id="<?=$userFeatures->hairLengthId?>"><?= $userFeatures->hairLength->hairLengthName ?></td>
-                            <td class="_tables-cell hair_colour_name" data-hair-colour-id="<?=$userFeatures->hairColourId?>"><?= $userFeatures->hairColour->colourName ?></td>
-                            <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime($userFeatures->dateCreated) ?></td>
-                            <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime($userFeatures->dateModified) ?></td>
+                            <td class="_tables-cell id"><?= $userFeature->id ?></td>
+                            <td class="_tables-cell user_id" data-user-id="<?=$userFeature->userId?>"><?= $userFeature->user->userName ?></td>
+                            <td class="_tables-cell face_shape_name" data-face-shape-id="<?=$userFeature->faceShapeId?>"><?= $userFeature->faceShape->shapeName ?></td>
+                            <td class="_tables-cell skin_tone_name" data-skin-tone-id="<?=$userFeature->skinToneId?>"><?= $userFeature->skinTone->skinToneName ?></td>
+                            <td class="_tables-cell hair_style_name" data-hair-style-id="<?=$userFeature->hairStyleId?>"><?= $userFeature->hairStyle->hairStyleName ?></td>
+                            <td class="_tables-cell hair_length_name" data-hair-length-id="<?=$userFeature->hairLengthId?>"><?= $userFeature->hairLength->hairLengthName ?></td>
+                            <td class="_tables-cell hair_colour_name" data-hair-colour-id="<?=$userFeature->hairColourId?>"><?= $userFeature->hairColour->colourName ?></td>
+                            <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime($userFeature->dateCreated) ?></td>
+                            <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime($userFeature->dateModified) ?></td>
                         </tr>
                     <?php } ?>
                     </tbody>
                 </table>
+                <!-- PAGINATION -->
                 <nav aria-label="Pagination" class="_pagination">
                     <ul class="pagination text-center">
-                        <li class="pagination-previous disabled">Previous</li>
-                        <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
-                        <li><a href="#" aria-label="Page 2">2</a></li>
-                        <li><a href="#" aria-label="Page 3">3</a></li>
-                        <li><a href="#" aria-label="Page 4">4</a></li>
-                        <li class="ellipsis"></li>
-                        <li><a href="#" aria-label="Page 12">12</a></li>
-                        <li><a href="#" aria-label="Page 13">13</a></li>
-                        <li class="pagination-next"><a href="#" aria-label="Next page">Next</a></li>
+                        <?php if ($page <= 1) {?>
+                            <li class="pagination-previous disabled">Previous</li>
+                        <?php } else { ?>
+                            <li
+                                    class="pagination-previous">
+                                <a href="<?= $currentBaseUrl . '?page='. ($page - 1) ?>">
+                                    Previous
+                                </a>
+                            </li>
+                        <?php } ?>
+
+                        <?php
+                        for ($i = 1; $i <= $totalNumberOfPages; $i++) {
+                            ?>
+                            <li>
+                                <?php if ($i === $page) { ?>
+                                    <a
+                                            class="current"
+                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                        <?= $i ?>
+                                    </a>
+                                <?php } else { ?>
+                                    <a
+                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
+                                        <?= $i ?>
+                                    </a>
+                                <?php } ?>
+                            </li>
+                        <?php } ?>
+
+                        <?php if ($page >= $totalNumberOfPages) {?>
+                            <li class="pagination-next disabled">
+                                Next
+                            </li>
+                        <?php } else {?>
+                            <li class="pagination-next">
+                                <a href="<?= $currentBaseUrl . '?page=' . ($page + 1) ?>">
+                                    Next
+                                </a>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </nav>
+
+                <!-- END OF PAGINATION -->
             </div>
         </div>
     </main>
