@@ -56,6 +56,11 @@ namespace AdminApi.Controllers
                                                     .Take(l)
                                                     .ToListAsync();
 
+                    limitedUserFeatures.ForEach(uf =>
+                    {
+                        uf.User = uf.User.WithoutPassword();
+                    });
+
                     return Ok(new
                     {
                         userFeatures = limitedUserFeatures
