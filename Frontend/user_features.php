@@ -87,6 +87,7 @@ if (isset($_COOKIE["auth"])) {
 </head>
 
 <body>
+<?php echo $_SERVER["HTTP_HOST"]; ?>
 <noscript>Please enable JavaScript for this page to work</noscript>
 
 <?php if(isset($alert)) echo $alert; ?>
@@ -103,22 +104,36 @@ if (isset($_COOKIE["auth"])) {
             <div class="grid-x">
 
 
+<!--                <div class="cell account-field-cell">-->
+<!--                    <label class="account-field">User name:-->
+<!--                        <span name="add_userId" class="grid-x account-user_role-container" id="selected-user_name-add">-->
+<!--                        user Name-->
+<!--                    </span>-->
+<!--                    </label>-->
+<!--                </div>-->
+
+<!--                selected-user_id-edit-->
+
                 <div class="cell account-field-cell">
-                    <label class="account-field">User name:
-                        <!--                        <input name="put_userName" type="text" placeholder="user name" class="account-input" id="selected-user_name-edit"-->
-                        <!--                               maxlength="512">-->
-                        <span class="grid-x account-user_role-container" id="selected-user_name-add">
-                        user Name
-                    </span>
+                    <label class="account-field">Id<span class="account-required">*</span>
+                        <input id="selected-user_id-add" name="add_userId" type="text" placeholder="User id" class="account-input">
                     </label>
                 </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">User name<span class="account-required">*</span>
+                        <input type="text" placeholder="User name" required class="account-input" id="selected-user_name-add"
+                               maxlength="128" readonly>
+                    </label>
+                </div>
+
 
 
 
                 <div class="cell account-field-cell">
                     <label class="account-field">face shape<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                        <select name="put_faceShapeId" class="account-user_role" id="selected-faceShape-add" required>
+                        <select name="add_faceShapeId" class="account-user_role" id="selected-faceShape-add" required>
                             <?php
                             // loop trough all face shapes
                             for ($i = 0; $i < count($faceShapes); $i++) {
@@ -173,7 +188,7 @@ if (isset($_COOKIE["auth"])) {
                 <div class="cell account-field-cell">
                     <label class="account-field">hair length<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                        <select name="add_hairStyleId" class="account-user_role" id="selected-hair_length-add" required>
+                        <select name="add_hairLengthId" class="account-user_role" id="selected-hair_length-add" required>
                             <?php
                             // loop trough all hair styles
                             for ($i = 0; $i < count($hairLengths); $i++) {
@@ -191,7 +206,7 @@ if (isset($_COOKIE["auth"])) {
                 <div class="cell account-field-cell">
                     <label class="account-field">hair colour<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                        <select name="add_hairStyleId" class="account-user_role" id="selected-hair_colour-add" required>
+                        <select name="add_hairColourId" class="account-user_role" id="selected-hair_colour-add" required>
                             <?php
                             // loop trough all hair colours
                             for ($i = 0; $i < count($hairColours); $i++) {
@@ -238,11 +253,17 @@ if (isset($_COOKIE["auth"])) {
                     <label class="account-field">User name:
 <!--                        <input name="put_userName" type="text" placeholder="user name" class="account-input" id="selected-user_name-edit"-->
 <!--                               maxlength="512">-->
-                        <span class="grid-x account-user_role-container" id="selected-user_name-edit">
-                            user Name
-                        </span>
-                        <input id="selected-user_id-edit" type="hidden" name="put_userId" value="0" />
+
+<!--                        <input id="selected-user_name-edit" type="hidden" name="put_userId" value="0" />-->
+                        <input id="selected-user_name-edit" type="text" placeholder="User name" class="account-input" readonly>
                  </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">Id<span class="account-required">*</span>
+                        <input id="selected-user_id-edit" name="put_userId" type="text" placeholder="User name" class="account-input"
+                               readonly>
+                    </label>
                 </div>
 
 

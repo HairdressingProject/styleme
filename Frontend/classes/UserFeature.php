@@ -97,13 +97,14 @@ class UserFeature
     {
         switch ($method) {
             case 'POST':
-                if (Utils::validateField('add_userId', 'number') &&
-                    Utils::validateField('add_faceShapeId', 'number') &&
-                    Utils::validateField('add_skinToneId', 'number') &&
-                    Utils::validateField('add_hairStyleId', 'number') &&
-                    Utils::validateField('add_hairLengthId', 'number') &&
-                    Utils::validateField('add_hairColourId', 'number')
-                ) {
+                var_dump(Utils::validateField('add_userId', 'number'));
+//                if (Utils::validateField('add_userId', 'number') &&
+//                    Utils::validateField('add_faceShapeId', 'number') &&
+//                    Utils::validateField('add_skinToneId', 'number') &&
+//                    Utils::validateField('add_hairStyleId', 'number') &&
+//                    Utils::validateField('add_hairLengthId', 'number') &&
+//                    Utils::validateField('add_hairColourId', 'number')
+//                ) {
                     $this->userId = $_POST['add_userId'];
                     $this->faceShapeId = $_POST['add_faceShapeId'];
                     $this->skinToneId = $_POST['add_skinToneId'];
@@ -118,13 +119,13 @@ class UserFeature
                         '500' => 'Could not add user feature. Please try again later',
                         '200' => 'User feature successfully added'
                     ]);
-                }
+//                }
                 break;
 
             case 'PUT':
                 if (
-                    //Utils::validateField('put_id', 'number') &&
-                    //Utils::validateField('put_userId', 'number') &&
+                    Utils::validateField('put_id', 'number') &&
+                    Utils::validateField('put_userId', 'number') &&
                     Utils::validateField('put_faceShapeId', 'number') &&
                     Utils::validateField('put_skinToneId', 'number') &&
                     Utils::validateField('put_hairStyleId', 'number') &&

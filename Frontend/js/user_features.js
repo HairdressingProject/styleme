@@ -102,7 +102,7 @@ function updateEditFields() {
 
     // userName
     const userName = document.getElementById('selected-user_name-edit');
-    userName.textContent = userFeature.userName;
+    userName.value = userFeature.userName;
 
     // face shape name
     const faceShapeName = document.getElementById('selected-faceShape-edit');
@@ -147,7 +147,6 @@ function updateDeleteFields() {
 function updateFields() {
     // id
     const id = userFeature.id || selectedRow.cells[0].textContent;
-    console.log(id);
 
     // user id
     const userId = userFeature.userId || selectedRow.cells[1].dataset['userId'];
@@ -156,7 +155,6 @@ function updateFields() {
     const allUserNameRows = document.querySelectorAll('[data-user-id]');
     const user = [...allUserNameRows].filter(r => r.dataset['userId'] === userId)[0];
     const userName = userFeature.userName || user.textContent;
-    console.log(userName);
 
 
     // face shape id
@@ -166,7 +164,6 @@ function updateFields() {
     const allFaceShapeRows = document.querySelectorAll('[data-face-shape-id]');
     const faceShape = [...allFaceShapeRows].filter(r => r.dataset['faceShapeId'] === faceShapeId)[0];
     const faceShapeName = userFeature.faceShapeName || faceShape.textContent;
-    console.dir(faceShapeName);
 
     // skin tone id
     const skinToneId = userFeature.skinToneId || selectedRow.cells[3].dataset['skinToneId'];
