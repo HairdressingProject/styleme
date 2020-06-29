@@ -27,7 +27,9 @@ mysql -u root -p < database_v.2.1.sql
 ### 3 - Generating pepper
 The back-end uses a [pepper](https://en.wikipedia.org/wiki/Pepper_(cryptography) "Pepper") that is added to hashed passwords. It is the same for all passwords, but stored outside of the application and the database. 
 
-Choose a secret (can be any string) and run the commands below (from the __AdminApi__ folder) to store it in your computer:
+Navigate to the [AdminApi](/Backend/AdminApi/ "AdminApi") folder before running the commands below.
+
+Now choose a Pepper secret (can be any string) and run the commands below to store the Pepper secret in your computer:
 
 ```
 dotnet user-secrets init
@@ -40,7 +42,7 @@ To view your secret, run:
 dotnet user-secrets list
 ```
 
-To start both back-end and database servers navigate to the [AdminApi](/Backend/AdminApi/ "AdminApi") folder, and run:
+To start both back-end and database servers, run:
 
 ```
 dotnet watch run
