@@ -45,6 +45,17 @@ namespace AdminApi.Controllers
                 {
                     var limitedHairStyleLinks = await _context
                                                     .HairStyleLinks
+                                                    .Where(
+                                                    hsl =>
+                                                        hsl
+                                                        .LinkName
+                                                        .Trim()
+                                                        .ToLower()
+                                                        .Contains(string.IsNullOrWhiteSpace(search) ? search :
+                                                                search.Trim().ToLower()
+                                                                ) ||
+                                                                hsl.LinkUrl.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
+                                                )
                                                     .Include(hsl => hsl.HairStyle)
                                                     .Skip(o)
                                                     .Take(l)

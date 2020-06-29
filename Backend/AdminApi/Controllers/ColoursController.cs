@@ -47,8 +47,8 @@ namespace AdminApi.Controllers
                                                 .Colours
                                                 .Where(
                                                 r =>
-                                                r.ColourName.Contains(search) ||
-                                                r.ColourHash.Contains(search)
+                                                r.ColourName.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower()) ||
+                                                r.ColourHash.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
                                                 )
                                                 .Skip(o)
                                                 .Take(l)

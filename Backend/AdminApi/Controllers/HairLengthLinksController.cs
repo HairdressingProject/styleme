@@ -45,6 +45,17 @@ namespace AdminApi.Controllers
                 {
                     var limitedHairLengthLinks = await _context
                                                     .HairLengthLinks
+                                                    .Where(
+                                                    hll =>
+                                                        hll
+                                                        .LinkName
+                                                        .Trim()
+                                                        .ToLower()
+                                                        .Contains(string.IsNullOrWhiteSpace(search) ? search :
+                                                                search.Trim().ToLower()
+                                                                ) ||
+                                                                hll.LinkUrl.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
+                                                )
                                                     .Include(hll => hll.HairLength)
                                                     .Skip(o)
                                                     .Take(l)
