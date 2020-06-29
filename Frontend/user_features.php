@@ -18,12 +18,16 @@ $uf = new UserFeature();
 $fs = new FaceShape();
 $st = new SkinTone();
 $hs = new HairStyle();
+$hl = new HairLength();
+$hc = new Colour();
 
 
 $userFeatures = [];
 $faceShapes = [];
 $skinTones = [];
 $hairStyles = [];
+$hairLengths = [];
+$hairColours = [];
 
 // for pagination
 define('ITEMS_PER_PAGE', 5);
@@ -60,6 +64,11 @@ if (isset($_COOKIE["auth"])) {
     $skinTones = $browseSkinTonesResponse['skinTones'];
 
     $hairStyles = $hs->browse()['hairStyles'];
+
+    $hairLengths = $hl->browse()['hairLengths'];
+
+    $hairColours = $hc->browse()['colours'];
+
 }
 ?>
 
@@ -92,48 +101,112 @@ if (isset($_COOKIE["auth"])) {
         <input type="hidden" name="token" value="<?=$token?>">
         <div class="grid-container">
             <div class="grid-x">
-                <div class="cell account-field-cell" id="userFeatures-userId">
-                    <label class="account-field">user_id<span class="account-required">*</span>
-                        <input name="add_userId" type="text" placeholder="user_id" required class="account-input" id="selected-userId-add"
-                               maxlength="32">
-                    </label>
-                </div>
-                <div class="cell account-field-cell" id="userFeatures-faceShapeId">
-                    <label class="account-field">face_shape_id<span class="account-required">*</span>
-                        <input name="add_faceShapeId" type="text" placeholder="face_shape_id" required class="account-input" id="selected-faceShapeId-add"
-                               maxlength="512">
-                    </label>
-                </div>
-                <div class="cell account-field-cell" id="userFeatures-skinToneId">
-                    <label class="account-field">skin_tone_id<span class="account-required">*</span>
-                        <input name="add_skinToneId" type="text" placeholder="skin_tone_id" required class="account-input"
-                               maxlength="128" id="selected-skinToneId-add">
-                    </label>
-                </div>
-                <div class="cell account-field-cell" id="account-family-name">
-                    <label class="account-field">last_name
-                        <input name="add_last_name" type="text" placeholder="last_name" class="account-input" id="selected-last_name-add"
-                               maxlength="128">
-                    </label>
-                </div>
-                <div class="cell account-field-cell" id="account-given-name">
-                    <label class="account-field">user_password<span class="account-required">*</span>
-                        <input name="add_password" type="password" placeholder="******" required minlength="6" maxlength="512"
-                               class="account-input" id="selected-password-add">
-                        <button class="account-reveal-password">
-                            <img src="img/icons/eye.svg" alt="Reveal password">
-                        </button>
-                    </label>
-                </div>
+
+
                 <div class="cell account-field-cell">
-                    <label class="account-field">Confirm password<span class="account-required">*</span>
-                        <input name="add_confirm_password" type="password" placeholder="******" required minlength="6" maxlength="512"
-                               class="account-input" id="selected-confirm-password-add">
-                        <button class="account-reveal-password account-reveal-password-active">
-                            <img src="img/icons/eye.svg" alt="Reveal password">
-                        </button>
+                    <label class="account-field">User name:
+                        <!--                        <input name="put_userName" type="text" placeholder="user name" class="account-input" id="selected-user_name-edit"-->
+                        <!--                               maxlength="512">-->
+                        <span class="grid-x account-user_role-container" id="selected-user_name-add">
+                        user Name
+                    </span>
                     </label>
                 </div>
+
+
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">face shape<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                        <select name="put_faceShapeId" class="account-user_role" id="selected-faceShape-add" required>
+                            <?php
+                            // loop trough all face shapes
+                            for ($i = 0; $i < count($faceShapes); $i++) {
+                                ?>
+                                <option value="<?= $faceShapes[$i]->id //id?>">
+                                        <?= $faceShapes[$i]->shapeName //name?>
+                                    </option>
+                            <?php } ?>
+                        </select>
+                    </span>
+
+                    </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">skin tone<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                        <select name="add_skinToneId" class="account-user_role" id="selected-skinTone-add" required>
+                            <?php
+                            // loop trough all skin tones
+                            for ($i = 0; $i < count($skinTones); $i++) {
+                                ?>
+                                <option value="<?= $skinTones[$i]->id //id?>">
+                                        <?= $skinTones[$i]->skinToneName //name?>
+                                    </option>
+                            <?php } ?>
+                        </select>
+                    </span>
+
+                    </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">hair style<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                        <select name="add_hairStyleId" class="account-user_role" id="selected-hairStyle-add" required>
+                            <?php
+                            // loop trough all hair styles
+                            for ($i = 0; $i < count($hairStyles); $i++) {
+                                ?>
+                                <option value="<?= $hairStyles[$i]->id //id?>">
+                                        <?= $hairStyles[$i]->hairStyleName //name?>
+                                    </option>
+                            <?php } ?>
+                        </select>
+                    </span>
+
+                    </label>
+                </div>
+
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">hair length<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                        <select name="add_hairStyleId" class="account-user_role" id="selected-hair_length-add" required>
+                            <?php
+                            // loop trough all hair styles
+                            for ($i = 0; $i < count($hairLengths); $i++) {
+                                ?>
+                                <option value="<?= $hairLengths[$i]->id //id?>">
+                                        <?= $hairLengths[$i]->hairLengthName //name?>
+                                    </option>
+                            <?php } ?>
+                        </select>
+                    </span>
+
+                    </label>
+                </div>
+
+                <div class="cell account-field-cell">
+                    <label class="account-field">hair colour<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                        <select name="add_hairStyleId" class="account-user_role" id="selected-hair_colour-add" required>
+                            <?php
+                            // loop trough all hair colours
+                            for ($i = 0; $i < count($hairColours); $i++) {
+                                ?>
+                                <option value="<?= $hairColours[$i]->id //id?>">
+                                        <?= $hairColours[$i]->colourName //name?>
+                                    </option>
+                            <?php } ?>
+                        </select>
+                    </span>
+
+                    </label>
+                </div>
+
+
                 <div class="account-btns grid-x">
                     <div class="cell small-12 medium-6">
                         <button id="btn-clear" class="account-restore-btn account-btn">Clear</button>
@@ -159,12 +232,17 @@ if (isset($_COOKIE["auth"])) {
         <input type="hidden" name="_method" value="PUT" />
         <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
         <div class="grid-container">
+
             <div class="grid-x">
-                <div class="cell account-field-cell" id="account-username">
-                    <label class="account-field">user_name<span class="account-required">*</span>
-                        <input type="text" placeholder="user_name" name="put_username" required class="account-input" id="selected-username-edit"
-                               maxlength="32">
-                    </label>
+                <div class="cell account-field-cell">
+                    <label class="account-field">User name:
+<!--                        <input name="put_userName" type="text" placeholder="user name" class="account-input" id="selected-user_name-edit"-->
+<!--                               maxlength="512">-->
+                        <span class="grid-x account-user_role-container" id="selected-user_name-edit">
+                            user Name
+                        </span>
+                        <input id="selected-user_id-edit" type="hidden" name="put_userId" value="0" />
+                 </label>
                 </div>
 
 
@@ -224,49 +302,43 @@ if (isset($_COOKIE["auth"])) {
                 </div>
 
 
-
-                <div class="cell account-field-cell" id="account-given-name">
-                    <label class="account-field">first_name<span class="account-required">*</span>
-                        <input type="text" placeholder="first_name" name="put_first_name" required class="account-input"
-                               maxlength="128" id="selected-first_name-edit">
-                    </label>
-                </div>
-                <div class="cell account-field-cell" id="account-family-name">
-                    <label class="account-field">last_name
-                        <input type="text" placeholder="last_name" name="put_last_name" class="account-input" id="selected-last_name-edit"
-                               maxlength="128">
-                    </label>
-                </div>
                 <div class="cell account-field-cell">
-                    <label class="account-field">user_role<span class="account-required">*</span>
+                    <label class="account-field">hair length<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                            <select name="put_user_role" class="account-user_role" id="selected-user_role-edit" required>
-                                <option value="user">User</option>
-                                <option value="developer">Developer</option>
-                                <option value="admin">Admin</option>
+                            <select name="put_hairColourId" class="account-user_role" id="selected-hair_length-edit" required>
+                                <?php
+                                // loop trough all hair styles
+                                for ($i = 0; $i < count($hairLengths); $i++) {
+                                    ?>
+                                    <option value="<?= $hairLengths[$i]->id //id?>">
+                                            <?= $hairLengths[$i]->hairLengthName //name?>
+                                        </option>
+                                <?php } ?>
                             </select>
                         </span>
 
                     </label>
                 </div>
-                <div class="cell account-field-cell" id="account-given-name">
-                    <label class="account-field">user_password<span class="account-required">*</span>
-                        <input type="password" name="put_password" placeholder="******" required minlength="6" maxlength="512"
-                               class="account-input" id="selected-password-edit">
-                        <button class="account-reveal-password">
-                            <img src="img/icons/eye.svg" alt="Reveal password">
-                        </button>
-                    </label>
-                </div>
+
                 <div class="cell account-field-cell">
-                    <label class="account-field">Confirm password<span class="account-required">*</span>
-                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
-                               class="account-input" name="put_confirm_password" id="selected-confirm-password-edit">
-                        <button class="account-reveal-password account-reveal-password-active">
-                            <img src="img/icons/eye.svg" alt="Reveal password">
-                        </button>
+                    <label class="account-field">hair colour<span class="account-required">*</span>
+                        <span class="grid-x account-user_role-container">
+                            <select name="put_hairStyleId" class="account-user_role" id="selected-hair_colour-edit" required>
+                                <?php
+                                // loop trough all hair colours
+                                for ($i = 0; $i < count($hairColours); $i++) {
+                                    ?>
+                                    <option value="<?= $hairColours[$i]->id //id?>">
+                                            <?= $hairColours[$i]->colourName //name?>
+                                        </option>
+                                <?php } ?>
+                            </select>
+                        </span>
+
                     </label>
                 </div>
+
+
                 <div class="account-btns grid-x">
                     <div class="cell small-12 medium-6">
                         <button id="btn-restore" class="account-restore-btn account-btn">Restore</button>

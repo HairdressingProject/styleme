@@ -96,12 +96,17 @@ function updateEditFields() {
     const id = document.getElementById('selected-id-edit');
     id.value = userFeature.id;
 
+    // user id
+    const userId = document.getElementById('selected-user_id-edit');
+    userId.value = userFeature.userId;
+
     // userName
-    const userName = document.getElementById('selected-userName-edit');
-    userName.value = userFeature.userId;
+    const userName = document.getElementById('selected-user_name-edit');
+    userName.textContent = userFeature.userName;
 
     // face shape name
-    const faceShapeName = document.getElementById('selected-')
+    const faceShapeName = document.getElementById('selected-faceShape-edit');
+    faceShapeName.value = userFeature.faceShapeId;
 
 }
 
@@ -142,21 +147,26 @@ function updateDeleteFields() {
 function updateFields() {
     // id
     const id = userFeature.id || selectedRow.cells[0].textContent;
+    console.log(id);
 
     // user id
     const userId = userFeature.userId || selectedRow.cells[1].dataset['userId'];
+    console.log(userId);
     // user name
     const allUserNameRows = document.querySelectorAll('[data-user-id]');
     const user = [...allUserNameRows].filter(r => r.dataset['userId'] === userId)[0];
     const userName = userFeature.userName || user.textContent;
+    console.log(userName);
 
 
     // face shape id
     const faceShapeId = userFeature.faceShapeId || selectedRow.cells[2].dataset['faceShapeId'];
+    console.dir(faceShapeId);
     // face shape name (get name from rows)
     const allFaceShapeRows = document.querySelectorAll('[data-face-shape-id]');
     const faceShape = [...allFaceShapeRows].filter(r => r.dataset['faceShapeId'] === faceShapeId)[0];
     const faceShapeName = userFeature.faceShapeName || faceShape.textContent;
+    console.dir(faceShapeName);
 
     // skin tone id
     const skinToneId = userFeature.skinToneId || selectedRow.cells[3].dataset['skinToneId'];
@@ -195,6 +205,7 @@ function updateFields() {
 
     userFeature = {
         id,
+        userId,
         userName,
         faceShapeId,
         faceShapeName,
@@ -220,7 +231,7 @@ function restoreEditFields(e) {
 function clearAddFields(e) {
     e.preventDefault();
 
-    document.getElementById('selected-shapeName-add').value = '';
+    document.getElementById('selected-userFeature-add').value = '';
 
 }
 
