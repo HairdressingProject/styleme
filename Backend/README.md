@@ -27,7 +27,9 @@ mysql -u root -p < database_v.2.1.sql
 ### 3 - Generating pepper
 The back-end uses a [pepper](https://en.wikipedia.org/wiki/Pepper_(cryptography) "Pepper") that is added to hashed passwords. It is the same for all passwords, but stored outside of the application and the database. 
 
-Choose a secret (can be any string) and run the commands below (from the __AdminApi__ folder) to store it in your computer:
+Navigate to the [AdminApi](/Backend/AdminApi/ "AdminApi") folder before running the commands below.
+
+Now choose a Pepper secret (can be any string) and run the commands below to store the Pepper secret in your computer:
 
 ```
 dotnet user-secrets init
@@ -40,9 +42,11 @@ To view your secret, run:
 dotnet user-secrets list
 ```
 
-Don't forget to start both back-end and database servers before proceeding to the next step.
+To start both back-end and database servers, run:
 
-> Run `dotnet watch run` from the AdminApi folder to start the server
+```
+dotnet watch run
+```
 
 ### 4 - Sending requests
 Before testing any route, you will first have to create a new sample admin account. That is because all passwords are now hashed by the server before being added to the database, so they should not be directly added with `INSERT` statements. 
@@ -85,3 +89,6 @@ All `GET` and `DELETE` requests should work out of the box. You will have to pro
 > Remember: `PUT` requests require an `id` both in the endpoint and in the request `body`. You will also have to include __all__ `[Required]` properties in the request `body` (plus `DateCreated`), not just the ones that you wish to modify.
 
 After you have set up your request, simply click __Send__. 
+
+### Extra - Pagination & Searching
+The "Colours" folder in the project's main Postman-collection outlines how pagination & searching work requests work in the project's API.
