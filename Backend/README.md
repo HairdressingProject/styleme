@@ -40,9 +40,11 @@ To view your secret, run:
 dotnet user-secrets list
 ```
 
-Don't forget to start both back-end and database servers before proceeding to the next step.
+To start both back-end and database servers navigate to the [AdminApi](/Backend/AdminApi/ "AdminApi") folder, and run:
 
-> Run `dotnet watch run` from the AdminApi folder to start the server
+```
+dotnet watch run
+```
 
 ### 4 - Sending requests
 Before testing any route, you will first have to create a new sample admin account. That is because all passwords are now hashed by the server before being added to the database, so they should not be directly added with `INSERT` statements. 
@@ -85,3 +87,6 @@ All `GET` and `DELETE` requests should work out of the box. You will have to pro
 > Remember: `PUT` requests require an `id` both in the endpoint and in the request `body`. You will also have to include __all__ `[Required]` properties in the request `body` (plus `DateCreated`), not just the ones that you wish to modify.
 
 After you have set up your request, simply click __Send__. 
+
+### Extra - Pagination & Searching
+The "Colours" folder in the project's main Postman-collection outlines how pagination & searching work requests work in the project's API.

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AdminApi.Models_v2_1;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace AdminApi.Controllers
 {
@@ -46,6 +47,17 @@ namespace AdminApi.Controllers
                     var limitedFaceShapeLinks = await _context
                                                 .FaceShapeLinks
                                                 .Include(fsl => fsl.FaceShape)
+                                                .Where(
+                                                    fsl =>
+                                                        fsl
+                                                        .LinkName
+                                                        .Trim()
+                                                        .ToLower()
+                                                        .Contains(string.IsNullOrWhiteSpace(search) ?                                             search : 
+                                                                search.Trim().ToLower()
+                                                                ) ||
+                                                                fsl.LinkUrl.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
+                                                )
                                                 .Skip(o)
                                                 .Take(l)
                                                 .ToListAsync();

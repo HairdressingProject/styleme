@@ -61,6 +61,11 @@ namespace AdminApi.Controllers
                 {
                     var limitedUsers = await _context
                                                 .Users
+                                                .Where(
+                                                    u =>
+                                                        u.UserEmail.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower()) ||
+                                                        u.UserName.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
+                                                        )
                                                 .Include(u => u.UserFeatures)
                                                 .Skip(o)
                                                 .Take(l)

@@ -45,6 +45,17 @@ namespace AdminApi.Controllers
                 {
                     var limitedSkinToneLinks = await _context
                                                     .SkinToneLinks
+                                                    .Where(
+                                                    stl =>
+                                                        stl
+                                                        .LinkName
+                                                        .Trim()
+                                                        .ToLower()
+                                                        .Contains(string.IsNullOrWhiteSpace(search) ? search :
+                                                                search.Trim().ToLower()
+                                                                ) ||
+                                                                stl.LinkUrl.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
+                                                )
                                                     .Include(stl => stl.SkinTone)
                                                     .Skip(o)
                                                     .Take(l)

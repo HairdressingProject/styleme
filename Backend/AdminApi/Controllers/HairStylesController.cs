@@ -47,7 +47,7 @@ namespace AdminApi.Controllers
                                                     .HairStyles
                                                     .Where(
                                                     r =>
-                                                    r.HairStyleName.Contains(search)
+                                                    r.HairStyleName.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
                                                     )
                                                     .Skip(o)
                                                     .Take(l)

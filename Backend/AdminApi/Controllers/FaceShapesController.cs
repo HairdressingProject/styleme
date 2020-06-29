@@ -49,7 +49,7 @@ namespace AdminApi.Controllers
                                                     .FaceShapes
                                                     .Where(
                                                     r =>
-                                                    r.ShapeName.Contains(search)
+                                                    r.ShapeName.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
                                                     )
                                                     .Skip(o)
                                                     .Take(l)

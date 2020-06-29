@@ -49,6 +49,12 @@ namespace AdminApi.Controllers
                     var limitedUserFeatures = await _context
                                                     .UserFeatures
                                                     .Include(uf => uf.User)
+                                                    .Where(
+                                                        uf =>
+                                                            uf.User.UserName.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
+                                                            ||
+                                                            uf.User.UserEmail.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
+                                                            )
                                                     .Include(uf => uf.HairColour)
                                                     .Include(uf => uf.HairStyle)
                                                     .Include(uf => uf.HairLength)

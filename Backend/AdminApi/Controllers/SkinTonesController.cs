@@ -49,7 +49,7 @@ namespace AdminApi.Controllers
                                                     .SkinTones
                                                     .Where(
                                                     r =>
-                                                    r.SkinToneName.Contains(search)
+                                                    r.SkinToneName.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
                                                     )
                                                     .Skip(o)
                                                     .Take(l)
