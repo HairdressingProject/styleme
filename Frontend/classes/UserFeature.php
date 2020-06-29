@@ -97,6 +97,7 @@ class UserFeature
     {
         switch ($method) {
             case 'POST':
+                var_dump(Utils::validateField('add_userId', 'number'));
                 if (Utils::validateField('add_userId', 'number') &&
                     Utils::validateField('add_faceShapeId', 'number') &&
                     Utils::validateField('add_skinToneId', 'number') &&
@@ -124,22 +125,23 @@ class UserFeature
             case 'PUT':
                 if (
                     Utils::validateField('put_id', 'number') &&
-                    Utils::validateField('add_userId', 'number') &&
-                    Utils::validateField('add_faceShapeId', 'number') &&
-                    Utils::validateField('add_skinToneId', 'number') &&
-                    Utils::validateField('add_hairStyleId', 'number') &&
-                    Utils::validateField('add_hairLengthId', 'number') &&
-                    Utils::validateField('add_hairColourId', 'number')
+                    Utils::validateField('put_userId', 'number') &&
+                    Utils::validateField('put_faceShapeId', 'number') &&
+                    Utils::validateField('put_skinToneId', 'number') &&
+                    Utils::validateField('put_hairStyleId', 'number') &&
+                    Utils::validateField('put_hairLengthId', 'number') &&
+                    Utils::validateField('put_hairColourId', 'number')
                 ) {
                     $this->id = $_POST['put_id'];
-                    $this->userId = $_POST['add_userId'];
-                    $this->faceShapeId = $_POST['add_faceShapeId'];
-                    $this->skinToneId = $_POST['add_skinToneId'];
-                    $this->hairStyleId = $_POST['add_hairStyleId'];
-                    $this->hairLengthId = $_POST['add_hairLengthId'];
-                    $this->hairColourId = $_POST['add_hairColourId'];
+                    $this->userId = $_POST['put_userId'];
+                    $this->faceShapeId = $_POST['put_faceShapeId'];
+                    $this->skinToneId = $_POST['put_skinToneId'];
+                    $this->hairStyleId = $_POST['put_hairStyleId'];
+                    $this->hairLengthId = $_POST['put_hairLengthId'];
+                    $this->hairColourId = $_POST['put_hairColourId'];
 
                     $response = $this->edit();
+                    var_dump($response);
 
                     return Utils::handleResponse($response, [
                         '400' => 'Invalid fields',
