@@ -40,9 +40,11 @@ To view your secret, run:
 dotnet user-secrets list
 ```
 
-Don't forget to start both back-end and database servers before proceeding to the next step.
+To start both back-end and database servers navigate to the AdminApi folder, and run:
 
-> Run `dotnet watch run` from the AdminApi folder to start the server
+```
+dotnet watch run
+```
 
 ### 4 - Sending requests
 Before testing any route, you will first have to create a new sample admin account. That is because all passwords are now hashed by the server before being added to the database, so they should not be directly added with `INSERT` statements. 
