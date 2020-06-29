@@ -40,7 +40,7 @@ To view your secret, run:
 dotnet user-secrets list
 ```
 
-To start both back-end and database servers navigate to the AdminApi folder, and run:
+To start both back-end and database servers navigate to the [AdminApi](/Backend/AdminApi/ "AdminApi") folder, and run:
 
 ```
 dotnet watch run
