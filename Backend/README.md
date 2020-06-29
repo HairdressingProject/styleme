@@ -85,3 +85,6 @@ All `GET` and `DELETE` requests should work out of the box. You will have to pro
 > Remember: `PUT` requests require an `id` both in the endpoint and in the request `body`. You will also have to include __all__ `[Required]` properties in the request `body` (plus `DateCreated`), not just the ones that you wish to modify.
 
 After you have set up your request, simply click __Send__. 
+
+### Extra - Pagination & Searching
+The "Colours" folder in the project's main Postman-collection outlines how pagination & searching work requests work in the project's API.
