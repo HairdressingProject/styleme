@@ -104,15 +104,6 @@ if (isset($_COOKIE["auth"])) {
             <div class="grid-x">
 
 
-<!--                <div class="cell account-field-cell">-->
-<!--                    <label class="account-field">User name:-->
-<!--                        <span name="add_userId" class="grid-x account-user_role-container" id="selected-user_name-add">-->
-<!--                        user Name-->
-<!--                    </span>-->
-<!--                    </label>-->
-<!--                </div>-->
-
-<!--                selected-user_id-edit-->
 
                 <div class="cell account-field-cell">
                     <label class="account-field">Id<span class="account-required">*</span>
@@ -120,12 +111,12 @@ if (isset($_COOKIE["auth"])) {
                     </label>
                 </div>
 
-                <div class="cell account-field-cell">
-                    <label class="account-field">User name<span class="account-required">*</span>
-                        <input type="text" placeholder="User name" required class="account-input" id="selected-user_name-add"
-                               maxlength="128" readonly>
-                    </label>
-                </div>
+<!--                <div class="cell account-field-cell">-->
+<!--                    <label class="account-field">User name<span class="account-required">*</span>-->
+<!--                        <input type="text" placeholder="User name" required class="account-input" id="selected-user_name-add"-->
+<!--                               maxlength="128" readonly>-->
+<!--                    </label>-->
+<!--                </div>-->
 
 
 
