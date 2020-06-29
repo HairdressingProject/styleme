@@ -16,7 +16,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/FaceShape.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/SkinTone.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/HairStyle.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/HairLength.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/HairColour.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Colour.php';
 
 class UserFeature
 {

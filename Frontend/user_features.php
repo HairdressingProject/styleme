@@ -1,54 +1,35 @@
 <?php
-/**********************************************************
- * Package: ${PACKAGE_NAME}
- * Project: Admin-Portal-v2
- * File: hair_length_links.php
- * Author: Diego <20026893@tafe.wa.edu.au>
- * Date: 2020-06-28
- * Version: 1.0.0
- * Description: add short description of file's purpose
- **********************************************************/
+/*******************************************************
+ * Project:     Admin-Portal-v2
+ * File:        user_features.php
+ * Author:      Your name
+ * Date:        2020-06-28
+ * Version:     1.0.0
+ * Description:
+ *******************************************************/
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/actions/browse.php';
-require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairLengthLink.php';
-require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairLength.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/UserFeature.php';
 
 $token = Utils::addCSRFToken();
 $alert = null;
-$hairLengthLink = new hairLengthLink();
-$hairLength = new hairLength();
-$hairLengthLinks = [];
-$hairLengths = [];
-// for pagination
-define('ITEMS_PER_PAGE', 5);
-$count = 0;
-$page = 1;
-$totalNumberOfPages = 1;
-
-$parsedUrl = parse_url($_SERVER['REQUEST_URI']);
-$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
+$uf = new UserFeature();
+$userFeatures = [];
 
 if ($_POST && Utils::verifyCSRFToken()) {
     if (isset($_POST['_method'])) {
-        $alert = $hairLengthLink->handleSubmit($_POST['_method']);
+        $alert = $uf->handleSubmit($_POST['_method']);
     } else {
-        $alert = $hairLengthLink->handleSubmit();
+        $alert = $uf->handleSubmit();
     }
 }
 
 if (isset($_COOKIE["auth"])) {
-    $p = Utils::paginateResource($hairLengthLink, 'hairLengthLinks', ITEMS_PER_PAGE, $currentBaseUrl);
-    $hairLengthLinks = $p['resources'];
-    $count = $p['count'];
-    $page = $p['page'];
-    $totalNumberOfPages = $p['totalNumberOfPages'];
-
-    $browseHairLengths = $hairLength->browse();
-    $hairLengths = $browseHairLengths['hairLengths'];
+    $browseResponse = $uf->browse();
+    $userFeatures = $browseResponse['userFeatures'];
 }
 ?>
-
 
 <!doctype html>
 <html class="no-js" lang="en">
@@ -57,7 +38,7 @@ if (isset($_COOKIE["auth"])) {
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Hair Length Links</title>
+    <title>User Features</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
           integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous"/>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
@@ -70,47 +51,57 @@ if (isset($_COOKIE["auth"])) {
 <?php if(isset($alert)) echo $alert; ?>
 <!-- ADD MODAL -->
 <div class="reveal large _table-modal" id="add-modal" data-reveal>
-    <h3 class="_table-modal-title">Add a new hair length link</h3>
+    <h3 class="_table-modal-title">Add a new user feature</h3>
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
 
-    <form action="<?= 'hair_length_links.php?page=' . $page ?>" method="POST">
+    <form action="user_features.php" method="POST">
         <input type="hidden" name="token" value="<?=$token?>">
         <div class="grid-container">
             <div class="grid-x">
-
-                <div class="cell account-field-cell">
-                    <label class="account-field">hair_length<span class="account-required">*</span>
-                        <span class="grid-x account-user_role-container">
-                            <select name="add_hairLengthId" class="account-user_role" id="selected-hairLength-add" required>
-                                <?php
-                                for ($i = 0; $i < count($hairLengths); $i++) {
-                                    ?>
-                                    <option value="<?= $hairLengths[$i]->id ?>">
-                                            <?= $hairLengths[$i]->hairLengthName ?>
-                                        </option>
-                                <?php } ?>
-                            </select>
-                        </span>
-
+                <div class="cell account-field-cell" id="userFeatures-userId">
+                    <label class="account-field">user_id<span class="account-required">*</span>
+                        <input name="add_userId" type="text" placeholder="user_id" required class="account-input" id="selected-userId-add"
+                               maxlength="32">
                     </label>
                 </div>
-
-                <div class="cell account-field-cell">
-                    <label class="account-field">Link name<span class="account-required">*</span>
-                        <input name="add_linkName" type="text" placeholder="link name" required class="account-input" id="selected-linkName-add"
-                               maxlength="128">
-                    </label>
-                </div>
-
-                <div class="cell account-field-cell">
-                    <label class="account-field">Link URL<span class="account-required">*</span>
-                        <input name="add_linkUrl" type="text" placeholder="link url" required class="account-input" id="selected-linkUrl-add"
+                <div class="cell account-field-cell" id="userFeatures-faceShapeId">
+                    <label class="account-field">face_shape_id<span class="account-required">*</span>
+                        <input name="add_faceShapeId" type="text" placeholder="face_shape_id" required class="account-input" id="selected-faceShapeId-add"
                                maxlength="512">
                     </label>
                 </div>
-
+                <div class="cell account-field-cell" id="userFeatures-skinToneId">
+                    <label class="account-field">skin_tone_id<span class="account-required">*</span>
+                        <input name="add_skinToneId" type="text" placeholder="skin_tone_id" required class="account-input"
+                               maxlength="128" id="selected-skinToneId-add">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-family-name">
+                    <label class="account-field">last_name
+                        <input name="add_last_name" type="text" placeholder="last_name" class="account-input" id="selected-last_name-add"
+                               maxlength="128">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-given-name">
+                    <label class="account-field">user_password<span class="account-required">*</span>
+                        <input name="add_password" type="password" placeholder="******" required minlength="6" maxlength="512"
+                               class="account-input" id="selected-password-add">
+                        <button class="account-reveal-password">
+                            <img src="img/icons/eye.svg" alt="Reveal password">
+                        </button>
+                    </label>
+                </div>
+                <div class="cell account-field-cell">
+                    <label class="account-field">Confirm password<span class="account-required">*</span>
+                        <input name="add_confirm_password" type="password" placeholder="******" required minlength="6" maxlength="512"
+                               class="account-input" id="selected-confirm-password-add">
+                        <button class="account-reveal-password account-reveal-password-active">
+                            <img src="img/icons/eye.svg" alt="Reveal password">
+                        </button>
+                    </label>
+                </div>
                 <div class="account-btns grid-x">
                     <div class="cell small-12 medium-6">
                         <button id="btn-clear" class="account-restore-btn account-btn">Clear</button>
@@ -127,48 +118,70 @@ if (isset($_COOKIE["auth"])) {
 
 <!-- EDIT MODAL -->
 <div class="reveal large _table-modal" id="edit-modal" data-reveal>
-    <h3 class="_table-modal-title">Edit a hair length link</h3>
+    <h3 class="_table-modal-title">Edit a user</h3>
     <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
-    <form action="<?= 'hair_length_links.php?page=' . $page ?>" method="POST" id="edit-form">
+    <form action="users.php" method="POST" id="edit-form">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="PUT" />
         <input id="selected-id-edit" type="hidden" name="put_id" value="0" />
         <div class="grid-container">
             <div class="grid-x">
-
+                <div class="cell account-field-cell" id="account-username">
+                    <label class="account-field">user_name<span class="account-required">*</span>
+                        <input type="text" placeholder="user_name" name="put_username" required class="account-input" id="selected-username-edit"
+                               maxlength="32">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-email">
+                    <label class="account-field">user_email<span class="account-required">*</span>
+                        <input type="email" placeholder="user_email" name="put_user_email" required class="account-input" id="selected-user_email-edit"
+                               maxlength="512">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-given-name">
+                    <label class="account-field">first_name<span class="account-required">*</span>
+                        <input type="text" placeholder="first_name" name="put_first_name" required class="account-input"
+                               maxlength="128" id="selected-first_name-edit">
+                    </label>
+                </div>
+                <div class="cell account-field-cell" id="account-family-name">
+                    <label class="account-field">last_name
+                        <input type="text" placeholder="last_name" name="put_last_name" class="account-input" id="selected-last_name-edit"
+                               maxlength="128">
+                    </label>
+                </div>
                 <div class="cell account-field-cell">
-                    <label class="account-field">hair length<span class="account-required">*</span>
+                    <label class="account-field">user_role<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                            <select name="put_hairLengthId" class="account-user_role" id="selected-hairLength-edit" required>
-                                <?php
-                                for ($i = 0; $i < count($hairLengths); $i++) {
-                                    ?>
-                                    <option value="<?= $hairLengths[$i]->id ?>">
-                                            <?= $hairLengths[$i]->hairLengthName ?>
-                                        </option>
-                                <?php } ?>
+                            <select name="put_user_role" class="account-user_role" id="selected-user_role-edit" required>
+                                <option value="user">User</option>
+                                <option value="developer">Developer</option>
+                                <option value="admin">Admin</option>
                             </select>
                         </span>
 
                     </label>
                 </div>
-
-                <div class="cell account-field-cell">
-                    <label class="account-field">Link name<span class="account-required">*</span>
-                        <input name="put_linkName" type="text" placeholder="link name" required class="account-input" id="selected-linkName-edit"
-                               maxlength="128">
+                <div class="cell account-field-cell" id="account-given-name">
+                    <label class="account-field">user_password<span class="account-required">*</span>
+                        <input type="password" name="put_password" placeholder="******" required minlength="6" maxlength="512"
+                               class="account-input" id="selected-password-edit">
+                        <button class="account-reveal-password">
+                            <img src="img/icons/eye.svg" alt="Reveal password">
+                        </button>
                     </label>
                 </div>
-
                 <div class="cell account-field-cell">
-                    <label class="account-field">Link URL<span class="account-required">*</span>
-                        <input name="put_linkUrl" type="text" placeholder="link url" required class="account-input" id="selected-linkUrl-edit"
-                               maxlength="512">
+                    <label class="account-field">Confirm password<span class="account-required">*</span>
+                        <input type="password" placeholder="******" required minlength="6" maxlength="512"
+                               class="account-input" name="put_confirm_password" id="selected-confirm-password-edit">
+                        <button class="account-reveal-password account-reveal-password-active">
+                            <img src="img/icons/eye.svg" alt="Reveal password">
+                        </button>
                     </label>
                 </div>
-
                 <div class="account-btns grid-x">
                     <div class="cell small-12 medium-6">
                         <button id="btn-restore" class="account-restore-btn account-btn">Restore</button>
@@ -185,8 +198,8 @@ if (isset($_COOKIE["auth"])) {
 
 <!-- DELETE MODAL -->
 <div class="reveal large _table-modal" id="delete-modal" data-reveal>
-    <h3 class="_table-modal-title" id="delete-hair_length">Confirm delete hair length link</h3>
-    <form method="POST" action="<?= 'hair_length_links.php?page=' . $page ?>">
+    <h3 class="_table-modal-title" id="delete-user">Confirm delete user</h3>
+    <form method="POST" action="users.php">
         <input type="hidden" name="token" value="<?=$token?>">
         <input type="hidden" name="_method" value="DELETE" />
         <input id="delete_id" type="hidden" name="delete_id" value="0" />
@@ -196,21 +209,28 @@ if (isset($_COOKIE["auth"])) {
                     <tbody>
                     <tr class="_table-modal-delete-row">
                         <td class="_table-modal-delete-prop">id:</td>
-                        <td id="selected-id-delete" class="_table-modal-delete-val">id</td>
+                        <td id="selected-id-delete" class="_table-modal-delete-val">user_id</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">hair_length:</td>
-                        <td id="selected-hairLength-delete" class="_table-modal-delete-val">hair_length</td>
+                        <td class="_table-modal-delete-prop">user_name:</td>
+                        <td id="selected-username-delete" class="_table-modal-delete-val">user_name</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">link_name:</td>
-                        <td id="selected-linkName-delete" class="_table-modal-delete-val">link_name</td>
+                        <td class="_table-modal-delete-prop">user_email:</td>
+                        <td id="selected-user_email-delete" class="_table-modal-delete-val">user_email</td>
                     </tr>
                     <tr class="_table-modal-delete-row">
-                        <td class="_table-modal-delete-prop">link_url:</td>
-                        <td id="selected-linkUrl-delete" class="_table-modal-delete-val">link_url</td>
+                        <td class="_table-modal-delete-prop">first_name:</td>
+                        <td id="selected-first_name-delete" class="_table-modal-delete-val">first_name</td>
                     </tr>
-
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">last_name:</td>
+                        <td id="selected-last_name-delete" class="_table-modal-delete-val">last_name</td>
+                    </tr>
+                    <tr class="_table-modal-delete-row">
+                        <td class="_table-modal-delete-prop">user_role:</td>
+                        <td id="selected-user_role-delete" class="_table-modal-delete-val">user_role</td>
+                    </tr>
                     <tr class="_table-modal-delete-row">
                         <td class="_table-modal-delete-prop">date_created:</td>
                         <td id="selected-date_created-delete" class="_table-modal-delete-val">date_created</td>
@@ -370,7 +390,7 @@ if (isset($_COOKIE["auth"])) {
     <main class="main">
         <div class="grid-x _tables-grid">
             <div class="cell small-12 large-11 large-offset-4 _tables">
-                <h2 class="_tables-title">Hair length links</h2>
+                <h2 class="_tables-title">User Featres</h2>
                 <div class="_tables-search-input-container">
                     <input type="text" placeholder="Search for an entry..." id="entries-search-input"
                            class="_tables-search"/>
@@ -389,79 +409,50 @@ if (isset($_COOKIE["auth"])) {
                     </div>
                 </div>
 
-                <table class="_resource-table _HairLengths-table">
+                <table class="_resource-table _users-table">
                     <thead>
                     <tr>
                         <th>id</th>
-                        <th>hair_length</th>
-                        <th>link_name</th>
-                        <th>link_url</th>
+                        <th>user_id</th>
+                        <th>face_shape_id</th>
+                        <th>skin_tone_id</th>
+                        <th>hair_style_id</th>
+                        <th>hair_length_id</th>
+                        <th>hair_colour_id</th>
                         <th>date_created</th>
                         <th>date_modified</th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php
-                    for ($i = 0; $i < count($hairLengthLinks); $i++) { $hairLengthLink = $hairLengthLinks[$i]; ?>
+                    for ($i = 0; $i < count($userFeatures); $i++) { $userFeatures = $userFeatures[$i]; ?>
                         <tr class="_tables-row">
-                            <td class="_tables-cell id"><?= $hairLengthLink->id ?></td>
-                            <td class="_tables-cell linkName" data-hair-length-id="<?=$hairLengthLink->hairLengthId?>"><?= $hairLengthLink->hairLength->hairLengthName ?></td>
-                            <td class="_tables-cell linkName"><?= $hairLengthLink->linkName ?></td>
-                            <td class="_tables-cell linkUrl"><?= $hairLengthLink->linkUrl ?></td>
-                            <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime($hairLengthLink->dateCreated) ?></td>
-                            <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime($hairLengthLink->dateModified) ?></td>
+                            <td class="_tables-cell id"><?= $userFeatures->id ?></td>
+                            <td class="_tables-cell user_id"><?= $userFeatures->user->userName ?></td>
+                            <td class="_tables-cell face_shape_id"><?= $userFeatures->faceShape->shapeName ?></td>
+                            <td class="_tables-cell skin_tone_id"><?= $userFeatures->skinTone->skinToneName ?></td>
+                            <td class="_tables-cell hair_style_id"><?= $userFeatures->hairStyle->hairStyleName ?></td>
+                            <td class="_tables-cell hair_length_id"><?= $userFeatures->hairLength->hairLengthName ?></td>
+                            <td class="_tables-cell hair_colour_id"><?= $userFeatures->hairColour->colourName ?></td>
+                            <td class="_tables-cell date_created"><?= Utils::prettyPrintDateTime($userFeatures->dateCreated) ?></td>
+                            <td class="_tables-cell date_modified"><?= Utils::prettyPrintDateTime($userFeatures->dateModified) ?></td>
                         </tr>
                     <?php } ?>
                     </tbody>
                 </table>
-                <!-- PAGINATION -->
                 <nav aria-label="Pagination" class="_pagination">
                     <ul class="pagination text-center">
-                        <?php if ($page <= 1) {?>
-                            <li class="pagination-previous disabled">Previous</li>
-                        <?php } else { ?>
-                            <li
-                                    class="pagination-previous">
-                                <a href="<?= $currentBaseUrl . '?page='. ($page - 1) ?>">
-                                    Previous
-                                </a>
-                            </li>
-                        <?php } ?>
-
-                        <?php
-                        for ($i = 1; $i <= $totalNumberOfPages; $i++) {
-                            ?>
-                            <li>
-                                <?php if ($i === $page) { ?>
-                                    <a
-                                            class="current"
-                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
-                                        <?= $i ?>
-                                    </a>
-                                <?php } else { ?>
-                                    <a
-                                            href="<?= $currentBaseUrl . '?page=' . $i ?>" aria-label="<?= 'Page ' . $page ?>">
-                                        <?= $i ?>
-                                    </a>
-                                <?php } ?>
-                            </li>
-                        <?php } ?>
-
-                        <?php if ($page >= $totalNumberOfPages) {?>
-                            <li class="pagination-next disabled">
-                                Next
-                            </li>
-                        <?php } else {?>
-                            <li class="pagination-next">
-                                <a href="<?= $currentBaseUrl . '?page=' . ($page + 1) ?>">
-                                    Next
-                                </a>
-                            </li>
-                        <?php } ?>
+                        <li class="pagination-previous disabled">Previous</li>
+                        <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
+                        <li><a href="#" aria-label="Page 2">2</a></li>
+                        <li><a href="#" aria-label="Page 3">3</a></li>
+                        <li><a href="#" aria-label="Page 4">4</a></li>
+                        <li class="ellipsis"></li>
+                        <li><a href="#" aria-label="Page 12">12</a></li>
+                        <li><a href="#" aria-label="Page 13">13</a></li>
+                        <li class="pagination-next"><a href="#" aria-label="Next page">Next</a></li>
                     </ul>
                 </nav>
-
-                <!-- END OF PAGINATION -->
             </div>
         </div>
     </main>
@@ -487,7 +478,7 @@ if (isset($_COOKIE["auth"])) {
 <script src="js/authenticate.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/redirect.js"></script>
-<script src="js/hair_length_links.js"></script>
+<script src="js/user_features.js"></script>
 </body>
 
 </html>
