@@ -29,8 +29,10 @@ namespace AdminApi.Controllers
         // GET: api/hair_styles
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HairStyles>>> GetHairStyles(
-            [FromQuery(Name = "limit")] string limit,
-             [FromQuery(Name = "offset")] string offset)
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -43,14 +45,15 @@ namespace AdminApi.Controllers
                 {
                     var limitedHairStyles = await _context
                                                     .HairStyles
+                                                    .Where(
+                                                    r =>
+                                                    r.HairStyleName.Contains(search)
+                                                    )
                                                     .Skip(o)
                                                     .Take(l)
                                                     .ToListAsync();
 
-                    return Ok(new
-                    {
-                        hairStyles = limitedHairStyles
-                    });
+                    return Ok(new { hairStyles = limitedHairStyles });
                 }
                 else
                 {
@@ -59,7 +62,7 @@ namespace AdminApi.Controllers
             }
 
             var hairStyles = await _context.HairStyles.ToListAsync();
-            return Ok(new { hairStyles });
+            return Ok(new { hairStyles = hairStyles });
         }
 
         [HttpGet("count")]

@@ -29,8 +29,10 @@ namespace AdminApi.Controllers
         // GET: api/skin_tone_links
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkinToneLinks>>> GetSkinToneLinks(
-            [FromQuery(Name = "limit")] string limit,
-             [FromQuery(Name = "offset")] string offset)
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -48,10 +50,7 @@ namespace AdminApi.Controllers
                                                     .Take(l)
                                                     .ToListAsync();
 
-                    return Ok(new
-                    {
-                        skinToneLinks = limitedSkinToneLinks
-                    });
+                    return Ok(new { skinToneLinks = limitedSkinToneLinks });
                 }
                 else
                 {
@@ -60,7 +59,7 @@ namespace AdminApi.Controllers
             }
 
             var skinToneLinks = await _context.SkinToneLinks.Include(stl => stl.SkinTone).ToListAsync();
-            return Ok(new { skinToneLinks });
+            return Ok(new { skinToneLinks = skinToneLinks });
         }
 
         [HttpGet("count")]

@@ -31,8 +31,10 @@ namespace AdminApi.Controllers
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HairLengths>>> GetHairLengths(
-            [FromQuery(Name = "limit")] string limit,
-            [FromQuery(Name = "offset")] string offset)
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -45,14 +47,15 @@ namespace AdminApi.Controllers
                 {
                     var limitedHairLengths = await _context
                                                     .HairLengths
+                                                    .Where(
+                                                    r =>
+                                                    r.HairLengthName.Contains(search)
+                                                    )
                                                     .Skip(o)
                                                     .Take(l)
                                                     .ToListAsync();
 
-                    return Ok(new
-                    {
-                        hairLengths = limitedHairLengths
-                    });
+                    return Ok(new { hairLengths = limitedHairLengths });
                 }
                 else
                 {
@@ -61,7 +64,7 @@ namespace AdminApi.Controllers
             }
 
             var hairLengths = await _context.HairLengths.ToListAsync();
-            return Ok(new { hairLengths });
+            return Ok(new { hairLengths = hairLengths });
         }
 
         [HttpGet("count")]

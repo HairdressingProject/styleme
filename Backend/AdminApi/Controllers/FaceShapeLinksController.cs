@@ -29,8 +29,9 @@ namespace AdminApi.Controllers
         // GET: api/face_shape_links
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FaceShapeLinks>>> GetFaceShapeLinks(
-            [FromQuery(Name = "limit")] string limit, 
-            [FromQuery(Name = "offset")] string offset
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
             )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
@@ -49,10 +50,7 @@ namespace AdminApi.Controllers
                                                 .Take(l)
                                                 .ToListAsync();
 
-                    return Ok(new
-                    {
-                        faceShapeLinks = limitedFaceShapeLinks
-                    });
+                    return Ok(new { faceShapeLinks = limitedFaceShapeLinks });
                 }
                 else
                 {
@@ -62,7 +60,7 @@ namespace AdminApi.Controllers
 
             var faceShapeLinks = await _context.FaceShapeLinks.Include(fsl => fsl.FaceShape).ToListAsync();
 
-            return Ok(new { faceShapeLinks });
+            return Ok(new { faceShapeLinks = faceShapeLinks });
         }
 
         [HttpGet("count")]

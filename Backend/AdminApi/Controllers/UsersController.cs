@@ -44,7 +44,11 @@ namespace AdminApi.Controllers
         // GET: api/users?limit=5&offset=0 (optional pagination)
         [EnableCors("Policy1")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Users>>> GetUsers([FromQuery(Name = "limit")] string limit, [FromQuery(Name = "offset")] string offset)
+        public async Task<ActionResult<IEnumerable<Users>>> GetUsers(
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -62,10 +66,7 @@ namespace AdminApi.Controllers
                                                 .Take(l)
                                                 .ToListAsync();
 
-                    return Ok(new
-                    {
-                        users = limitedUsers.WithoutPasswords()
-                    });
+                    return Ok(new { users = limitedUsers.WithoutPasswords() });
                 }
                 else
                 {

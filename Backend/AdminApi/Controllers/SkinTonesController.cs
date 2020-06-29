@@ -31,8 +31,10 @@ namespace AdminApi.Controllers
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkinTones>>> GetSkinTones(
-            [FromQuery(Name = "limit")] string limit,
-             [FromQuery(Name = "offset")] string offset)
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -45,14 +47,15 @@ namespace AdminApi.Controllers
                 {
                     var limitedSkinTones = await _context
                                                     .SkinTones
+                                                    .Where(
+                                                    r =>
+                                                    r.SkinToneName.Contains(search)
+                                                    )
                                                     .Skip(o)
                                                     .Take(l)
                                                     .ToListAsync();
 
-                    return Ok(new
-                    {
-                        skinTones = limitedSkinTones
-                    });
+                    return Ok(new { skinTones = limitedSkinTones });
                 }
                 else
                 {
@@ -62,7 +65,7 @@ namespace AdminApi.Controllers
 
             var skinTones = await _context.SkinTones.ToListAsync();
 
-            return Ok(new { skinTones });
+            return Ok(new { skinTones = skinTones });
         }
 
         [HttpGet("count")]

@@ -28,7 +28,11 @@ namespace AdminApi.Controllers
 
         // GET: api/colours
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Colours>>> GetColours([FromQuery(Name = "limit")] string limit, [FromQuery(Name = "offset")] string offset)
+        public async Task<ActionResult<IEnumerable<Colours>>> GetColours(
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -41,14 +45,16 @@ namespace AdminApi.Controllers
                 {
                     var limitedColours = await _context
                                                 .Colours
+                                                .Where(
+                                                r =>
+                                                r.ColourName.Contains(search) ||
+                                                r.ColourHash.Contains(search)
+                                                )
                                                 .Skip(o)
                                                 .Take(l)
                                                 .ToListAsync();
 
-                    return Ok(new
-                    {
-                        colours = limitedColours
-                    });
+                    return Ok(new { colours = limitedColours });
                 }
                 else
                 {
@@ -56,9 +62,9 @@ namespace AdminApi.Controllers
                 }
             }
 
+            // default return
             var colours = await _context.Colours.ToListAsync();
-
-            return Ok(new {colours});
+            return Ok(new { colours = colours });
         }
 
         [HttpGet("count")]

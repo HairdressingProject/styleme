@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Cors;
 namespace AdminApi.Controllers
 {
     /**
-     * FaceShapesController
+     * FaceShapesControllerC:\Users\Stefan\Desktop\Complex UX\Admin-Portal-v2\Backend\AdminApi\Controllers\FaceShapesController.cs
      * This controller handles all routes in the format: "/api/face_shapes/"
      * 
     **/
@@ -31,8 +31,9 @@ namespace AdminApi.Controllers
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FaceShapes>>> GetFaceShapes(
-            [FromQuery(Name = "limit")] string limit,
-            [FromQuery(Name = "offset")] string offset
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
             )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
@@ -46,14 +47,15 @@ namespace AdminApi.Controllers
                 {
                     var limitedFaceShapes = await _context
                                                     .FaceShapes
+                                                    .Where(
+                                                    r =>
+                                                    r.ShapeName.Contains(search)
+                                                    )
                                                     .Skip(o)
                                                     .Take(l)
                                                     .ToListAsync();
 
-                    return Ok(new
-                    {
-                        faceShapes = limitedFaceShapes
-                    });
+                    return Ok(new { faceShapes = limitedFaceShapes });
                 }
                 else
                 {
@@ -61,9 +63,9 @@ namespace AdminApi.Controllers
                 }
             }
 
-            var faceShapes = await _context.FaceShapes.ToListAsync();
 
-            return Ok(new { faceShapes });
+            var faceShapes = await _context.FaceShapes.ToListAsync();
+            return Ok(new { faceShapes = faceShapes });
         }
 
         [HttpGet("count")]

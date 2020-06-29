@@ -32,8 +32,10 @@ namespace AdminApi.Controllers
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserFeatures>>> GetUserFeatures(
-            [FromQuery(Name = "limit")] string limit,
-             [FromQuery(Name = "offset")] string offset)
+            [FromQuery(Name = "limit")] string limit = "1000",
+            [FromQuery(Name = "offset")] string offset = "0",
+            [FromQuery(Name = "search")] string search = ""
+            )
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -61,10 +63,7 @@ namespace AdminApi.Controllers
                         uf.User = uf.User.WithoutPassword();
                     });
 
-                    return Ok(new
-                    {
-                        userFeatures = limitedUserFeatures
-                    });
+                    return Ok(new { userFeatures = limitedUserFeatures });
                 }
                 else
                 {
@@ -90,7 +89,7 @@ namespace AdminApi.Controllers
                 });
             }
 
-            return Ok(new { userFeatures });
+            return Ok(new { userFeatures = userFeatures });
         }
 
         [HttpGet("count")]
