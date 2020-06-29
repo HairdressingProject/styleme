@@ -317,7 +317,7 @@ if (isset($_COOKIE["auth"])) {
                 <div class="cell account-field-cell">
                     <label class="account-field">hair length<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                            <select name="put_hairColourId" class="account-user_role" id="selected-hair_length-edit" required>
+                            <select name="put_hairLengthId" class="account-user_role" id="selected-hair_length-edit" required>
                                 <?php
                                 // loop trough all hair styles
                                 for ($i = 0; $i < count($hairLengths); $i++) {
@@ -335,7 +335,7 @@ if (isset($_COOKIE["auth"])) {
                 <div class="cell account-field-cell">
                     <label class="account-field">hair colour<span class="account-required">*</span>
                         <span class="grid-x account-user_role-container">
-                            <select name="put_hairStyleId" class="account-user_role" id="selected-hair_colour-edit" required>
+                            <select name="put_hairColourId" class="account-user_role" id="selected-hair_colour-edit" required>
                                 <?php
                                 // loop trough all hair colours
                                 for ($i = 0; $i < count($hairColours); $i++) {
