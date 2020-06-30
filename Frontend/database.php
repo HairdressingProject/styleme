@@ -1,3 +1,60 @@
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
+
+$token = Utils::addCSRFToken();
+$alert = null;
+$search = null;
+
+$parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
+
+$tables = [
+        'users' => 'Users',
+        'colours' => 'Colours',
+        'face_shapes' => 'Face shapes',
+        'face_shape_links' => 'Face shape links',
+        'hair_lengths' => 'Hair lengths',
+        'hair_length_links' => 'Hair length links',
+        'hair_styles' => 'Hair styles',
+        'hair_style_links' => 'Hair style links',
+        'skin_tones' => 'Skin tones',
+        'skin_tone_links' => 'Skin tone links',
+        'user_features' => 'User features'
+];
+
+$filteredTables = [];
+
+function filter(string $str, array $arr) {
+    $filtered = [];
+    foreach ($arr as $k => $v) {
+        if (stripos($k, $str) !== false) $filtered[$k] = $v;
+    }
+    return $filtered;
+}
+
+if ($_POST && $_POST['search_table'] && Utils::verifyCSRFToken()) {
+    $search = Utils::sanitiseField($_POST['search_table'], FILTER_SANITIZE_STRING);
+
+    if (!empty(filter($search, $tables))) {
+        $redirect = '<script>';
+        $redirect .= 'window.location.href="';
+        $redirect .= $currentBaseUrl.'?search='.$search;
+        $redirect .= '";</script>';
+
+        echo $redirect;
+        exit();
+    }
+    else {
+        $alert = Utils::createAlert('No results found', 'error');
+    }
+}
+
+if ($_GET && $_GET['search']) {
+    $search = Utils::sanitiseField($_GET['search'], FILTER_SANITIZE_STRING);
+    $filteredTables = filter($search, $tables);
+}
+?>
+
 <!doctype html>
 <html class="no-js" lang="en">
 
@@ -15,6 +72,7 @@
 <body>
 <noscript>Please enable JavaScript for this page to work</noscript>
 
+<?php if(isset($alert)) echo $alert; ?>
 <!-- TOP BAR -->
 <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
     <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
@@ -145,11 +203,32 @@
         <div class="grid-x _tables-grid">
             <div class="cell small-12 large-8 large-offset-4 _tables">
                 <h2 class="_tables-title">hair_project_db tables</h2>
-                <div class="_tables-search-input-container">
-                    <input type="text" placeholder="Search for a table..." id="tables-search-input"
+                <form
+                        action="database.php"
+                        method="POST"
+                        class="_tables-search-input-container">
+                    <input type="hidden" name="token" value="<?= $token ?>">
+                    <input type="text" name="search_table" placeholder="Search for a table..." id="tables-search-input"
                            class="_tables-search"/>
-                    <img src="img/icons/search.svg" alt="Search" class="_tables-search-icon">
-                </div>
+                    <button type="submit" style="cursor: pointer">
+                        <img src="img/icons/search.svg" alt="Search for a table" class="_tables-search-icon">
+                    </button>
+                </form>
+
+                <?php
+                if (isset($search)) {
+                    ?>
+                    <div class="text-center" style="margin-bottom: 5rem">
+                        <h2 style="margin-bottom: 2.5rem; font-size: 2rem">
+                            Search results for: <?= Utils::sanitiseField($search, FILTER_SANITIZE_STRING) ?>
+                        </h2>
+                        <a      style="font-size: 1.5rem"
+                                href="database.php"
+                        >
+                            Show all results
+                        </a>
+                    </div>
+                <?php } ?>
 
                 <!-- YOU MIGHT WANT TO RE-USE THIS TABLE -->
                 <table>
@@ -157,77 +236,26 @@
                     <tr>
                         <th>#</th>
                         <th>table name</th>
-                        <th>created</th>
-                        <th>last updated</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="_tables-row" data-href="/users.php">
-                        <td>1</td>
-                        <td>Users</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/colours.php">
-                        <td>2</td>
-                        <td>Colours</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/face_shapes.php">
-                        <td>3</td>
-                        <td>Face shapes</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/face_shape_links.php">
-                        <td>4</td>
-                        <td>Face shape links</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/hair_lengths.php">
-                        <td>5</td>
-                        <td>Hair lengths</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/hair_length_links.php">
-                        <td>6</td>
-                        <td>Hair length links</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/hair_styles.php">
-                        <td>7</td>
-                        <td>Hair styles</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/hair_style_links.php">
-                        <td>8</td>
-                        <td>Hair style links</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/skin_tones.php">
-                        <td>9</td>
-                        <td>Skin tones</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="/skin_tone_links.php">
-                        <td>10</td>
-                        <td>Skin tone links</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
-                    <tr class="_tables-row" data-href="user_features.php">
-                        <td>11</td>
-                        <td>User features</td>
-                        <td>Content Goes Here</td>
-                        <td>Content Goes Here</td>
-                    </tr>
+
+                    <?php if (!empty($filteredTables)) {
+                        $count = 0;
+                        foreach ($filteredTables as $k => $v) { $count++ ?>
+                            <tr class="_tables-row" data-href="/<?= Utils::sanitiseField($k, FILTER_SANITIZE_STRING) . '.php' ?>">
+                                <td><?= Utils::sanitiseField($count, FILTER_SANITIZE_NUMBER_INT) ?></td>
+                                <td><?= Utils::sanitiseField($v, FILTER_SANITIZE_STRING) ?></td>
+                            </tr>
+                    <?php } ?>
+
+                   <?php } else { $count = 0;
+                   foreach ($tables as $k => $v) { $count++?>
+                       <tr class="_tables-row" data-href="/<?= Utils::sanitiseField($k, FILTER_SANITIZE_STRING) . '.php' ?>">
+                           <td><?= Utils::sanitiseField($count, FILTER_SANITIZE_NUMBER_INT) ?></td>
+                           <td><?= Utils::sanitiseField($v, FILTER_SANITIZE_STRING) ?></td>
+                       </tr>
+                    <?php }} ?>
                     </tbody>
                 </table>
             </div>
