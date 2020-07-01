@@ -25,7 +25,7 @@ class Utils
         $response = [];
 
         if (isAuthenticated()) {
-            $r = @file_get_contents($resourceUrl, false, $context);
+            $r = file_get_contents($resourceUrl, false, $context);
 
             if ($r) {
                 // I <3 PHP

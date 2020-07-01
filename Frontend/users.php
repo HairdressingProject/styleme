@@ -17,7 +17,7 @@ $page = 1;
 $totalNumberOfPages = 1;
 
 $parsedUrl = parse_url($_SERVER['REQUEST_URI']);
-$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
+$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].$parsedUrl['path'];
 
 $f = implementDefaultPageFeatures(
         'users',

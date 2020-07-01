@@ -10,4 +10,4 @@
  **********************************************************/
 
 define('ROOT', $_SERVER['DOCUMENT_ROOT']);
-define("API_URL", "https://localhost:5000");
+define("API_URL", "https://178.128.94.81");

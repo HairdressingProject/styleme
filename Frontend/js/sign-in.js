@@ -237,7 +237,7 @@ async function signIn(e) {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Origin': 'http://localhost:5500/'
+                'Origin': 'http://178.128.94.81'
             },
             body: JSON.stringify(data)
         });
@@ -254,7 +254,7 @@ async function signIn(e) {
         }
         else {
             // successfully signed in
-            window.location.replace('http://localhost:5500/database.php');
+            window.location.replace('http://178.128.94.81/database.php');
         }
     }
     signInBtn.removeAttribute('disabled');

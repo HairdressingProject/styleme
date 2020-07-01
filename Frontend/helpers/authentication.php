@@ -17,13 +17,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
  * Verifies if the user is authenticated
  * @return int|bool ID of authenticated user or false (if not authenticated)
  */
+ini_set("display_errors", 1); error_reporting(E_ALL);
+
 function isAuthenticated() {
     $opts = generateHeaders('GET');
     $authUrl = API_URL . '/api/users/authenticate';
 
     $ctx = stream_context_create($opts);
 
-    $response = @file_get_contents($authUrl, false, $ctx);
+    $response = file_get_contents($authUrl, false, $ctx);
 
     $r = (array) json_decode($response);
 

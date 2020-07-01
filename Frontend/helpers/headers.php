@@ -36,6 +36,10 @@ function generateHeaders(string $method, array $data = null) {
     if (isset($data)) {
         // POST, PUT
         return array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false
+            ),
             'http' => array(
                 'method' => $method,
                 'content' => json_encode($data),
@@ -49,6 +53,10 @@ function generateHeaders(string $method, array $data = null) {
 
     return array(
         // GET, DELETE
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false
+        ),
         'http' => array(
             'method' => $method,
             'origin' => $protocol.$_SERVER["HTTP_HOST"],

@@ -39,7 +39,7 @@ namespace AdminApi.Services
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
                 Path = "/",
                 SameSite = SameSiteMode.Strict,
-                Domain = "localhost",
+                Domain = "178.128.94.81",
                 Secure = false
             };
 

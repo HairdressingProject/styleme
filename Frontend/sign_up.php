@@ -21,7 +21,7 @@
             <h1 class="sign-up-title">Hairdressing Application - Admin Portal</h1>
             <p class="sign-up-subtitle">Hey there! Let's get started</p>
 
-            <form action="https://localhost:5000/api/users/sign_up" method="POST" id="sign-up-form">
+            <form action="https://178.128.94.81/api/users/sign_up" method="POST" id="sign-up-form">
                 <div class="sign-up-given-name" id="sign-up-given-name">
                     <div class="input-group sign-up-input-group" id="sign-up-given-name-group">
                         <span class="input-group-label sign-up-input-label">

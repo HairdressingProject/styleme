@@ -1,12 +1,12 @@
 async function authenticate() {
-    const url = 'https://localhost:5000/api/users/authenticate';
+    const url = 'https://178.128.94.81/api/users/authenticate';
 
     const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
         headers: {
-            'Origin': 'http://localhost:5500/'
+            'Origin': 'http://178.128.94.81'
         }
     });
 
@@ -34,14 +34,14 @@ async function parseAuthResponse(response) {
 }
 
 async function getUser(id) {
-    const url = `https://localhost:5000/api/users/${id}`;
+    const url = `https://178.128.94.81/api/users/${id}`;
 
     const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
         headers: {
-            'Origin': 'http://localhost:5500'
+            'Origin': 'http://178.128.94.81/'
         }
     });
 
@@ -66,14 +66,14 @@ function handleError(response) {
 }
 
 async function logout() {
-    const url = `https://localhost:5000/api/users/logout`;
+    const url = `https://178.128.94.81/api/users/logout`;
 
     const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
         headers: {
-            'Origin': 'http://localhost:5500'
+            'Origin': 'http://178.128.94.81'
         }
     });
 

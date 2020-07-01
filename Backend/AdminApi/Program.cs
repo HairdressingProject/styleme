@@ -15,7 +15,7 @@ namespace AdminApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                                .UseUrls("https://localhost:5000");
+                                .UseUrls("https://178.128.94.81");
                 });
     }
 }
