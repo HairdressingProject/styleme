@@ -5,7 +5,7 @@ namespace AdminApi
 {
     public class Program
     {
-        public static readonly string API_URL = "http://api.stylebest.me/";
+        public static readonly string API_URL = "http://api.stylebest.me:5000/";
         public static readonly string API_DOMAIN = "stylebest.me";
         public static void Main(string[] args)
         {
