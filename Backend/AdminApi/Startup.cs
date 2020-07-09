@@ -56,8 +56,8 @@ namespace AdminApi
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidAudience = "http://178.128.94.81",
-                    ValidIssuer = "http://178.128.94.81"
+                    ValidAudience = Program.API_URL,
+                    ValidIssuer = Program.API_URL
                 };
             })
             .AddCookie(options =>
@@ -94,7 +94,7 @@ namespace AdminApi
                     builder =>
                     {
                         builder.AllowCredentials()
-                                .WithOrigins("http://178.128.94.81")
+                                .WithOrigins(Program.API_URL)
                                 .WithMethods("GET", "POST", "PUT", "DELETE")
                                 .WithHeaders("Origin", "Content-Type");
                     });

@@ -70,8 +70,8 @@ namespace AdminApi.Services
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = "http://178.128.94.81",
-                Audience = "http://178.128.94.81"                
+                Issuer = Program.API_URL,
+                Audience = Program.API_URL                
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             entityUser.Token = tokenHandler.WriteToken(token);           
@@ -125,9 +125,9 @@ namespace AdminApi.Services
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidIssuer = "http://178.128.94.81",
+                    ValidIssuer = Program.API_URL,
                     ValidateAudience = true,
-                    ValidAudience = "http://178.128.94.81"
+                    ValidAudience = Program.API_URL
                 }, out SecurityToken validatedToken);
             }
             catch

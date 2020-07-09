@@ -5,6 +5,8 @@ namespace AdminApi
 {
     public class Program
     {
+        public static readonly string API_URL = "http://api.stylebest.me/";
+        public static readonly string API_DOMAIN = "stylebest.me";
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -15,7 +17,7 @@ namespace AdminApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                                .UseUrls("https://178.128.94.81");
+                                .UseUrls(API_URL);
                 });
     }
 }
