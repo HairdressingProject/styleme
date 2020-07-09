@@ -1,12 +1,15 @@
+const API_URL = 'http://api.stylebest.me';
+const APP_URL = 'http://stylebest.me';
+
 async function authenticate() {
-    const url = 'https://178.128.94.81/api/users/authenticate';
+    const url = `${API_URL}/api/users/authenticate`;
 
     const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
         headers: {
-            'Origin': 'http://178.128.94.81'
+            'Origin': APP_URL
         }
     });
 
@@ -34,14 +37,14 @@ async function parseAuthResponse(response) {
 }
 
 async function getUser(id) {
-    const url = `https://178.128.94.81/api/users/${id}`;
+    const url = `${API_URL}/api/users/${id}`;
 
     const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
         headers: {
-            'Origin': 'http://178.128.94.81/'
+            'Origin': APP_URL
         }
     });
 
@@ -66,14 +69,14 @@ function handleError(response) {
 }
 
 async function logout() {
-    const url = `https://178.128.94.81/api/users/logout`;
+    const url = `${API_URL}/api/users/logout`;
 
     const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
         headers: {
-            'Origin': 'http://178.128.94.81'
+            'Origin': APP_URL
         }
     });
 
