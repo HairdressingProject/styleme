@@ -40,7 +40,7 @@ namespace AdminApi.Services
                 Path = "/",
                 SameSite = SameSiteMode.Strict,
                 Domain = Program.API_DOMAIN,
-                Secure = false
+                Secure = true
             };
 
             var origin = request.Headers["Origin"];
