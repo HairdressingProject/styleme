@@ -20,7 +20,7 @@
             <h1 class="sign-in-title">Hairdressing Application - Admin Portal</h1>
             <p class="sign-in-subtitle">Welcome back! Please login to continue.</p>
 
-            <form action="https://178.128.94.81/api/users/sign_in" method="POST" id="sign-in-form">
+            <form action="http://api.styleme.best/api/users/sign_in" method="POST" id="sign-in-form">
                 <div class="sign-in-username" id="sign-in-username">
                     <div class="input-group sign-in-input-group" id="sign-in-username-group">
                         <span class="input-group-label sign-in-input-label">

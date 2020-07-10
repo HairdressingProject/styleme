@@ -71,7 +71,7 @@ namespace AdminApi.Services
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = Program.API_URL,
-                Audience = Program.API_URL                
+                Audience = Program.ADMIN_URL           
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             entityUser.Token = tokenHandler.WriteToken(token);           
@@ -127,7 +127,7 @@ namespace AdminApi.Services
                     ValidateIssuer = true,
                     ValidIssuer = Program.API_URL,
                     ValidateAudience = true,
-                    ValidAudience = Program.API_URL
+                    ValidAudience = Program.ADMIN_URL
                 }, out SecurityToken validatedToken);
             }
             catch

@@ -1,3 +1,6 @@
+const ADMIN_URL = "http://styleme.best";
+const API_URL = "http://api.styleme.best";
+
 const signInBtn = document.getElementById('sign-in-btn');
 const username = document.getElementById('username');
 let usernameTouched = false;
@@ -237,7 +240,7 @@ async function signIn(e) {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Origin': 'http://178.128.94.81'
+                'Origin': ADMIN_URL
             },
             body: JSON.stringify(data)
         });
@@ -254,7 +257,7 @@ async function signIn(e) {
         }
         else {
             // successfully signed in
-            window.location.replace('http://178.128.94.81/database.php');
+            window.location.replace(`${ADMIN_URL}/database.php`);
         }
     }
     signInBtn.removeAttribute('disabled');

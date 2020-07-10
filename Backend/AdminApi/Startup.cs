@@ -56,7 +56,7 @@ namespace AdminApi
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidAudience = Program.API_URL,
+                    ValidAudience = Program.ADMIN_URL,
                     ValidIssuer = Program.API_URL
                 };
             })
@@ -94,7 +94,7 @@ namespace AdminApi
                     builder =>
                     {
                         builder.AllowCredentials()
-                                .WithOrigins(Program.API_URL)
+                                .WithOrigins(Program.ADMIN_URL)
                                 .WithMethods("GET", "POST", "PUT", "DELETE")
                                 .WithHeaders("Origin", "Content-Type");
                     });

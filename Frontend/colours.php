@@ -8,8 +8,6 @@
  * Version: 1.0.0
  * Description: add short description of file's purpose
  **********************************************************/
-
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/actions/browse.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/classes/Colour.php';
@@ -27,7 +25,7 @@ $page = 1;
 $totalNumberOfPages = 1;
 
 $parsedUrl = parse_url($_SERVER['REQUEST_URI']);
-$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
+$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].$parsedUrl['path'];
 
 $f = implementDefaultPageFeatures(
     'colours',
@@ -52,7 +50,7 @@ $search = $f['search'];
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Face Shapes</title>
+    <title>Colours</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
           integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous"/>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
