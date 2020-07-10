@@ -1,5 +1,5 @@
-const ADMIN_URL = "http://styleme.best";
-const API_URL = "http://api.styleme.best";
+const ADMIN_URL = "https://styleme.best";
+const API_URL = "https://api.styleme.best";
 
 const signInBtn = document.getElementById('sign-in-btn');
 const username = document.getElementById('username');

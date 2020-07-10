@@ -1,3 +1,7 @@
+<?php
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
+?>
+
 <!doctype html>
 <html class="no-js" lang="en">
 
@@ -20,7 +24,7 @@
             <h1 class="sign-in-title">Hairdressing Application - Admin Portal</h1>
             <p class="sign-in-subtitle">Welcome back! Please login to continue.</p>
 
-            <form action="http://api.styleme.best/users/sign_in" method="POST" id="sign-in-form">
+            <form action="https://api.styleme.best/users/sign_in" method="POST" id="sign-in-form">
                 <div class="sign-in-username" id="sign-in-username">
                     <div class="input-group sign-in-input-group" id="sign-in-username-group">
                         <span class="input-group-label sign-in-input-label">

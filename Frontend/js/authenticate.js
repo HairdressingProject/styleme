@@ -1,5 +1,5 @@
-const API_URL = 'http://api.styleme.best';
-const APP_URL = 'http://styleme.best';
+const API_URL = 'https://api.styleme.best';
+const APP_URL = 'https://styleme.best';
 
 async function authenticate() {
     const url = `${API_URL}/users/authenticate`;

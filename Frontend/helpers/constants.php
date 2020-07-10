@@ -10,4 +10,4 @@
  **********************************************************/
 
 define('ROOT', $_SERVER['DOCUMENT_ROOT']);
-define("API_URL", "http://api.styleme.best");
+define("API_URL", "https://api.styleme.best");
