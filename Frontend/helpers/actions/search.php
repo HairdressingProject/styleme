@@ -21,7 +21,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
  */
 function searchResource(string $resourceName, string $query, int $limit = null, int $offset = null) {
     $opts = generateHeaders('GET');
-    $resourceUrl = API_URL . '/api/' . $resourceName . '?search=' . Utils::sanitiseField($query, FILTER_SANITIZE_STRING);
+    $resourceUrl = API_URL . '/' . $resourceName . '?search=' . Utils::sanitiseField($query, FILTER_SANITIZE_STRING);
 
     if (isset($limit) && isset($offset)) {
         $resourceUrl .= '&limit='. $limit . '&offset=' . $offset;

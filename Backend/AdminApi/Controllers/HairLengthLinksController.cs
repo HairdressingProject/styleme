@@ -9,11 +9,11 @@ namespace AdminApi.Controllers
 {
     /**
      * HairLengthLinksController
-     * This controller handles all routes in the format: "/api/hair_length_links/"
+     * This controller handles all routes in the format: "/hair_length_links/"
      * 
     **/
     // [Authorize]
-    [Route("api/hair_length_links")]
+    [Route("hair_length_links")]
     [ApiController]
     public class HairLengthLinksController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/hair_length_links
+        // GET: hair_length_links
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HairLengthLinks>>> GetHairLengthLinks(
             [FromQuery(Name = "limit")] string limit = "1000",
@@ -107,7 +107,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/hair_length_links/5
+        // GET: hair_length_links/5
         [HttpGet("{id}")]
         public async Task<ActionResult<HairLengthLinks>> GetHairLengthLinks(ulong id)
         {
@@ -126,7 +126,7 @@ namespace AdminApi.Controllers
             return hairLengthLinks;
         }
 
-        // PUT: api/hair_length_links/5
+        // PUT: hair_length_links/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHairLengthLinks(ulong id, [FromBody] HairLengthLinks hairLengthLinks)
         {
@@ -170,7 +170,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST: api/hair_length_links
+        // POST: hair_length_links
         [HttpPost]
         public async Task<ActionResult<HairLengthLinks>> PostHairLengthLinks([FromBody] HairLengthLinks hairLengthLinks)
         {
@@ -192,7 +192,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetHairLengthLinks", new { id = hairLengthLinks.Id }, hairLengthLinks);
         }
 
-        // DELETE: api/hair_length_links/5
+        // DELETE: hair_length_links/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<HairLengthLinks>> DeleteHairLengthLinks(ulong id)
         {

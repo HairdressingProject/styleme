@@ -21,7 +21,7 @@ ini_set("display_errors", 1); error_reporting(E_ALL);
 
 function isAuthenticated() {
     $opts = generateHeaders('GET');
-    $authUrl = API_URL . '/api/users/authenticate';
+    $authUrl = API_URL . '/users/authenticate';
 
     $ctx = stream_context_create($opts);
 

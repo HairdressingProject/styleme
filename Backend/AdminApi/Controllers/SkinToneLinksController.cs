@@ -9,11 +9,11 @@ namespace AdminApi.Controllers
 {
     /**
      * SkinToneLinksController
-     * This controller handles all routes in the format: "/api/skin_tone_links/"
+     * This controller handles all routes in the format: "/skin_tone_links/"
      * 
     **/
     // [Authorize]
-    [Route("api/skin_tone_links")]
+    [Route("skin_tone_links")]
     [ApiController]
     public class SkinToneLinksController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/skin_tone_links
+        // GET: skin_tone_links
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkinToneLinks>>> GetSkinToneLinks(
             [FromQuery(Name = "limit")] string limit = "1000",
@@ -106,7 +106,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/skin_tone_links/5
+        // GET: skin_tone_links/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SkinToneLinks>> GetSkinToneLinks(ulong id)
         {
@@ -125,7 +125,7 @@ namespace AdminApi.Controllers
             return skinToneLinks;
         }
 
-        // PUT: api/skin_tone_links/5
+        // PUT: skin_tone_links/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSkinToneLinks(ulong id, [FromBody] SkinToneLinks skinToneLinks)
         {
@@ -167,7 +167,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST: api/skin_tone_links
+        // POST: skin_tone_links
         [HttpPost]
         public async Task<ActionResult<SkinToneLinks>> PostSkinToneLinks(SkinToneLinks skinToneLinks)
         {
@@ -189,7 +189,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetSkinToneLinks", new { id = skinToneLinks.Id }, skinToneLinks);
         }
 
-        // DELETE: api/skin_tone_links/5
+        // DELETE: skin_tone_links/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<SkinToneLinks>> DeleteSkinToneLinks(ulong id)
         {

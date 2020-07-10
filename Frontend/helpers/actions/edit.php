@@ -19,6 +19,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
  */
 function editResource(string $resourceName, array $data) {
     $opts = generateHeaders('PUT', $data);
-    $resourceUrl = API_URL . '/api/' . $resourceName . '/' . $data['Id'];
+    $resourceUrl = API_URL . '/' . $resourceName . '/' . $data['Id'];
     return Utils::getResponse($resourceUrl, $opts);
 }

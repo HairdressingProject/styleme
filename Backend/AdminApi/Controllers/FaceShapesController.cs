@@ -10,11 +10,11 @@ namespace AdminApi.Controllers
 {
     /**
      * FaceShapesControllerC:\Users\Stefan\Desktop\Complex UX\Admin-Portal-v2\Backend\AdminApi\Controllers\FaceShapesController.cs
-     * This controller handles all routes in the format: "/api/face_shapes/"
+     * This controller handles all routes in the format: "/face_shapes/"
      * 
     **/
     // [Authorize]
-    [Route("api/face_shapes")]
+    [Route("face_shapes")]
     [ApiController]
     public class FaceShapesController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/face_shapes
+        // GET: face_shapes
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FaceShapes>>> GetFaceShapes(
@@ -96,7 +96,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/face_shapes/5
+        // GET: face_shapes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<FaceShapes>> GetFaceShapes(ulong id)
         {
@@ -115,7 +115,7 @@ namespace AdminApi.Controllers
             return faceShapes;
         }
 
-        // PUT: api/face_shapes/5
+        // PUT: face_shapes/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFaceShapes(ulong id, [FromBody] FaceShapes faceShapes)
         {
@@ -148,7 +148,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST: api/face_shapes
+        // POST: face_shapes
         [EnableCors("Policy1")]
         [HttpPost]
         public async Task<ActionResult<FaceShapes>> PostFaceShapes([FromBody] FaceShapes faceShapes)
@@ -164,7 +164,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetFaceShapes", new { id = faceShapes.Id }, faceShapes);
         }
 
-        // DELETE: api/face_shapes/5
+        // DELETE: face_shapes/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<FaceShapes>> DeleteFaceShapes(ulong id)
         {

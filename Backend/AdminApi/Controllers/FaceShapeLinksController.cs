@@ -10,11 +10,11 @@ namespace AdminApi.Controllers
 {
     /**
      * FaceShapeLinksController
-     * This controller handles all routes in the format: "/api/face_shape_links/"
+     * This controller handles all routes in the format: "/face_shape_links/"
      * 
     **/
     // [Authorize]
-    [Route("api/face_shape_links")]
+    [Route("face_shape_links")]
     [ApiController]
     public class FaceShapeLinksController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/face_shape_links
+        // GET: face_shape_links
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FaceShapeLinks>>> GetFaceShapeLinks(
             [FromQuery(Name = "limit")] string limit = "1000",
@@ -108,7 +108,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/face_shape_links/5
+        // GET: face_shape_links/5
         [HttpGet("{id}")]
         public async Task<ActionResult<FaceShapeLinks>> GetFaceShapeLinks(ulong id)
         {
@@ -127,7 +127,7 @@ namespace AdminApi.Controllers
             return faceShapeLinks;
         }
 
-        // PUT: api/face_shape_links/5
+        // PUT: face_shape_links/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFaceShapeLinks(ulong id, [FromBody] FaceShapeLinks faceShapeLinks)
         {
@@ -170,7 +170,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST: api/face_shape_links
+        // POST: face_shape_links
         [HttpPost]
         public async Task<ActionResult<FaceShapeLinks>> PostFaceShapeLinks([FromBody] FaceShapeLinks faceShapeLinks)
         {
@@ -192,7 +192,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetFaceShapeLinks", new { id = faceShapeLinks.Id }, faceShapeLinks);
         }
 
-        // DELETE: api/face_shape_links/5
+        // DELETE: face_shape_links/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<FaceShapeLinks>> DeleteFaceShapeLinks(ulong id)
         {

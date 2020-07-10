@@ -19,6 +19,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
  */
 function deleteResource(string $resourceName, $id) {
     $opts = generateHeaders('DELETE');
-    $resourceUrl = API_URL . '/api/' . $resourceName . '/' . $id;
+    $resourceUrl = API_URL . '/' . $resourceName . '/' . $id;
     return Utils::getResponse($resourceUrl, $opts);
 }

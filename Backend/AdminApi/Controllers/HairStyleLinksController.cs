@@ -9,11 +9,11 @@ namespace AdminApi.Controllers
 {
     /**
      * HairStyleLinksController
-     * This controller handles all routes in the format: "/api/hair_style_links/"
+     * This controller handles all routes in the format: "/hair_style_links/"
      * 
     **/
     // [Authorize]
-    [Route("api/hair_style_links")]
+    [Route("hair_style_links")]
     [ApiController]
     public class HairStyleLinksController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/hair_style_links
+        // GET: hair_style_links
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HairStyleLinks>>> GetHairStyleLinks(
             [FromQuery(Name = "limit")] string limit = "1000",
@@ -107,7 +107,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/hair_style_links/5
+        // GET: hair_style_links/5
         [HttpGet("{id}")]
         public async Task<ActionResult<HairStyleLinks>> GetHairStyleLinks(ulong id)
         {
@@ -126,7 +126,7 @@ namespace AdminApi.Controllers
             return hairStyleLinks;
         }
 
-        // PUT: api/hair_style_links/5
+        // PUT: hair_style_links/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHairStyleLinks(ulong id, [FromBody] HairStyleLinks hairStyleLinks)
         {
@@ -168,7 +168,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST /api/hair_style_links
+        // POST /hair_style_links
         [HttpPost]
         public async Task<ActionResult<HairStyleLinks>> PostHairStyleLinks([FromBody] HairStyleLinks hairStyleLinks)
         {
@@ -190,7 +190,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetHairStyleLinks", new { id = hairStyleLinks.Id }, hairStyleLinks);
         }
 
-        // DELETE: api/hair_style_links/5
+        // DELETE: hair_style_links/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<HairStyleLinks>> DeleteHairStyleLinks(ulong id)
         {

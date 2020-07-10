@@ -20,7 +20,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 function countResource(string $resourceName, string $search = null) {
     $opts = generateHeaders('GET');
 
-    $resourceUrl = API_URL . '/api/' . $resourceName . '/count';
+    $resourceUrl = API_URL . '/' . $resourceName . '/count';
 
     if (isset($search)) {
         $resourceUrl .= '?search=' . Utils::sanitiseField($search, FILTER_SANITIZE_STRING);

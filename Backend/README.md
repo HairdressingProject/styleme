@@ -51,7 +51,7 @@ dotnet watch run
 ### 4 - Sending requests
 Before testing any route, you will first have to create a new sample admin account. That is because all passwords are now hashed by the server before being added to the database, so they should not be directly added with `INSERT` statements. 
 
-Send a `POST /api/users/sign_up` request with a request body in the following format (you may change each property to suit your preferences):
+Send a `POST /users/sign_up` request with a request body in the following format (you may change each property to suit your preferences):
 
 ```json
 {
@@ -65,7 +65,7 @@ Send a `POST /api/users/sign_up` request with a request body in the following fo
 
 > After you submit your request, notice that the user role was added as "user" instead of "admin". This is intentional, otherwise anyone would be able to register as admin. Similar measures may be implemented in other routes, if time permits.
 
-If you have already registered an account, you can send a `POST /api/users/sign_in` request with the format below to authenticate:
+If you have already registered an account, you can send a `POST /users/sign_in` request with the format below to authenticate:
 
 ```json
 {

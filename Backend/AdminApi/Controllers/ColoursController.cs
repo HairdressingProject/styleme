@@ -9,11 +9,11 @@ namespace AdminApi.Controllers
 {
     /**
      * ColoursController
-     * This controller handles all routes in the format: "/api/colours/"
+     * This controller handles all routes in the format: "/colours/*"
      * 
     **/
     // [Authorize]
-    [Route("api/colours")]
+    [Route("colours")]
     [ApiController]
     public class ColoursController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/colours
+        // GET: colours
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Colours>>> GetColours(
             [FromQuery(Name = "limit")] string limit = "1000",
@@ -96,7 +96,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/colours/5
+        // GET: colours/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Colours>> GetColours(ulong id)
         {
@@ -115,7 +115,7 @@ namespace AdminApi.Controllers
             return colours;
         }
 
-        // PUT: api/colours/5
+        // PUT: colours/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutColours(ulong id, [FromBody] Colours colours)
         {
@@ -149,7 +149,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST: api/colours
+        // POST: colours
         [HttpPost]
         public async Task<ActionResult<Colours>> PostColours([FromBody] Colours colours)
         {
@@ -164,7 +164,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetColours", new { id = colours.Id }, colours);
         }
 
-        // DELETE: api/colours/5
+        // DELETE: colours/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Colours>> DeleteColours(ulong id)
         {

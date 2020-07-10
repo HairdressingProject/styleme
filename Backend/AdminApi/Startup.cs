@@ -62,7 +62,7 @@ namespace AdminApi
             })
             .AddCookie(options =>
             {
-                options.LoginPath = "/api/users/sign_in";
+                options.LoginPath = "/users/sign_in";
                 options.Events.OnRedirectToLogin = (context) =>
                 {
                     context.Response.StatusCode = 401;

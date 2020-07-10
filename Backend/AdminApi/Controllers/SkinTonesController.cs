@@ -10,11 +10,11 @@ namespace AdminApi.Controllers
 {
     /**
      * SkinTonesController
-     * This controller handles all routes in the format: "/api/skin_tones/"
+     * This controller handles all routes in the format: "/skin_tones/"
      * 
     **/
     // [Authorize]
-    [Route("api/skin_tones")]
+    [Route("skin_tones")]
     [ApiController]
     public class SkinTonesController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/skin_tones
+        // GET: skin_tones
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkinTones>>> GetSkinTones(
@@ -96,7 +96,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/skin_tones/5
+        // GET: skin_tones/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SkinTones>> GetSkinTones(ulong id)
         {
@@ -115,7 +115,7 @@ namespace AdminApi.Controllers
             return skinTones;
         }
 
-        // PUT: api/skin_tones/5
+        // PUT: skin_tones/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSkinTones(ulong id, [FromBody] SkinTones skinTones)
         {
@@ -148,7 +148,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST: api/skin_tones
+        // POST: skin_tones
         [HttpPost]
         public async Task<ActionResult<SkinTones>> PostSkinTones([FromBody] SkinTones skinTones)
         {
@@ -163,7 +163,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetSkinTones", new { id = skinTones.Id }, skinTones);
         }
 
-        // DELETE: api/skin_tones/5
+        // DELETE: skin_tones/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<SkinTones>> DeleteSkinTones(ulong id)
         {

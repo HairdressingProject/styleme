@@ -12,10 +12,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 function browseResource(string $resourceName, int $limit = null, int $offset = null) {
     $opts = generateHeaders('GET');
 
-    $resourceUrl = API_URL . '/api/' . $resourceName;
+    $resourceUrl = API_URL . '/' . $resourceName;
 
     if (isset($limit) && isset($offset)) {
-        $resourceUrl = API_URL . '/api/' . $resourceName . '?limit=' . $limit . '&offset=' . $offset;
+        $resourceUrl = API_URL . '/' . $resourceName . '?limit=' . $limit . '&offset=' . $offset;
     }
     
     return Utils::getResponse($resourceUrl, $opts);

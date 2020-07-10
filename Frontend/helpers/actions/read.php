@@ -19,6 +19,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
  */
 function readResource(string $resourceName, $id) {
     $opts = generateHeaders('GET');
-    $resourceUrl = API_URL . '/api/' . $resourceName . '/' . $id;
+    $resourceUrl = API_URL . '/' . $resourceName . '/' . $id;
     return Utils::getResponse($resourceUrl, $opts);
 }

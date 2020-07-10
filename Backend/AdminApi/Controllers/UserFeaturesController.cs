@@ -11,11 +11,11 @@ namespace AdminApi.Controllers
 {
     /**
      * UserFeaturesController
-     * This controller handles all routes in the format: "/api/user_features/"
+     * This controller handles all routes in the format: "/user_features/"
      * 
     **/
     // [Authorize]
-    [Route("api/user_features")]
+    [Route("user_features")]
     [ApiController]
     public class UserFeaturesController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/user_features
+        // GET: user_features
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserFeatures>>> GetUserFeatures(
@@ -129,7 +129,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/user_features/5
+        // GET: user_features/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserFeatures>> GetUserFeatures(ulong id)
         {
@@ -152,7 +152,7 @@ namespace AdminApi.Controllers
             return userFeatures[0];
         }
 
-        // PUT: api/user_features/5
+        // PUT: user_features/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserFeatures(ulong id, [FromBody] UserFeatures userFeatures)
         {
@@ -198,7 +198,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST: api/user_features
+        // POST: user_features
         [HttpPost]
         public async Task<ActionResult<UserFeatures>> PostUserFeatures(UserFeatures userFeatures)
         {
@@ -221,7 +221,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetUserFeatures", new { id = userFeatures.Id }, userFeatures);
         }
 
-        // DELETE: api/user_features/5
+        // DELETE: user_features/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<UserFeatures>> DeleteUserFeatures(ulong id)
         {

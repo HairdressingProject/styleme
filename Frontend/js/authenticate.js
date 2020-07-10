@@ -2,7 +2,7 @@ const API_URL = 'http://api.styleme.best';
 const APP_URL = 'http://styleme.best';
 
 async function authenticate() {
-    const url = `${API_URL}/api/users/authenticate`;
+    const url = `${API_URL}/users/authenticate`;
 
     const response = await fetch(url, {
         method: 'GET',
@@ -37,7 +37,7 @@ async function parseAuthResponse(response) {
 }
 
 async function getUser(id) {
-    const url = `${API_URL}/api/users/${id}`;
+    const url = `${API_URL}/users/${id}`;
 
     const response = await fetch(url, {
         method: 'GET',
@@ -69,7 +69,7 @@ function handleError(response) {
 }
 
 async function logout() {
-    const url = `${API_URL}/api/users/logout`;
+    const url = `${API_URL}/users/logout`;
 
     const response = await fetch(url, {
         method: 'GET',

@@ -16,12 +16,12 @@ namespace AdminApi.Controllers
 {
     /**
      * UsersController
-     * This controller handles all routes in the format: "/api/users/"
+     * This controller handles all routes in the format: "/users/"
      * To disable authentication, simply comment out the [Authorize] annotation
      * 
     **/
     [ApiController]
-    [Route("api/users")]
+    [Route("users")]
     public class UsersController : ControllerBase
     {
         private readonly hair_project_dbContext _context;
@@ -40,8 +40,8 @@ namespace AdminApi.Controllers
             _emailService = emailService;
         }
 
-        // GET: api/users
-        // GET: api/users?limit=5&offset=0 (optional pagination)
+        // GET: users
+        // GET: users?limit=5&offset=0 (optional pagination)
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Users>>> GetUsers(
@@ -130,7 +130,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/users/5
+        // GET: users/5
         [HttpGet("{id:long}")]
         public async Task<ActionResult<Users>> GetUser(ulong id)
         {
@@ -160,7 +160,7 @@ namespace AdminApi.Controllers
             // return users;
         }
 
-        // GET: api/users/{guid} - Can be used to get user details based on their recover password token (if valid)
+        // GET: users/{guid} - Can be used to get user details based on their recover password token (if valid)
         [HttpGet("{token:guid}")]
         public async Task<ActionResult<Users>> GetUser(Guid token)
         {
@@ -191,7 +191,7 @@ namespace AdminApi.Controllers
         }
 
 
-        // GET: /api/users/logout
+        // GET: /users/logout
         [HttpGet("logout")]
         public IActionResult LogoutUser()
         {
@@ -201,7 +201,7 @@ namespace AdminApi.Controllers
         }
 
         // ********************************************************************************************************************************************        
-        // PUT: api/users/5
+        // PUT: users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsers(ulong id, [FromBody] UpdatedUser user)
         {
@@ -261,7 +261,7 @@ namespace AdminApi.Controllers
 
         // ********************************************************************************************************************************************
 
-        // PUT: api/users/{guid}/change_password : Method to change user password (based on user's recover password token).
+        // PUT: users/{guid}/change_password : Method to change user password (based on user's recover password token).
         [HttpPut("{token:guid}/change_password")]
         public async Task<IActionResult> SetNewPassword(Guid token, [FromBody] ValidatedChangeUserPasswordModel user)
         {
@@ -323,7 +323,7 @@ namespace AdminApi.Controllers
             return NotFound(new { errors = new { Token = new string[] { "Token not found" } }, status = 404 });
         }
 
-        // PUT: api/users/5/change_password : Method to change user password (based on user's ID).
+        // PUT: users/5/change_password : Method to change user password (based on user's ID).
         [HttpPut("{id:long}/change_password")]
         public async Task<IActionResult> SetNewPassword(ulong id, [FromBody]ValidatedChangeUserPasswordModel user)
         {
@@ -372,7 +372,7 @@ namespace AdminApi.Controllers
             return NoContent();
         }
 
-        // PUT api/users/5/change_role
+        // PUT users/5/change_role
         [HttpPut("{id}/change_role")]
         public async Task<IActionResult> ChangeUserRole(ulong id, [FromBody] Models_v2_1.Validation.ValidatedUserRoleModel user)
         {
@@ -417,7 +417,7 @@ namespace AdminApi.Controllers
         }
 
         // ********************************************************************************************************************************************        
-        // POST api/users
+        // POST users
         [EnableCors("Policy1")]
         [HttpPost]
         public async Task<ActionResult<Users>> PostUsers([FromBody] SignUpUser user)
@@ -458,7 +458,7 @@ namespace AdminApi.Controllers
             return Conflict(new { errors = new { Users = new string[] { "User already exists" } }, status = 409 });
         }
 
-        // POST api/users/sign_up
+        // POST users/sign_up
         [EnableCors("Policy1")]
         [HttpPost("sign_up")]
         public async Task<IActionResult> SignUp([FromBody] SignUpUser newUser)
@@ -524,7 +524,7 @@ namespace AdminApi.Controllers
             return Conflict(new { errors = new { Users = new string[] { "User already registered" } }, status = 409 });
         }
 
-        // POST: api/users/sign_in
+        // POST: users/sign_in
         [EnableCors("Policy1")]
         [HttpPost("sign_in")]
         public async Task<IActionResult> SignIn([FromBody] AuthenticatedUserModel user)
@@ -553,7 +553,7 @@ namespace AdminApi.Controllers
             return Ok();
         }
 
-        // POST: api/users/authenticate
+        // POST: users/authenticate
         // This method is an alternative to sign in that validates the token directly
         [EnableCors("Policy1")]
         [HttpGet("authenticate")]
@@ -573,7 +573,7 @@ namespace AdminApi.Controllers
             return NotFound();
         }
 
-        // POST: api/users/forgot_password
+        // POST: users/forgot_password
         [EnableCors("Policy1")]
         [HttpPost("forgot_password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ValidatedUserEmailModel user)
@@ -631,7 +631,7 @@ HairdressingProject Admin.
             }
         }
 
-        // DELETE: api/users/5
+        // DELETE: users/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Users>> DeleteUsers(ulong id)
         {

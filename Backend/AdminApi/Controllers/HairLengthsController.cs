@@ -10,11 +10,11 @@ namespace AdminApi.Controllers
 {
     /**
      * HairLengthsController
-     * This controller handles all routes in the format: "/api/hair_lengths/"
+     * This controller handles all routes in the format: "/hair_lengths/"
      * 
     **/
     // [Authorize]
-    [Route("api/hair_lengths")]
+    [Route("hair_lengths")]
     [ApiController]
     public class HairLengthsController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace AdminApi.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/hair_lengths
+        // GET: hair_lengths
         [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HairLengths>>> GetHairLengths(
@@ -95,7 +95,7 @@ namespace AdminApi.Controllers
             });
         }
 
-        // GET: api/hair_lengths/5
+        // GET: hair_lengths/5
         [HttpGet("{id}")]
         public async Task<ActionResult<HairLengths>> GetHairLengths(ulong id)
         {
@@ -114,7 +114,7 @@ namespace AdminApi.Controllers
             return hairLengths;
         }
 
-        // PUT: api/hair_lengths/5
+        // PUT: hair_lengths/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHairLengths(ulong id, [FromBody] HairLengths hairLengths)
         {
@@ -147,7 +147,7 @@ namespace AdminApi.Controllers
             }
         }
 
-        // POST: api/hair_lengths
+        // POST: hair_lengths
         [HttpPost]
         public async Task<ActionResult<HairLengths>> PostHairLengths([FromBody] HairLengths hairLengths)
         {
@@ -162,7 +162,7 @@ namespace AdminApi.Controllers
             return CreatedAtAction("GetHairLengths", new { id = hairLengths.Id }, hairLengths);
         }
 
-        // DELETE: api/hair_lengths/5
+        // DELETE: hair_lengths/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<HairLengths>> DeleteHairLengths(ulong id)
         {
