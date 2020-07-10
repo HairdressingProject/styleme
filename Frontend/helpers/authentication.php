@@ -25,7 +25,7 @@ function isAuthenticated() {
 
     $ctx = stream_context_create($opts);
 
-    $response = file_get_contents($authUrl, false, $ctx);
+    $response = @file_get_contents($authUrl, false, $ctx);
 
     $r = (array) json_decode($response);
 
