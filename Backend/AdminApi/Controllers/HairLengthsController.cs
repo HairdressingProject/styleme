@@ -28,7 +28,6 @@ namespace AdminApi.Controllers
         }
 
         // GET: hair_lengths
-        [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HairLengths>>> GetHairLengths(
             [FromQuery(Name = "limit")] string limit = "1000",

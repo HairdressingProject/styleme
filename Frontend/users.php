@@ -46,7 +46,7 @@ $search = $f['search'];
           integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous"/>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css"/>
-</head>
+<script defer src="dist/./js/alert.b343894394789be6eccd.js"></script><script defer src="dist/./js/account~authenticate~colours~database~face_shape_links~face_shapes~hair_length_links~hair_lengths~ha~2ac6ed68.54af0dae442d85891c45.js"></script><script defer src="dist/./js/authenticate.5feb8edce647737d98dd.js"></script><script defer src="dist/./js/index.a9aeea2909aadcf5e962.js"></script><script defer src="dist/./js/sidebar.76f4b7f4db2fdd043287.js"></script><script defer src="dist/./js/users.5a341385c8db45328c2c.js"></script></head>
 
 <body>
 <noscript>Please enable JavaScript for this page to work</noscript>
@@ -588,12 +588,12 @@ if (isset($alert)) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/js/foundation.min.js"
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 
-<script src="js/index.js"></script>
+<!-- <script src="js/index.js"></script>
 <script src="js/alert.js"></script>
 <script src="js/authenticate.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/redirect.js"></script>
-<script src="js/users.js"></script>
+<script src="js/users.js"></script> -->
 </body>
 
 </html>

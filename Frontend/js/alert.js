@@ -61,7 +61,4 @@ function dismissAlert() {
     alertMsg.style.display = 'none';
 }
 
-module.exports = {
-    showAlert,
-    dismissAlert
-}
+export {showAlert, dismissAlert}

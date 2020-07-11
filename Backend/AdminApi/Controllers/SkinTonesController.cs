@@ -28,7 +28,6 @@ namespace AdminApi.Controllers
         }
 
         // GET: skin_tones
-        [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkinTones>>> GetSkinTones(
             [FromQuery(Name = "limit")] string limit = "1000",

@@ -84,3 +84,5 @@ async function logout() {
         window.location.replace('/sign_in.php');
     }
 }
+
+export {authenticate, logout, getUser}

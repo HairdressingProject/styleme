@@ -1,3 +1,6 @@
+import { redirect } from './redirect';
+redirect();
+
 const tableRows = document.getElementsByClassName('_tables-row');
 let selectedRow;
 const clearBtn = document.getElementById('btn-clear');

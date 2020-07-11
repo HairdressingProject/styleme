@@ -1,3 +1,5 @@
+import { redirect } from './redirect';
+
 const tableRows = document.getElementsByClassName('_tables-row');
 let selectedRow;
 const clearBtn = document.getElementById('btn-clear');
@@ -23,7 +25,8 @@ let colour = {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-
+    redirect();
+    
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('_tables-cell')) {
             selectedRow = e.target.parentElement;

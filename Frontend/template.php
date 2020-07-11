@@ -14,7 +14,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css" />
-</head>
+<script defer src="dist/./js/alert.b343894394789be6eccd.js"></script><script defer src="dist/./js/account~authenticate~colours~database~face_shape_links~face_shapes~hair_length_links~hair_lengths~ha~2ac6ed68.54af0dae442d85891c45.js"></script><script defer src="dist/./js/authenticate.5feb8edce647737d98dd.js"></script><script defer src="dist/./js/index.a9aeea2909aadcf5e962.js"></script><script defer src="dist/./js/sidebar.76f4b7f4db2fdd043287.js"></script></head>
 
 <body>
     <h1>Hello, world!</h1>

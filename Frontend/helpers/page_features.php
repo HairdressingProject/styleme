@@ -95,5 +95,8 @@ function implementDefaultPageFeatures(
             'search' => $search
         );
     }
-    exit();
+    else {
+        echo '<script>window.location.href ="/sign_in.php"</script>';
+        exit();
+    }
 }

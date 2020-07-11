@@ -196,7 +196,15 @@ namespace AdminApi.Controllers
         public IActionResult LogoutUser()
         {
             // Invalidate token/cookie
-            Response.Cookies.Delete("auth");
+            Response.Cookies.Append("auth", "", new CookieOptions {
+                HttpOnly = true,
+                Expires = DateTime.Now.AddDays(-1),
+                Path = "/",
+                SameSite = SameSiteMode.Strict,
+                Domain = Program.API_DOMAIN,
+                Secure = true
+            });
+
             return Ok(new { message = "Logout successful" });
         }
 

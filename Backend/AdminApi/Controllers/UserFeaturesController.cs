@@ -29,7 +29,6 @@ namespace AdminApi.Controllers
         }
 
         // GET: user_features
-        [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserFeatures>>> GetUserFeatures(
             [FromQuery(Name = "limit")] string limit = "1000",

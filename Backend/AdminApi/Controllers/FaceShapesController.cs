@@ -28,7 +28,6 @@ namespace AdminApi.Controllers
         }
 
         // GET: face_shapes
-        [EnableCors("Policy1")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FaceShapes>>> GetFaceShapes(
             [FromQuery(Name = "limit")] string limit = "1000",
@@ -149,7 +148,6 @@ namespace AdminApi.Controllers
         }
 
         // POST: face_shapes
-        [EnableCors("Policy1")]
         [HttpPost]
         public async Task<ActionResult<FaceShapes>> PostFaceShapes([FromBody] FaceShapes faceShapes)
         {

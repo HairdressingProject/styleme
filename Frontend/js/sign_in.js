@@ -1,4 +1,4 @@
-const { showAlert } = require('./alert');
+import { showAlert } from './alert';
 
 const ADMIN_URL = "https://styleme.best";
 const API_URL = "https://api.styleme.best";

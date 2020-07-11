@@ -1,3 +1,6 @@
+import { redirect } from './redirect';
+redirect();
+
 const tableRows = document.getElementsByClassName('_tables-row');
 let selectedRow;
 const clearBtn = document.getElementById('btn-clear');
@@ -21,31 +24,28 @@ let faceShape = {
     dateModified: ''
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('_tables-cell')) {
-            selectedRow = e.target.parentElement;
-            selectRow(selectedRow)
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('_tables-cell')) {
+        selectedRow = e.target.parentElement;
+        selectRow(selectedRow)
+    }
+    else {
+        if (selectedRow && !e.target.classList.contains('_table-btn')) {
+            deselectRow(selectedRow);
+            selectedRow = null;
         }
-        else {
-            if (selectedRow && !e.target.classList.contains('_table-btn')) {
-                deselectRow(selectedRow);
-                selectedRow = null;
-            }
-        }
-    });
-
-    openEditModalBtn.addEventListener('click', function() {
-        if (selectedRow) {
-            updateEditFields();
-        }
-    });
-    openDeleteModalBtn.addEventListener('click', updateDeleteFields);
-    restoreBtn.addEventListener('click', restoreEditFields);
-    clearBtn.addEventListener('click', clearAddFields);
-    cancelBtn.addEventListener('click', closeDeleteForm);
+    }
 });
+
+openEditModalBtn.addEventListener('click', function () {
+    if (selectedRow) {
+        updateEditFields();
+    }
+});
+openDeleteModalBtn.addEventListener('click', updateDeleteFields);
+restoreBtn.addEventListener('click', restoreEditFields);
+clearBtn.addEventListener('click', clearAddFields);
+cancelBtn.addEventListener('click', closeDeleteForm);
 
 function selectRow(selected) {
     // deselect others

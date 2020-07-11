@@ -63,12 +63,13 @@ if ($_GET && $_GET['search']) {
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Admin Portal website for the Hairdressing Project" />
     <title>Database</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
-          integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous"/>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/index.css"/>
-</head>
+          integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous" media="screen" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="css/index.css" media="screen" />
+<script defer src="dist/./js/alert.b343894394789be6eccd.js"></script><script defer src="dist/./js/account~authenticate~colours~database~face_shape_links~face_shapes~hair_length_links~hair_lengths~ha~2ac6ed68.54af0dae442d85891c45.js"></script><script defer src="dist/./js/authenticate.5feb8edce647737d98dd.js"></script><script defer src="dist/./js/database.b8de25110fdfbaed1513.js"></script><script defer src="dist/./js/index.a9aeea2909aadcf5e962.js"></script><script defer src="dist/./js/sidebar.76f4b7f4db2fdd043287.js"></script></head>
 
 <body>
 <noscript>Please enable JavaScript for this page to work</noscript>
@@ -76,7 +77,7 @@ if ($_GET && $_GET['search']) {
 <?php if(isset($alert)) echo $alert; ?>
 <!-- TOP BAR -->
 <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
-    <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+    <button class="menu-icon" type="button" data-toggle="responsive-menu" aria-label="menu"></button>
     <div class="title-bar-title">Hairdressing Project</div>
 </div>
 
@@ -209,8 +210,10 @@ if ($_GET && $_GET['search']) {
                         method="POST"
                         class="_tables-search-input-container">
                     <input type="hidden" name="token" value="<?= $token ?>">
+                    <label for="tables-search-input" aria-label="search for a table"></label>
                     <input type="text" name="search_table" placeholder="Search for a table..." id="tables-search-input"
                            class="_tables-search"/>
+                   
                     <button type="submit" style="cursor: pointer">
                         <img src="img/icons/search.svg" alt="Search for a table" class="_tables-search-icon">
                     </button>
@@ -279,12 +282,12 @@ if ($_GET && $_GET['search']) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/js/foundation.min.js"
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 
-<script src="js/index.js"></script>
-<script src="js/alert.js"></script>
-<script src="js/authenticate.js"></script>
-<script src="js/sidebar.js"></script>
-<script src="js/database.js"></script>
-<script src="js/redirect.js"></script>
+<!-- <script src="dist/js/index.15929ebd2c9329d115b2.js"></script>   
+<script src="dist/js/alert.63343dc1ee857e6a231d.js"></script>
+<script src="dist/js/authenticate.03a439d03468df849e11.js"></script>
+<script src="dist/js/sidebar.50133d7752b0bb6b835d.js"></script>
+<script src="dist/js/database.92eff97ca026a2176aa8.js"></script>
+<script src="dist/js/redirect.4f2eb9a33949dcb44653.js"></script> -->
 </body>
 
 </html>

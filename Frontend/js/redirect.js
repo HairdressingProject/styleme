@@ -1,7 +1,8 @@
-const logoutLink = document.getElementById('logout');
-const userName = document.getElementById('user-name');
+import { authenticate, getUser, logout } from './authenticate';
 
-document.addEventListener('DOMContentLoaded', async function () {
+async function redirect() {
+    const logoutLink = document.getElementById('logout');
+    const userName = document.getElementById('user-name');
     const id = await authenticate();
 
     if (id) {
@@ -17,4 +18,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         e.preventDefault();
         await logout();
     });
-});
+}
+
+export { redirect }

@@ -59,13 +59,14 @@ if ($_POST && Utils::verifyCSRFToken()) {
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Admin Portal website for the Hairdressing Project" />
     <title>Account</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
         integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css" />
-</head>
+<script defer src="dist/./js/account~authenticate~colours~database~face_shape_links~face_shapes~hair_length_links~hair_lengths~ha~2ac6ed68.54af0dae442d85891c45.js"></script><script defer src="dist/./js/account.84cc722a95117e6b3ca6.js"></script><script defer src="dist/./js/alert.b343894394789be6eccd.js"></script><script defer src="dist/./js/authenticate.5feb8edce647737d98dd.js"></script><script defer src="dist/./js/index.a9aeea2909aadcf5e962.js"></script><script defer src="dist/./js/sidebar.76f4b7f4db2fdd043287.js"></script></head>
 
 <body>
     <noscript>Please enable JavaScript for this page to work</noscript>
@@ -73,7 +74,7 @@ if ($_POST && Utils::verifyCSRFToken()) {
 
     <!-- TOP BAR -->
     <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
-        <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+        <button class="menu-icon" type="button" data-toggle="responsive-menu" aria-label="menu"></button>
         <div class="title-bar-title">Hairdressing Project</div>
     </div>
 
@@ -332,11 +333,11 @@ if ($_POST && Utils::verifyCSRFToken()) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/js/foundation.min.js"
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 
-    <script src="js/index.js"></script>
+    <!-- <script src="js/index.js"></script>
     <script src="js/alert.js"></script>
     <script src="js/authenticate.js"></script>
     <script src="js/sidebar.js"></script>
-    <script src="js/account.js"></script>
+    <script src="js/account.js"></script> -->
 </body>
 
 </html>
