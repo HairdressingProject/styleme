@@ -439,7 +439,7 @@ namespace AdminApi.Controllers
                     UserName = user.UserName,
                     UserEmail = user.UserEmail,
                     FirstName = user.FirstName,
-                    LastName = user.LastName,
+                    LastName = user.LastName ?? "",
                     UserRole = user.UserRole,
                     UserPasswordHash = hash,
                     UserPasswordSalt = salt
