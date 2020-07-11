@@ -60,3 +60,8 @@ function dismissAlert() {
     const alertMsg = document.getElementById('alert');
     alertMsg.style.display = 'none';
 }
+
+module.exports = {
+    showAlert,
+    dismissAlert
+}

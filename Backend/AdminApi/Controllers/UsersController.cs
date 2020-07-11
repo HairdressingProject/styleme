@@ -42,7 +42,7 @@ namespace AdminApi.Controllers
 
         // GET: users
         // GET: users?limit=5&offset=0 (optional pagination)
-        [EnableCors("Policy1")]
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Users>>> GetUsers(
             [FromQuery(Name = "limit")] string limit = "1000",
@@ -418,7 +418,7 @@ namespace AdminApi.Controllers
 
         // ********************************************************************************************************************************************        
         // POST users
-        [EnableCors("Policy1")]
+        
         [HttpPost]
         public async Task<ActionResult<Users>> PostUsers([FromBody] SignUpUser user)
         {
@@ -459,7 +459,7 @@ namespace AdminApi.Controllers
         }
 
         // POST users/sign_up
-        [EnableCors("Policy1")]
+        
         [HttpPost("sign_up")]
         public async Task<IActionResult> SignUp([FromBody] SignUpUser newUser)
         {
@@ -525,7 +525,7 @@ namespace AdminApi.Controllers
         }
 
         // POST: users/sign_in
-        [EnableCors("Policy1")]
+        // 
         [HttpPost("sign_in")]
         public async Task<IActionResult> SignIn([FromBody] AuthenticatedUserModel user)
         {
@@ -540,6 +540,7 @@ namespace AdminApi.Controllers
             if (authenticatedUser == null)
             {
                 // User isn't registered
+                Response.Headers.Append("Access-Control-Allow-Origin", Request.Headers["Origin"]);
                 return Unauthorized(new { errors = new { Authentication = new string[] { "Invalid username, email and/or password" } }, status = 401 });
             }
 
@@ -555,7 +556,7 @@ namespace AdminApi.Controllers
 
         // POST: users/authenticate
         // This method is an alternative to sign in that validates the token directly
-        [EnableCors("Policy1")]
+        
         [HttpGet("authenticate")]
         public IActionResult AuthenticateUser()
         {
@@ -574,7 +575,7 @@ namespace AdminApi.Controllers
         }
 
         // POST: users/forgot_password
-        [EnableCors("Policy1")]
+        
         [HttpPost("forgot_password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ValidatedUserEmailModel user)
         {

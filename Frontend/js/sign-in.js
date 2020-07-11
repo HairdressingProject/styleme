@@ -1,3 +1,5 @@
+const { showAlert } = require('./alert');
+
 const ADMIN_URL = "https://styleme.best";
 const API_URL = "https://api.styleme.best";
 

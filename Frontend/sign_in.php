@@ -9,11 +9,12 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Admin Portal website for the Hairdressing Project" />
     <title>Sign in</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
-        integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous" />
+        integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous" media="screen" />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/index.css" media="screen" />
 </head>
 
 <body class="landing-background">
@@ -27,21 +28,21 @@
             <form action="https://api.styleme.best/users/sign_in" method="POST" id="sign-in-form">
                 <div class="sign-in-username" id="sign-in-username">
                     <div class="input-group sign-in-input-group" id="sign-in-username-group">
-                        <span class="input-group-label sign-in-input-label">
+                        <label for="username" class="input-group-label sign-in-input-label">
                             <img src="./img/icons/mail.svg" alt="Username or email" class="sign-in-input-icon" />
-                        </span>
-                        <input type="text" class="input-group-field sign-in-input" placeholder="Username or email"
+                        </label>
+                        <input type="text" name="username" class="input-group-field sign-in-input" placeholder="Username or email"
                             id="username" required maxlength="512" />
                     </div>
                 </div>
 
                 <div class="sign-in-password" id="sign-in-password">
                     <div class="input-group sign-in-input-group sign-in-input-group-last" id="sign-in-password-group">
-                        <span class="input-group-label sign-in-input-label">
+                        <label for="password" class="input-group-label sign-in-input-label">
                             <img src="./img/icons/password.svg" alt="Password" class="sign-in-input-icon" />
-                        </span>
+                        </label>
                         <input type="password" class="input-group-field sign-in-input" placeholder="Password"
-                            id="password" required minlength="6" maxlength="512" />
+                            id="password" name="password" required minlength="6" maxlength="512" />
                     </div>
                 </div>
 
@@ -64,9 +65,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/js/foundation.min.js"
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 
-    <script src="js/index.js"></script>
-    <script src="js/alert.js"></script>
-    <script src="js/sign-in.js"></script>
+    <script src="dist/js/index.b7cfbc9e819fbbff3b42.js"></script>
+    <script src="dist/js/sign-in.8aeaf76c0c269bf8a89b.js"></script>
 </body>
 
 </html>

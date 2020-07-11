@@ -117,12 +117,12 @@ namespace AdminApi
                 app.UseDeveloperExceptionPage();
             }
 
+             // Global CORS
+            app.UseCors(AllowedOriginsConf);
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            // Global CORS
-            app.UseCors(AllowedOriginsConf);
 
             app.UseAuthentication();
             app.UseAuthorization();
