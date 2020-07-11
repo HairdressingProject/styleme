@@ -485,7 +485,7 @@ namespace AdminApi.Controllers
                     UserName = newUser.UserName,
                     UserEmail = newUser.UserEmail,
                     FirstName = newUser.FirstName,
-                    LastName = newUser.LastName,
+                    LastName = newUser.LastName ?? "",
                     UserPasswordHash = hash,
                     UserPasswordSalt = salt
                 };
