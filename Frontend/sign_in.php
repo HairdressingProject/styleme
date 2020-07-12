@@ -1,5 +1,6 @@
 <?php
     require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
+    http_response_code(308);
 ?>
 
 <!doctype html>
