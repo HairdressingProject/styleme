@@ -6,7 +6,8 @@
   "main": "js/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "compile:scss": "sass scss/index.scss dist/css/index.css --style=compressed"
   },
   "author": "Hairdressing Project Team",
   "license": "GPL-3.0",

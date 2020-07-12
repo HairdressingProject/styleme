@@ -2,12 +2,12 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 
+$parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
+
 $token = Utils::addCSRFToken();
 $alert = null;
 $search = null;
-
-$parsedUrl = parse_url($_SERVER['REQUEST_URI']);
-$currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$parsedUrl['path'];
 
 $tables = [
         'users' => 'Users',

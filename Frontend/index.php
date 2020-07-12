@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css" />
-<script defer src="dist/./js/index.a9aeea2909aadcf5e962.js"></script></head>
+<script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script></head>
 
 <body>
     <h1 class="text-center">Hairdressing Project - Admin Portal home page</h1>

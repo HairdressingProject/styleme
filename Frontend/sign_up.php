@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css" />
-<script defer src="dist/./js/alert.b343894394789be6eccd.js"></script><script defer src="dist/./js/index.a9aeea2909aadcf5e962.js"></script><script defer src="dist/./js/sign_up.c003d4c47f4f192b38c9.js"></script></head>
+<script defer src="dist/js/alert.ec45e674de93365b15c2.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sign_up.d5244153deaccb9be2ba.js"></script></head>
 
 <body class="landing-background">
     <noscript>Please enable JavaScript for this page to work</noscript>

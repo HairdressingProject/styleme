@@ -94,9 +94,9 @@ module.exports = {
         users: './js/users.js'
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        publicPath: 'dist/',
-        filename: './js/[name].[contenthash].js'
+        path: path.resolve(__dirname, 'dist', 'js'),
+        publicPath: 'dist/js/',
+        filename: '[name].[contenthash].js'
     },
     resolve: {
         extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']

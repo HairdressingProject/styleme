@@ -1,6 +1,5 @@
 <?php
     require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
-    http_response_code(308);
 ?>
 
 <!doctype html>
@@ -22,7 +21,7 @@
         integrity="sha256-ZLjSztVkz5q3lKFjN9AgL6qR7TGLE+qnTXnNNTWtMF4=" crossorigin="anonymous" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/js/foundation.min.js"
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous" defer></script>
-<script defer src="dist/./js/alert.b343894394789be6eccd.js"></script><script defer src="dist/./js/index.a9aeea2909aadcf5e962.js"></script><script defer src="dist/./js/sign_in.0735ba03d1595e5411aa.js"></script></head>
+<script defer src="dist/js/alert.ec45e674de93365b15c2.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sign_in.68e210b7766a4e59ddc5.js"></script></head>
 
 <body class="landing-background">
     <noscript>Please enable JavaScript for this page to work</noscript>
