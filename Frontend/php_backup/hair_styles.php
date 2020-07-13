@@ -51,6 +51,7 @@ $search = $f['search'];
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Admin Portal website for the Hairdressing Project" />
     <title>Hair Styles</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
           integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous"/>
@@ -180,7 +181,7 @@ $search = $f['search'];
 
 <!-- TOP BAR -->
 <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
-    <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+    <button class="menu-icon" type="button" data-toggle="responsive-menu" aria-label="Menu"></button>
     <div class="title-bar-title">Hairdressing Project</div>
 </div>
 
@@ -192,7 +193,7 @@ $search = $f['search'];
     <div class="top-bar-right">
         <ul class="dropdown menu _right-menu" data-dropdown-menu>
             <li>
-                <button>
+                <button aria-label="Settings">
                     <img src="img/icons/settings-dark.svg" alt="Settings" class="_menu-icon"/>
                 </button>
                 <ul class="menu _settings-dropdown">
@@ -231,7 +232,7 @@ $search = $f['search'];
                 </ul>
             </li>
             <li>
-                <button>
+                <button aria-label="Notifications">
                     <img src="img/icons/notifications-dark.svg" alt="Notifications" class="_menu-icon"/>
                 </button>
                 <ul class="menu">
@@ -239,7 +240,7 @@ $search = $f['search'];
                 </ul>
             </li>
             <li>
-                <button>
+                <button aria-label="User">
                     <img src="img/icons/user.svg" alt="User" class="_menu-icon"/>
                     <span id="user-name">User</span>
                     <img src="img/icons/caret-down.svg" alt="User menu"/>
@@ -291,11 +292,11 @@ $search = $f['search'];
             </a>
         </li>
         <li class="_sidebar-controls">
-            <button id="sidebar-close" class="hide">
+            <button id="sidebar-close" class="hide" aria-label="Close">
                 <img src="img/icons/caret-left.svg" alt="Close">
             </button>
 
-            <button id="sidebar-open" style="transform: translateX(250%)">
+            <button id="sidebar-open" style="transform: translateX(250%)" aria-label="Open">
                 <img src="img/icons/caret-right-dark.svg" alt="Open">
             </button>
         </li>
@@ -313,11 +314,13 @@ $search = $f['search'];
                         method="POST"
                         class="_tables-search-input-container">
                     <input type="hidden" name="token" value="<?= $token ?>">
+                    <label for="search" aria-label="Search for an entry"></label>
                     <input type="text" placeholder="Search for an entry..."
                            name="search"
+                           id="search"
                            class="_tables-search _search-field"/>
 
-                    <button class="_search-btn" data-search="users" type="submit">
+                    <button class="_search-btn" data-search="users" type="submit" aria-label="Search">
                         <img src="img/icons/search.svg" alt="Search" class="_tables-search-icon">
                     </button>
                 </form>
@@ -470,12 +473,12 @@ $search = $f['search'];
 <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/js/foundation.min.js"
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 
-<script src="js/index.js"></script>
+<!-- <script src="js/index.js"></script>
 <script src="js/alert.js"></script>
 <script src="js/authenticate.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/redirect.js"></script>
-<script src="js/hair_styles.js"></script>
+<script src="js/hair_styles.js"></script> -->
 </body>
 
 </html>

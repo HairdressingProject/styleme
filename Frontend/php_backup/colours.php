@@ -51,6 +51,7 @@ $search = $f['search'];
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Admin Portal website for the Hairdressing Project" />
     <title>Colours</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/css/foundation.min.css"
           integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous"/>
@@ -65,7 +66,7 @@ $search = $f['search'];
 <!-- ADD MODAL -->
 <div class="reveal large _table-modal" id="add-modal" data-reveal>
     <h3 class="_table-modal-title">Add a new colour</h3>
-    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
+    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 
@@ -104,7 +105,7 @@ $search = $f['search'];
 <!-- EDIT MODAL -->
 <div class="reveal large _table-modal" id="edit-modal" data-reveal>
     <h3 class="_table-modal-title">Edit a colour</h3>
-    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button">
+    <button class="close-button _table-modal-close" data-close aria-label="Close modal" type="button" aria-label="close">
         <span aria-hidden="true">&times;</span>
     </button>
     <form action="<?= 'colours.php?page=' . $page ?>" method="POST" id="edit-form">
@@ -199,7 +200,7 @@ $search = $f['search'];
 
 <!-- TOP BAR -->
 <div class="title-bar" data-responsive-toggle="responsive-menu" data-hide-for="medium">
-    <button class="menu-icon" type="button" data-toggle="responsive-menu"></button>
+    <button class="menu-icon" type="button" data-toggle="responsive-menu" aria-label="Menu"></button>
     <div class="title-bar-title">Hairdressing Project</div>
 </div>
 
@@ -211,7 +212,7 @@ $search = $f['search'];
     <div class="top-bar-right">
         <ul class="dropdown menu _right-menu" data-dropdown-menu>
             <li>
-                <button>
+                <button aria-label="Settings">
                     <img src="img/icons/settings-dark.svg" alt="Settings" class="_menu-icon"/>
                 </button>
                 <ul class="menu _settings-dropdown">
@@ -250,7 +251,7 @@ $search = $f['search'];
                 </ul>
             </li>
             <li>
-                <button>
+                <button aria-label="Notifications">
                     <img src="img/icons/notifications-dark.svg" alt="Notifications" class="_menu-icon"/>
                 </button>
                 <ul class="menu">
@@ -258,7 +259,7 @@ $search = $f['search'];
                 </ul>
             </li>
             <li>
-                <button>
+                <button aria-label="User">
                     <img src="img/icons/user.svg" alt="User" class="_menu-icon"/>
                     <span id="user-name">User</span>
                     <img src="img/icons/caret-down.svg" alt="User menu"/>
@@ -332,11 +333,12 @@ $search = $f['search'];
                         method="POST"
                         class="_tables-search-input-container">
                     <input type="hidden" name="token" value="<?= $token ?>">
-                    <input type="text" placeholder="Search for an entry..."
+                    <label for="search" aria-label="Search"></label>
+                    <input type="text" id="search" placeholder="Search for an entry..."
                            name="search"
                            class="_tables-search _search-field"/>
 
-                    <button class="_search-btn" data-search="users" type="submit">
+                    <button class="_search-btn" data-search="users" type="submit" aria-label="Search">
                         <img src="img/icons/search.svg" alt="Search" class="_tables-search-icon">
                     </button>
                 </form>
