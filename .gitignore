@@ -483,3 +483,6 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,aspnetcore
+
+# Configuration settings
+appsettings.production.json

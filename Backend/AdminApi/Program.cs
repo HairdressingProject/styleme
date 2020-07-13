@@ -1,9 +1,12 @@
+using System;
+using System.Collections;
+using AdminApi.Helpers;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
 
 namespace AdminApi
 {
@@ -15,23 +18,35 @@ namespace AdminApi
         public static readonly string API_DOMAIN = "styleme.best";
         public static void Main(string[] args)
         {
+            var builder = new ConfigurationBuilder()
+                            .SetBasePath(Directory.GetCurrentDirectory())
+                            .AddEnvironmentVariables()
+                            .AddUserSecrets<AppSettings>()
+                            .AddJsonFile("appsettings.json", optional: true)
+                            .AddJsonFile("appsettings.production.json", optional: false);
+            
+            Configuration = builder.Build();
             var host = CreateHostBuilder(args).Build();
             host.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            var settings = Configuration.GetSection("AppSettings").Get<AppSettings>();
+
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureKestrel(serverOptions => {
                         serverOptions.Listen(IPAddress.Loopback, 5000);
                         serverOptions.Listen(IPAddress.Loopback, 5001, listenOptions => {
-                            listenOptions.UseHttps("certificate.pfx", "Secret1");
+                            listenOptions.UseHttps(settings.CertificateFilename, settings.CertificatePWD);
                             listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
                         });
-                    });                    
+                    });                  
 
                     webBuilder.UseStartup<Startup>();
                 });
+        }
     }
 }
