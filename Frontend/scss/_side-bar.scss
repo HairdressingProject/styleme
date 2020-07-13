@@ -68,6 +68,10 @@
         }
     }
 
+    &-open-btn {
+        transform: translateX(250%);
+    }
+
     &-closed {
         transform: translateX(-70%);
     }
@@ -77,7 +81,7 @@
     position: relative;
     cursor: pointer;
     left: 50%;
-    transform: translateX(-50%);
+    // transform: translateX(-50%);
     transition: translate 200ms;
 }
 
