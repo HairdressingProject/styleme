@@ -1,5 +1,14 @@
 <?php
     require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/authentication.php';
+
+    if (isAuthenticated()) {
+        $parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+        $currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'];
+        header('Location: ' . $currentBaseUrl . '/database.php', true, 302);
+        exit();
+    }
 ?>
 
 <!doctype html>

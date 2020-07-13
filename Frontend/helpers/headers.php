@@ -61,7 +61,7 @@ function generateHeaders(string $method, array $data = null) {
             'method' => $method,
             'origin' => $protocol.$_SERVER["HTTP_HOST"],
             'header' => "Accept-language: en\r\n".
-                "Cookie: auth=".$_COOKIE['auth']."\r\n"
+                "Cookie: auth=". ($_COOKIE['auth'] ?? '' )."\r\n"
         )
     );
 }
