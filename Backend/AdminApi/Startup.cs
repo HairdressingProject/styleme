@@ -73,7 +73,6 @@ namespace AdminApi
             });
 
             // Configure DI for application services
-            services.AddScoped<ILoggingService, LoggingService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IEmailService, EmailService>();
@@ -128,12 +127,12 @@ namespace AdminApi
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMiddleware<LoggingService>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-            app.UseMiddleware<ILoggingService>();
         }
     }
 }

@@ -4,6 +4,7 @@ using AdminApi.Helpers;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
@@ -35,6 +36,13 @@ namespace AdminApi
             var settings = Configuration.GetSection("AppSettings").Get<AppSettings>();
 
             return Host.CreateDefaultBuilder(args)
+                .ConfigureLogging((ctx, logging) => {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                    logging.AddDebug();
+
+                    logging.AddConfiguration(ctx.Configuration.GetSection("Logging"));
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureKestrel(serverOptions => {

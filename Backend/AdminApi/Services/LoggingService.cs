@@ -31,10 +31,16 @@ namespace AdminApi.Services
             }
             finally
             {
+                var zone = TimeZoneInfo.FindSystemTimeZoneById("Australia/Perth");
+                var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zone).ToString("dd/MM/yyyy hh:mm:ss tt");
+
                 _logger.LogInformation(
-                        "Request {method} {url} => {statusCode}",
+                        "{dateTime} - Request from {IP}: {method} {url}{query} => {statusCode}",
+                        now,
+                        context.Request?.HttpContext.Connection.RemoteIpAddress,
                         context.Request?.Method,
                         context.Request?.Path.Value,
+                        context.Request?.QueryString,
                         context.Response?.StatusCode
                     );
             }
