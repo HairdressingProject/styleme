@@ -14,12 +14,12 @@ async function authenticate() {
     });
 
     if (!response.ok) {
-        handleError(response);
+        return handleError(response);
     }
     else {
         // all good
         const r = await parseAuthResponse(response);
-        return r.id;
+        return { id: r.id, userRole: r.userRole };
     }
 }
 
@@ -49,7 +49,7 @@ async function getUser(id) {
     });
 
     if (!response.ok) {
-        handleError(response);
+        return handleError(response);
     }
     else {
         const u = await parseAuthResponse(response);
@@ -60,6 +60,7 @@ async function getUser(id) {
 function handleError(response) {
     if (response.status === 401) {
         console.log('User is not authenticated');
+        return null;
     }
     else if (response.status === 404) {
         console.log('User not found');

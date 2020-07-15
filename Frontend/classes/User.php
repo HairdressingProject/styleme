@@ -8,7 +8,7 @@
  * Version: 1.0.0
  * Description: add short description of file's purpose
  **********************************************************/
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/UserRoles.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/helpers/actions/actions.php';
 
 class User

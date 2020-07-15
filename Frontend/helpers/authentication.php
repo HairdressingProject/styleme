@@ -12,10 +12,11 @@
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/constants.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/headers.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/UserRoles.php';
 
 /**
  * Verifies if the user is authenticated
- * @return int|bool ID of authenticated user or false (if not authenticated)
+ * @return array|bool Authenticated user or false (if not authenticated)
  */
 ini_set("display_errors", 1); error_reporting(E_ALL);
 
@@ -29,5 +30,14 @@ function isAuthenticated() {
 
     $r = (array) json_decode($response);
 
-    return isset($r['id']) ? $r['id'] : false;
+    return isset($r['id']) ? array('id' => $r['id'], 'userRole' => $r['userRole']) : false;
+}
+
+function handleAuthorisation() {
+    $user = isAuthenticated();
+
+    if (!($user && $user['userRole'] === UserRoles::ADMIN)) {
+        $signIn = Utils::getUrlProtocol() . $_SERVER['SERVER_NAME'] . '/sign_in.php';
+        header('Location: ' . $signIn, true);
+    }
 }

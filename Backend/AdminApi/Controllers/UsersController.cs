@@ -566,7 +566,7 @@ namespace AdminApi.Controllers
         // This method is an alternative to sign in that validates the token directly
         
         [HttpGet("authenticate")]
-        public IActionResult AuthenticateUser()
+        public async Task<IActionResult> AuthenticateUser()
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
@@ -575,9 +575,10 @@ namespace AdminApi.Controllers
 
             var id = _userService.GetUserIdFromToken(Request.Cookies["auth"]);
 
-            if (id != null)
+            if (id != null && ulong.TryParse(id, out ulong _id))
             {
-                return Ok(new { Id = id });
+                var user = await _context.Users.FindAsync(_id);
+                return Ok(new { Id = user.Id, UserRole = user.UserRole });
             }
             return NotFound();
         }

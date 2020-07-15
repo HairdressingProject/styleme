@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
     confirmPassword.addEventListener('input', validateConfirmPassword);
     confirmPassword.addEventListener('blur', validateConfirmPassword);
 
-    signUpForm.addEventListener('submit', signUp);
+    // signUpForm.addEventListener('submit', signUp);
 
     updateSignUpBtn();
 });
@@ -541,7 +541,7 @@ function removeErrorInputs(className, parent) {
  * Runs when sign up form is submitted
  * @param {Event} e 
  */
-async function signUp(e) {
+/* async function signUp(e) {
     e.preventDefault();
     signUpBtn.setAttribute('disabled', true);
     const url = e.target.action;
@@ -605,13 +605,13 @@ async function signUp(e) {
         }
     }
     signUpBtn.removeAttribute('disabled');
-}
+} */
 
 /**
  * Tries to parse HTTP responses as JSON
  * @param {Response} res 
  */
-async function parseResponse(res) {
+/* async function parseResponse(res) {
     try {
         const msg = await res.json();
         return msg;
@@ -619,4 +619,4 @@ async function parseResponse(res) {
     catch (err) {
         console.log('could not parse response');
     }
-}
+} */

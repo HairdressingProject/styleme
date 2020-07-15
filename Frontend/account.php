@@ -4,6 +4,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/authentication.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/classes/User.php';
 
+handleAuthorisation();
+
 $token = Utils::addCSRFToken();
 $alert = null;
 $user = new User();
@@ -66,7 +68,7 @@ if ($_POST && Utils::verifyCSRFToken()) {
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css" />
-<script defer src="dist/js/account~authenticate~colours~database~face_shape_links~face_shapes~hair_length_links~hair_lengths~ha~2ac6ed68.54af0dae442d85891c45.js"></script><script defer src="dist/js/account.1c29991377b2dcd70a96.js"></script><script defer src="dist/js/alert.ec45e674de93365b15c2.js"></script><script defer src="dist/js/authenticate.f72ea0b2f580156adc2b.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sidebar.6a605f50b6c3e33789c2.js"></script></head>
+<script defer src="dist/js/account~authenticate~colours~database~face_shape_links~face_shapes~hair_length_links~hair_lengths~ha~2ac6ed68.39774f942d8a44710ed5.js"></script><script defer src="dist/js/account.4e013291c91baaa4b79f.js"></script><script defer src="dist/js/alert.ec45e674de93365b15c2.js"></script><script defer src="dist/js/authenticate.f72ea0b2f580156adc2b.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sidebar.6a605f50b6c3e33789c2.js"></script></head>
 
 <body>
     <noscript>Please enable JavaScript for this page to work</noscript>

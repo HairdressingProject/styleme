@@ -1,3 +1,19 @@
+<?php
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
+    
+    $alert = null;
+    $parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+    $currentBaseUrl = Utils::getUrlProtocol().$_SERVER['SERVER_NAME'];
+
+    if ($_POST) {
+        $alert = Utils::createAlert(
+            'Sorry, registrations are currently closed. Contact your admin for more details.',
+            'error');
+    }
+
+?>
+
 <!doctype html>
 <html class="no-js" lang="en">
 
@@ -12,17 +28,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css" />
-<script defer src="dist/js/alert.ec45e674de93365b15c2.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sign_up.d5244153deaccb9be2ba.js"></script></head>
+<script defer src="dist/js/alert.ec45e674de93365b15c2.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sign_up.c2262bf18a625bf04833.js"></script></head>
 
 <body class="landing-background">
     <noscript>Please enable JavaScript for this page to work</noscript>
-
+    <?php if(isset($alert)) echo $alert; ?>
     <div class="sign-up grid-x">
         <div class="cell small-12 medium-6 large-4 medium-offset-3 large-offset-4 sign-up-container">
             <h1 class="sign-up-title">Hairdressing Application - Admin Portal</h1>
             <p class="sign-up-subtitle">Hey there! Let's get started</p>
 
-            <form action="https://api.styleme.best/users/sign_up" method="POST" id="sign-up-form">
+            <form action="<?= $currentBaseUrl . '/sign_up.php' ?>" method="POST" id="sign-up-form">
                 <div class="sign-up-given-name" id="sign-up-given-name">
                     <div class="input-group sign-up-input-group" id="sign-up-given-name-group">
                         <label for="given-name" class="input-group-label sign-up-input-label">

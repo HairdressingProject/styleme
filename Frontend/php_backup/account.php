@@ -4,6 +4,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/authentication.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/classes/User.php';
 
+handleAuthorisation();
+
 $token = Utils::addCSRFToken();
 $alert = null;
 $user = new User();

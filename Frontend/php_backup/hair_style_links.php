@@ -14,6 +14,9 @@ require_once $_SERVER['DOCUMENT_ROOT']. '/helpers/actions/browse.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairStyleLink.php';
 require_once $_SERVER['DOCUMENT_ROOT']. '/classes/HairStyle.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/page_features.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/authentication.php';
+
+handleAuthorisation();
 
 $token = Utils::addCSRFToken();
 $alert = null;
