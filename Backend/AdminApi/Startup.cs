@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using AdminApi.Helpers;
 using AdminApi.Models_v2_1;
@@ -15,7 +16,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
-using Microsoft.AspNetCore.Authentication;
 
 namespace AdminApi
 {
@@ -27,6 +27,9 @@ namespace AdminApi
     public class Startup
     {
         private readonly string AllowedOriginsConf = "Policy1";
+        private readonly string[] WhitelistedRoutes = new string[] {
+            "/users/sign_in", "/users/authenticate"
+        };
 
         public Startup(IConfiguration configuration)
         {
@@ -109,8 +112,21 @@ namespace AdminApi
             });
         }
 
+        private static void RestrictToAdmins(IApplicationBuilder builder)
+        {
+            builder.Use(async (ctx, next) => {
+                Console.WriteLine("Requested colours route");
+                await next.Invoke();
+            });
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app, 
+            IWebHostEnvironment env, 
+            IUserService userService,
+            hair_project_dbContext dbContext
+            )
         {
             if (env.IsDevelopment())
             {
@@ -126,8 +142,35 @@ namespace AdminApi
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseMiddleware<LoggingService>();
+
+            app.UseWhen(
+                ctx => !WhitelistedRoutes.Any(r => ctx.Request.Path.Value.Contains(r)),
+                builder => {
+                    builder.Use(async (ctx, next) => {
+                        string authToken = ctx.Request.Cookies["auth"];
+                        if (authToken != null && userService.ValidateUserToken(authToken)) {
+                            string userId = userService.GetUserIdFromToken(authToken);
+                            if (ulong.TryParse(userId, out ulong id)) {
+                                using (var serviceScope = app.ApplicationServices.CreateScope()) {
+                                    var services = serviceScope.ServiceProvider;
+                                    var _dbCtx = services.GetService<hair_project_dbContext>();
+
+                                    var user = await _dbCtx.Users.FindAsync(id);    
+
+                                    if (user != null && user.UserRole == "admin") {
+                                        await next();
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        await ctx.Response.WriteAsync("You do not have permission to access this data");
+                    });
+                }
+            );
 
             app.UseEndpoints(endpoints =>
             {
