@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -110,6 +111,11 @@ namespace AdminApi
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
                 options.HttpsPort = 5001;
             });
+
+            // Forwarded Headers
+            services.Configure<ForwardedHeadersOptions>(options => {
+               options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
         }
 
         private static void RestrictToAdmins(IApplicationBuilder builder)
@@ -133,6 +139,9 @@ namespace AdminApi
                 app.UseDeveloperExceptionPage();
             }
 
+            // Forwarded headers
+            app.UseForwardedHeaders();
+            
              // Global CORS
             app.UseCors(AllowedOriginsConf);
 
