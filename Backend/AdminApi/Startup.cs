@@ -138,6 +138,10 @@ namespace AdminApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            else {
+               app.UseExceptionHandler("/error");
+               app.UseHsts(); 
+            }
 
             // Forwarded headers
             app.UseForwardedHeaders();
