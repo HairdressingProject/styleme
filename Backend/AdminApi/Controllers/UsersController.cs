@@ -75,7 +75,17 @@ namespace AdminApi.Controllers
                 }
                 else
                 {
-                    return BadRequest(new { errors = new { queries = new string[] { "Invalid queries" }, status = 400 } });
+                    var response = new JsonResponse
+                    {
+                        Message = "Invalid request",
+                        Status = 400,
+                        Errors = new Dictionary<string, string[]>
+                        {
+                            { "Queries", new string[] { "Invalid queries" } }
+                        }
+                    };
+
+                    return BadRequest(response.FormatResponse());
                 }
             }
 
@@ -88,16 +98,6 @@ namespace AdminApi.Controllers
             };
 
             return Ok(usersResponse);
-
-            // Use the code below to restrict access to this route to admins or developers
-            // Can also be used as middleware
-            /*var isAdminOrDeveloper = await _authorizationService.IsAdminOrDeveloper(Request);
-
-            if (isAdminOrDeveloper)
-            {
-                return Unauthorized(new { errors = new { Authorisation = new string[] { "Insufficient permissions" } }, status = 401 });
-            }
-            return Ok(usersResponse);*/
         }
 
         [HttpGet("count")]
@@ -539,7 +539,17 @@ namespace AdminApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(Request.Headers["Origin"]))
             {
-                return Unauthorized(new { errors = new { Origin = new string[] { "Invalid request origin" } }, status = 401 });
+                var response = new JsonResponse
+                {
+                    Message = "Invalid request",
+                    Status = 401,
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "Origin", new string[] {"Invalid request origin"} }
+                    }
+                };
+
+                return Unauthorized(response.FormatResponse());
             }
 
             // Authenticate user
