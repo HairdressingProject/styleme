@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 
 namespace AdminApi.Helpers
 {
+    /// <summary>
+    /// Constructs a JSON object to be sent back in HTTP responses
+    /// </summary>
     public class JsonResponse
     {
         public string Message { get; set; }
@@ -17,16 +21,25 @@ namespace AdminApi.Helpers
             Status = status;
         }
 
-        public object FormatResponse()
+        /// <summary>
+        /// Formats JSON object with optional entries 
+        /// <para>
+        /// Note: Use with caution. It iterates through reflected properties of 
+        /// <see cref="JsonResponse"/> so performance could be slow in some cases.
+        /// </para>
+        /// </summary>
+        /// <param name="additionalEntries">Optional entries to be added to the response object</param>
+        /// <returns>Formatted object with additional entries (if present) or the original object</returns>
+        public object FormatResponse(Dictionary<string, object> additionalEntries = null)
         {
-            if (Errors != null)
+            if (additionalEntries != null)
             {
-                return new
+                foreach (var prop in GetType().GetProperties())
                 {
-                    Message,
-                    Status,
-                    Errors
-                };
+                    additionalEntries[prop.Name] = prop.GetValue(this);
+                }
+
+                return additionalEntries;                
             }
             return this;
         }
