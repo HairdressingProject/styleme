@@ -486,3 +486,7 @@ MigrationBackup/
 
 # Configuration settings
 appsettings.production.json
+
+# Secrets
+secrets/
+secret_constants.php
