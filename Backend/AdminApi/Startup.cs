@@ -32,7 +32,7 @@ namespace AdminApi
     {
         private readonly string AllowedOriginsConf = "Policy1";
         private readonly string[] WhitelistedRoutes = new string[] {
-            "/users/sign_in", "/users/authenticate"
+            "/users/sign_in", "/users/authenticate", "/users/forgot_password"
         };
 
         public Startup(IConfiguration configuration)

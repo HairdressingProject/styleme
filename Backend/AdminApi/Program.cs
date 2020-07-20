@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using AdminApi.Helpers;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;

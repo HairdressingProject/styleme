@@ -77,7 +77,7 @@
 		* 2.9.4. [POST /hair_style_links](#POSThair_style_links)
 		* 2.9.5. [PUT /hair_style_links/{id}](#PUThair_style_linksid)
 		* 2.9.6. [DELETE /hair_style_links/{id}](#DELETEhair_style_linksid)
-	* 2.10. [Hair length](#Hairlength)
+	* 2.10. [Hair lengths](#Hairlengths)
 		* 2.10.1. [GET /hair_lengths[?limit={limit}&offset={offset}&search={search}]](#GEThair_lengthslimitlimitoffsetoffsetsearchsearch)
 		* 2.10.2. [GET /hair_lengths/{id}](#GEThair_lengthsid)
 		* 2.10.3. [GET /hair_lengths/count[?search={search}]](#GEThair_lengthscountsearchsearch)
@@ -116,13 +116,13 @@ There are currently three user roles:
 
 The permissions work as follows:
 
-- Admin: allowed to access to the Admin Portal (shockingly enough) and all routes in the API
+- Admin: allowed to access the Admin Portal (shockingly enough) and all routes in the API
 - Developer: allowed to sign in
 - User: allowed to sign in
 
 Sign up is currently restricted. New users will be able to sign up and access their own details in the future.
 
-__NOTE:__ **ALL** routes require that you sign in first, except for `POST /users/sign_in` itself and `GET /users/authenticate`.
+__NOTE:__ **ALL** routes require that you sign in first, except for `POST /users/sign_in` itself, `GET /users/authenticate` and `POST /users/forgot_password`.
 
 Additional routes and other modifications may be made as we progress through the application. Stay tuned! 🧐
 
@@ -209,7 +209,7 @@ Registers a new user with the details sent in the JSON request body.
 ```json
 {
   "UserName": "johnny",
-  "UserEmail": "johnny@b.good",
+  "UserEmail": "johnny@b.goode",
   "UserPassword": "Secret1",
   "FirstName": "John",
   "LastName": "Doe",
@@ -233,7 +233,7 @@ Sends an email to the user associated with the specified `UserNameOrEmail` sent 
 
 ```json
 {
-  "UserNameOrEmail": "johnny@b.good"
+  "UserNameOrEmail": "johnny@b.goode"
 }
 ```
 
@@ -249,7 +249,7 @@ Updates a user's details, identified by the specified `id`.
 {
   "Id": 5,
   "UserName": "johnny",
-  "UserEmail": "johnny@b.good",
+  "UserEmail": "johnny@b.goode",
   "UserPassword": "Secret1",
   "FirstName": "John",
   "LastName": "Doe",
@@ -298,7 +298,7 @@ Updates a user's role.
 {
   "Id": 5,
   "UserName": "johnny",
-  "UserEmail": "johnny@b.good",
+  "UserEmail": "johnny@b.goode",
   "UserRole": "developer"
 }
 ```
@@ -624,7 +624,7 @@ Adds a new skin tone.
 
 ```json
 {
-  "SkinToneName": "light brown",
+  "SkinToneName": "light brown"
 }
 ```
 
@@ -844,7 +844,7 @@ __NOTE__: the `Id` property __must__ be added to the request body as well (and i
 ####  2.9.6. <a name='DELETEhair_style_linksid'></a>DELETE /hair_style_links/{id}
 Deletes a hair style link identified by the specified `id`.
 
-###  2.10. <a name='Hairlength'></a>Hair length
+###  2.10. <a name='Hairlengths'></a>Hair lengths
 
 Properties:
 
@@ -884,7 +884,7 @@ Adds a new hair length.
 
 ```json
 {
-  "HairLengthName": "short",
+  "HairLengthName": "short"
 }
 ```
 
