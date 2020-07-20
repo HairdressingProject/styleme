@@ -1,5 +1,7 @@
 using System;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Linq;
 using System.Threading.Tasks;
 using AdminApi.Helpers;
@@ -17,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
+using MimeKit;
 
 namespace AdminApi
 {
@@ -180,7 +183,15 @@ namespace AdminApi
                             }
                         }
                         ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        await ctx.Response.WriteAsync("You do not have permission to access this data");
+                        ctx.Response.ContentType = "application/json";
+                        var response = new JsonResponse
+                        {
+                            Message = "You do not have permission to access this data",
+                            Status = 401
+                        };
+
+                        var jsonResponse = JsonSerializer.Serialize(response);
+                        await ctx.Response.WriteAsync(jsonResponse);
                     });
                 }
             );
