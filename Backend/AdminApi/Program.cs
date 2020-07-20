@@ -14,17 +14,38 @@ namespace AdminApi
     public class Program
     {
         public static IConfiguration Configuration { get; set; }
-        public static readonly string ADMIN_URL = "https://styleme.best";
-        public static readonly string API_URL = "https://localhost:5000";
-        public static readonly string API_DOMAIN = "styleme.best";
+        public static readonly string ADMIN_URL = 
+            File.Exists(
+                Path.GetFullPath(
+                        Path.Join(Directory.GetCurrentDirectory(), "appsettings.production.json")
+                    )
+            ) ? 
+                "https://styleme.best" : 
+                "http://localhost:3000";
+        public static readonly string API_URL = 
+            File.Exists(
+                Path.GetFullPath(
+                        Path.Join(Directory.GetCurrentDirectory(), "appsettings.production.json")
+                    )
+            ) ? 
+                "https://api.styleme.best" : 
+                "https://localhost:5001";
+        public static readonly string API_DOMAIN = 
+            File.Exists(
+                Path.GetFullPath(
+                        Path.Join(Directory.GetCurrentDirectory(), "appsettings.production.json")
+                    )
+            ) ? 
+                "styleme.best" : 
+                "localhost";
         public static void Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
                             .SetBasePath(Directory.GetCurrentDirectory())
                             .AddEnvironmentVariables()
                             .AddUserSecrets<AppSettings>()
-                            .AddJsonFile("appsettings.json", optional: true)
-                            .AddJsonFile("appsettings.production.json", optional: false);
+                            .AddJsonFile("appsettings.json", optional: false)
+                            .AddJsonFile("appsettings.production.json", optional: true);
             
             Configuration = builder.Build();
             var host = CreateHostBuilder(args).Build();
@@ -48,7 +69,14 @@ namespace AdminApi
                     webBuilder.ConfigureKestrel(serverOptions => {
                         serverOptions.Listen(IPAddress.Loopback, 5000);
                         serverOptions.Listen(IPAddress.Loopback, 5001, listenOptions => {
-                            listenOptions.UseHttps(settings.CertificateFilename, settings.CertificatePWD);
+                            if (settings.CertificateFilename != null && settings.CertificatePWD != null)
+                            {
+                                listenOptions.UseHttps(settings.CertificateFilename, settings.CertificatePWD);
+                            }
+                            else
+                            {
+                                listenOptions.UseHttps();
+                            }                            
                             listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
                         });
                     });                  

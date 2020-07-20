@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace AdminApi.Services
 {
@@ -31,7 +30,17 @@ namespace AdminApi.Services
             }
             finally
             {
-                var zone = TimeZoneInfo.FindSystemTimeZoneById("Australia/Perth");
+                TimeZoneInfo zone = null;
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
+                {
+                    zone = TimeZoneInfo.FindSystemTimeZoneById("W. Australia Standard Time");
+                }
+                else
+                {
+                    zone = TimeZoneInfo.FindSystemTimeZoneById("Australia/Perth");
+                }
+
                 var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zone).ToString("dd/MM/yyyy hh:mm:ss tt");
 
                 _logger.LogInformation(
