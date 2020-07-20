@@ -14,28 +14,21 @@ namespace AdminApi
     public class Program
     {
         public static IConfiguration Configuration { get; set; }
-        public static readonly string ADMIN_URL = 
-            File.Exists(
+        private static readonly bool USE_PRODUCTION_SETTINGS = File.Exists(
                 Path.GetFullPath(
                         Path.Join(Directory.GetCurrentDirectory(), "appsettings.production.json")
                     )
-            ) ? 
+            );
+        public static readonly string ADMIN_URL = 
+            USE_PRODUCTION_SETTINGS ? 
                 "https://styleme.best" : 
                 "http://localhost:3000";
         public static readonly string API_URL = 
-            File.Exists(
-                Path.GetFullPath(
-                        Path.Join(Directory.GetCurrentDirectory(), "appsettings.production.json")
-                    )
-            ) ? 
+            USE_PRODUCTION_SETTINGS ? 
                 "https://api.styleme.best" : 
                 "https://localhost:5001";
         public static readonly string API_DOMAIN = 
-            File.Exists(
-                Path.GetFullPath(
-                        Path.Join(Directory.GetCurrentDirectory(), "appsettings.production.json")
-                    )
-            ) ? 
+            USE_PRODUCTION_SETTINGS ? 
                 "styleme.best" : 
                 "localhost";
         public static void Main(string[] args)
