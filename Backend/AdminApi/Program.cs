@@ -20,7 +20,7 @@ namespace AdminApi
         public static readonly string ADMIN_URL = 
             USE_PRODUCTION_SETTINGS ? 
                 "https://styleme.best" : 
-                "http://localhost:3000";
+                "http://localhost:5500";
         public static readonly string API_URL = 
             USE_PRODUCTION_SETTINGS ? 
                 "https://api.styleme.best" : 
