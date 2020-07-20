@@ -237,15 +237,13 @@ Mem:        1009176      160096       76984        2188      772096      695972
 Swap:       2047996           0     2047996
 ```
 
-Now we can run again `composer global require laravel/installer` and it should work properly.
-
-Lets test that everything is working. Create a new Laravel project inside `/var/www` but first, we have to add Composer's vendor bin directory to our `$PATH` in order to make it executable:
+Add Composer's vendor bin directory to our `$PATH` in order to make it executable:
 
 ```bash
 echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' >> ~/.bashrc
 source ~/.bashrc
 ```
-Quick note: Laravel uses PHP 7.3+. Let's install PHP7.4
+Let's install PHP7.4
 ```bash
 sudo apt install php7.4 php7.4-mbstring php7.4-xmlrpc php7.4-soap php7.4-gd php7.4-xml php7.4-cli php7.4-zip php7.4-bcmath php7.4-tokenizer php7.4-json
 
@@ -264,18 +262,6 @@ sudo a2enmod php7.4
 systemctl restart apache2
 ```
 
-Now we can create a test Laravel app
-```bash
-cd /var/www
-laravel new test
-```
-
-When finished, we can test our development server
-```bash
-php artisan serve --host 178.128.94.81 --port 8080
-```
-
-visit `http://178.128.94.81:8080/` on your broser and you should see the default Laravel home page
 
 #### Install NVM (NodeJS and npm)
 
@@ -296,10 +282,8 @@ npm -v
 
 
 
-### 3. Clone repo, edit env and some configurations
-```bash
-git clone https://github.com/ggornes/GGG-SomeApp.git
-```
+### 3. Permissions (ToDo: check correct permissions)
+
 Set some permissions
 ```bash
 sudo chown -R administrator:www-data /var/www/
@@ -308,39 +292,7 @@ chmod -R 750 /var/www/GGG-SomeApp
 chmod -R 770 /var/www/GGG-SomeApp
 ```
 
-Install `composer.json` packages
-```bash
-composer install
-```
 
-Now, we have to change the `APP_NAME` on the .env file, choose a style on the `_variables.scss` file and change the `name` on the `UserSeeder.php` file.
-
-To set the style changes, we need to run
-```bash
-npm run dev
-```
-Create the database using the `1-db.sql` file provided:
-```bash
-cd /var/www/GGG-SomeApp/set-up
-sudo mysql -u root < 1-db.sql
-```
-
-Run the migrations, seeder and generate keys
-```bash
-php artisan key:generate
-composer dumpautoload
-php artisan migrate
-php artisan config:cache
-php artisan passport:install --force
-php artisan cache:clear
-php artisan view:clear
-php artisan route:clear
-php artisan migrate:fresh --seed
-```
-We can generate an auth toke key
-```bash
-php artisan passport:client --personal
-```
 
 
 ### 5. Start Apache web server
@@ -370,7 +322,6 @@ sudo a2enmod rewrite
 systemctl restart apache2
 ```
 
-And that is all. We can now visit http://178.128.94.81/ on a browser and the app should be working :grinning:
 
 
 
