@@ -1050,13 +1050,13 @@ If you have already registered an account, you can send a `POST /users/sign_in` 
 
 After you click "Send" (whether you signed in or signed up), you should get a cookie from the server:
 
-![Cookie](https://i.imgur.com/OER135W.png "Cookie")
+![Cookie](https://i.imgur.com/RgNLVqd.png "Cookie")
 
 Now this cookie will be automatically sent back to the server (included in the headers by Postman) on every new request that you make, so you don't need to touch the Authorization tab.
 
 > Note: if you get an error message saying "Invalid request origin", simply add this Origin header to your request:
 
-![Origin](https://i.imgur.com/Q5nFuAp.png "Origin")
+![Origin](https://i.imgur.com/Dzx9OQD.png "Origin")
 
 All `GET` and `DELETE` requests should work out of the box. You will have to provide a request `body` to `PUT` and `POST` requests (check the attributes in the corresponding [Model](AdminApi/Models_v2_1 "Models v2.1") file to understand how each property is validated).
 

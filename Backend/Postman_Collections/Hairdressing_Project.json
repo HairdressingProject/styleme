@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "54b6aaaa-5954-42b7-ae20-2d46228a8fb5",
+		"_postman_id": "0fa6587c-0a78-4833-a9e9-49ba6bdc4125",
 		"name": "Hair Project",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -172,7 +172,7 @@
 							{
 								"key": "Origin",
 								"type": "text",
-								"value": "https://localhost:3000"
+								"value": "https://localhost:5500"
 							}
 						],
 						"body": {
@@ -209,7 +209,7 @@
 						"header": [
 							{
 								"key": "Origin",
-								"value": "https://localhost:3000",
+								"value": "https://localhost:5500",
 								"type": "text"
 							}
 						],
@@ -278,7 +278,7 @@
 						"header": [
 							{
 								"key": "Origin",
-								"value": "https://localhost:3000",
+								"value": "https://localhost:5500",
 								"type": "text"
 							}
 						],
@@ -614,7 +614,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:5001/colours",
+							"raw": "https://localhost:5001/colours?search=grey&limit=1&offset=0",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -622,6 +622,20 @@
 							"port": "5001",
 							"path": [
 								"colours"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "grey"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
 							]
 						}
 					},
@@ -656,7 +670,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:5001/colours/count",
+							"raw": "https://localhost:5001/colours/count?search=grey",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -665,6 +679,12 @@
 							"path": [
 								"colours",
 								"count"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "grey"
+								}
 							]
 						}
 					},
