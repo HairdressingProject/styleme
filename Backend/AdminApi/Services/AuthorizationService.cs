@@ -17,12 +17,12 @@ namespace AdminApi.Services
 
     public class AuthorizationService : IAuthorizationService
     {
-        private readonly IUserService _userService;
+        private readonly IAuthenticationService _authenticationService;
         private readonly hair_project_dbContext _context;
 
-        public AuthorizationService(IUserService userService, hair_project_dbContext context)
+        public AuthorizationService(IAuthenticationService authenticationService, hair_project_dbContext context)
         {
-            _userService = userService;
+            _authenticationService = authenticationService;
             _context = context;
         }
 
@@ -59,7 +59,7 @@ namespace AdminApi.Services
         public bool ValidateJWTCookie(HttpRequest request)
         {
             var token = GetAuthCookie(request);
-            return _userService.ValidateUserToken(token);
+            return _authenticationService.ValidateUserToken(token);
         }
 
         public async Task<bool> IsAdminOrDeveloper(HttpRequest request)
@@ -67,7 +67,7 @@ namespace AdminApi.Services
             if (ValidateJWTCookie(request))
             {
                 var authCookie = GetAuthCookie(request);
-                string id = _userService.GetUserIdFromToken(authCookie);
+                string id = _authenticationService.GetUserIdFromToken(authCookie);
 
                 if (ulong.TryParse(id, out ulong idParsed))
                 {

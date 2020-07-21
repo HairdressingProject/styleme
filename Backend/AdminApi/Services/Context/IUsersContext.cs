@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AdminApi.Controllers;
+using AdminApi.Helpers.Exceptions;
 
 namespace AdminApi.Services.Context
 {
@@ -21,38 +22,37 @@ namespace AdminApi.Services.Context
         /// <param name="limit">Limits the number of results found</param>
         /// <param name="offset">Offsets the position from which users should be returned</param>
         /// <param name="search">Only returns users that match this query</param>
-        /// <param name="includeFeatures">Optionally, include <see cref="UserFeatures"/></param>
         /// <returns>Users found</returns>
         Task<List<Users>> Browse(
             string limit = "1000", 
             string offset = "0", 
-            string search = "", 
-            bool includeFeatures = true
+            string search = ""
             );
 
         /// <summary>
         /// Gets a user by ID
         /// </summary>
         /// <param name="id">User's ID</param>
-        /// <param name="includeFeatures">Optionally, include <see cref="UserFeatures"/></param>
         /// <returns>User found or null</returns>
-        Task<Users> ReadById(ulong id, bool includeFeatures = true);
+        Task<Users> ReadById(ulong id);
 
         /// <summary>
         /// Gets a user by their JWT token sent in the request
         /// </summary>
         /// <param name="token">JWT token from the request (e.g. from cookies or Authorization header)</param>
-        /// <param name="includeFeatures">Optionally, include <see cref="UserFeatures"/></param>
-        /// <returns>User found or null</returns>
-        Task<Users> ReadByToken(Guid token, bool includeFeatures = true);
+        /// <returns>User found and list of accounts found or (null, null)</returns>
+        Task<(Users, List<Accounts>)> ReadByToken(Guid token);
 
         /// <summary>
         /// Updates a user
         /// </summary>
         /// <param name="id">ID of the user to be updated</param>
         /// <param name="user">Updated user object</param>
-        /// <returns></returns>
-        Task Edit(ulong id, UpdatedUser user);
+        /// <exception cref="ExistingUserException">
+        ///     Thrown if another user has the same username or email
+        /// </exception>
+        /// <returns>Result of the operation</returns>
+        Task<bool> Edit(ulong id, UpdatedUser user);
 
         /// <summary>
         /// Changes a user's role, as defined in <see cref="UserRoles"/>
@@ -66,8 +66,8 @@ namespace AdminApi.Services.Context
         /// Adds a new user
         /// </summary>
         /// <param name="user">User to be added</param>
-        /// <returns></returns>
-        Task Add(SignUpUser user);
+        /// <returns>User added or null or if the operation failed</returns>
+        Task<Users> Add(SignUpUser user);
 
         /// <summary>
         /// Performs a sign in action for an existing user
@@ -86,8 +86,8 @@ namespace AdminApi.Services.Context
         /// Deletes a user
         /// </summary>
         /// <param name="id">ID of the user to be deleted</param>
-        /// <returns></returns>
-        Task Delete(ulong id);
+        /// <returns>User removed or null (if the operation failed)</returns>
+        Task<Users> Delete(ulong id);
 
         /// <summary>
         /// Gets the current total count of users

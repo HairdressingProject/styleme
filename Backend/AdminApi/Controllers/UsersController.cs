@@ -11,6 +11,7 @@ using AdminApi.Models_v2_1.Validation;
 using System;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using AdminApi.Services.Context;
 
 namespace AdminApi.Controllers
 {
@@ -25,26 +26,29 @@ namespace AdminApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly hair_project_dbContext _context;
+        private readonly IUsersContext _usersContext;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IUserService _userService;
+        private readonly IAuthenticationService _authenticationService;
         private readonly IEmailService _emailService;
 
         public UsersController(hair_project_dbContext context,
-            IUserService userService,
+            IAuthenticationService authenticationService,
             IAuthorizationService authorizationService,
-            IEmailService emailService)
+            IEmailService emailService,
+            IUsersContext usersContext)
         {
             _context = context;
-            _userService = userService;
+            _authenticationService = authenticationService;
             _authorizationService = authorizationService;
             _emailService = emailService;
+            _usersContext = usersContext;
         }
 
         // GET: users
-        // GET: users?limit=5&offset=0 (optional pagination)
+        // GET: users?limit=5&offset=0&search=admin (optional pagination / search)
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Users>>> GetUsers(
+        public async Task<ActionResult<List<Users>>> GetUsers(
             [FromQuery(Name = "limit")] string limit = "1000",
             [FromQuery(Name = "offset")] string offset = "0",
             [FromQuery(Name = "search")] string search = ""
@@ -57,23 +61,7 @@ namespace AdminApi.Controllers
 
             if (limit != null && offset != null)
             {
-                if (int.TryParse(limit, out int l) && int.TryParse(offset, out int o))
-                {
-                    var limitedUsers = await _context
-                                                .Users
-                                                .Where(
-                                                    u =>
-                                                        u.UserEmail.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower()) ||
-                                                        u.UserName.Trim().ToLower().Contains(string.IsNullOrWhiteSpace(search) ? search : search.Trim().ToLower())
-                                                        )
-                                                .Include(u => u.UserFeatures)
-                                                .Skip(o)
-                                                .Take(l)
-                                                .ToListAsync();
-
-                    return Ok(new { users = limitedUsers.WithoutPasswords() });
-                }
-                else
+                if (!int.TryParse(limit, out int l) || !int.TryParse(offset, out int o))
                 {
                     var response = new JsonResponse
                     {
@@ -88,16 +76,9 @@ namespace AdminApi.Controllers
                     return BadRequest(response.FormatResponse());
                 }
             }
-
-            var users = await _context.Users.Include(u => u.UserFeatures).ToListAsync();
-            var mappedUsersWithoutPasswords = users.WithoutPasswords();
-
-            var usersResponse = new
-            {
-                users = mappedUsersWithoutPasswords
-            };
-
-            return Ok(usersResponse);
+            
+            List<Users> users = await _usersContext.Browse(limit, offset, search);
+            return Ok(new { users });
         }
 
         [HttpGet("count")]
@@ -238,8 +219,8 @@ namespace AdminApi.Controllers
             }
 
             // hash/salt new password
-            string salt = _userService.GenerateSalt();
-            string hash = _userService.HashPassword(user.UserPassword, salt);
+            string salt = _authenticationService.GenerateSalt();
+            string hash = _authenticationService.HashPassword(user.UserPassword, salt);
 
             Users currentUser = await _context.Users.FindAsync(user.Id);
 
@@ -282,8 +263,8 @@ namespace AdminApi.Controllers
 
                 if (existingUser != null)
                 {
-                    string salt = _userService.GenerateSalt();
-                    string hash = _userService.HashPassword(user.UserPassword, salt);
+                    string salt = _authenticationService.GenerateSalt();
+                    string hash = _authenticationService.HashPassword(user.UserPassword, salt);
 
                     existingUser.UserPasswordHash = hash;
                     existingUser.UserPasswordSalt = salt;
@@ -353,8 +334,8 @@ namespace AdminApi.Controllers
             }
 
             // hash + salt new password
-            string salt = _userService.GenerateSalt();
-            string hash = _userService.HashPassword(user.UserPassword, salt);
+            string salt = _authenticationService.GenerateSalt();
+            string hash = _authenticationService.HashPassword(user.UserPassword, salt);
 
             userMod.UserPasswordHash = hash;
             userMod.UserPasswordSalt = salt;
@@ -439,8 +420,8 @@ namespace AdminApi.Controllers
 
             if (!existingUser)
             {
-                string salt = _userService.GenerateSalt();
-                string hash = _userService.HashPassword(user.UserPassword, salt);
+                string salt = _authenticationService.GenerateSalt();
+                string hash = _authenticationService.HashPassword(user.UserPassword, salt);
 
                 Users userToBeAdded = new Users
                 {
@@ -483,8 +464,8 @@ namespace AdminApi.Controllers
                 // New user, add to DB and authenticate
                 // Also, validate/sanitise properties here
 
-                string salt = _userService.GenerateSalt();
-                string hash = _userService.HashPassword(newUser.UserPassword, salt);
+                string salt = _authenticationService.GenerateSalt();
+                string hash = _authenticationService.HashPassword(newUser.UserPassword, salt);
 
                 // By default, every new user will be registered as "user" in their user role
                 // Their status should only be changed by admins
@@ -513,7 +494,7 @@ namespace AdminApi.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                var authenticatedUser = await _userService.Authenticate(newUser.UserName, newUser.UserPassword);
+                var authenticatedUser = await _authenticationService.Authenticate(newUser.UserName, newUser.UserPassword);
                 // var baseUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == authenticatedUser.Id);
 
                 authenticatedUser.BaseUser = savedUser.WithoutPassword();
@@ -553,7 +534,7 @@ namespace AdminApi.Controllers
             }
 
             // Authenticate user
-            var authenticatedUser = await _userService.Authenticate(user.UserNameOrEmail, user.UserPassword);
+            var authenticatedUser = await _authenticationService.Authenticate(user.UserNameOrEmail, user.UserPassword);
 
             if (authenticatedUser == null)
             {
@@ -583,7 +564,7 @@ namespace AdminApi.Controllers
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var id = _userService.GetUserIdFromToken(Request.Cookies["auth"]);
+            var id = _authenticationService.GetUserIdFromToken(Request.Cookies["auth"]);
 
             if (id != null && ulong.TryParse(id, out ulong _id))
             {
