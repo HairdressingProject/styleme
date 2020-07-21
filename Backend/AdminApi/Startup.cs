@@ -161,7 +161,9 @@ namespace AdminApi
             
             app.UseMiddleware<LoggingService>();
 
-            app.UseWhen(
+            if (Program.RESTRICT_ACCESS)
+            {
+                app.UseWhen(
                 ctx => !WhitelistedRoutes.Any(r => ctx.Request.Path.Value.Contains(r)),
                 builder => {
                     builder.Use(async (ctx, next) => {
@@ -195,6 +197,7 @@ namespace AdminApi
                     });
                 }
             );
+            }            
 
             app.UseEndpoints(endpoints =>
             {

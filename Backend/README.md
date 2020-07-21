@@ -162,7 +162,7 @@ Retrieves all users.
 Retrieves a user with the specified `id`.
 
 ####  2.1.3. <a name='GETuserstoken'></a>GET /users/{token}
-Retrieves a user identified by the specified JWT `token` send as an `auth` cookie (if signed in).
+Retrieves a user identified by the specified JWT `token` sent as an `auth` cookie (if signed in).
 
 ####  2.1.4. <a name='GETuserscountsearchsearch'></a>GET /users/count[?search={search}]
 Retrieves the total number of users.

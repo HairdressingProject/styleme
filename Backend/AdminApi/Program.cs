@@ -12,6 +12,7 @@ namespace AdminApi
     public class Program
     {
         public static IConfiguration Configuration { get; set; }
+        public static readonly bool RESTRICT_ACCESS = true;
         private static readonly bool USE_PRODUCTION_SETTINGS = File.Exists(
                 Path.GetFullPath(
                         Path.Join(Directory.GetCurrentDirectory(), "appsettings.production.json")
