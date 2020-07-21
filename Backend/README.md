@@ -168,7 +168,7 @@ Retrieves a user identified by the specified JWT `token` sent as an `auth` cooki
 Retrieves the total number of users.
 
 ##### Optional queries
-- `search` (`string`): Only counts the users whose `UserName` or `UserPassword` match this query
+- `search` (`string`): Only counts the users whose `UserName` or `UserEmail` match this query (case insensitive)
 
 ##### Remarks
 Combine this route with `GET /users[?limit={limit}&offset={offset}&search={search}]` to implement pagination more efficiently.
