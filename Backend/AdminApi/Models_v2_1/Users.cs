@@ -14,6 +14,11 @@ namespace AdminApi.Models_v2_1
             UserFeatures = new HashSet<UserFeatures>();
         }
 
+        public Users ShallowCopy()
+        {
+            return (Users)MemberwiseClone();
+        }
+
         [Key]
         [Column("id")]
         public ulong? Id { get; set; }

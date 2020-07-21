@@ -1,17 +1,13 @@
 ﻿using AdminApi.Models_v2_1;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace ApiUnitTests.Fixtures
+namespace ApiUnitTests.Seeds
 {
-    public class DatabaseFixture
+    public class UsersSeed
     {
-        public List<Users> Users { get; set; }
-
-        public DatabaseFixture()
+        public static List<Users> Seed()
         {
-            Users = new List<Users>
+            return new List<Users>
             {
                 new Users
                 {

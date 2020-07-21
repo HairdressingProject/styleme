@@ -61,7 +61,7 @@ namespace AdminApi.Controllers
 
             if (limit != null && offset != null)
             {
-                if (!int.TryParse(limit, out int l) || !int.TryParse(offset, out int o))
+                if (!int.TryParse(limit, out _) || !int.TryParse(offset, out _))
                 {
                     var response = new JsonResponse
                     {
