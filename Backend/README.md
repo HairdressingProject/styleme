@@ -162,7 +162,7 @@ Retrieves all users.
 Retrieves a user with the specified `id`.
 
 ####  2.1.3. <a name='GETuserstoken'></a>GET /users/{token}
-Retrieves a user identified by the specified JWT `token` sent as an `auth` cookie (if signed in).
+Retrieves a user identified by their recover password token (if valid).
 
 ####  2.1.4. <a name='GETuserscountsearchsearch'></a>GET /users/count[?search={search}]
 Retrieves the total number of users.
@@ -277,7 +277,7 @@ Updates a user's password, identified by the specified `id`.
 __NOTE__: the `Id` property __must__ be added to the request body as well (and it __must__ match the `id` from the endpoint).
 
 ####  2.1.13. <a name='PUTuserstokenchange_password'></a>PUT /users/{token}/change_password
-Alternative to `PUT /users/{id}/change_password` that uses the current user's JWT token instead, sent by the `auth` cookie.
+Alternative to `PUT /users/{id}/change_password` that uses the current user's recover password token instead.
 
 ##### Example request body
 

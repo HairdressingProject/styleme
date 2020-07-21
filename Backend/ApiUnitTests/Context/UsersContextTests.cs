@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AdminApi.Models_v2_1;
 using Xunit;
 using AdminApi.Services.Context;
-using ApiUnitTests.Fixtures;
+using ApiUnitTests.Fakes;
 using System.Linq;
 using AdminApi.Entities;
 

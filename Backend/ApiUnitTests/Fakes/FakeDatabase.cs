@@ -3,7 +3,7 @@ using AdminApi.Services.Context;
 using ApiUnitTests.Seeds;
 using System.Collections.Generic;
 
-namespace ApiUnitTests.Fixtures
+namespace ApiUnitTests.Fakes
 {
     public class FakeDatabase
     {
