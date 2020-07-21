@@ -14,12 +14,13 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using AdminApi.Services.Context;
 
 namespace AdminApi.Services
 {
-    public interface IUserService
+    public interface IAuthenticationService
     {
-        string HashPassword(string password, string salt);
+        string HashPassword(string password, string salt, string pepper = null);
         string GenerateSalt();
         Task<TokenisedUser> Authenticate(string usernameOrEmail, string password);
         bool ValidateUserToken(string token);
@@ -28,55 +29,75 @@ namespace AdminApi.Services
         string GetUserIdFromToken(string token);
     }
 
-    public class UserService : IUserService
+    public class AuthenticationService : IAuthenticationService
     {
         private readonly hair_project_dbContext _context;
+        private readonly IUsersContext _usersContext;
         private readonly AppSettings _appSettings;
         private readonly IConfiguration _configuration;
 
-        public UserService(IOptions<AppSettings> appSettings, hair_project_dbContext context, IConfiguration configuration)
+        public AuthenticationService(
+            IOptions<AppSettings> appSettings, 
+            hair_project_dbContext context, 
+            IConfiguration configuration
+            )
         {
             _appSettings = appSettings.Value;
             _context = context;
             _configuration = configuration;
         }
 
+        // for testing purposes
+        public AuthenticationService(
+                AppSettings appSettings,
+                IUsersContext usersContext
+            )
+        {
+            _appSettings = appSettings;
+            _usersContext = usersContext;
+        }
+
         public async Task<TokenisedUser> Authenticate(string usernameOrEmail, string password)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x =>
-                                  x.UserName == usernameOrEmail || 
+            if (_context != null)
+            {
+                var user = await _context.Users.SingleOrDefaultAsync(x =>
+                                  x.UserName == usernameOrEmail ||
                                   x.UserEmail == usernameOrEmail
                                   );
 
-            // return null if user not found
-            if (user == null)
-                return null;
+                // return null if user not found
+                if (user == null)
+                    return null;
 
-            // check password
-            if (!ValidateUserPassword(password, user.UserPasswordHash, user.UserPasswordSalt))
-            {
-                return null;
+                // check password
+                if (!ValidateUserPassword(password, user.UserPasswordHash, user.UserPasswordSalt))
+                {
+                    return null;
+                }
+
+                // authentication successful so generate jwt token
+                var entityUser = new TokenisedUser(user.Id);
+                var key = Encoding.UTF8.GetBytes(_appSettings.Secret);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                    new Claim(ClaimTypes.Name, entityUser.Id.ToString())
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                    Issuer = Program.API_URL,
+                    Audience = Program.ADMIN_URL
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                entityUser.Token = tokenHandler.WriteToken(token);
+
+                return entityUser;
             }
 
-            // authentication successful so generate jwt token
-            var entityUser = new TokenisedUser(user.Id);
-            var key = Encoding.UTF8.GetBytes(_appSettings.Secret);
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, entityUser.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = Program.API_URL,
-                Audience = Program.ADMIN_URL           
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            entityUser.Token = tokenHandler.WriteToken(token);           
-
-            return entityUser;
+            return null;
         }
 
         public string GenerateSalt()
@@ -92,13 +113,21 @@ namespace AdminApi.Services
 
         public async Task<IEnumerable<Users>> GetAll()
         {
-            var users = await _context.Users.ToListAsync();
+            List<Users> users;
+
+            if (_context != null)
+            {
+                users = await _context.Users.ToListAsync();
+                return users.WithoutPasswords();
+            }
+
+            users = await _usersContext.Browse();
             return users.WithoutPasswords();
         }
 
-        public string HashPassword(string password, string salt)
+        public string HashPassword(string password, string salt, string pepper = null)
         {
-            string pepper = _appSettings.Pepper;
+            pepper ??= _appSettings.Pepper;
 
             var bytes = KeyDerivation.Pbkdf2(
                 password: password,

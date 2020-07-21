@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using MimeKit;
+using AdminApi.Services.Context;
 
 namespace AdminApi
 {
@@ -80,9 +81,10 @@ namespace AdminApi
             });
 
             // Configure DI for application services
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IUsersContext, UsersContext>();
 
             // Register DB Context
             services.AddDbContext<hair_project_dbContext>(options =>
@@ -133,7 +135,7 @@ namespace AdminApi
         public void Configure(
             IApplicationBuilder app, 
             IWebHostEnvironment env, 
-            IUserService userService,
+            IAuthenticationService authenticationService,
             hair_project_dbContext dbContext
             )
         {
@@ -168,8 +170,8 @@ namespace AdminApi
                 builder => {
                     builder.Use(async (ctx, next) => {
                         string authToken = ctx.Request.Cookies["auth"];
-                        if (authToken != null && userService.ValidateUserToken(authToken)) {
-                            string userId = userService.GetUserIdFromToken(authToken);
+                        if (authToken != null && authenticationService.ValidateUserToken(authToken)) {
+                            string userId = authenticationService.GetUserIdFromToken(authToken);
                             if (ulong.TryParse(userId, out ulong id)) {
                                 using (var serviceScope = app.ApplicationServices.CreateScope()) {
                                     var services = serviceScope.ServiceProvider;
