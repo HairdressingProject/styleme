@@ -17,17 +17,31 @@ namespace AdminApi.Services.Context
         private readonly IAuthenticationService _authenticationService;
         public List<Users> Users { get; set; }
 
+        /// <summary>
+        /// Constructor for testing purposes
+        /// </summary>
+        /// <param name="users">Sample list of users</param>
         public UsersContext(List<Users> users)
         {
             Users = users;
         }
 
+        /// <summary>
+        /// Constructor to be added to the dependency injection container
+        /// </summary>
+        /// <param name="context">EF's database context</param>
+        /// <param name="authenticationService">Authentication service for users</param>
         public UsersContext(hair_project_dbContext context, IAuthenticationService authenticationService)
         {
             _context = context;
             _authenticationService = authenticationService;
         }
 
+        /// <summary>
+        /// Adds a new user
+        /// </summary>
+        /// <param name="user">User to be added</param>
+        /// <returns>User added</returns>
         public async Task<Users> Add(SignUpUser user)
         {
             Users userAdded = null;
@@ -107,6 +121,23 @@ namespace AdminApi.Services.Context
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Browses users
+        /// </summary>
+        /// <param name="limit">Optionally limits the number of users returned</param>
+        /// <param name="offset">
+        ///     Optionally offsets the position from which users will be counted
+        /// <para>
+        ///     Example: <code>offset = 5</code> ignores the first 5 users
+        /// </para>
+        /// </param>
+        /// <param name="search">
+        ///     Optionally searches for a user by 
+        ///     <see cref="Users.UserName"/> or 
+        ///     <see cref="Users.UserEmail"/>
+        ///     (case insensitive)
+        /// </param>
+        /// <returns></returns>
         public async Task<List<Users>> Browse(
             string limit = "1000",
             string offset = "0",
@@ -180,6 +211,17 @@ namespace AdminApi.Services.Context
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Counts users
+        /// </summary>
+        /// <param name="search">
+        ///     Optionally only count users whose 
+        ///     <see cref="Users.UserName"/> or
+        ///     <see cref="Users.UserEmail"/>
+        ///     match this query
+        ///     (case insensitive)
+        /// </param>
+        /// <returns>Users count</returns>
         public async Task<int> Count(string search = null)
         {
             int searchUsersCount = 0;
@@ -220,6 +262,11 @@ namespace AdminApi.Services.Context
             return searchUsersCount;
         }
 
+        /// <summary>
+        /// Deletes a user by ID
+        /// </summary>
+        /// <param name="id">ID of the user to be deleted</param>
+        /// <returns>User deleted</returns>
         public async Task<Users> Delete(ulong id)
         {
             Users user = null;
@@ -247,6 +294,18 @@ namespace AdminApi.Services.Context
             return user;
         }
 
+        /// <summary>
+        /// Updates an existing user
+        /// </summary>
+        /// <param name="id">ID of the user to be updated</param>
+        /// <param name="user">Updated user object</param>
+        /// <exception cref="ExistingUserException">
+        ///     Thrown if another user has the same
+        ///     <see cref="Users.UserName"/> or
+        ///     <see cref="Users.UserEmail"/>
+        ///     as <seealso cref="user"/>
+        /// </exception>
+        /// <returns>Result of the operation</returns>
         public async Task<bool> Edit(ulong id, UpdatedUser user)
         {
             bool userUpdated = false;
@@ -340,6 +399,11 @@ namespace AdminApi.Services.Context
             return userUpdated;
         }
 
+        /// <summary>
+        /// Retrieves a user by ID
+        /// </summary>
+        /// <param name="id">ID of the user to be retrieved</param>
+        /// <returns>User found or null</returns>
         public async Task<Users> ReadById(ulong id)
         {
             List<Users> results;
@@ -401,6 +465,16 @@ namespace AdminApi.Services.Context
         }
 
         public Task SignIn(AuthenticatedUserModel user)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> IBaseContext<Users>.Edit(ulong id, Users resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Users> IBaseContext<Users>.Add(Users resource)
         {
             throw new NotImplementedException();
         }

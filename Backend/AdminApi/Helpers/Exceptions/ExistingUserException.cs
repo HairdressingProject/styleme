@@ -2,7 +2,7 @@
 
 namespace AdminApi.Helpers.Exceptions
 {
-    public class ExistingUserException : Exception
+    public class ExistingUserException : ExistingResourceException
     {
         public ExistingUserException() { }
 
