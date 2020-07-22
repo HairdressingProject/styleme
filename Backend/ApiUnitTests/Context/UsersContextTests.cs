@@ -6,6 +6,7 @@ using AdminApi.Services.Context;
 using ApiUnitTests.Fakes;
 using System.Linq;
 using AdminApi.Entities;
+using AdminApi.Helpers.Exceptions;
 
 namespace ApiUnitTests.Context
 {
@@ -71,6 +72,7 @@ namespace ApiUnitTests.Context
             int expected = 1;
 
             // Act
+            // Equivalent to GET /users/count?search=john
             int actual = await _usersContext.Count("john");
 
             // Assert
@@ -125,6 +127,18 @@ namespace ApiUnitTests.Context
             Assert.Equal(updated.UserEmail, u.UserEmail);            
         }
 
+        [Fact(DisplayName = "Edit with existing username")]
+        public async Task Edit_SameUserName_ThrowsExistingUserException()
+        {
+            await TestEditUserWithException(2, true);
+        }
+
+        [Fact(DisplayName = "Edit with existing email")]
+        public async Task Edit_SameUserEmail_ThrowsExistingUserException()
+        {
+            await TestEditUserWithException(2, false, true);
+        }
+
         [Fact(DisplayName = "Add")]
         public async Task Add_ReturnsUserAdded()
         {
@@ -170,6 +184,55 @@ namespace ApiUnitTests.Context
             // Assert
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(currentUsersCount - 1, updatedUsersCount);
+        }
+
+        private async Task TestEditUserWithException(
+            ulong id, 
+            bool sameUserName = false, 
+            bool sameUserEmail = false
+            )
+        {
+            // Arrange
+            _usersContext = _db.SeedUsersContext();
+            List<Users> currentUsers = _db.Users;
+            Users current = _db.Users.FirstOrDefault(u => u.Id == id);
+            Users updated = current.ShallowCopy();
+
+            // Act
+            switch ((sameUserName, sameUserEmail))
+            {
+                case (true, false):
+                    updated.UserName = "admin";
+                    break;
+
+                case (false, true):
+                    updated.UserEmail = "admin@mail.com";
+                    break;
+
+                case (true, true):
+                    updated.UserName = "admin";
+                    updated.UserEmail = "admin@mail.com";
+                    break;
+
+                default:
+                    // (false, false)
+                    break;            
+            }
+
+            // UserPassword doesn't matter for the purposes of these tests
+            UpdatedUser updatedUser = new UpdatedUser
+            {
+                Id = id,
+                UserName = updated.UserName,
+                UserEmail = updated.UserEmail,
+                FirstName = updated.FirstName,
+                LastName = updated.LastName,
+                UserPassword = "Password1",
+                UserRole = updated.UserRole
+            };
+
+            // Assert
+            await Assert.ThrowsAsync<ExistingUserException>(() => _usersContext.Edit(id, updatedUser));
         }
     }
 }

@@ -39,7 +39,7 @@ namespace AdminApi.Services.Context
         /// <summary>
         /// Gets a user by their JWT token sent in the request
         /// </summary>
-        /// <param name="token">JWT token from the request (e.g. from cookies or Authorization header)</param>
+        /// <param name="token">GUID recover password token</param>
         /// <returns>User found and list of accounts found or (null, null)</returns>
         Task<(Users, List<Accounts>)> ReadByToken(Guid token);
 
