@@ -14,6 +14,11 @@ namespace AdminApi.Models_v2_1
             HairLengthLinks = new HashSet<HairLengthLinks>();
         }
 
+        public HairLengths ShallowCopy()
+        {
+            return (HairLengths)MemberwiseClone();
+        }
+
         [Key]
         [Column("id")]
         public ulong? Id { get; set; }
