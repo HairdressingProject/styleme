@@ -12,6 +12,7 @@ namespace ApiUnitTests.Fakes
     public class FakeDatabase
     {
         public List<Users> Users { get; set; }
+        public List<UserFeatures> UserFeatures { get; set; }
         public List<Colours> Colours { get; set; }
         public List<FaceShapes> FaceShapes { get; set; }
         public List<FaceShapeLinks> FaceShapeLinks { get; set; }
@@ -36,6 +37,20 @@ namespace ApiUnitTests.Fakes
         {
             SeedUsers();
             return new UsersContext(Users);
+        }
+
+        /**
+         * USER FEATURES
+         */
+        public void SeedUserFeatures()
+        {
+            UserFeatures = UserFeaturesSeed.Seed();
+        }
+
+        public UserFeaturesContext SeedUserFeaturesContext()
+        {
+            SeedUserFeatures();
+            return new UserFeaturesContext(UserFeatures);
         }
 
         /**
