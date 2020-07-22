@@ -6,16 +6,20 @@ using System.Collections.Generic;
 
 namespace ApiUnitTests.Fakes
 {
+    /// <summary>
+    /// Fake database containing collections of all the model classes used in the API
+    /// </summary>
     public class FakeDatabase
     {
         public List<Users> Users { get; set; }
         public List<Colours> Colours { get; set; }
+        public List<FaceShapes> FaceShapes { get; set; }
 
-        public FakeDatabase() 
-        {
-            Users = new List<Users>();
-        }
+        public FakeDatabase() { }
 
+        /**
+         * USERS
+         */
         public void SeedUsers()
         {
             Users = UsersSeed.Seed();
@@ -27,6 +31,9 @@ namespace ApiUnitTests.Fakes
             return new UsersContext(Users);
         }
 
+        /**
+         * COLOURS
+         */
         public void SeedColours()
         {
             Colours = ColoursSeed.Seed();
@@ -36,6 +43,20 @@ namespace ApiUnitTests.Fakes
         {
             SeedColours();
             return new ColoursContext(Colours);
+        }
+
+        /**
+         * FACE SHAPES
+         */
+        public void SeedFaceShapes()
+        {
+            FaceShapes = FaceShapesSeed.Seed();
+        }
+
+        public FaceShapesContext SeedFaceShapesContext()
+        {
+            SeedFaceShapes();
+            return new FaceShapesContext(FaceShapes);
         }
     }
 }

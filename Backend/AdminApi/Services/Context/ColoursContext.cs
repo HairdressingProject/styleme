@@ -204,6 +204,9 @@ namespace AdminApi.Services.Context
         /// Deletes a colour by ID
         /// </summary>
         /// <param name="id">ID of the colour to be deleted</param>
+        /// <exception cref="ResourceNotFoundException">
+        ///     Thrown if the user with the corresponding <seealso cref="id"/> is not found
+        /// </exception>
         /// <returns>Colour deleted</returns>
         public async Task<Colours> Delete(ulong id)
         {
@@ -216,8 +219,12 @@ namespace AdminApi.Services.Context
                 if (colour != null)
                 {
                     _context.Colours.Remove(colour);
+                    await _context.SaveChangesAsync();
                 }
-                await _context.SaveChangesAsync();
+                else
+                {
+                    throw new ResourceNotFoundException("Colour not found");
+                }                               
             }
             else
             {
@@ -226,6 +233,10 @@ namespace AdminApi.Services.Context
                 if (colour != null)
                 {
                     Colours.Remove(colour);
+                }
+                else
+                {
+                    throw new ResourceNotFoundException("Colour not found");
                 }
             }
 
@@ -271,10 +282,18 @@ namespace AdminApi.Services.Context
             }
             else
             {
-                int currentColourIndex = Colours.FindIndex(c => c.Id == id);
+                Colours currentFaceShape = Colours.FirstOrDefault(fs => fs.Id == id);
 
-                Colours[currentColourIndex] = updatedColour;
-                colourUpdated = true;
+                if (currentFaceShape != null)
+                {
+                    int currentColourIndex = Colours.FindIndex(c => c.Id == id);
+                    Colours[currentColourIndex] = updatedColour;
+                    colourUpdated = true;
+                }
+                else
+                {
+                    throw new ResourceNotFoundException("Colour not found");
+                }
             }
 
             return colourUpdated;
