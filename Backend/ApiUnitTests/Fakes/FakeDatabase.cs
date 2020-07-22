@@ -20,6 +20,7 @@ namespace ApiUnitTests.Fakes
         public List<HairStyles> HairStyles { get; set; }
         public List<HairStyleLinks> HairStyleLinks { get; set; }
         public List<SkinTones> SkinTones { get; set; }
+        public List<SkinToneLinks> SkinToneLinks { get; set; }
 
         public FakeDatabase() { }
 
@@ -147,6 +148,20 @@ namespace ApiUnitTests.Fakes
         {
             SeedSkinTones();
             return new SkinTonesContext(SkinTones);
+        }
+
+        /**
+         * SKIN TONE LINKS
+         */
+        public void SeedSkinToneLinks()
+        {
+            SkinToneLinks = SkinToneLinksSeed.Seed();
+        }
+
+        public SkinToneLinksContext SeedSkinToneLinksContext()
+        {
+            SeedSkinToneLinks();
+            return new SkinToneLinksContext(SkinToneLinks);
         }
     }
 }

@@ -8,6 +8,11 @@ namespace AdminApi.Models_v2_1
     [Table("skin_tone_links")]
     public partial class SkinToneLinks
     {
+        public SkinToneLinks ShallowCopy()
+        {
+            return (SkinToneLinks)MemberwiseClone();
+        }
+
         [Key]
         [Column("id")]
         public ulong? Id { get; set; }
