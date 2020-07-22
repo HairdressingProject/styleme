@@ -16,6 +16,7 @@ namespace ApiUnitTests.Fakes
         public List<FaceShapes> FaceShapes { get; set; }
         public List<FaceShapeLinks> FaceShapeLinks { get; set; }
         public List<HairLengths> HairLengths { get; set; }
+        public List<HairLengthLinks> HairLengthLinks { get; set; }
         public List<HairStyles> HairStyles { get; set; }
         public List<SkinTones> SkinTones { get; set; }
 
@@ -89,6 +90,20 @@ namespace ApiUnitTests.Fakes
         {
             SeedHairLengths();
             return new HairLengthsContext(HairLengths);
+        }
+
+        /**
+         * HAIR LENGTH LINKS
+         */
+        public void SeedHairLengthLinks()
+        {
+            HairLengthLinks = HairLengthLinksSeed.Seed();
+        }
+
+        public HairLengthLinksContext SeedHairLengthLinksContext()
+        {
+            SeedHairLengthLinks();
+            return new HairLengthLinksContext(HairLengthLinks);
         }
 
         /**

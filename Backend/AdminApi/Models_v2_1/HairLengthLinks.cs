@@ -8,6 +8,11 @@ namespace AdminApi.Models_v2_1
     [Table("hair_length_links")]
     public partial class HairLengthLinks
     {
+        public HairLengthLinks ShallowCopy()
+        {
+            return (HairLengthLinks)MemberwiseClone();
+        }
+
         [Key]
         [Column("id")]
         public ulong? Id { get; set; }
