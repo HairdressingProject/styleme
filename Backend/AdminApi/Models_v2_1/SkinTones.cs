@@ -32,5 +32,10 @@ namespace AdminApi.Models_v2_1
 
         [InverseProperty("SkinTone")]
         public virtual ICollection<SkinToneLinks> SkinToneLinks { get; set; }
+
+        public SkinTones ShallowCopy()
+        {
+            return (SkinTones)MemberwiseClone();
+        }
     }
 }
