@@ -542,7 +542,7 @@ namespace AdminApi.Services.Context
         /// </summary>
         /// <param name="userFeatures">User features to be mapped</param>
         /// <returns>Iterable collection of mapped user features</returns>
-        private IEnumerable<UserFeatures> IncludeProperties(List<UserFeatures> userFeatures)
+        public IEnumerable<UserFeatures> IncludeProperties(List<UserFeatures> userFeatures)
         {
             return userFeatures
                 .Select(

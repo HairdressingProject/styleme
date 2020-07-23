@@ -49,8 +49,23 @@ namespace ApiUnitTests.Fakes
 
         public UserFeaturesContext SeedUserFeaturesContext()
         {
+            SeedUsers();
+            SeedFaceShapes();
+            SeedColours();
+            SeedHairLengths();
+            SeedHairStyles();
+            SeedSkinTones();
             SeedUserFeatures();
-            return new UserFeaturesContext(UserFeatures);
+
+            return new UserFeaturesContext(
+                UserFeatures,
+                Users,
+                FaceShapes,
+                Colours,
+                HairLengths,
+                HairStyles,
+                SkinTones
+                );
         }
 
         /**
