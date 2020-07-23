@@ -9,6 +9,11 @@ namespace AdminApi.Models_v2_1
     [Table("face_shape_links")]
     public partial class FaceShapeLinks
     {
+        public FaceShapeLinks ShallowCopy()
+        {
+            return (FaceShapeLinks)MemberwiseClone();
+        }
+
         [Key]
         [Column("id")]
         public ulong? Id { get; set; }

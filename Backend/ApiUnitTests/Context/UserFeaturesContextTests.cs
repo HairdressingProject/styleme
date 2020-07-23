@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+/* using System.Collections.Generic;
 using System.Threading.Tasks;
 using AdminApi.Models_v2_1;
 using Xunit;
@@ -10,41 +10,49 @@ using AdminApi.Helpers.Exceptions;
 
 namespace ApiUnitTests.Context
 {
-    public class UsersContextTests
+    public class UserFeaturesContextTests
     {
-        private UsersContext _usersContext;
+        private UserFeaturesContext _userFeaturesContext;
         private FakeDatabase _db;
 
-        public UsersContextTests()
+        public UserFeaturesContextTests()
         {
             _db = new FakeDatabase();
-            _usersContext = new UsersContext(_db.Users);
+           _userFeaturesContext = new UserFeaturesContext(
+               _db.UserFeatures, 
+               _db.Users, 
+               _db.FaceShapes, 
+               _db.Colours, 
+               _db.HairLengths, 
+               _db.HairStyles,
+                _db.SkinTones
+                );
         }
 
         [Fact(DisplayName = "Browse all")]
-        public async Task Browse_ReturnsListOfUsers()
+        public async Task Browse_ReturnsListOfUserFeatures()
         {
             // Arrange     
-            _usersContext = _db.SeedUsersContext();
-            List<Users> expected = _db.Users;
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
+            List<UserFeatures> expected = _db.UserFeatures;
 
             // Act
-            List<Users> actual = await _usersContext.Browse();
+            List<UserFeatures> actual = await _userFeaturesContext.Browse();
 
             // Assert
             Assert.Equal(expected.Count, actual.Count);
         }
 
         [Fact(DisplayName = "Browse filtered")]
-        public async Task Browse_Limit_Offset_Search_ReturnsFilteredUsers()
+        public async Task Browse_Limit_Offset_Search_ReturnsFilteredUserFeatures()
         {
             // Arrange
-            _usersContext = _db.SeedUsersContext();
-            List<Users> expected = _db.Users.FindAll(u => u.UserName == "johnny");
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
+            List<UserFeatures> expected = _db.UserFeatures.FindAll(u => u.UserName == "johnny");
 
             // Act
             // Equivalent to GET /users?limit=1000&offset=0&search=john
-            List<Users> actual = await _usersContext.Browse("1000", "0" , "john");
+            List<UserFeatures> actual = await_userFeaturesContext.Browse("1000", "0" , "john");
 
             // Assert
             Assert.Equal(expected.Count, actual.Count);
@@ -54,11 +62,11 @@ namespace ApiUnitTests.Context
         public async Task Count_ReturnsTotal()
         {
             // Arrange
-            _usersContext = _db.SeedUsersContext();
-            int expected = _db.Users.Count;
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
+            int expected = _db.UserFeatures.Count;
 
             // Act
-            int actual = await _usersContext.Count();
+            int actual = await_userFeaturesContext.Count();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -68,12 +76,12 @@ namespace ApiUnitTests.Context
         public async Task Count_ReturnsFilteredCount()
         {
             // Arrange
-            _usersContext = _db.SeedUsersContext();
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
             int expected = 1;
 
             // Act
             // Equivalent to GET /users/count?search=john
-            int actual = await _usersContext.Count("john");
+            int actual = await_userFeaturesContext.Count("john");
 
             // Assert
             Assert.Equal(expected, actual);
@@ -83,12 +91,12 @@ namespace ApiUnitTests.Context
         public async Task Read_ReturnsUserById()
         {
             // Arrange
-            _usersContext = _db.SeedUsersContext();
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
             ulong id = 1;
-            Users expected = _db.Users.FirstOrDefault(u => u.Id == id);
+            UserFeatures expected = _db.UserFeatures.FirstOrDefault(u => u.Id == id);
 
             // Act
-            Users actual = await _usersContext.ReadById(id);
+            UserFeatures actual = await_userFeaturesContext.ReadById(id);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -98,11 +106,11 @@ namespace ApiUnitTests.Context
         public async Task Edit_ReturnsTrue()
         {
             // Arrange
-            _usersContext = _db.SeedUsersContext();
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
             ulong id = 2;
-            List<Users> currentUsers = _db.Users;
-            Users current = _db.Users.FirstOrDefault(u => u.Id == id);
-            Users updated = current.ShallowCopy();
+            List<UserFeatures> currentUserFeatures = _db.UserFeatures;
+            UserFeatures current = _db.UserFeatures.FirstOrDefault(u => u.Id == id);
+            UserFeatures updated = current.ShallowCopy();
             updated.UserEmail = "johnny@mail.com";
             UpdatedUser updatedUser = new UpdatedUser
             {
@@ -118,9 +126,9 @@ namespace ApiUnitTests.Context
             bool expected = true;
 
             // Act
-            bool actual = await _usersContext.Edit(id, updatedUser);
-            Users u = _db.Users.FirstOrDefault(u => u.Id == id);
-            _db.Users = new List<Users>(currentUsers);
+            bool actual = await_userFeaturesContext.Edit(id, updatedUser);
+            UserFeatures u = _db.UserFeatures.FirstOrDefault(u => u.Id == id);
+            _db.UserFeatures = new List<UserFeatures>(currentUserFeatures);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -143,9 +151,9 @@ namespace ApiUnitTests.Context
         public async Task Add_ReturnsUserAdded()
         {
             // Arrange
-            _usersContext = _db.SeedUsersContext();
-            int currentUsersCount = _db.Users.Count;
-            List<Users> currentUsers = _db.Users;
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
+            int currentUserFeaturesCount = _db.UserFeatures.Count;
+            List<UserFeatures> currentUserFeatures = _db.UserFeatures;
             SignUpUser expected = new SignUpUser
             {
                 UserName = "carl",
@@ -157,33 +165,33 @@ namespace ApiUnitTests.Context
             };
 
             // Act
-            Users actual = await _usersContext.Add(expected);
-            int updatedUsersCount = _db.Users.Count;
-            _db.Users = new List<Users>(currentUsers);
+            UserFeatures actual = await_userFeaturesContext.Add(expected);
+            int updatedUserFeaturesCount = _db.UserFeatures.Count;
+            _db.UserFeatures = new List<UserFeatures>(currentUserFeatures);
 
             // Assert
             Assert.Equal(expected.UserName, actual.UserName);
-            Assert.Equal(currentUsersCount + 1, updatedUsersCount);
+            Assert.Equal(currentUserFeaturesCount + 1, updatedUserFeaturesCount);
         }
 
         [Fact(DisplayName = "Delete")]
         public async Task Delete_ReturnsUserDeleted()
         {
             // Arrange
-            _usersContext = _db.SeedUsersContext();
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
             ulong id = 2;
-            List<Users> currentUsers = _db.Users;
-            int currentUsersCount = _db.Users.Count;
-            Users expected = _db.Users.FirstOrDefault(u => u.Id == id);
+            List<UserFeatures> currentUserFeatures = _db.UserFeatures;
+            int currentUserFeaturesCount = _db.UserFeatures.Count;
+            UserFeatures expected = _db.UserFeatures.FirstOrDefault(u => u.Id == id);
 
             // Act
-            Users actual = await _usersContext.Delete(id);
-            int updatedUsersCount = _db.Users.Count;
-            _db.Users = new List<Users>(currentUsers);
+            UserFeatures actual = await_userFeaturesContext.Delete(id);
+            int updatedUserFeaturesCount = _db.UserFeatures.Count;
+            _db.UserFeatures = new List<UserFeatures>(currentUserFeatures);
 
             // Assert
             Assert.Equal(expected.Id, actual.Id);
-            Assert.Equal(currentUsersCount - 1, updatedUsersCount);
+            Assert.Equal(currentUserFeaturesCount - 1, updatedUserFeaturesCount);
         }
 
         private async Task TestEditUserWithException(
@@ -193,10 +201,10 @@ namespace ApiUnitTests.Context
             )
         {
             // Arrange
-            _usersContext = _db.SeedUsersContext();
-            List<Users> currentUsers = _db.Users;
-            Users current = _db.Users.FirstOrDefault(u => u.Id == id);
-            Users updated = current.ShallowCopy();
+           _userFeaturesContext = _db.SeedUserFeaturesContext();
+            List<UserFeatures> currentUserFeatures = _db.UserFeatures;
+            UserFeatures current = _db.UserFeatures.FirstOrDefault(u => u.Id == id);
+            UserFeatures updated = current.ShallowCopy();
 
             // Act
             switch ((sameUserName, sameUserEmail))
@@ -232,7 +240,8 @@ namespace ApiUnitTests.Context
             };
 
             // Assert
-            await Assert.ThrowsAsync<ExistingUserException>(() => _usersContext.Edit(id, updatedUser));
+            await Assert.ThrowsAsync<ExistingUserException>(() =>_userFeaturesContext.Edit(id, updatedUser));
         }
     }
 }
+ */

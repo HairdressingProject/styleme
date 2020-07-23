@@ -8,6 +8,11 @@ namespace AdminApi.Models_v2_1
     [Table("colours")]
     public partial class Colours
     {
+        public Colours ShallowCopy()
+        {
+            return (Colours)MemberwiseClone();
+        }
+
         [Key]
         [Column("id")]
         public ulong? Id { get; set; }

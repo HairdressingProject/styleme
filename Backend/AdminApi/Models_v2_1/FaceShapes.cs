@@ -14,6 +14,11 @@ namespace AdminApi.Models_v2_1
             FaceShapeLinks = new HashSet<FaceShapeLinks>();
         }
 
+        public FaceShapes ShallowCopy()
+        {
+            return (FaceShapes)MemberwiseClone();
+        }
+
         [Key]
         [Column("id")]
         public ulong? Id { get; set; }

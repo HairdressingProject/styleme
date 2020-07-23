@@ -13,7 +13,7 @@ namespace ApiUnitTests.Seeds
                 {
                     Id = 1,
                     FirstName = "Admin",
-                    LastName = "Instrator",
+                    LastName = "Istrator",
                     UserName = "admin",
                     UserEmail = "admin@mail.com",
                     UserRole = "admin",
