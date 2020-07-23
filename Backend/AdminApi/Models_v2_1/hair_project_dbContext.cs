@@ -1,15 +1,9 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace AdminApi.Models_v2_1
 {
     public partial class hair_project_dbContext : DbContext
     {
-        public hair_project_dbContext()
-        {
-        }
-
         public hair_project_dbContext(DbContextOptions<hair_project_dbContext> options)
             : base(options)
         {
@@ -30,7 +24,6 @@ namespace AdminApi.Models_v2_1
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

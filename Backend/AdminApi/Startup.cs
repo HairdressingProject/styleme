@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Linq;
 using System.Threading.Tasks;
 using AdminApi.Helpers;
@@ -19,7 +18,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
-using MimeKit;
 using AdminApi.Services.Context;
 
 namespace AdminApi
@@ -87,12 +85,24 @@ namespace AdminApi
             services.AddScoped<IUsersContext, UsersContext>();
 
             // Register DB Context
-            services.AddDbContext<hair_project_dbContext>(options =>
-            options
-            .UseMySql(Configuration.GetConnectionString("HairDesignDB"), mySqlOptions =>
-            mySqlOptions
-            .ServerVersion(new ServerVersion(new Version(8, 0, 19), ServerType.MySql))
-            ));
+            if (Program.USE_PRODUCTION_SETTINGS)
+            {
+                services.AddDbContext<hair_project_dbContext>(options =>
+                options
+                .UseMySql(Configuration.GetConnectionString("HairdressingProjectDB"), mySqlOptions =>
+                mySqlOptions
+                .ServerVersion(new ServerVersion(new Version(10, 5, 4), ServerType.MariaDb))
+                ));
+            }
+            else
+            {
+                services.AddDbContext<hair_project_dbContext>(options =>
+                options
+                .UseMySql(Configuration.GetConnectionString("DefaultConnection"), mySqlOptions =>
+                mySqlOptions
+                .ServerVersion(new ServerVersion(new Version(10, 5, 4), ServerType.MariaDb))
+                ));
+            }
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore

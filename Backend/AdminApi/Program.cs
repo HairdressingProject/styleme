@@ -1,3 +1,4 @@
+using System;
 using AdminApi.Helpers;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
@@ -13,9 +14,9 @@ namespace AdminApi
     {
         public static IConfiguration Configuration { get; set; }
         public static readonly bool RESTRICT_ACCESS = true;
-        private static readonly bool USE_PRODUCTION_SETTINGS = File.Exists(
+        public static readonly bool USE_PRODUCTION_SETTINGS = File.Exists(
                 Path.GetFullPath(
-                        Path.Join(Directory.GetCurrentDirectory(), "appsettings.production.json")
+                        Path.Join(Directory.GetCurrentDirectory(), "appsettings.Production.json")
                     )
             );
         public static readonly string ADMIN_URL = 
@@ -32,13 +33,16 @@ namespace AdminApi
                 "localhost";
         public static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
+            IConfigurationBuilder builder;
+            Console.WriteLine($"Using production settings: {USE_PRODUCTION_SETTINGS}");
+
+            builder = new ConfigurationBuilder()
                             .SetBasePath(Directory.GetCurrentDirectory())
                             .AddEnvironmentVariables()
                             .AddUserSecrets<AppSettings>()
-                            .AddJsonFile("appsettings.json", optional: false)
-                            .AddJsonFile("appsettings.production.json", optional: true);
-            
+                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                            .AddJsonFile("appsettings.Production.json", optional: true);
+                    
             Configuration = builder.Build();
             var host = CreateHostBuilder(args).Build();
             host.Run();
