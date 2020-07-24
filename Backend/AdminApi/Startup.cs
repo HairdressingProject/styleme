@@ -84,16 +84,21 @@ namespace AdminApi
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUsersContext, UsersContext>();
 
-            string connectionString = null;
+            string connectionString = Configuration["ConnectionStrings.HairdressingProjectDB"];
 
-            if (Program.USE_PRODUCTION_SETTINGS)
+            if (connectionString == null)
             {
-                connectionString = Configuration["ConnectionStrings.HairdressingProjectDB"];
+                connectionString = Configuration.GetConnectionString("HairdressingProjectDB");
+            }
+
+            /* if (Program.USE_PRODUCTION_SETTINGS)
+            {
+                
             }
             else
             {
                 connectionString = Configuration.GetConnectionString("DefaultConnection");
-            }
+            } */
 
 
             services.AddDbContext<hair_project_dbContext>(options =>
