@@ -502,7 +502,7 @@ MigrationBackup/
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
 
 # Configuration settings
-appsettings.production.json
+appsettings.Production.json
 
 # Secrets
 secrets/
