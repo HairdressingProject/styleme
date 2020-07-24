@@ -84,8 +84,27 @@ namespace AdminApi
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUsersContext, UsersContext>();
 
-            // Register DB Context
+            string connectionString = null;
+
             if (Program.USE_PRODUCTION_SETTINGS)
+            {
+                connectionString = Configuration["ConnectionStrings.HairdressingProjectDB"];
+            }
+            else
+            {
+                connectionString = Configuration.GetConnectionString("DefaultConnection");
+            }
+
+
+            services.AddDbContext<hair_project_dbContext>(options =>
+                options
+                .UseMySql(connectionString, mySqlOptions =>
+                mySqlOptions
+                .ServerVersion(new ServerVersion(new Version(10, 5, 4), ServerType.MariaDb))
+                ));
+
+            // Register DB Context
+            /* if (Program.USE_PRODUCTION_SETTINGS)
             {
                 services.AddDbContext<hair_project_dbContext>(options =>
                 options
@@ -103,7 +122,7 @@ namespace AdminApi
                 .ServerVersion(new ServerVersion(new Version(10, 5, 4), ServerType.MariaDb))
                 ));
             }
-
+ */
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );

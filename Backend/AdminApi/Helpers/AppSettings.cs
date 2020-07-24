@@ -7,5 +7,7 @@
 
         public string CertificateFilename {get; set;}
         public string CertificatePWD { get; set; }
+
+        public string ConnectionString {get; set;}
     }
 }
