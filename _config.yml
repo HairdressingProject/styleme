@@ -12,7 +12,7 @@ site_title: StyleMe.best Documentation
 company_name: Hairdressing Project
 # this appears in the footer
 
-github_editme_path: HairdressingProject/styleme/blob/master/
+github_editme_path: HairdressingProject/styleme/blob/gh-pages/
 # if you're using Github, provide the basepath to the branch you've created for reviews, following the sample here. if not, leave this value blank.
 
 # gitlab_editme_path: tomjoht/documentation-theme-jekyll/blob/gh-pages/
@@ -35,13 +35,13 @@ exclude:
 
 feedback_subject_line: StyleMe.best App Docs
 
-feedback_email: name@mail.com
+feedback_email: hairdressingproject@gmail.com
 # used as a contact email for the Feedback link in the top navigation bar
 
 # feedback_disable: true
 # if you uncomment the previous line, the Feedback link gets removed
 
-# feedback_text: "Need help?"
+feedback_text: "Need help?"
 # if you uncomment the previous line, it changes the Feedback text
 
 # feedback_link: "http://helpy.io/"
