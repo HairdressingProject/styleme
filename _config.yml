@@ -1,4 +1,4 @@
-repository: HairdressingProject/docs
+repository: HairdressingProject/styleme
 
 output: web
 # this property is useful for conditional filtering of content that is separate from the PDF.
@@ -6,13 +6,13 @@ output: web
 topnav_title: StyleMe.best Docs
 # this appears on the top navigation bar next to the home button
 
-site_title: StyleMe.best App
+site_title: StyleMe.best Documentation
 # this appears in the html browser tab for the site title (seen mostly by search engines, not users)
 
-company_name: Your company
+company_name: Hairdressing Project
 # this appears in the footer
 
-github_editme_path: HairdressingProject/docs/blob/master/
+github_editme_path: HairdressingProject/styleme/blob/master/
 # if you're using Github, provide the basepath to the branch you've created for reviews, following the sample here. if not, leave this value blank.
 
 # gitlab_editme_path: tomjoht/documentation-theme-jekyll/blob/gh-pages/
@@ -106,7 +106,7 @@ sidebars:
 - product2_sidebar
 - other
 
-description: "Intended as a documentation theme based on Jekyll for technical writers documenting software and other technical products, this theme has all the elements you would need to handle multiple products with both multi-level sidebar navigation, tags, and other documentation features."
+description: "This is the documentation website of the Style Me App, developed as part of the Hairdressing Project"
 # the description is used in the feed.xml file
 
 # needed for sitemap.xml file only
