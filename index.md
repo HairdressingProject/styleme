@@ -24,7 +24,7 @@ Welcome to the documentation site for the Hairdressing Project available [here](
 # Project Overview
 ## Backend
 ### API
-We used ASP.NET Core to build the main API of this project, which directly interfaces with our database. See the [End Points](/mydoc_api_endpoints.html "API end points") section in the navbar for more details about its routes.
+We used ASP.NET Core to build the main API of this project, which directly interfaces with our database. See the [End Points](/styleme/mydoc_api_endpoints.html "API end points") section in the navbar for more details about its routes.
 
 Additional APIs may be built to interpret and process images uploaded by users. This is related to the main feature of the Style Me app.
 
