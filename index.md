@@ -1,5 +1,5 @@
 ---
-title: "Documentation for the StyleMe.best App"
+title: "Documentation for the Hairdressing Project"
 keywords: homepage
 tags: [getting_started]
 sidebar: mydoc_sidebar
@@ -24,7 +24,7 @@ Welcome to the documentation site for the Hairdressing Project available [here](
 # Project Overview
 ## Backend
 ### API
-We used ASP.NET Core to build the main API of this project, which directly interfaces with our database. See the "End Points" section in the navbar for more details about its routes.
+We used ASP.NET Core to build the main API of this project, which directly interfaces with our database. See the [End Points](/mydoc_api_endpoints.html "API end points") section in the navbar for more details about its routes.
 
 Additional APIs may be built to interpret and process images uploaded by users. This is related to the main feature of the Style Me app.
 
@@ -43,5 +43,6 @@ The following languages and tools were used to build it:
 - Webpack
 - PHP
 
-We are using Apache to serve the PHP pages. 
+We are using Apache to serve the PHP pages.
+
 <sup> Private GitHub Source: https://github.com/HairdressingProject/styleme/blob/master/README.md </sup>
