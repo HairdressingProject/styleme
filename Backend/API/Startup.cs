@@ -84,11 +84,11 @@ namespace AdminApi
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUsersContext, UsersContext>();
 
-            string connectionString = Configuration["ConnectionStrings.HairdressingProjectDB"];
+            string connectionString = Configuration["ConnectionStrings.StyleMeDevDB"];
 
             if (connectionString == null)
             {
-                connectionString = Configuration.GetConnectionString("HairdressingProjectDB");
+                connectionString = Configuration.GetConnectionString("StyleMeDevDB");
             }
 
             /* if (Program.USE_PRODUCTION_SETTINGS)
@@ -146,10 +146,10 @@ namespace AdminApi
             });
 
             // HTTPS redirection
-            services.AddHttpsRedirection(options => {
+            /* services.AddHttpsRedirection(options => {
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                options.HttpsPort = 5001;
-            });
+                options.HttpsPort = 5051;
+            }); */
 
             // Forwarded Headers
             services.Configure<ForwardedHeadersOptions>(options => {
@@ -179,7 +179,7 @@ namespace AdminApi
             }
             else {
                app.UseExceptionHandler("/error");
-               app.UseHsts(); 
+               // app.UseHsts(); 
             }
 
             // Forwarded headers
@@ -188,7 +188,7 @@ namespace AdminApi
              // Global CORS
             app.UseCors(AllowedOriginsConf);
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 

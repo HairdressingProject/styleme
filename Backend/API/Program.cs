@@ -63,8 +63,8 @@ namespace AdminApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureKestrel(serverOptions => {
-                        serverOptions.Listen(IPAddress.Loopback, 5000);
-                        serverOptions.Listen(IPAddress.Loopback, 5001, listenOptions => {
+                        serverOptions.Listen(IPAddress.Loopback, 5050);
+                        /* serverOptions.Listen(IPAddress.Loopback, 5051, listenOptions => {
                             if (settings.CertificateFilename != null && settings.CertificatePWD != null)
                             {
                                 listenOptions.UseHttps(settings.CertificateFilename, settings.CertificatePWD);
@@ -74,7 +74,7 @@ namespace AdminApi
                                 listenOptions.UseHttps();
                             }                            
                             listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                        });
+                        }); */
                     });                  
 
                     webBuilder.UseStartup<Startup>();
