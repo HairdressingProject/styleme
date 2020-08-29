@@ -31,7 +31,7 @@ namespace AdminApi
     {
         private readonly string AllowedOriginsConf = "Policy1";
         private readonly string[] WhitelistedRoutes = new string[] {
-            "/users/sign_in", "/users/authenticate", "/users/forgot_password"
+            "/users/sign_in", "/users/sign_up", "/users/authenticate", "/users/forgot_password"
         };
 
         public Startup(IConfiguration configuration)
@@ -78,18 +78,19 @@ namespace AdminApi
                 };
             });
 
-            // Configure DI for application services
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<IAuthorizationService, AuthorizationService>();
-            services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IUsersContext, UsersContext>();
-
             string connectionString = Configuration["ConnectionStrings.StyleMeDevDB"];
 
             if (connectionString == null)
             {
                 connectionString = Configuration.GetConnectionString("StyleMeDevDB");
             }
+
+            // Configure DI for application services
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IUsersContext, UsersContext>();
+
 
             /* if (Program.USE_PRODUCTION_SETTINGS)
             {

@@ -1,7 +1,7 @@
 const { showAlert } = require('./alert');
 
-const ADMIN_URL = "https://styleme.best";
-const API_URL = "https://api.styleme.best";
+const ADMIN_URL = "http://localhost:5500";
+const API_URL = "http://localhost:5050";
 
 const signUpBtn = document.getElementById('sign-up-btn');
 const givenName = document.getElementById('given-name');
