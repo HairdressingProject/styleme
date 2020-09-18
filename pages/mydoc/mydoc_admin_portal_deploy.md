@@ -122,7 +122,7 @@ Note: It is strongly advised to remove root acces to the remote server.
 ```bash
 # On remote
 sudo apt update
-sudo sudo systemctl status apache2
+sudo apt install apache2
 # If firewall installed (skip if not)
 sudo ufw allow “Apache Full”
 # Check Apache service status
@@ -137,7 +137,7 @@ PHP 7 comes by default in Ubuntu’s official repositories. Update and isntall A
 ```bash
 sudo add-apt-repository ppa:ondrej/php
 sudo apt-get update
-sudo apt install php libapache2-mod-php php-mbstring php-xmlrpc php-soap php-gd php-xml php-cli php-zip php-bcmath php-tokenizer php-json php-pear zip unzip
+sudo apt install php libapache2-mod-php php-mbstring php-xmlrpc php-soap php-gd php-xml php-cli php-zip php-bcmath php-tokenizer php-json php-pear php-mysql zip unzip
 ```
 
 To test that PHP (and also Apache) are working correctly, create a file in Apache's root durectory `/var/www/html`
