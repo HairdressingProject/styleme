@@ -56,6 +56,10 @@ entries:
       url: /mydoc_admin_portal_deploy.html
       output: web, pdf 
 
+    - title: Deployment (AWS)
+      url: /mydoc_admin_portal_deploy_aws.html
+      output: web, pdf
+
   - title: Database
     output: web, pdf
     folderitems:
