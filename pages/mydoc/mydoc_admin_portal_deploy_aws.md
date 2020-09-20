@@ -159,7 +159,7 @@ Write the following configuration to your `.conf` file:
     ServerAlias www.your_domain 
     ServerAdmin webmaster@localhost
     Protocols h2 http/1.1
-    DocumentRoot /var/www/your_domain
+    DocumentRoot /var/www/your_domain/Admin_Portal
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
