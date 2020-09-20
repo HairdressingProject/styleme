@@ -80,8 +80,8 @@ sudo ufw allow ssh
 #### 1. Install Apache
 ```bash
 # On remote
+sudo add-apt-repository ppa:ondrej/apache2
 sudo apt update
-sudo apt install apache2
 # If firewall installed (skip if not)
 sudo ufw allow “Apache Full”
 # Enable firewall
@@ -140,6 +140,20 @@ sudo a2enmod proxy_http2
 sudo a2enmod proxy_balancer
 sudo a2enmod rewrite
 sudo a2enmod headers
+```
+
+You should also disable `mpm_prefork` and enable `mpm_event` for __HTTP/2__ support, along with `php7.4-fpm`:
+
+```bash
+# Enabling php7.4-fpm
+sudo apt install php7.4-fpm
+sudo a2dismod php7.4
+sudo a2enconf php7.4-fpm
+sudo a2enmod proxy_fcgi
+
+# Enabling mpm_event
+sudo a2dismod mpm_prefork
+sudo a2enmod mpm_event
 ```
 
 You may now reload Apache to enable such modules:
