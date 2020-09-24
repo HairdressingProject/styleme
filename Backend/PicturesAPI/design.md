@@ -61,19 +61,19 @@ classDiagram
           -date date_created
           -date date_updated
           -date date_deleted
-          get_id()
-          get_picture_id()
-          get_original_picture_id()
-          set_original_picture_id(id)
-          get_hair_colour()
-          get_hair_style()
-          get_face_shape()
-          get_user()
-          get_date_created()
-          get_date_updated()
-          set_date_updated(date_updated)
-          get_date_deleted()
-          set_date_deleted(date_deleted)
+          +get_id()
+          +get_picture_id()
+          +get_original_picture_id()
+          +set_original_picture_id(id)
+          +get_hair_colour()
+          +get_hair_style()
+          +get_face_shape()
+          +get_user()
+          +get_date_created()
+          +get_date_updated()
+          +set_date_updated(date_updated)
+          +get_date_deleted()
+          +set_date_deleted(date_deleted)
           
       }
       
