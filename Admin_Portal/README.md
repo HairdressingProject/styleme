@@ -21,10 +21,10 @@ Stop Laragon (if you're currently running it) and follow the steps below to serv
 2. Go to __Preferences (cog button) > Services & Ports > change Apache port to 5500__
 ![Laragon - changing Apache port](https://i.imgur.com/WQuyIs4.png "Changing Apache port")
 
-3. Go to __Menu > `www` (second submenu from the top) > Switch Document Root > Select another__ and then choose your Frontend folder
-![Laragon - changing root directory](https://i.imgur.com/NlbJoO1.png "Changing root directory")
+3. Go to __Menu > `www` (second submenu from the top) > Switch Document Root > Select another__ and then choose your Admin_Portal folder
+![Laragon - changing root directory](https://i.imgur.com/ihaP9Dl.png "Changing root directory")
 
-Notice that I have already changed it, that's why it's showing `C:\laragon\www\Admin-Portal-v2\Frontend`
+Notice that I have already changed it.
 
 4. Start Laragon. You might be prompted to allow admin access several times (mildly annoying).
 
