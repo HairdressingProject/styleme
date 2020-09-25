@@ -61,26 +61,26 @@ classDiagram
           -date date_created
           -date date_updated
           -date date_deleted
-          +get_id()
-          +get_picture_id()
-          +get_original_picture_id()
-          +set_original_picture_id(id)
-          +get_hair_colour()
-          +get_hair_style()
-          +get_face_shape()
-          +get_user()
-          +get_date_created()
-          +get_date_updated()
-          +set_date_updated(date_updated)
-          +get_date_deleted()
-          +set_date_deleted(date_deleted)
+          get_id()
+          get_picture_id()
+          get_original_picture_id()
+          set_original_picture_id(id)
+          get_hair_colour()
+          get_hair_style()
+          get_face_shape()
+          get_user()
+          get_date_created()
+          get_date_updated()
+          set_date_updated(date_updated)
+          get_date_deleted()
+          set_date_deleted(date_deleted)
           
       }
       
 
 
 ```
-
+### Services
 ```mermaid
 classDiagram
       class PictureService{
@@ -93,7 +93,7 @@ classDiagram
       
 ```
 
-
+### Actions
 ```mermaid
 classDiagram
       class PictureActions{
@@ -101,11 +101,11 @@ classDiagram
           +read_picture_by_id(db: Session, id: int)
           +read_picture_by_path(db: Session, path: str)
           +read_user_pictures(db: Session, user_id: int)
-          +browse_user_pictures(db: Session, user_id, hair_style, hair_colour ace_shape)
-          +browse_pictures(db: Session,] hair_style hair_colour face_shape)
+          +browse_user_pictures(db: Session, user_id,] hair_style,] hair_colour,] face_shape)
+          +browse_pictures(db: Session,] hair_style,] hair_colour,] face_shape)
           +add_picture(db: Session, picture user_id)
-          +edit_picture_by_path(db: Session, picture_path hair_style hair_colour face_shape)
-          +edit_picture_by_id(db: Session, picture_id hair_style hair_colour face_shape)
+          +edit_picture_by_path(db: Session, picture_path,] hair_style,] hair_colour,] face_shape)
+          +edit_picture_by_id(db: Session, picture_id,] hair_style,] hair_colour,] face_shape)
           +delete_picture_by_path(db: Session, picture_path)
           +delete_picture_by_id(db: Session, picture_id)
       }
