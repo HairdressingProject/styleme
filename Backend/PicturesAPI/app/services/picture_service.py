@@ -38,20 +38,19 @@ class PictureService:
 
 
         # file stats of the uploaded file (to get file_size and created_at)
-
-        stats = os.stat(save_file_path + new_file_name)
-        file_size = stats.st_size
-        created_at = datetime.fromtimestamp(stats.st_mtime)
+        # stats = os.stat(save_file_path + new_file_name)
+        # file_size = stats.st_size
+        # created_at = datetime.fromtimestamp(stats.st_mtime)
 
         # read uploaded image to retrieve dimensions
-        img = cv2.imread(save_file_path + new_file_name, cv2.IMREAD_UNCHANGED)
-        dimensions = img.shape
-        print(dimensions)
-        height = int(dimensions[0])
-        width = int(dimensions[1])
+        # img = cv2.imread(save_file_path + new_file_name, cv2.IMREAD_UNCHANGED)
+        # dimensions = img.shape
+        # print(dimensions)
+        # height = int(dimensions[0])
+        # width = int(dimensions[1])
 
 
-        return (file_name, file_extension, new_file_name, file_size, height, width, created_at)
+        return (new_file_name)
 
     
     def detect_face(self, file_name):
@@ -62,9 +61,16 @@ class PictureService:
         img = cv2.cvtColor(cv2.imread(path_to_file), cv2.COLOR_BGR2RGB)
         face_rgba = pre.process(img)
         if face_rgba is None:
+            # delete picture from original folder
+            self.delete_picture(path, file_name)
             return False
         else:
             return True
+
+    
+    def detect_face_shape(self, file_name):
+        path = PICTURE_UPLOAD_FOLDER
+        path_to_file = path + file_name
 
 
     def crop_picture(self, file_name):
@@ -84,3 +90,34 @@ class PictureService:
         face_crop = face.astype(np.uint8)
         picture_crop = cv2.cvtColor(face_crop, cv2.COLOR_RGB2BGR)
         cv2.imwrite(path_to_upload, picture_crop)
+
+    def delete_picture(self, path, file_name):
+        # ToDo: handle exceptions
+        os.remove(path+file_name)
+
+    def get_picture_info(self, path, file_name):
+        file_name2 = os.path.splitext(path+file_name)[0]
+        file_extension = os.path.splitext(path+file_name)[1]
+        stats = os.stat(path+file_name)
+        file_size = stats.st_size
+        # created_at = datetime.fromtimestamp(stats.st_mtime)
+        created_at = stats.st_mtime
+        print(path, "path")
+        print(file_name2, "filename2")
+        print(file_extension, "extension")
+        print(stats, "stats")
+        print(file_size, "file_size")
+        print(created_at, "created_at")
+
+        # read uploaded image to retrieve dimensions
+        img = cv2.imread(path+file_name, cv2.IMREAD_UNCHANGED)
+        dimensions = img.shape
+        # print(dimensions)
+        height = int(dimensions[0])
+        width = int(dimensions[1])
+
+        print(height)
+        print(width)
+
+        return (path, file_name, file_size, height, width, created_at)
+    
