@@ -1,11 +1,11 @@
 ---
-title: API End Points
+title: Users API End Points
 keywords: Admin portal, Api, Endpoints
 last_updated: July 23, 2020
 tags: [api]
-summary: "This document outlines all of the API endpoints."
+summary: "This document outlines all of the Users API endpoints."
 sidebar: mydoc_sidebar
-permalink: mydoc_api_endpoints.html
+permalink: mydoc_users_api_endpoints.html
 folder: mydoc
 ---
 

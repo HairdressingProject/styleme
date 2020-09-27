@@ -68,7 +68,7 @@ entries:
       url: /mydoc_database_design.html
       output: web, pdf
 
-  - title: API
+  - title: Users API
     output: web, pdf
     folderitems:
     
@@ -77,10 +77,18 @@ entries:
    #   output: web, pdf
 
     - title: End Points
-      url: /mydoc_api_endpoints.html
+      url: /mydoc_users_api_endpoints.html
       output: web, pdf
       
     - title: Build Instructions
       url: /mydoc_api_build_instructions.html
+      output: web, pdf
+  
+  - title: Pictures API
+    output: web, pdf
+    folderitems:
+    
+    - title: End Points
+      url: /mydoc_pictures_api_endpoints.html
       output: web, pdf
 
