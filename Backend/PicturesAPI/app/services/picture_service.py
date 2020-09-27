@@ -5,6 +5,7 @@ from app.settings import PICTURE_UPLOAD_FOLDER
 import pathlib
 import shutil
 import cv2
+from app.libraries.fmPyTorch.utils import Preprocess
 
 class PictureService:
     def save_picture(self, file):
@@ -50,3 +51,16 @@ class PictureService:
 
 
         return (file_name, file_extension, new_file_name, file_size, height, width, created_at)
+
+    
+    def detect_face(self, file_name):
+        path = PICTURE_UPLOAD_FOLDER
+        path_to_file = path + file_name
+        pre = Preprocess()
+        img = cv2.imread(path_to_file)
+        img = cv2.cvtColor(cv2.imread(path_to_file), cv2.COLOR_BGR2RGB)
+        face_rgba = pre.process(img)
+        if face_rgba is None:
+            return False
+        else:
+            return True
