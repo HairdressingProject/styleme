@@ -1,12 +1,12 @@
 from .face_detect import FaceDetect
-from .face_seg import FaceSeg
+# from .face_seg import FaceSeg
 import numpy as np
 
 
 class Preprocess:
     def __init__(self, device='cpu', detector='dlib'):
         self.detect = FaceDetect(device, detector)  # device = 'cpu' or 'cuda', detector = 'dlib' or 'sfd'
-        self.segment = FaceSeg()
+        # self.segment = FaceSeg()
 
     def process(self, image):
         face_info = self.detect.align(image)
@@ -15,8 +15,9 @@ class Preprocess:
         image_align, landmarks_align = face_info
 
         face = self.__crop(image_align, landmarks_align)
-        mask = self.segment.get_mask(face)
-        return np.dstack((face, mask))
+        # mask = self.segment.get_mask(face)
+        # return np.dstack((face, mask))
+        return face
 
     @staticmethod
     def __crop(image, landmarks):
