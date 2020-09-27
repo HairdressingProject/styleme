@@ -295,6 +295,7 @@ def find_face_shape(df,file_num):
 
     mlp_crosstab = pd.crosstab(Y_test, y_pred, margins=True)
     
+    # test_row = df.ix[file_num].values.reshape(1,-1)
     test_row = df.loc[file_num].values.reshape(1,-1)
     test_row = scaler.transform(test_row)  
     test_shape = best_mlp.predict(test_row)
