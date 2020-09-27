@@ -1,3 +1,22 @@
+# pictures
+/pictures
+
+# libraries
+# Hair_Style_Recommendation
+/app/libraries/Hair_Style_Recommendation/data
+/app/libraries/Hair_Style_Recommendation/fonts
+/app/libraries/Hair_Style_Recommendation/output
+/app/libraries/Hair_Style_Recommendation/static
+/app/libraries/Hair_Style_Recommendation/templates
+# /app/libraries/Hair_Style_Recommendation/face_points.jpg
+/app/libraries/Hair_Style_Recommendation/Hair_Style_Recommender.ipynb
+/app/libraries/Hair_Style_Recommendation/app.py
+/app/libraries/Hair_Style_Recommendation/index.html
+/app/libraries/Hair_Style_Recommendation/model_comparisons.ipynb
+/app/libraries/Hair_Style_Recommendation/model_comparisons.py
+/app/libraries/Hair_Style_Recommendation/plot_images.py
+/app/libraries/Hair_Style_Recommendation/recommender.py
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm,visualstudiocode,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm,visualstudiocode,python
