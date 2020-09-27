@@ -1,11 +1,12 @@
 import os
 import hashlib
 from datetime import datetime
-from app.settings import PICTURE_UPLOAD_FOLDER
+from app.settings import PICTURE_UPLOAD_FOLDER, PICTURE_PROCESSED_FOLDER
 import pathlib
 import shutil
 import cv2
 from app.libraries.fmPyTorch.utils import Preprocess
+import numpy as np
 
 class PictureService:
     def save_picture(self, file):
@@ -64,3 +65,22 @@ class PictureService:
             return False
         else:
             return True
+
+
+    def crop_picture(self, file_name):
+        original_path = PICTURE_UPLOAD_FOLDER
+        processed_path = PICTURE_PROCESSED_FOLDER
+        path_to_file = original_path + file_name
+        path_to_upload = processed_path + file_name
+
+        print(path_to_file)
+        print(path_to_upload)
+        img_size = 512
+        pre = Preprocess()
+        img = cv2.cvtColor(cv2.imread(path_to_file), cv2.COLOR_BGR2RGB)
+        face_rgba = pre.process(img)
+        face_rgba = cv2.resize(face_rgba, (int(img_size), int(img_size)), interpolation=cv2.INTER_AREA)
+        face = face_rgba[:, :, : 3].copy()
+        face_crop = face.astype(np.uint8)
+        picture_crop = cv2.cvtColor(face_crop, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(path_to_upload, picture_crop)
