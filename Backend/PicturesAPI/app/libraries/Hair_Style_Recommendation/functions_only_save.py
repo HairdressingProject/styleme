@@ -239,7 +239,8 @@ def make_face_df_save(image_select,filenum,df):
         #imshow(pil_image, cmap='gray')
             
 def find_face_shape(df,file_num):
-    data = pd.read_csv('all_features.csv',index_col = None)
+    # data = pd.read_csv('all_features.csv',index_col = None)
+    data = pd.read_csv('app/libraries/Hair_Style_Recommendation/all_features.csv',index_col = None)
     data = data.drop('Unnamed: 0',axis = 1)
 
     data_clean = data.dropna(axis=0, how='any')
@@ -294,7 +295,7 @@ def find_face_shape(df,file_num):
 
     mlp_crosstab = pd.crosstab(Y_test, y_pred, margins=True)
     
-    test_row = df.ix[file_num].values.reshape(1,-1)
+    test_row = df.loc[file_num].values.reshape(1,-1)
     test_row = scaler.transform(test_row)  
     test_shape = best_mlp.predict(test_row)
     return test_shape
