@@ -18,6 +18,12 @@ async def save_picture(file: UploadFile = File(...), db: Session = Depends(get_d
     file_info = picture_service.save_picture(file)
     return {file_info}
 
+@app.get("/pictures/detect_face")
+async def detect_face(file_name: str):
+    picture_service = services.PictureService()
+    face_detected = picture_service.detect_face(file_name)
+    return face_detected
+
 @app.get("/test")
 async def test():
     return {"Test OK"}
