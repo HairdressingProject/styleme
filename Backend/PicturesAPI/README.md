@@ -52,6 +52,11 @@ conda install -c conda-forge scikit-image
 conda install -c conda-forge opencv
 ```
 
+* fmPyTorch library (used to detect faces):
+```shell script
+conda install -c 1adrianb face_alignment
+```
+
 ### Run the application
 From your Anaconda Prompt (with the __StyleMe__ environment activated), run the command below from the project root directory (one level above the `app` directory):
 
