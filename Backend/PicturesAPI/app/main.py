@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database.db import SessionLocal, engine
 from app import services, actions, models
 
+models.Picture.metadata.create_all(bind=engine)
 app = FastAPI()
 
 def get_db():
