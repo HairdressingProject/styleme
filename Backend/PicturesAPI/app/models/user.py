@@ -1,12 +1,6 @@
 from sqlalchemy import func, Column, Integer, String, DateTime
+from sqlalchemy.dialects import mysql
 from app.database.db import Base
-from enum import Enum
-
-
-class UserRoles(Enum):
-    ADMIN = "admin"
-    DEVELOPER = "developer"
-    USER = "user"
 
 
 class User(Base):
@@ -21,6 +15,6 @@ class User(Base):
     user_email = Column(String(512), unique=True, nullable=False)
     first_name = Column(String(128), nullable=False, default="user")
     last_name = Column(String(128))
-    user_role = Column(UserRoles, nullable=False, default=UserRoles.USER)
+    user_role = Column(mysql.ENUM("user", "developer", "admin"), nullable=False, server_default="user")
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     date_updated = Column(DateTime(timezone=True), onupdate=func.now())
