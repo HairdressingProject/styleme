@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from app.database.db import Base
 
+
 class Picture(Base):
     __tablename__ = "pictures"
     id = Column(Integer, primary_key=True, index=True)
