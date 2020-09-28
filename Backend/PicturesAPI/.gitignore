@@ -28,7 +28,7 @@
 /app/libraries/fmPyTorch/utils/seg_model_384.pb
 /app/libraries/fmPyTorch/utils/face_seg.py
 /app/libraries/fmPyTorch/utils/utils.py
-/app/libraries/fmPyTorch/utils/__init__.py
+
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm,visualstudiocode,python
