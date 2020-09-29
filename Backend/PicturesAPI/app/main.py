@@ -23,7 +23,7 @@ async def save_picture(file: UploadFile = File(...), db: Session = Depends(get_d
     face_detected = picture_service.detect_face(file_name)
     if face_detected is True:
         # crop picture and save in preprocessed folder
-        picture_service.crop_picture(file_name)
+        # picture_service.crop_picture(file_name)
         # add picture to db
         picture_info = picture_service.get_picture_info('pictures/original/', file_name)
         print(picture_info)
