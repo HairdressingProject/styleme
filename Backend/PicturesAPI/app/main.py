@@ -1,9 +1,9 @@
 from fastapi import FastAPI, File, Depends, UploadFile
 from sqlalchemy.orm import Session
-from app.database.db import SessionLocal, engine
+from app.database.db import SessionLocal, engine, Base
 from app import services, actions, models
 
-models.Picture.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 def get_db():
