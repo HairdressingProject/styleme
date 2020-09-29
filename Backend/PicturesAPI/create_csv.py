@@ -3,10 +3,11 @@ import pathlib
 
 import pandas as pd
 import numpy as np
-from . import functions_only
+from app.libraries.Hair_Style_Recommendation.functions_only import make_face_df
 
 
-image_dir = "data/pics"
+image_dir = "app/libraries/Hair_Style_Recommendation/data/pics"
+
 
 
 df = pd.DataFrame(columns = ['0','1','2','3','4','5','6','7','8','9','10','11',	'12',	'13',	'14',	'15',	'16','17',
@@ -45,7 +46,7 @@ def store_features_and_classification():
                 face_file_name = os.path.basename(p)
                 classified_face_shape = os.path.basename(os.path.dirname(p))
                 filenum += 1
-                functions_only.make_face_df(p ,filenum, df)
+                make_face_df(p, filenum, df)
                 shape_array.append(filenum)
                 shape_array.append(face_file_name)
                 shape_array.append(classified_face_shape)
@@ -55,4 +56,4 @@ def store_features_and_classification():
 store_features_and_classification()
 data = pd.concat([df, shape_df], axis=1)
 
-data.to_csv('all_features4.csv')
+data.to_csv('all_features6.csv')
