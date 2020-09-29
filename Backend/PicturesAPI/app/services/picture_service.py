@@ -66,7 +66,7 @@ class PictureService:
         pre = Preprocess()
         # img = cv2.imread(path_to_file)
         try:
-            img = cv2.cvtColor(cv2.imread(file_path+file_name), cv2.COLOR_BGR2RGB)
+            img = cv2.cvtColor(cv2.imread(file_path + file_name), cv2.COLOR_BGR2RGB)
         except:
             print("Could not process image")
             return False
@@ -85,7 +85,7 @@ class PictureService:
         :param file_path: str: 'foo/bar', DEFAULT=PICTURE_UPLOAD_FOLDER
         :return: None or [] face_landmark_list
         """
-        image = face_recognition.load_image_file(file_path+file_name)
+        image = face_recognition.load_image_file(file_path + file_name)
         face_landmarks_list = face_recognition.face_landmarks(image)
 
         print("I found {} face(s) in this photograph.".format(len(face_landmarks_list)))
@@ -134,7 +134,7 @@ class PictureService:
         file_num = 2035
 
         # generate data frame with the new picture information
-        file_url = file_path+file_name
+        file_url = file_path + file_name
         make_face_df_save(file_url, file_num, df)
 
         # run model to predict the face shape
@@ -212,8 +212,7 @@ class PictureService:
 
         return (path, file_name, file_size, height, width, created_at)
 
-
-    def change_hair_colour(self, file_name, file_path=PICTURE_UPLOAD_FOLDER):
+    def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER):
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
         cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
 
@@ -240,10 +239,20 @@ class PictureService:
 
         parsing = evaluate(portrait, cp)
         part = [table['hair']]
-        green = [25, 250, 32]
 
-        colors = green
+        colours = {"green": [25, 250, 32], "yellow": [30, 252, 249], "orange": [30, 108, 252], "burgundy": [32, 0, 128], "ruby": [95, 17, 224], "coral": [80, 127, 255], "violet": [211, 0, 148]}
 
-        image = hair(portrait, parsing, part, colors)
+
+        # blonde : [123, 201, 227],
+        # DarkRed : [0, 0, 139],
+        # DarkCyan : [139, 139, 0],
+        # DarkMagenta : [139, 0, 139],
+        # Coral : [80, 127, 255],
+        # Violet : [211, 0, 148],
+        # SeaGreen : [128, 205, 67],
+        # Peach : [185, 218, 255],
+        # Gold : [0, 215, 255],
+        # Chocolate : [19, 69, 139]
+
+        image = hair(portrait, parsing, part, colours[str(selected_colour)])
         cv2.imwrite('pictures/hair_colour/makeup.png', image)
-
