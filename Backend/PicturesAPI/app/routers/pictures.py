@@ -1,10 +1,12 @@
 from fastapi import APIRouter, File, Depends, UploadFile, status
 from sqlalchemy.orm import Session
-from app import services, actions, models
+from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
-
+from app.settings import PICTURE_UPLOAD_FOLDER
 
 router = APIRouter()
+picture_service = services.PictureService()
+picture_actions = actions.PictureActions()
 
 def get_db():
     db = SessionLocal()
@@ -16,37 +18,34 @@ def get_db():
 
 @router.post("/pictures", status_code=status.HTTP_201_CREATED)
 async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    picture_service = services.PictureService()
 
-    file_name = picture_service.save_picture(file)
-    # return {file_name}
+    save_path = PICTURE_UPLOAD_FOLDER
 
-    face_detected = picture_service.detect_face(file_name)
+    file_name = picture_service.save_picture(file, save_path)
+    face_detected = picture_service.detect_face(file_name, save_path)
+
     if face_detected is True:
-        # crop picture and save in preprocessed folder
-        # picture_service.crop_picture(file_name)
-        # add picture to db
-
-        face_landmarks = picture_service.detect_face_landmarks('pictures/original/' + file_name)
-        # Prevent to add to db if landmarks not found
+        # try to find face landmark points
+        face_landmarks = picture_service.detect_face_landmarks(file_name, save_path)
         if face_landmarks is None:
-            return {"No face detected (landmarks)"}
+            return {"No face landmarks detected"}
         else:
-            picture_info = picture_service.get_picture_info('pictures/original/', file_name)
-            print(picture_info)
+            picture_info = picture_service.get_picture_info(file_name, save_path)
+            print(picture_info, "Picture info")
             new_picture = models.Picture(file_name=picture_info[1], file_path=picture_info[0],
                                          file_size=picture_info[2], height=picture_info[3], width=picture_info[4])
-            picture_actions = actions.PictureActions()
+
             picture_actions.add_picture(db=db, picture=new_picture)
             # detect face_shape
-            face_shape = picture_service.detect_face_shape(file_name)
+            face_shape = picture_service.detect_face_shape(file_name, save_path)
             return face_shape
     else:
         return {"No face detected (cant read image)"}
     # return face_detected
 
 
-@router.get("/pictures/{picture_id}")
-async def read_picture(picture_id: int):
-    pass
+@router.get("/pictures/{picture_id}", response_model=schemas.Picture)
+async def read_picture(picture_id: int, db: Session = Depends(get_db)):
+    return actions.get_picture_by_id(db, picture_id=picture_id)
+
 
