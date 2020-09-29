@@ -13,7 +13,7 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/pictures/upload")
+@app.post("/pictures")
 async def save_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
     picture_service = services.PictureService()
     
@@ -25,16 +25,22 @@ async def save_picture(file: UploadFile = File(...), db: Session = Depends(get_d
         # crop picture and save in preprocessed folder
         # picture_service.crop_picture(file_name)
         # add picture to db
-        picture_info = picture_service.get_picture_info('pictures/original/', file_name)
-        print(picture_info)
-        new_picture = models.Picture(file_name=picture_info[1], file_path=picture_info[0], file_size=picture_info[2], height=picture_info[3], width=picture_info[4])
-        picture_actions = actions.PictureActions()
-        picture_actions.add_picture(db=db, picture=new_picture)
-        # detect face_shape
-        face_shape = picture_service.detect_face_shape(file_name)
-        return face_shape
+
+        face_landmarks = picture_service.detect_face_landmarks('pictures/original/'+file_name)
+        # Prevent to add to db if landmarks not found
+        if face_landmarks is None:
+            return {"No face detected (landmarks)"}
+        else:
+            picture_info = picture_service.get_picture_info('pictures/original/', file_name)
+            print(picture_info)
+            new_picture = models.Picture(file_name=picture_info[1], file_path=picture_info[0], file_size=picture_info[2], height=picture_info[3], width=picture_info[4])
+            picture_actions = actions.PictureActions()
+            picture_actions.add_picture(db=db, picture=new_picture)
+            # detect face_shape
+            face_shape = picture_service.detect_face_shape(file_name)
+            return face_shape
     else:
-        return {"No face detected"}
+        return {"No face detected (cant read image)"}
     # return face_detected
 
 @app.get("/pictures/detect_face")
