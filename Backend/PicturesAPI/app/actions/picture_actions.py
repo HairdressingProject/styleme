@@ -9,3 +9,9 @@ class PictureActions:
         db.commit()
         db.refresh(db_picture)
         return db_picture
+
+    def read_picture_by_id(self, db: Session, picture_id):
+        return db.query(Picture).filter(Picture.id == picture_id).first()
+
+    def read_pictures(self, db: Session, skip: int = 0, limit: int = 100):
+        return db.query(Picture).offset(skip).limit(limit).all()

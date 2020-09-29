@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, File, Depends, UploadFile, status
 from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
@@ -46,6 +48,11 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
 
 @router.get("/pictures/{picture_id}", response_model=schemas.Picture)
 async def read_picture(picture_id: int, db: Session = Depends(get_db)):
-    return actions.get_picture_by_id(db, picture_id=picture_id)
+    return picture_actions.read_picture_by_id(db, picture_id=picture_id)
 
+
+@router.get("/pictures/", response_model=List[schemas.Picture])
+def read_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    pictures = picture_actions.read_pictures(db, skip=skip, limit=limit)
+    return pictures
 
