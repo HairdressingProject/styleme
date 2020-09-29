@@ -7,6 +7,8 @@ import pathlib
 import shutil
 import cv2
 from app.libraries.fmPyTorch.utils import Preprocess
+from app.libraries.fmPyTorch.test import evaluate
+from app.libraries.fmPyTorch.makeup import hair
 from app.libraries.Hair_Style_Recommendation.functions_only_save import make_face_df_save, find_face_shape
 import numpy as np
 import pandas as pd
@@ -209,3 +211,39 @@ class PictureService:
         # print(width)
 
         return (path, file_name, file_size, height, width, created_at)
+
+
+    def change_hair_colour(self, file_name, file_path=PICTURE_UPLOAD_FOLDER):
+        table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
+        cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
+
+        img_url = file_path + file_name  # @param {type: "string"}
+        print(img_url)
+
+        img_size = "512"  # @param [512,256]
+        img = cv2.cvtColor(cv2.imread(img_url), cv2.COLOR_BGR2RGB)
+        pre = Preprocess()
+        face_rgba = pre.process(img)
+
+        if face_rgba is not None:
+            # change background to white
+            face_rgba = cv2.resize(face_rgba, (int(img_size), int(img_size)), interpolation=cv2.INTER_AREA)
+            # face = face_rgba[:, :, : 3].copy()
+            # mask = face_rgba[:, :, 3].copy()[:, :, np.newaxis] / 255.
+            # face_white_bg = (face * mask + (1 - mask) * 255).astype(np.uint8)
+            # potrait = cv2.cvtColor(face_white_bg, cv2.COLOR_RGB2BGR)
+            portrait = cv2.cvtColor(face_rgba, cv2.COLOR_RGB2BGR)
+            cv2.imwrite('pictures/hair_colour/portrait.png', portrait)
+
+        # cv2.imwrite('pictures/hair_colour/test.png', img)
+        # print(img)
+
+        parsing = evaluate(portrait, cp)
+        part = [table['hair']]
+        green = [25, 250, 32]
+
+        colors = green
+
+        image = hair(portrait, parsing, part, colors)
+        cv2.imwrite('pictures/hair_colour/makeup.png', image)
+

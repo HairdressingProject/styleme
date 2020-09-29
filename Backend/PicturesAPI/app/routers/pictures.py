@@ -56,3 +56,13 @@ def read_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     pictures = picture_actions.read_pictures(db, skip=skip, limit=limit)
     return pictures
 
+
+@router.get("/pictures/{picture_id}/hair_colour")
+async def change_hair_colour(picture_id: int, db: Session = Depends(get_db)):
+    selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
+    print(selected_picture.file_name)
+    print(selected_picture.file_path)
+
+    picture_service.change_hair_colour(file_name=selected_picture.file_name, file_path=selected_picture.file_path)
+    # return picture_actions.read_picture_by_id(db, picture_id=picture_id)
+
