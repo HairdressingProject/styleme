@@ -8,5 +8,5 @@ class Picture(Base):
     file_name = Column(String(255), unique=True)
     file_path = Column(String(255))
     file_size = Column(Integer)
-    height = Column(String(255))
-    width = Column(String(255))
+    height = Column(Integer)
+    width = Column(Integer)

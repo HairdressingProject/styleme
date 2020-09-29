@@ -6,7 +6,6 @@ File: account.py
 """
 from sqlalchemy import func, Column, Integer, DateTime, Binary, Boolean, ForeignKey, text
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.elements import ClauseElement
 
 from app.database.db import Base
 from .user import User

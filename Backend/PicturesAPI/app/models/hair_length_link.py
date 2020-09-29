@@ -2,7 +2,7 @@
 Project: PicturesAPI
 Author: Diego C. <20026893@tafe.wa.edu.au>
 Created at: 29/09/2020 4:04 pm
-File: hair_length_links.py
+File: hair_length_link.py
 """
 from sqlalchemy import func, Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
