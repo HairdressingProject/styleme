@@ -6,6 +6,8 @@ from .hair_colour import HairColour
 from .hair_length import HairLength
 from .hair_style import HairStyle
 from .hair_style_links import HairStyleLinks
+from .hair_length_links import HairLengthLinks
+from .face_shape_links import FaceShapeLinks
 from .history import History
 from .model_picture import ModelPicture
 from .picture import Picture

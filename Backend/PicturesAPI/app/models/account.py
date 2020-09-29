@@ -21,12 +21,16 @@ class Account(Base):
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     date_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
-    user = relationship("User", back_populates="users")
+    user = relationship(
+        "User", back_populates="account",
+        cascade="all, delete-orphan",
+        single_parent=True
+    )
 
     def __repr__(self):
         return "<User's account (user_id = '%s')>" % self.user_id
 
 
-User.accounts = relationship(
-    "Account", order_by=Account.date_updated, back_populates="user"
+User.account = relationship(
+    "Account", back_populates="user"
 )

@@ -10,6 +10,7 @@ from app.libraries.Hair_Style_Recommendation.functions_only_save import make_fac
 import numpy as np
 import pandas as pd
 
+
 class PictureService:
     def save_picture(self, file):
         """
@@ -27,17 +28,15 @@ class PictureService:
         hashed_filename = hashlib.md5(temp_filename.encode())
         new_file_name = hashed_filename.hexdigest() + str(file_extension)
 
-
         # Save file
 
-        save_file_path = PICTURE_UPLOAD_FOLDER
+        save_file_path = "pictures/original/"
 
         if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_file_path)):
             os.makedirs(os.path.join(pathlib.Path().absolute() / save_file_path))
         upload_folder = open(os.path.join(pathlib.Path().absolute() / save_file_path, new_file_name), 'wb+')
         shutil.copyfileobj(file_object, upload_folder)
         upload_folder.close()
-
 
         # file stats of the uploaded file (to get file_size and created_at)
         # stats = os.stat(save_file_path + new_file_name)
@@ -51,10 +50,8 @@ class PictureService:
         # height = int(dimensions[0])
         # width = int(dimensions[1])
 
-
         return (new_file_name)
 
-    
     def detect_face(self, file_name):
         path = PICTURE_UPLOAD_FOLDER
         path_to_file = path + file_name
@@ -69,28 +66,29 @@ class PictureService:
         else:
             return True
 
-    
     def detect_face_shape(self, file_name):
         path = PICTURE_UPLOAD_FOLDER
         save_path = FACE_SHAPE_RESULTS_PATH
         path_to_file = path + file_name
 
-        df = pd.DataFrame(columns = ['0','1','2','3','4','5','6','7','8','9','10','11',	'12',	'13',	'14',	'15',	'16','17',
-                             '18',	'19',	'20',	'21',	'22',	'23',	'24','25',	'26',	'27',	'28',	'29',
-                             '30',	'31',	'32',	'33',	'34',	'35',	'36',	'37',	'38',	'39',	'40',	'41',
-                             '42',	'43',	'44',	'45',	'46',	'47',	'48',	'49',	'50',	'51',	'52',	'53',
-                             '54',	'55',	'56',	'57',	'58',	'59',	'60',	'61',	'62',	'63',	'64',	'65',
-                             '66',	'67',	'68',	'69',	'70',	'71',	'72',	'73',	'74',	'75',	'76',	'77',
-                             '78',	'79',	'80',	'81',	'82',	'83',	'84',	'85',	'86',	'87',	'88',	'89',
-                             '90',	'91',	'92',	'93',	'94',	'95',	'96',	'97',	'98',	'99',	'100',	'101',
-                             '102',	'103',	'104',	'105',	'106',	'107',	'108',	'109',	'110',	'111',	'112',	'113',
-                             '114',	'115',	'116',	'117',	'118',	'119',	'120',	'121',	'122',	'123',	'124',	'125',
-                             '126',	'127',	'128',	'129',	'130',	'131',	'132',	'133',	'134',	'135',	'136',	'137',
-                             '138',	'139',	'140',	'141',	'142',	'143','A1','A2','A3','A4','A5','A6','A7','A8','A9',
-                            'A10','A11','A12','A13','A14','A15','A16','Width','Height','H_W_Ratio','Jaw_width','J_F_Ratio',
-                             'MJ_width','MJ_J_width'])
+        df = pd.DataFrame(
+            columns=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17',
+                     '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                     '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41',
+                     '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53',
+                     '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65',
+                     '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77',
+                     '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89',
+                     '90', '91', '92', '93', '94', '95', '96', '97', '98', '99', '100', '101',
+                     '102', '103', '104', '105', '106', '107', '108', '109', '110', '111', '112', '113',
+                     '114', '115', '116', '117', '118', '119', '120', '121', '122', '123', '124', '125',
+                     '126', '127', '128', '129', '130', '131', '132', '133', '134', '135', '136', '137',
+                     '138', '139', '140', '141', '142', '143', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9',
+                     'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'Width', 'Height', 'H_W_Ratio', 'Jaw_width',
+                     'J_F_Ratio',
+                     'MJ_width', 'MJ_J_width'])
         print(df)
-        photo = path+file_name
+        photo = path + file_name
         print(photo)
         print(save_path)
         file_num = 2035
@@ -98,8 +96,7 @@ class PictureService:
         print(df)
         face_shape = find_face_shape(df, file_num)
         print(face_shape)
-        return(face_shape[0])
-
+        return (face_shape[0])
 
     def crop_picture(self, file_name):
         original_path = PICTURE_UPLOAD_FOLDER
@@ -121,12 +118,12 @@ class PictureService:
 
     def delete_picture(self, path, file_name):
         # ToDo: handle exceptions
-        os.remove(path+file_name)
+        os.remove(path + file_name)
 
     def get_picture_info(self, path, file_name):
-        file_name2 = os.path.splitext(path+file_name)[0]
-        file_extension = os.path.splitext(path+file_name)[1]
-        stats = os.stat(path+file_name)
+        file_name2 = os.path.splitext(path + file_name)[0]
+        file_extension = os.path.splitext(path + file_name)[1]
+        stats = os.stat(path + file_name)
         file_size = stats.st_size
         # created_at = datetime.fromtimestamp(stats.st_mtime)
         created_at = stats.st_mtime
@@ -138,7 +135,7 @@ class PictureService:
         print(created_at, "created_at")
 
         # read uploaded image to retrieve dimensions
-        img = cv2.imread(path+file_name, cv2.IMREAD_UNCHANGED)
+        img = cv2.imread(path + file_name, cv2.IMREAD_UNCHANGED)
         dimensions = img.shape
         # print(dimensions)
         height = int(dimensions[0])
@@ -148,4 +145,3 @@ class PictureService:
         print(width)
 
         return (path, file_name, file_size, height, width, created_at)
-    
