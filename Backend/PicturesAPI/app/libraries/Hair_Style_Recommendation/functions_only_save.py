@@ -15,8 +15,9 @@ import random
 from sklearn.preprocessing import normalize
 from sklearn.preprocessing import StandardScaler 
 from sklearn.model_selection import train_test_split
-from sklearn.decomposition import PCA 
+from sklearn.decomposition import PCA
 
+from app import services
 
 image_dir = "data/pics"   #celebrity search version
 
@@ -79,7 +80,7 @@ def make_face_df_save(image_select,filenum,df):
     face = 0
     image = face_recognition.load_image_file(image_select)
     face_landmarks_list = face_recognition.face_landmarks(image)
-    
+
     for face_landmarks in face_landmarks_list:
         face += 1
         if face >1:    # this will only measure one face per image
@@ -115,13 +116,23 @@ def make_face_df_save(image_select,filenum,df):
         eyes.append(pts[72:74])
         eyes.append(pts[90:92])
 
-        image =  Image.open(image_select)
-        crop_image = crop_face(image, eye_left=(lex, ley), eye_right=(rex, rey), offset_pct=(0.34,0.34), dest_sz=(300,300))
-        try:
-            crop_image.save(str(image_select)+"_NEW_cropped.jpg")
-        except:
-            continue
+        picture_service = services.PictureService()
+        picture_service.crop_picture(image_select)
+        # try:
+        #     picture_service.crop_picture(image_select)
+        # except:
+        #     print("Error cropping the file")
+        #     continue
+
+        # -------- Original code --------
+        # image =  Image.open(image_select)
+        # crop_image = crop_face(image, eye_left=(lex, ley), eye_right=(rex, rey), offset_pct=(0.34,0.34), dest_sz=(300,300))
+        # try:
+        #     crop_image.save(str(image_select)+"_NEW_cropped.jpg")
+        # except:
+        #     continue
         #crop_image.show()
+        # -------- end of Original code --------
         
         nn = str(image_select)+"_NEW_cropped.jpg"
         pts = []
@@ -234,13 +245,13 @@ def make_face_df_save(image_select,filenum,df):
         pts.append(mid_jaw_width_to_jaw_width)
         
         ### end of new ###
-            
+
         df.loc[filenum] = np.array(pts)
         #imshow(pil_image, cmap='gray')
             
 def find_face_shape(df,file_num):
-    # data = pd.read_csv('all_features.csv',index_col = None)
-    data = pd.read_csv('app/libraries/Hair_Style_Recommendation/all_features.csv',index_col = None)
+    # data = pd.read_csv('all_features_orig.csv',index_col = None)
+    data = pd.read_csv('app/libraries/Hair_Style_Recommendation/all_features_new.csv',index_col = None)
     data = data.drop('Unnamed: 0',axis = 1)
 
     data_clean = data.dropna(axis=0, how='any')

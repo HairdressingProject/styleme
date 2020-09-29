@@ -1,6 +1,7 @@
 import os
 import hashlib
 from datetime import datetime
+import face_recognition
 from app.settings import PICTURE_UPLOAD_FOLDER, PICTURE_PROCESSED_FOLDER, FACE_SHAPE_RESULTS_PATH
 import pathlib
 import shutil
@@ -59,8 +60,12 @@ class PictureService:
         path = PICTURE_UPLOAD_FOLDER
         path_to_file = path + file_name
         pre = Preprocess()
-        img = cv2.imread(path_to_file)
-        img = cv2.cvtColor(cv2.imread(path_to_file), cv2.COLOR_BGR2RGB)
+        # img = cv2.imread(path_to_file)
+        try:
+            img = cv2.cvtColor(cv2.imread(path_to_file), cv2.COLOR_BGR2RGB)
+        except:
+            print("Could not process image")
+            return False
         face_rgba = pre.process(img)
         if face_rgba is None:
             # delete picture from original folder
@@ -69,7 +74,18 @@ class PictureService:
         else:
             return True
 
-    
+
+    def detect_face_landmarks(self, file_name):
+        image = face_recognition.load_image_file(file_name)
+        face_landmarks_list = face_recognition.face_landmarks(image)
+
+        print("I found {} face(s) in this photograph.".format(len(face_landmarks_list)))
+        if len(face_landmarks_list) == 0:
+            print("error")
+            return None
+        else:
+            return face_landmarks_list
+
     def detect_face_shape(self, file_name):
         path = PICTURE_UPLOAD_FOLDER
         save_path = FACE_SHAPE_RESULTS_PATH
@@ -89,35 +105,54 @@ class PictureService:
                              '138',	'139',	'140',	'141',	'142',	'143','A1','A2','A3','A4','A5','A6','A7','A8','A9',
                             'A10','A11','A12','A13','A14','A15','A16','Width','Height','H_W_Ratio','Jaw_width','J_F_Ratio',
                              'MJ_width','MJ_J_width'])
-        print(df)
+        print(df, "df before make")
         photo = path+file_name
         print(photo)
         print(save_path)
+
+        face_landmarks_list = self.detect_face_landmarks(photo)
+        print(face_landmarks_list)
+        if face_landmarks_list is None:
+            return("No landmarks found")
+
+
         file_num = 2035
         make_face_df_save(photo, file_num, df)
-        print(df)
+        print(df, "df after make")
         face_shape = find_face_shape(df, file_num)
         print(face_shape)
         return(face_shape[0])
 
 
     def crop_picture(self, file_name):
-        original_path = PICTURE_UPLOAD_FOLDER
-        processed_path = PICTURE_PROCESSED_FOLDER
-        path_to_file = original_path + file_name
-        path_to_upload = processed_path + file_name
+        # original_path = PICTURE_UPLOAD_FOLDER
+        # processed_path = PICTURE_PROCESSED_FOLDER
+        # path_to_file = original_path + file_name
+        # # path_to_upload = processed_path + file_name
+        # path_to_upload = original_path + file_name + "_NEW_cropped.jpg"
 
-        print(path_to_file)
-        print(path_to_upload)
         img_size = 512
         pre = Preprocess()
-        img = cv2.cvtColor(cv2.imread(path_to_file), cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(cv2.imread(file_name), cv2.COLOR_BGR2RGB)
         face_rgba = pre.process(img)
         face_rgba = cv2.resize(face_rgba, (int(img_size), int(img_size)), interpolation=cv2.INTER_AREA)
         face = face_rgba[:, :, : 3].copy()
         face_crop = face.astype(np.uint8)
         picture_crop = cv2.cvtColor(face_crop, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(path_to_upload, picture_crop)
+        print(picture_crop)
+        cv2.imwrite(file_name + "_NEW_cropped.jpg", picture_crop)
+
+    def crop_picture_data(self, file_name):
+
+        img_size = 512
+        pre = Preprocess()
+        img = cv2.cvtColor(cv2.imread(file_name.as_posix()), cv2.COLOR_BGR2RGB)
+        face_rgba = pre.process(img)
+        face_rgba = cv2.resize(face_rgba, (int(img_size), int(img_size)), interpolation=cv2.INTER_AREA)
+        face = face_rgba[:, :, : 3].copy()
+        face_crop = face.astype(np.uint8)
+        picture_crop = cv2.cvtColor(face_crop, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(file_name.as_posix() + "_NEW_cropped.jpg", picture_crop)
 
     def delete_picture(self, path, file_name):
         # ToDo: handle exceptions
