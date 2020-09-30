@@ -1,8 +1,7 @@
-from pathlib import Path
 import os
-from dotenv import load_dotenv
-env_path = Path().absolute() / '.env'
-load_dotenv(dotenv_path=env_path)
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv(), verbose=True)
 
 DB_USER = os.getenv("DB_USER")
 DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD")
