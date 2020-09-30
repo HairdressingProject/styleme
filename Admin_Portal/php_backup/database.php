@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/authentication.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/policies.php';

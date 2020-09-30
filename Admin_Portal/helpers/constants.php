@@ -14,7 +14,7 @@ define('ROOT', $_SERVER['DOCUMENT_ROOT']);
 define("ENV", "development");
 
 if (ENV === 'development') {
-    define("API_URL", "https://localhost:5001");
+    define("API_URL", "http://localhost:5050");
 }
 else {
     define("API_URL", "https://api.styleme.best");

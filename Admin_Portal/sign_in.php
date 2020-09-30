@@ -1,5 +1,5 @@
 <?php
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
+    // require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
     require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
     require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/authentication.php';
 
@@ -30,7 +30,7 @@
         integrity="sha256-ZLjSztVkz5q3lKFjN9AgL6qR7TGLE+qnTXnNNTWtMF4=" crossorigin="anonymous" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.6.3/js/foundation.min.js"
         integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous" defer></script>
-<script defer src="dist/js/alert.ec45e674de93365b15c2.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sign_in.68e210b7766a4e59ddc5.js"></script></head>
+<script defer src="dist/js/alert.5fbb88c61d48f3e1ef1b.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sign_in.4f9f584ad083c67827f2.js"></script></head>
 
 <body class="landing-background">
     <noscript>Please enable JavaScript for this page to work</noscript>
@@ -40,7 +40,7 @@
             <h1 class="sign-in-title">Hairdressing Application - Admin Portal</h1>
             <p class="sign-in-subtitle">Welcome back! Please login to continue.</p>
 
-            <form action="https://api.styleme.best/users/sign_in" method="POST" id="sign-in-form">
+            <form action="http://localhost:5050/users/sign_in" method="POST" id="sign-in-form">
                 <div class="sign-in-username" id="sign-in-username">
                     <div class="input-group sign-in-input-group" id="sign-in-username-group">
                         <label for="username" class="input-group-label sign-in-input-label">

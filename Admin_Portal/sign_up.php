@@ -1,5 +1,5 @@
 <?php
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
+    // require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
     require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
     
     $alert = null;
@@ -28,7 +28,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css" />
-<script defer src="dist/js/alert.ec45e674de93365b15c2.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sign_up.c2262bf18a625bf04833.js"></script></head>
+<script defer src="dist/js/alert.5fbb88c61d48f3e1ef1b.js"></script><script defer src="dist/js/index.a4419fb66731ce4f5d91.js"></script><script defer src="dist/js/sign_up.89ebd79dd47a483c30b7.js"></script></head>
 
 <body class="landing-background">
     <noscript>Please enable JavaScript for this page to work</noscript>

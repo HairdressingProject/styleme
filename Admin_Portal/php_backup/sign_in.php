@@ -1,5 +1,5 @@
 <?php
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
+    // require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/redirect-https.php';
     require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/utils.php';
     require_once $_SERVER['DOCUMENT_ROOT'] . '/helpers/authentication.php';
 
@@ -40,7 +40,7 @@
             <h1 class="sign-in-title">Hairdressing Application - Admin Portal</h1>
             <p class="sign-in-subtitle">Welcome back! Please login to continue.</p>
 
-            <form action="https://api.styleme.best/users/sign_in" method="POST" id="sign-in-form">
+            <form action="http://localhost:5050/users/sign_in" method="POST" id="sign-in-form">
                 <div class="sign-in-username" id="sign-in-username">
                     <div class="input-group sign-in-input-group" id="sign-in-username-group">
                         <label for="username" class="input-group-label sign-in-input-label">
