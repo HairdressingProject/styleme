@@ -21,10 +21,10 @@
 /app/libraries/fmPyTorch/cp
 /app/libraries/fmPyTorch/face_makeup.ipynb
 /app/libraries/fmPyTorch/makeup.png
-/app/libraries/fmPyTorch/makeup.py
-/app/libraries/fmPyTorch/model.py
-/app/libraries/fmPyTorch/resnet.py
-/app/libraries/fmPyTorch/test.py
+# /app/libraries/fmPyTorch/makeup.py
+# /app/libraries/fmPyTorch/model.py
+# /app/libraries/fmPyTorch/resnet.py
+# /app/libraries/fmPyTorch/test.py
 /app/libraries/fmPyTorch/utils/seg_model_384.pb
 /app/libraries/fmPyTorch/utils/face_seg.py
 /app/libraries/fmPyTorch/utils/utils.py
