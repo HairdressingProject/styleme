@@ -57,6 +57,12 @@ conda install -c conda-forge opencv
 conda install -c 1adrianb face_alignment
 ```
 
+Download machine learning model (79999_iter.pth):
+```shell script
+cd app/libraries/fmPytorch/cp
+wget https://github.com/zllrunning/face-makeup.PyTorch/raw/master/cp/79999_iter.pth
+```
+
 ### Run the application
 From your Anaconda Prompt (with the __StyleMe__ environment activated), run the command below from the project root directory (one level above the `app` directory):
 
