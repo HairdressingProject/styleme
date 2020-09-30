@@ -69,6 +69,7 @@ class PictureService:
             img = cv2.cvtColor(cv2.imread(file_path + file_name), cv2.COLOR_BGR2RGB)
         except:
             print("Could not process image")
+            self.delete_picture(file_path, file_name)
             return False
         face_rgba = pre.process(img)
         if face_rgba is None:
@@ -91,6 +92,7 @@ class PictureService:
         print("I found {} face(s) in this photograph.".format(len(face_landmarks_list)))
         if len(face_landmarks_list) == 0:
             print("error")
+            self.delete_picture(file_path, file_name)
             return None
         else:
             return face_landmarks_list
@@ -129,7 +131,10 @@ class PictureService:
         face_landmarks_list = self.detect_face_landmarks(file_name, file_path)
         # print(face_landmarks_list)
         if face_landmarks_list is None:
-            return ("No landmarks found")
+            # return ("No landmarks found")
+            self.delete_picture(file_path, file_name)
+            print("No landmarks found")
+            return None
 
         file_num = 2035
 
@@ -140,7 +145,7 @@ class PictureService:
         # run model to predict the face shape
         face_shape = find_face_shape(df, file_num)
 
-        return (face_shape[0])
+        return (face_shape)
 
     def crop_picture(self, file_url):
         """
