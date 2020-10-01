@@ -94,3 +94,15 @@ async def change_hair_colour(picture_id: int, colour: str, db: Session = Depends
     picture_service.change_hair_colour(file_name=selected_picture.file_name, selected_colour=colour, file_path=selected_picture.file_path)
     # return picture_actions.read_picture_by_id(db, picture_id=picture_id)
 
+@router.get("/pictures/{user_picture_id}/change_hairstyle/{model_picture_id}")
+async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
+    user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
+    model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
+
+    picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
+
+
+
+
+
+

@@ -2,10 +2,11 @@ import os
 import cv2
 import numpy as np
 from datetime import datetime
-from hairstyleFeed import HairstyleFeed
-from userProfile import UserProfile
-from hairSwap import FaceSwap
-from relevancyScore import RelevancyScore
+# from hairstyleFeed import HairstyleFeed
+# from userProfile import UserProfile
+from .hairSwap import FaceSwap
+# from relevancyScore import RelevancyScore
+from ...settings import HAIR_STYLE_RESULTS_PATH, PICTURE_UPLOAD_FOLDER
 
 
 def ensure_dir(img_dir):
@@ -86,13 +87,31 @@ def perform_swap(request_obj):
 
     uploader = request_obj.form['uploader']
     username = request_obj.form['username']
-    save_dir = os.path.dirname(__file__) + '/file_storage/trash/hairswaps/'
+
+    print(uploader, "uploader")
+    print(username, "username")
+
+    # save_dir = os.path.dirname(__file__) + '/pictures/trash/hairswaps/'
+    save_dir = HAIR_STYLE_RESULTS_PATH
+    pictures_dir = PICTURE_UPLOAD_FOLDER
+    print(save_dir)
     index = int(count(save_dir)/3) + 1
-    hair_model_path = save_dir + str(index) + '_' + str(uploader) + '.jpg'
-    selfie_path = save_dir + str(index) + '_' + str(username) + '.jpg'
-    swap_path = save_dir + str(index) + '_' + str(uploader) + "-->" + str(username) + '.jpg'
+    print(index)
+    hair_model_path = pictures_dir + str(uploader)
+    print(hair_model_path, "hair model path")
+    selfie_path = pictures_dir + str(username)
+    print(selfie_path, "Selfie path")
+    swap_path = save_dir + 'result' + '.jpg'
+    print(swap_path, "swap path")
+
+
     selfie = request_obj.files['selfie']
+    # print(selfie)
     hair_model = request_obj.files['hair_model']
+    # print(hair_model)
+
+    selfie_path = username
+    hair_model_path = uploader
 
     # Extract Selfie as openCV array
     if type(selfie) == np.ndarray:
