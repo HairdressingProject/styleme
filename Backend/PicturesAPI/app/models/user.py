@@ -1,4 +1,4 @@
-from sqlalchemy import func, Column, Integer, String, DateTime
+from sqlalchemy import func, Column, BIGINT, String, DateTime
 from sqlalchemy.dialects import mysql
 from app.database.db import Base
 
@@ -8,7 +8,7 @@ class User(Base):
     Users model class
     """
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(BIGINT, primary_key=True, index=True)
     user_name = Column(String(32), unique=True, nullable=False)
     user_password_hash = Column(String(512), nullable=False)
     user_password_salt = Column(String(512), nullable=False)

@@ -4,7 +4,7 @@ Author: Diego C. <20026893@tafe.wa.edu.au>
 Created at: 28/09/2020 8:53 pm
 File: model_picture.py
 """
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, BIGINT, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database.db import Base
 from .hair_style import HairStyle
@@ -15,16 +15,16 @@ from .hair_colour import HairColour
 
 class ModelPicture(Base):
     __tablename__ = "model_pictures"
-    id = Column(Integer, primary_key=True, index=True)
-    file_name = Column(String(255), unique=True)
+    id = Column(BIGINT, primary_key=True, index=True)
+    file_name = Column(String(255), unique=True, index=True)
     file_path = Column(String(255))
     file_size = Column(Integer)
     height = Column(Integer)
     width = Column(Integer)
-    hair_style_id = Column(Integer, ForeignKey("hair_styles.id"))
-    hair_length_id = Column(Integer, ForeignKey("hair_lengths.id"))
-    face_shape_id = Column(Integer, ForeignKey("face_shapes.id"))
-    hair_colour_id = Column(Integer, ForeignKey("colours.id"))
+    hair_style_id = Column(BIGINT, ForeignKey("hair_styles.id"))
+    hair_length_id = Column(BIGINT, ForeignKey("hair_lengths.id"))
+    face_shape_id = Column(BIGINT, ForeignKey("face_shapes.id"))
+    hair_colour_id = Column(BIGINT, ForeignKey("colours.id"))
 
     hair_style = relationship(
         "HairStyle", back_populates="model_picture"
