@@ -61,7 +61,9 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             user_id = 1
 
             # ToDo: redirect to POST /history/face_shape ?
-            new_history = models.History(original_picture_id=orig_pic.id, face_shape_id=face_shape_id, user_id=user_id)
+            new_history = models.History(picture_id=orig_pic.id, original_picture_id=orig_pic.id, face_shape_id=face_shape_id, user_id=user_id)
+            print(new_history)
+            print(new_history.picture_id)
             history_actions.add_history(db=db, history=new_history)
             print(new_history)
 
