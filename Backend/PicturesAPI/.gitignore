@@ -29,6 +29,30 @@
 /app/libraries/fmPyTorch/utils/face_seg.py
 /app/libraries/fmPyTorch/utils/utils.py
 
+# HairTransfer
+/app/libraries/HairTransfer/
+/app/libraries/HairTransfer/.gitignore
+/app/libraries/HairTransfer/.idea
+/app/libraries/HairTransfer/bottlenecks
+/app/libraries/HairTransfer/file_storage
+/app/libraries/HairTransfer/program_files
+/app/libraries/HairTransfer/templates
+/app/libraries/HairTransfer/__init__.py
+/app/libraries/HairTransfer/app.py
+/app/libraries/HairTransfer/database.py
+/app/libraries/HairTransfer/dummy_request.py
+/app/libraries/HairTransfer/faceShape.py
+/app/libraries/HairTransfer/hairstyleFeed.py
+/app/libraries/HairTransfer/maintenance.py
+/app/libraries/HairTransfer/Procfile
+/app/libraries/HairTransfer/QuantumProcessor.py
+/app/libraries/HairTransfer/relevancyScore.py
+/app/libraries/HairTransfer/requirements.txt
+/app/libraries/HairTransfer/runtime.txt
+/app/libraries/HairTransfer/shape_predictor_68_face_landmarks.dat
+/app/libraries/HairTransfer/skinComplexion.py
+/app/libraries/HairTransfer/trial.py
+/app/libraries/HairTransfer/userProfile.py
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm,visualstudiocode,python
