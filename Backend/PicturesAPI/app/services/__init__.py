@@ -1,1 +1,2 @@
 from .picture_service import PictureService
+from .face_shape_service import FaceShapeService
