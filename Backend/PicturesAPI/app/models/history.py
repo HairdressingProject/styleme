@@ -28,9 +28,9 @@ class History(Base):
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     date_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
-    picture = relationship("Picture", back_populates="history")
-    original_picture = relationship("Picture", back_populates="original_history")
-    previous_picture = relationship("Picture", back_populates="previous_history")
+    picture = relationship("Picture", back_populates="history", foreign_keys=[picture_id])
+    original_picture = relationship("Picture", back_populates="original_history", foreign_keys=[original_picture_id])
+    previous_picture = relationship("Picture", back_populates="previous_history", foreign_keys=[previous_picture_id])
     hair_colour = relationship("HairColour", back_populates="history")
     hair_style = relationship("HairStyle", back_populates="history")
     face_shape = relationship("FaceShape", back_populates="history")
@@ -41,15 +41,15 @@ class History(Base):
 
 
 Picture.history = relationship(
-    "History", back_populates="picture"
+    "History", back_populates="picture", foreign_keys=[History.picture_id]
 )
 
 Picture.original_history = relationship(
-    "History", back_populates="original_picture"
+    "History", back_populates="original_picture", foreign_keys=[History.original_picture_id]
 )
 
 Picture.previous_history = relationship(
-    "History", back_populates="previous_picture"
+    "History", back_populates="previous_picture", foreign_keys=[History.previous_picture_id]
 )
 
 User.history = relationship(
