@@ -34,13 +34,39 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
         else:
             picture_info = picture_service.get_picture_info(file_name, save_path)
             print(picture_info, "Picture info")
+
+            # detect face_shape
+            face_shape = picture_service.detect_face_shape(file_name, save_path)
+            if (face_shape is None):
+                print("face shape is none")
+                return {"face shape detected"}
+            print(face_shape, "face_shape result")
+            print(type(face_shape))
+
+
             new_picture = models.Picture(file_name=picture_info[1], file_path=picture_info[0],
                                          file_size=picture_info[2], height=picture_info[3], width=picture_info[4])
 
-            picture_actions.add_picture(db=db, picture=new_picture)
-            # detect face_shape
-            face_shape = picture_service.detect_face_shape(file_name, save_path)
-            return face_shape
+            orig_pic = picture_actions.add_picture(db=db, picture=new_picture)
+
+            # Testing how to create a history record after detecting a face shape
+            # create History instance
+            history_actions = actions.HistoryActions()
+            face_shape_service = services.FaceShapeService()
+
+            # parse face shape string to int
+            face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
+            print(face_shape_id)
+
+            user_id = 1
+
+            # ToDo: redirect to POST /history/face_shape ?
+            new_history = models.History(original_picture_id=orig_pic.id, face_shape_id=face_shape_id, user_id=user_id)
+            history_actions.add_history(db=db, history=new_history)
+            print(new_history)
+
+
+            return face_shape[0]
     else:
         return {"No face detected (cant read image)"}
     # return face_detected
