@@ -278,3 +278,17 @@ class PictureService:
 
         perform_swap(request_obj)
 
+    def change_hairstyle_str(self, user_picture: str, model_picture: str):
+
+        class hair_transfer_request(object):
+            def __init__(self, user_picture, model_picture):
+                print(user_picture)
+                print(model_picture)
+                self.selfie = cv2.imread('pictures/original/' + user_picture)
+                self.hair_model = cv2.imread('pictures/original/' + model_picture)
+                self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
+                self.form = {'username': user_picture, 'uploader': model_picture}
+
+        request_obj = hair_transfer_request(user_picture, model_picture)
+
+        perform_swap(request_obj)
