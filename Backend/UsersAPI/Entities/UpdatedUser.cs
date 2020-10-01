@@ -1,8 +1,8 @@
-﻿using AdminApi.Models_v2_1.Validation;
+﻿using UsersAPI.Models.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AdminApi.Entities
+namespace UsersAPI.Entities
 {
     public class UpdatedUser
     {

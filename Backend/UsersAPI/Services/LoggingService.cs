@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-namespace AdminApi.Services
+namespace UsersAPI.Services
 {
     public interface ILoggingService
     {

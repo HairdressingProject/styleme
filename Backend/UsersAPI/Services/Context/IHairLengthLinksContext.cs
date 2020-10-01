@@ -1,10 +1,10 @@
-﻿using AdminApi.Models_v2_1;
+﻿using UsersAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AdminApi.Services.Context
+namespace UsersAPI.Services.Context
 {
     public interface IHairLengthLinksContext : IBaseContext<HairLengthLinks>
     {

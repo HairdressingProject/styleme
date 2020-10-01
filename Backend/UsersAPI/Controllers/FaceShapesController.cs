@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2_1;
+using UsersAPI.Models;
 using Microsoft.AspNetCore.Cors;
 
-namespace AdminApi.Controllers
+namespace UsersAPI.Controllers
 {
     /**
-     * FaceShapesControllerC:\Users\Stefan\Desktop\Complex UX\Admin-Portal-v2\Backend\AdminApi\Controllers\FaceShapesController.cs
+     * FaceShapesControllerC:\Users\Stefan\Desktop\Complex UX\Admin-Portal-v2\Backend\UsersAPI\Controllers\FaceShapesController.cs
      * This controller handles all routes in the format: "/face_shapes/"
      * 
     **/

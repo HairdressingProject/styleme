@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AdminApi.Helpers.Exceptions;
+using UsersAPI.Helpers.Exceptions;
 
-namespace AdminApi.Services.Context
+namespace UsersAPI.Services.Context
 {
     /// <summary>
     /// Base context to be inherited by each context type

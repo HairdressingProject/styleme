@@ -130,7 +130,7 @@ Additional routes and other modifications may be made as we progress through the
 
 ###  2.1. <a name='Users'></a>Users
 
-Properties (see the [Models_v2_1/Validation](/Backend/AdminApi/Models_v2_1/Validation "Validation") folder for additional models and properties used in specific routes - e.g. `POST /users/sign_in` and `POST /users/sign_up`):
+Properties (see the [Models/Validation](/Backend/UsersAPI/Models/Validation "Validation") folder for additional models and properties used in specific routes - e.g. `POST /users/sign_in` and `POST /users/sign_up`):
 
 ```json
 {
@@ -143,7 +143,7 @@ Properties (see the [Models_v2_1/Validation](/Backend/AdminApi/Models_v2_1/Valid
   "LastName": "<string> (Maximum Length: 128)",
   "UserRole": "<string> (Required, One of: admin, developer or user)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -323,7 +323,7 @@ Properties:
   "HairLengthId": "<ulong?> (Required, Foreign key: HairLengths.Id)",
   "HairColourId": "<ulong?> (Required, Foreign key: Colours.Id)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -399,7 +399,7 @@ Properties:
   "ColourName": "<string> (Required, Maximum Length: 64)",
   "ColourHash": "<string> (Required, Patterns: #ABC or #ABCABC)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -463,7 +463,7 @@ Properties:
   "Id": "<ulong?>",
   "ShapeName": "<string> (Required, Maximum Length: 128)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -527,7 +527,7 @@ Properties:
   "LinkName": "<string> (Required, Maximum Length: 128)",
   "LinkUrl": "<string> (Required, Maximum Length: 512)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -593,7 +593,7 @@ Properties:
   "Id": "<ulong?>",
   "SkinToneName": "<string> (Required, Maximum Length: 128)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -657,7 +657,7 @@ Properties:
   "LinkName": "<string> (Required, Maximum Length: 128)",
   "LinkUrl": "<string> (Required, Maximum Length: 512)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -723,7 +723,7 @@ Properties:
   "Id": "<ulong?>",
   "HairStyleName": "<string> (Required, Maximum Length: 128)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -787,7 +787,7 @@ Properties:
   "LinkName": "<string> (Required, Maximum Length: 128)",
   "LinkUrl": "<string> (Required, Maximum Length: 512)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -853,7 +853,7 @@ Properties:
   "Id": "<ulong?>",
   "HairLengthName": "<string> (Required, Maximum Length: 128)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -917,7 +917,7 @@ Properties:
   "LinkName": "<string> (Required, Maximum Length: 128)",
   "LinkUrl": "<string> (Required, Maximum Length: 512)",
   "DateCreated": "<DateTime?>",
-  "DateModified": "<DateTime?>"
+  "DateUpdated": "<DateTime?>"
 }
 ```
 
@@ -1001,7 +1001,7 @@ mysql -u root -p < database_v.2.1.sql
 ###  3.3. <a name='Generatingpepper'></a>3 - Generating pepper
 The back-end uses a [pepper](https://en.wikipedia.org/wiki/Pepper_(cryptography) "Pepper") that is added to hashed passwords. It is the same for all passwords, but stored outside of the application and the database. 
 
-Navigate to the [AdminApi](/Backend/AdminApi/ "AdminApi") folder before running the commands below.
+Navigate to the [UsersAPI](/Backend/UsersAPI/ "UsersAPI") folder before running the commands below.
 
 Now choose a Pepper secret (can be any string) and run the commands below to store the Pepper secret in your computer:
 
@@ -1058,7 +1058,7 @@ Now this cookie will be automatically sent back to the server (included in the h
 
 ![Origin](https://i.imgur.com/Dzx9OQD.png "Origin")
 
-All `GET` and `DELETE` requests should work out of the box. You will have to provide a request `body` to `PUT` and `POST` requests (check the attributes in the corresponding [Model](AdminApi/Models_v2_1 "Models v2.1") file to understand how each property is validated).
+All `GET` and `DELETE` requests should work out of the box. You will have to provide a request `body` to `PUT` and `POST` requests (check the attributes in the corresponding [Model](UsersAPI/Models "Models v2.1") file to understand how each property is validated).
 
 > Remember: `PUT` requests require an `id` both in the endpoint and in the request `body`. You will also have to include __all__ `[Required]` properties in the request `body` (plus `DateCreated`), not just the ones that you wish to modify.
 

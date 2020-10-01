@@ -1,14 +1,14 @@
-﻿using AdminApi.Entities;
-using AdminApi.Models_v2_1;
-using AdminApi.Models_v2_1.Validation;
-using AdminApi.Helpers;
+﻿using UsersAPI.Entities;
+using UsersAPI.Models;
+using UsersAPI.Models.Validation;
+using UsersAPI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AdminApi.Controllers;
-using AdminApi.Helpers.Exceptions;
+using UsersAPI.Controllers;
+using UsersAPI.Helpers.Exceptions;
 
-namespace AdminApi.Services.Context
+namespace UsersAPI.Services.Context
 {
     /// <summary>
     /// Includes BREAD methods that perform tasks for <see cref="UsersController"/>  

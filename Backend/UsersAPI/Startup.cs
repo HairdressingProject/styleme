@@ -3,9 +3,9 @@ using System.Text;
 using System.Text.Json;
 using System.Linq;
 using System.Threading.Tasks;
-using AdminApi.Helpers;
-using AdminApi.Models_v2_1;
-using AdminApi.Services;
+using UsersAPI.Helpers;
+using UsersAPI.Models;
+using UsersAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,9 +18,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
-using AdminApi.Services.Context;
+using UsersAPI.Services.Context;
 
-namespace AdminApi
+namespace UsersAPI
 {
     public interface IAppSettings
     {

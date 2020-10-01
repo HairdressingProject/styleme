@@ -3,10 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2_1;
-using Org.BouncyCastle.Bcpg.OpenPgp;
+using UsersAPI.Models;
 
-namespace AdminApi.Controllers
+namespace UsersAPI.Controllers
 {
     /**
      * FaceShapeLinksController

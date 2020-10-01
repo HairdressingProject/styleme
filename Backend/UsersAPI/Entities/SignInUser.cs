@@ -1,4 +1,4 @@
-﻿namespace AdminApi.Entities
+﻿namespace UsersAPI.Entities
 {
     public class SignInUser
     {

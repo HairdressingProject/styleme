@@ -1,11 +1,11 @@
-﻿using AdminApi.Helpers.Exceptions;
-using AdminApi.Models_v2_1;
+﻿using UsersAPI.Helpers.Exceptions;
+using UsersAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AdminApi.Services.Context
+namespace UsersAPI.Services.Context
 {
     public class SkinTonesContext : ISkinTonesContext
     {

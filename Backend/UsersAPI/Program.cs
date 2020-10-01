@@ -1,5 +1,5 @@
 using System;
-using AdminApi.Helpers;
+using UsersAPI.Helpers;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
 
-namespace AdminApi
+namespace UsersAPI
 {
     public class Program
     {

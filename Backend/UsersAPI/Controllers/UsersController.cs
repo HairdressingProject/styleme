@@ -2,18 +2,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2_1;
+using UsersAPI.Models;
 using Microsoft.AspNetCore.Cors;
-using AdminApi.Services;
-using AdminApi.Helpers;
-using AdminApi.Entities;
-using AdminApi.Models_v2_1.Validation;
+using UsersAPI.Services;
+using UsersAPI.Helpers;
+using UsersAPI.Entities;
+using UsersAPI.Models.Validation;
 using System;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using AdminApi.Services.Context;
+using UsersAPI.Services.Context;
 
-namespace AdminApi.Controllers
+namespace UsersAPI.Controllers
 {
     /**
      * UsersController
@@ -363,7 +363,7 @@ namespace AdminApi.Controllers
 
         // PUT users/5/change_role
         [HttpPut("{id}/change_role")]
-        public async Task<IActionResult> ChangeUserRole(ulong id, [FromBody] Models_v2_1.Validation.ValidatedUserRoleModel user)
+        public async Task<IActionResult> ChangeUserRole(ulong id, [FromBody] Models.Validation.ValidatedUserRoleModel user)
         {
             if (!_authorizationService.ValidateJWTCookie(Request))
             {
