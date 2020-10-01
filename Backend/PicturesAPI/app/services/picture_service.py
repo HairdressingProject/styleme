@@ -261,3 +261,11 @@ class PictureService:
 
         image = hair(portrait, parsing, part, colours[str(selected_colour)])
         cv2.imwrite('pictures/hair_colour/makeup.png', image)
+
+    def change_hairstyle(self, user_picture_id: int, model_picture_id: int):
+        model_picture_path='path'
+        model_picture_file_name='file_name'
+
+        user_picture_path='path (history)'
+        user_pciture_file_name='file_na,e'
+

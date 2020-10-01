@@ -30,7 +30,6 @@
 /app/libraries/fmPyTorch/utils/utils.py
 
 # HairTransfer
-/app/libraries/HairTransfer/
 /app/libraries/HairTransfer/.gitignore
 /app/libraries/HairTransfer/.idea
 /app/libraries/HairTransfer/bottlenecks
@@ -53,6 +52,7 @@
 /app/libraries/HairTransfer/skinComplexion.py
 /app/libraries/HairTransfer/trial.py
 /app/libraries/HairTransfer/userProfile.py
+
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm,visualstudiocode,python
