@@ -13,6 +13,7 @@ class HistoryBase(BaseModel):
     id: int
     picture_id: int
     original_picture_id: int
+    previous_picture_id: int
     hair_colour_id: int
     hair_style_id: int
     face_shape_id: int
