@@ -222,7 +222,7 @@ class PictureService:
 
         return (path, file_name, file_size, height, width, created_at)
 
-    def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER):
+    def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER, save_path=HAIR_COLOUR_RESULTS_PATH):
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
         cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
 
@@ -268,10 +268,10 @@ class PictureService:
 
         # cv2.imwrite('pictures/hair_colour/makeup.png', image)
         new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + '.' + file_name.split('.')[1]
-        full_path = HAIR_COLOUR_RESULTS_PATH + new_file_name
+        full_path = save_path + new_file_name
         print(full_path, "full path")
         cv2.imwrite(full_path, image)
-        picture_info = PictureService.get_picture_info(self, HAIR_COLOUR_RESULTS_PATH, new_file_name)
+        picture_info = PictureService.get_picture_info(self, save_path, new_file_name)
         print(picture_info)
 
         return picture_info
