@@ -102,7 +102,7 @@ namespace UsersAPI
             } */
 
 
-            services.AddDbContext<hair_project_dbContext>(options =>
+            services.AddDbContext<hairdressing_project_dbContext>(options =>
                 options
                 .UseMySql(connectionString, mySqlOptions =>
                 mySqlOptions
@@ -112,7 +112,7 @@ namespace UsersAPI
             // Register DB Context
             /* if (Program.USE_PRODUCTION_SETTINGS)
             {
-                services.AddDbContext<hair_project_dbContext>(options =>
+                services.AddDbContext<hairdressing_project_dbContext>(options =>
                 options
                 .UseMySql(Configuration.GetConnectionString("HairdressingProjectDB"), mySqlOptions =>
                 mySqlOptions
@@ -121,7 +121,7 @@ namespace UsersAPI
             }
             else
             {
-                services.AddDbContext<hair_project_dbContext>(options =>
+                services.AddDbContext<hairdressing_project_dbContext>(options =>
                 options
                 .UseMySql(Configuration.GetConnectionString("DefaultConnection"), mySqlOptions =>
                 mySqlOptions
@@ -171,7 +171,7 @@ namespace UsersAPI
             IApplicationBuilder app, 
             IWebHostEnvironment env, 
             IAuthenticationService authenticationService,
-            hair_project_dbContext dbContext
+            hairdressing_project_dbContext dbContext
             )
         {
             if (env.IsDevelopment())
@@ -204,13 +204,13 @@ namespace UsersAPI
                 ctx => !WhitelistedRoutes.Any(r => ctx.Request.Path.Value.Contains(r)),
                 builder => {
                     builder.Use(async (ctx, next) => {
-                        string authToken = ctx.Request.Cookies["auth"];
+                        string authToken = ctx.Request.Cookies["auth"] ?? ctx.Request.Headers["Authorization"];
                         if (authToken != null && authenticationService.ValidateUserToken(authToken)) {
                             string userId = authenticationService.GetUserIdFromToken(authToken);
                             if (ulong.TryParse(userId, out ulong id)) {
                                 using (var serviceScope = app.ApplicationServices.CreateScope()) {
                                     var services = serviceScope.ServiceProvider;
-                                    var _dbCtx = services.GetService<hair_project_dbContext>();
+                                    var _dbCtx = services.GetService<hairdressing_project_dbContext>();
 
                                     var user = await _dbCtx.Users.FindAsync(id);    
 

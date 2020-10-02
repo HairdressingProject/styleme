@@ -1,30 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace UsersAPI.GeneratedModels
+namespace UsersAPI.Models
 {
     [Table("history")]
     public partial class History
     {
         [Key]
-        [Column("id", TypeName = "int(11)")]
-        public int Id { get; set; }
-        [Column("picture_id", TypeName = "int(11)")]
-        public int? PictureId { get; set; }
-        [Column("original_picture_id", TypeName = "int(11)")]
-        public int? OriginalPictureId { get; set; }
-        [Column("previous_picture_id", TypeName = "int(11)")]
-        public int? PreviousPictureId { get; set; }
-        [Column("hair_colour_id", TypeName = "int(11)")]
-        public int? HairColourId { get; set; }
-        [Column("hair_style_id", TypeName = "int(11)")]
-        public int? HairStyleId { get; set; }
-        [Column("face_shape_id", TypeName = "int(11)")]
-        public int? FaceShapeId { get; set; }
-        [Column("user_id", TypeName = "int(11)")]
-        public int? UserId { get; set; }
+        [Column("id", TypeName = "bigint(20) unsigned")]
+        public ulong Id { get; set; }
+        [Column("picture_id", TypeName = "bigint(20) unsigned")]
+        public ulong PictureId { get; set; }
+        [Column("original_picture_id", TypeName = "bigint(20) unsigned")]
+        public ulong? OriginalPictureId { get; set; }
+        [Column("previous_picture_id", TypeName = "bigint(20) unsigned")]
+        public ulong? PreviousPictureId { get; set; }
+        [Column("hair_colour_id", TypeName = "bigint(20) unsigned")]
+        public ulong? HairColourId { get; set; }
+        [Column("hair_style_id", TypeName = "bigint(20) unsigned")]
+        public ulong? HairStyleId { get; set; }
+        [Column("face_shape_id", TypeName = "bigint(20) unsigned")]
+        public ulong? FaceShapeId { get; set; }
+        [Column("user_id", TypeName = "bigint(20) unsigned")]
+        public ulong UserId { get; set; }
         [Column("date_created", TypeName = "datetime")]
         public DateTime? DateCreated { get; set; }
         [Column("date_updated", TypeName = "datetime")]

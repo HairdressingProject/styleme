@@ -1,20 +1,27 @@
-﻿using UsersAPI.Models.Validation;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using UsersAPI.Models.Validation;
 
 namespace UsersAPI.Models
 {
     [Table("colours")]
     public partial class Colours
     {
+        public Colours()
+        {
+            History = new HashSet<History>();
+            ModelPictures = new HashSet<ModelPictures>();
+        }
+
         public Colours ShallowCopy()
         {
             return (Colours)MemberwiseClone();
         }
 
         [Key]
-        [Column("id")]
+        [Column("id", TypeName = "bigint(20) unsigned")]
         public ulong? Id { get; set; }
 
         [Required(ErrorMessage = "Colour name is required", AllowEmptyStrings = false)]
@@ -32,8 +39,12 @@ namespace UsersAPI.Models
 
         [Column("date_created", TypeName = "datetime")]
         public DateTime? DateCreated { get; set; }
-
-        [Column("date_modified", TypeName = "datetime")]
+        [Column("date_updated", TypeName = "datetime")]
         public DateTime? DateUpdated { get; set; }
+
+        [InverseProperty("HairColour")]
+        public virtual ICollection<History> History { get; set; }
+        [InverseProperty("HairColour")]
+        public virtual ICollection<ModelPictures> ModelPictures { get; set; }
     }
 }

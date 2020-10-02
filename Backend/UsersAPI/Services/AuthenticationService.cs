@@ -31,14 +31,14 @@ namespace UsersAPI.Services
 
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly hair_project_dbContext _context;
+        private readonly hairdressing_project_dbContext _context;
         private readonly IUsersContext _usersContext;
         private readonly AppSettings _appSettings;
         private readonly IConfiguration _configuration;
 
         public AuthenticationService(
             IOptions<AppSettings> appSettings, 
-            hair_project_dbContext context, 
+            hairdressing_project_dbContext context, 
             IConfiguration configuration
             )
         {

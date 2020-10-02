@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace UsersAPI.GeneratedModels
+namespace UsersAPI.Models
 {
     [Table("pictures")]
     public partial class Pictures
@@ -16,8 +16,9 @@ namespace UsersAPI.GeneratedModels
         }
 
         [Key]
-        [Column("id", TypeName = "int(11)")]
-        public int Id { get; set; }
+        [Column("id", TypeName = "bigint(20) unsigned")]
+        public ulong Id { get; set; }
+        [Required]
         [Column("file_name", TypeName = "varchar(255)")]
         public string FileName { get; set; }
         [Column("file_path", TypeName = "varchar(255)")]
