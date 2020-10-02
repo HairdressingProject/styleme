@@ -44,7 +44,7 @@
 /app/libraries/HairTransfer/hairstyleFeed.py
 /app/libraries/HairTransfer/maintenance.py
 /app/libraries/HairTransfer/Procfile
-/app/libraries/HairTransfer/QuantumProcessor.py
+# /app/libraries/HairTransfer/QuantumProcessor.py
 /app/libraries/HairTransfer/relevancyScore.py
 /app/libraries/HairTransfer/requirements.txt
 /app/libraries/HairTransfer/runtime.txt

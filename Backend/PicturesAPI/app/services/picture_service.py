@@ -2,6 +2,7 @@ import os
 import hashlib
 from datetime import datetime
 import face_recognition
+from app.models import Picture
 from app.settings import PICTURE_UPLOAD_FOLDER, PICTURE_PROCESSED_FOLDER, FACE_SHAPE_RESULTS_PATH
 import pathlib
 import shutil
@@ -12,6 +13,8 @@ from app.libraries.fmPyTorch.makeup import hair
 from app.libraries.Hair_Style_Recommendation.functions_only_save import make_face_df_save, find_face_shape
 import numpy as np
 import pandas as pd
+
+from app.libraries.HairTransfer.QuantumProcessor import perform_swap
 
 
 class PictureService:
@@ -262,10 +265,30 @@ class PictureService:
         image = hair(portrait, parsing, part, colours[str(selected_colour)])
         cv2.imwrite('pictures/hair_colour/makeup.png', image)
 
-    def change_hairstyle(self, user_picture_id: int, model_picture_id: int):
-        model_picture_path='path'
-        model_picture_file_name='file_name'
+    def change_hairstyle(self, user_picture: Picture, model_picture: Picture):
 
-        user_picture_path='path (history)'
-        user_pciture_file_name='file_na,e'
+        class hair_transfer_request(object):
+            def __init__(self, user_picture, model_picture):
+                self.selfie = cv2.imread(user_picture.file_path + user_picture.file_name)
+                self.hair_model = cv2.imread(model_picture.file_path + model_picture.file_name)
+                self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
+                self.form = {'username': user_picture.file_path + user_picture.file_name, 'uploader': model_picture.file_path + model_picture.file_name}
 
+        request_obj = hair_transfer_request(user_picture, model_picture)
+
+        perform_swap(request_obj)
+
+    def change_hairstyle_str(self, user_picture: str, model_picture: str):
+
+        class hair_transfer_request(object):
+            def __init__(self, user_picture, model_picture):
+                print(user_picture)
+                print(model_picture)
+                self.selfie = cv2.imread('pictures/original/' + user_picture)
+                self.hair_model = cv2.imread('pictures/original/' + model_picture)
+                self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
+                self.form = {'username': user_picture, 'uploader': model_picture}
+
+        request_obj = hair_transfer_request(user_picture, model_picture)
+
+        perform_swap(request_obj)
