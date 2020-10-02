@@ -72,7 +72,8 @@ def crop_face(image, eye_left=(0,0), eye_right=(0,0), offset_pct=(0.3,0.3), dest
     image = image.resize(dest_sz, Image.ANTIALIAS)
     return image
 
-def make_face_df_save(image_select,filenum,df):
+def make_face_df_save(file_path, file_name, save_path, filenum, df):
+    image_select = file_path + file_name
     
     # This function looks at one image, draws points and saves points to DF
     pts = []
@@ -117,7 +118,8 @@ def make_face_df_save(image_select,filenum,df):
         eyes.append(pts[90:92])
 
         picture_service = services.PictureService()
-        picture_service.crop_picture(image_select)
+        # picture_service.crop_picture(image_select)
+        picture_service.crop_picture(file_path, file_name, save_path)
         # try:
         #     picture_service.crop_picture(image_select)
         # except:
@@ -134,7 +136,7 @@ def make_face_df_save(image_select,filenum,df):
         #crop_image.show()
         # -------- end of Original code --------
         
-        nn = str(image_select)+"_NEW_cropped.jpg"
+        nn = str(save_path + file_name)+"_cropped.jpg"
         pts = []
         face = 0
         image = face_recognition.load_image_file(nn)
@@ -196,7 +198,7 @@ def make_face_df_save(image_select,filenum,df):
                     d.point(face_landmarks[facial_feature], fill = (255,255,255))
             
             
-            pil_image.save(str(image_select) + '_NEW_rotated_pts.jpg', 'JPEG', quality = 100)
+            pil_image.save(str(save_path + file_name) + '__rotated_pts.jpg', 'JPEG', quality = 100)
 
             # take_measurements width & height measurements
         msmt = []
