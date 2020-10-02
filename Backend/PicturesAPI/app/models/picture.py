@@ -1,11 +1,11 @@
-from sqlalchemy import Column, Integer, String, DateTime, func, text
+from sqlalchemy import Column, Integer, BIGINT, String, DateTime, func, text
 from app.database.db import Base
 
 
 class Picture(Base):
     __tablename__ = "pictures"
-    id = Column(Integer, primary_key=True, index=True)
-    file_name = Column(String(255), unique=True)
+    id = Column(BIGINT, primary_key=True, index=True)
+    file_name = Column(String(255), unique=True, index=True)
     file_path = Column(String(255))
     file_size = Column(Integer)
     height = Column(Integer)

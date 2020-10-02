@@ -1,15 +1,15 @@
-﻿using AdminApi.Entities;
-using AdminApi.Helpers;
-using AdminApi.Helpers.Exceptions;
-using AdminApi.Models_v2_1;
-using AdminApi.Models_v2_1.Validation;
+﻿using UsersAPI.Entities;
+using UsersAPI.Helpers;
+using UsersAPI.Helpers.Exceptions;
+using UsersAPI.Models;
+using UsersAPI.Models.Validation;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AdminApi.Services.Context
+namespace UsersAPI.Services.Context
 {
     public class UsersContext : IUsersContext
     {

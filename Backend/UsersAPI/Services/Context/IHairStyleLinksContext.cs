@@ -1,6 +1,6 @@
-﻿using AdminApi.Models_v2_1;
+﻿using UsersAPI.Models;
 
-namespace AdminApi.Services.Context
+namespace UsersAPI.Services.Context
 {
     public interface IHairStyleLinksContext : IBaseContext<HairStyleLinks>
     {

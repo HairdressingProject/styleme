@@ -1,13 +1,13 @@
-﻿using AdminApi.Helpers;
-using AdminApi.Helpers.Exceptions;
-using AdminApi.Models_v2_1;
+﻿using UsersAPI.Helpers;
+using UsersAPI.Helpers.Exceptions;
+using UsersAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AdminApi.Services.Context
+namespace UsersAPI.Services.Context
 {
     public class UserFeaturesContext : IUserFeaturesContext
     {
@@ -491,7 +491,7 @@ namespace AdminApi.Services.Context
 
         /// <summary>
         /// Convenience method related to 
-        /// <see cref="CorrespondingResourceExists(Models_v2_1.UserFeatures, ResourceTypes)"/>
+        /// <see cref="CorrespondingResourceExists(Models.UserFeatures, ResourceTypes)"/>
         /// that determines which resource is missing from <paramref name="userFeatures"/>
         /// </summary>
         /// <param name="userFeatures"></param>

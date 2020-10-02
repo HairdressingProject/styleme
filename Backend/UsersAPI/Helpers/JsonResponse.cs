@@ -2,7 +2,7 @@
 using System.Dynamic;
 using System.Linq;
 
-namespace AdminApi.Helpers
+namespace UsersAPI.Helpers
 {
     /// <summary>
     /// Constructs a JSON object to be sent back in HTTP responses

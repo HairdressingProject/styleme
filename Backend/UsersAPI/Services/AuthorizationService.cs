@@ -1,11 +1,11 @@
-﻿using AdminApi.Models_v2_1;
+﻿using UsersAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AdminApi.Services
+namespace UsersAPI.Services
 {
     public interface IAuthorizationService
     {

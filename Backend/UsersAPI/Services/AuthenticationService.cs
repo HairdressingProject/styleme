@@ -5,18 +5,18 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using AdminApi.Entities;
-using AdminApi.Helpers;
+using UsersAPI.Entities;
+using UsersAPI.Helpers;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2_1;
+using UsersAPI.Models;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
-using AdminApi.Services.Context;
+using UsersAPI.Services.Context;
 
-namespace AdminApi.Services
+namespace UsersAPI.Services
 {
     public interface IAuthenticationService
     {

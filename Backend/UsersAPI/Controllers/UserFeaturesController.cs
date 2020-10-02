@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2_1;
-using AdminApi.Helpers;
+using UsersAPI.Models;
+using UsersAPI.Helpers;
 using Microsoft.AspNetCore.Cors;
 
-namespace AdminApi.Controllers
+namespace UsersAPI.Controllers
 {
     /**
      * UserFeaturesController

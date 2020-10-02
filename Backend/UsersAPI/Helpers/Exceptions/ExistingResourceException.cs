@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AdminApi.Helpers.Exceptions
+namespace UsersAPI.Helpers.Exceptions
 {
     public class ExistingResourceException : Exception
     {

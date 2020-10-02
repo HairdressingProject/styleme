@@ -4,27 +4,27 @@ Author: Diego C. <20026893@tafe.wa.edu.au>
 Created at: 28/09/2020 8:57 pm
 File: history.py
 """
-from sqlalchemy import func, Column, Integer, DateTime, ForeignKey
+from sqlalchemy import func, Column, BIGINT, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
+
 from app.database.db import Base
-from .user import User
-from .hair_length import HairLength
+from .face_shape import FaceShape
 from .hair_colour import HairColour
 from .hair_style import HairStyle
-from .face_shape import FaceShape
 from .picture import Picture
+from .user import User
 
 
 class History(Base):
     __tablename__ = "history"
-    id = Column(Integer, primary_key=True, index=True)
-    picture_id = Column(Integer, ForeignKey("pictures.id"), index=True)
-    original_picture_id = Column(Integer, ForeignKey("pictures.id"), index=True)
-    previous_picture_id = Column(Integer, ForeignKey("pictures.id"), index=True)
-    hair_colour_id = Column(Integer, ForeignKey("colours.id"), index=True)
-    hair_style_id = Column(Integer, ForeignKey("hair_styles.id"), index=True)
-    face_shape_id = Column(Integer, ForeignKey("face_shapes.id"), index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    id = Column(BIGINT, primary_key=True, index=True)
+    picture_id = Column(BIGINT, ForeignKey("pictures.id"), index=True)
+    original_picture_id = Column(BIGINT, ForeignKey("pictures.id"), index=True)
+    previous_picture_id = Column(BIGINT, ForeignKey("pictures.id"), index=True)
+    hair_colour_id = Column(BIGINT, ForeignKey("colours.id"), index=True)
+    hair_style_id = Column(BIGINT, ForeignKey("hair_styles.id"), index=True)
+    face_shape_id = Column(BIGINT, ForeignKey("face_shapes.id"), index=True)
+    user_id = Column(BIGINT, ForeignKey("users.id"), index=True)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     date_updated = Column(DateTime(timezone=True), onupdate=func.now())
 

@@ -1,4 +1,4 @@
-﻿namespace AdminApi.Helpers
+﻿namespace UsersAPI.Helpers
 {
     public enum ResourceTypes
     {
