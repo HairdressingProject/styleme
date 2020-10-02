@@ -11,7 +11,7 @@ namespace UsersAPI.Models
     {
         public Users()
         {
-            UserFeatures = new HashSet<UserFeatures>();
+            History = new HashSet<History>();
         }
 
         public Users ShallowCopy()
@@ -20,18 +20,19 @@ namespace UsersAPI.Models
         }
 
         [Key]
-        [Column("id", TypeName = "int(11)")]
+        [Column("id", TypeName = "bigint(20) unsigned")]
         public ulong? Id { get; set; }
+
 
         [Required(ErrorMessage = "Username is required", AllowEmptyStrings = false)]
         [NotNullOrEmptyOrWhiteSpace(ErrorMessage = @"Username should not be empty or white space")]
         [MaxLength(32)]
         [Column("user_name", TypeName = "varchar(32)")]
         public string UserName { get; set; }
-
+        [Required]
         [Column("user_password_hash", TypeName = "varchar(512)")]
         public string UserPasswordHash { get; set; }
-
+        [Required]
         [Column("user_password_salt", TypeName = "varchar(512)")]
         public string UserPasswordSalt { get; set; }
 
@@ -58,14 +59,12 @@ namespace UsersAPI.Models
 
         [Column("date_created", TypeName = "datetime")]
         public DateTime? DateCreated { get; set; }
-
         [Column("date_updated", TypeName = "datetime")]
         public DateTime? DateUpdated { get; set; }
 
         [InverseProperty("User")]
         public virtual Accounts Accounts { get; set; }
-
         [InverseProperty("User")]
-        public virtual ICollection<UserFeatures> UserFeatures { get; set; }
+        public virtual ICollection<History> History { get; set; }
     }
 }

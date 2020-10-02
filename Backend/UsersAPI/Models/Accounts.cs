@@ -8,12 +8,12 @@ namespace UsersAPI.Models
     public partial class Accounts
     {
         [Key]
-        [Column("user_id", TypeName = "int(11)")]
+        [Column("user_id", TypeName = "bigint(20) unsigned")]
         public ulong? UserId { get; set; }
 
         [MaxLength(16)]
         [MinLength(16)]
-        [Column("recover_password_token", TypeName = "tinyblob")]
+        [Column("recover_password_token")]
         public byte[] RecoverPasswordToken { get; set; }
         [Column("account_confirmed")]
         public bool? AccountConfirmed { get; set; }

@@ -12,7 +12,6 @@ namespace UsersAPIUnitTests.Fakes
     public class FakeDatabase
     {
         public List<Users> Users { get; set; }
-        public List<UserFeatures> UserFeatures { get; set; }
         public List<Colours> Colours { get; set; }
         public List<FaceShapes> FaceShapes { get; set; }
         public List<FaceShapeLinks> FaceShapeLinks { get; set; }
@@ -20,8 +19,6 @@ namespace UsersAPIUnitTests.Fakes
         public List<HairLengthLinks> HairLengthLinks { get; set; }
         public List<HairStyles> HairStyles { get; set; }
         public List<HairStyleLinks> HairStyleLinks { get; set; }
-        public List<SkinTones> SkinTones { get; set; }
-        public List<SkinToneLinks> SkinToneLinks { get; set; }
 
         public FakeDatabase() { }
 
@@ -37,35 +34,6 @@ namespace UsersAPIUnitTests.Fakes
         {
             SeedUsers();
             return new UsersContext(Users);
-        }
-
-        /**
-         * USER FEATURES
-         */
-        public void SeedUserFeatures()
-        {
-            UserFeatures = UserFeaturesSeed.Seed();
-        }
-
-        public UserFeaturesContext SeedUserFeaturesContext()
-        {
-            SeedUsers();
-            SeedFaceShapes();
-            SeedColours();
-            SeedHairLengths();
-            SeedHairStyles();
-            SeedSkinTones();
-            SeedUserFeatures();
-
-            return new UserFeaturesContext(
-                UserFeatures,
-                Users,
-                FaceShapes,
-                Colours,
-                HairLengths,
-                HairStyles,
-                SkinTones
-                );
         }
 
         /**
@@ -164,34 +132,6 @@ namespace UsersAPIUnitTests.Fakes
         {
             SeedHairStyleLinks();
             return new HairStyleLinksContext(HairStyleLinks);
-        }
-
-        /**
-         * SKIN TONES
-         */
-        public void SeedSkinTones()
-        {
-            SkinTones = SkinTonesSeed.Seed();
-        }
-
-        public SkinTonesContext SeedSkinTonesContext()
-        {
-            SeedSkinTones();
-            return new SkinTonesContext(SkinTones);
-        }
-
-        /**
-         * SKIN TONE LINKS
-         */
-        public void SeedSkinToneLinks()
-        {
-            SkinToneLinks = SkinToneLinksSeed.Seed();
-        }
-
-        public SkinToneLinksContext SeedSkinToneLinksContext()
-        {
-            SeedSkinToneLinks();
-            return new SkinToneLinksContext(SkinToneLinks);
         }
     }
 }

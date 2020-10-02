@@ -250,8 +250,8 @@ class PictureService:
         parsing = evaluate(portrait, cp)
         part = [table['hair']]
 
-        colours = {"green": [25, 250, 32], "yellow": [30, 252, 249], "orange": [30, 108, 252], "burgundy": [32, 0, 128], "ruby": [95, 17, 224], "coral": [80, 127, 255], "violet": [211, 0, 148]}
-
+        colours = {"green": [25, 250, 32], "yellow": [30, 252, 249], "orange": [30, 108, 252], "burgundy": [32, 0, 128],
+                   "ruby": [95, 17, 224], "coral": [80, 127, 255], "violet": [211, 0, 148]}
 
         # blonde : [123, 201, 227],
         # DarkRed : [0, 0, 139],
@@ -276,6 +276,7 @@ class PictureService:
 
         return picture_info
 
+
     def change_hairstyle(self, user_picture: Picture, model_picture: Picture):
 
         class hair_transfer_request(object):
@@ -283,7 +284,9 @@ class PictureService:
                 self.selfie = cv2.imread(user_picture.file_path + user_picture.file_name)
                 self.hair_model = cv2.imread(model_picture.file_path + model_picture.file_name)
                 self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
-                self.form = {'username': user_picture.file_path + user_picture.file_name, 'uploader': model_picture.file_path + model_picture.file_name}
+
+                self.form = {'username': user_picture.file_path + user_picture.file_name,
+                             'uploader': model_picture.file_path + model_picture.file_name}
 
         request_obj = hair_transfer_request(user_picture, model_picture)
 

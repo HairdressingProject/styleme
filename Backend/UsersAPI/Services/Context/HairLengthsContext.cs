@@ -10,7 +10,7 @@ namespace UsersAPI.Services.Context
 {
     public class HairLengthsContext : IHairLengthsContext
     {
-        private readonly hair_project_dbContext _context;
+        private readonly hairdressing_project_dbContext _context;
         private readonly IAuthenticationService _authenticationService;
         public List<HairLengths> HairLengths { get; set; }
 
@@ -28,7 +28,7 @@ namespace UsersAPI.Services.Context
         /// </summary>
         /// <param name="context">EF's database context</param>
         /// <param name="authenticationService">Authentication service for users</param>
-        public HairLengthsContext(hair_project_dbContext context, IAuthenticationService authenticationService)
+        public HairLengthsContext(hairdressing_project_dbContext context, IAuthenticationService authenticationService)
         {
             _context = context;
             _authenticationService = authenticationService;

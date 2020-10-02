@@ -1,16 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace UsersAPI.GeneratedModels
+namespace UsersAPI.Models
 {
-    public partial class fastapi_picturesContext : DbContext
+    public partial class hairdressing_project_dbContext : DbContext
     {
-        public fastapi_picturesContext()
+        public hairdressing_project_dbContext()
         {
         }
 
-        public fastapi_picturesContext(DbContextOptions<fastapi_picturesContext> options)
+        public hairdressing_project_dbContext(DbContextOptions<hairdressing_project_dbContext> options)
             : base(options)
         {
         }
@@ -30,11 +28,6 @@ namespace UsersAPI.GeneratedModels
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=localhost;database=fastapi_pictures;user=pictures-admin;password=Password1;treattinyasboolean=true", x => x.ServerVersion("10.5.4-mariadb"));
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,7 +42,7 @@ namespace UsersAPI.GeneratedModels
                     .IsUnique();
 
                 entity.HasIndex(e => e.UserId)
-                    .HasName("ix_accounts_user_id");
+                    .HasName("user_id");
 
                 entity.Property(e => e.UserId).ValueGeneratedNever();
 
@@ -57,19 +50,22 @@ namespace UsersAPI.GeneratedModels
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
 
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
+
+                entity.Property(e => e.RecoverPasswordToken).IsFixedLength();
+
                 entity.Property(e => e.UnusualActivity).HasDefaultValueSql("'0'");
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.Accounts)
                     .HasForeignKey<Accounts>(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("accounts_ibfk_1");
+                    .HasConstraintName("fk_user_id");
             });
 
             modelBuilder.Entity<Colours>(entity =>
             {
                 entity.HasIndex(e => e.Id)
-                    .HasName("ix_colours_id");
+                    .HasName("id");
 
                 entity.Property(e => e.ColourHash)
                     .HasDefaultValueSql("'** ERROR: missing category **'")
@@ -82,6 +78,8 @@ namespace UsersAPI.GeneratedModels
                     .HasCollation("utf8mb4_general_ci");
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
             });
 
             modelBuilder.Entity<FaceShapeLinks>(entity =>
@@ -90,9 +88,11 @@ namespace UsersAPI.GeneratedModels
                     .HasName("face_shape_id");
 
                 entity.HasIndex(e => e.Id)
-                    .HasName("ix_face_shape_links_id");
+                    .HasName("id");
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.Property(e => e.LinkName)
                     .HasDefaultValueSql("'** ERROR: missing category **'")
@@ -107,16 +107,17 @@ namespace UsersAPI.GeneratedModels
                 entity.HasOne(d => d.FaceShape)
                     .WithMany(p => p.FaceShapeLinks)
                     .HasForeignKey(d => d.FaceShapeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("face_shape_links_ibfk_1");
             });
 
             modelBuilder.Entity<FaceShapes>(entity =>
             {
                 entity.HasIndex(e => e.Id)
-                    .HasName("ix_face_shapes_id");
+                    .HasName("id");
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.Property(e => e.ShapeName)
                     .HasDefaultValueSql("'** ERROR: missing category **'")
@@ -130,9 +131,11 @@ namespace UsersAPI.GeneratedModels
                     .HasName("hair_length_id");
 
                 entity.HasIndex(e => e.Id)
-                    .HasName("ix_hair_length_links_id");
+                    .HasName("id");
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.Property(e => e.LinkName)
                     .HasDefaultValueSql("'** ERROR: missing category **'")
@@ -147,16 +150,17 @@ namespace UsersAPI.GeneratedModels
                 entity.HasOne(d => d.HairLength)
                     .WithMany(p => p.HairLengthLinks)
                     .HasForeignKey(d => d.HairLengthId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("hair_length_links_ibfk_1");
             });
 
             modelBuilder.Entity<HairLengths>(entity =>
             {
                 entity.HasIndex(e => e.Id)
-                    .HasName("ix_hair_lengths_id");
+                    .HasName("id");
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.Property(e => e.HairLengthName)
                     .HasDefaultValueSql("'** ERROR: missing category **'")
@@ -170,9 +174,11 @@ namespace UsersAPI.GeneratedModels
                     .HasName("hair_style_id");
 
                 entity.HasIndex(e => e.Id)
-                    .HasName("ix_hair_style_links_id");
+                    .HasName("id");
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.Property(e => e.LinkName)
                     .HasDefaultValueSql("'** ERROR: missing category **'")
@@ -187,16 +193,17 @@ namespace UsersAPI.GeneratedModels
                 entity.HasOne(d => d.HairStyle)
                     .WithMany(p => p.HairStyleLinks)
                     .HasForeignKey(d => d.HairStyleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("hair_style_links_ibfk_1");
             });
 
             modelBuilder.Entity<HairStyles>(entity =>
             {
                 entity.HasIndex(e => e.Id)
-                    .HasName("ix_hair_styles_id");
+                    .HasName("id");
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.Property(e => e.HairStyleName)
                     .HasDefaultValueSql("'** ERROR: missing category **'")
@@ -207,87 +214,97 @@ namespace UsersAPI.GeneratedModels
             modelBuilder.Entity<History>(entity =>
             {
                 entity.HasIndex(e => e.FaceShapeId)
-                    .HasName("ix_history_face_shape_id");
+                    .HasName("fk_history_face_shape_id");
 
                 entity.HasIndex(e => e.HairColourId)
-                    .HasName("ix_history_hair_colour_id");
+                    .HasName("fk_history_hair_colour_id");
 
                 entity.HasIndex(e => e.HairStyleId)
-                    .HasName("ix_history_hair_style_id");
-
-                entity.HasIndex(e => e.Id)
-                    .HasName("ix_history_id");
+                    .HasName("fk_history_hair_style_id");
 
                 entity.HasIndex(e => e.OriginalPictureId)
-                    .HasName("ix_history_original_picture_id");
+                    .HasName("fk_history_original_picture_id");
 
                 entity.HasIndex(e => e.PictureId)
-                    .HasName("ix_history_picture_id");
+                    .HasName("fk_history_picture_id");
 
                 entity.HasIndex(e => e.PreviousPictureId)
-                    .HasName("ix_history_previous_picture_id");
+                    .HasName("fk_history_previous_picture_id");
 
                 entity.HasIndex(e => e.UserId)
-                    .HasName("ix_history_user_id");
+                    .HasName("fk_history_user_id");
+
+                entity.HasIndex(e => new { e.Id, e.PictureId, e.OriginalPictureId, e.PreviousPictureId, e.HairColourId, e.HairStyleId, e.FaceShapeId, e.UserId })
+                    .HasName("id")
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0, 0, 0, 0, 0 });
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.HasOne(d => d.FaceShape)
                     .WithMany(p => p.History)
                     .HasForeignKey(d => d.FaceShapeId)
-                    .HasConstraintName("history_ibfk_6");
+                    .HasConstraintName("fk_history_face_shape_id");
 
                 entity.HasOne(d => d.HairColour)
                     .WithMany(p => p.History)
                     .HasForeignKey(d => d.HairColourId)
-                    .HasConstraintName("history_ibfk_4");
+                    .HasConstraintName("fk_history_hair_colour_id");
 
                 entity.HasOne(d => d.HairStyle)
                     .WithMany(p => p.History)
                     .HasForeignKey(d => d.HairStyleId)
-                    .HasConstraintName("history_ibfk_5");
+                    .HasConstraintName("fk_history_hair_style_id");
 
                 entity.HasOne(d => d.OriginalPicture)
                     .WithMany(p => p.HistoryOriginalPicture)
                     .HasForeignKey(d => d.OriginalPictureId)
-                    .HasConstraintName("history_ibfk_2");
+                    .HasConstraintName("fk_history_original_picture_id");
 
                 entity.HasOne(d => d.Picture)
                     .WithMany(p => p.HistoryPicture)
                     .HasForeignKey(d => d.PictureId)
-                    .HasConstraintName("history_ibfk_1");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_history_picture_id");
 
                 entity.HasOne(d => d.PreviousPicture)
                     .WithMany(p => p.HistoryPreviousPicture)
                     .HasForeignKey(d => d.PreviousPictureId)
-                    .HasConstraintName("history_ibfk_3");
+                    .HasConstraintName("fk_history_previous_picture_id");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.History)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("history_ibfk_7");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_history_user_id");
             });
 
             modelBuilder.Entity<ModelPictures>(entity =>
             {
                 entity.HasIndex(e => e.FaceShapeId)
-                    .HasName("face_shape_id");
+                    .HasName("fk_face_shape_id");
 
                 entity.HasIndex(e => e.FileName)
                     .HasName("file_name")
                     .IsUnique();
 
                 entity.HasIndex(e => e.HairColourId)
-                    .HasName("hair_colour_id");
+                    .HasName("fk_hair_colour_id");
 
                 entity.HasIndex(e => e.HairLengthId)
-                    .HasName("hair_length_id");
+                    .HasName("fk_hair_length_id");
 
                 entity.HasIndex(e => e.HairStyleId)
-                    .HasName("hair_style_id");
+                    .HasName("fk_hair_style_id");
 
-                entity.HasIndex(e => e.Id)
-                    .HasName("ix_model_pictures_id");
+                entity.HasIndex(e => new { e.Id, e.FileName, e.FilePath, e.HairStyleId, e.HairLengthId, e.FaceShapeId, e.HairColourId })
+                    .HasName("id")
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0, 0, 0, 0 });
+
+                entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.Property(e => e.FileName)
                     .HasCharSet("utf8mb4")
@@ -300,22 +317,26 @@ namespace UsersAPI.GeneratedModels
                 entity.HasOne(d => d.FaceShape)
                     .WithMany(p => p.ModelPictures)
                     .HasForeignKey(d => d.FaceShapeId)
-                    .HasConstraintName("model_pictures_ibfk_3");
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("fk_face_shape_id");
 
                 entity.HasOne(d => d.HairColour)
                     .WithMany(p => p.ModelPictures)
                     .HasForeignKey(d => d.HairColourId)
-                    .HasConstraintName("model_pictures_ibfk_4");
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("fk_hair_colour_id");
 
                 entity.HasOne(d => d.HairLength)
                     .WithMany(p => p.ModelPictures)
                     .HasForeignKey(d => d.HairLengthId)
-                    .HasConstraintName("model_pictures_ibfk_2");
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("fk_hair_length_id");
 
                 entity.HasOne(d => d.HairStyle)
                     .WithMany(p => p.ModelPictures)
                     .HasForeignKey(d => d.HairStyleId)
-                    .HasConstraintName("model_pictures_ibfk_1");
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("fk_hair_style_id");
             });
 
             modelBuilder.Entity<Pictures>(entity =>
@@ -324,10 +345,13 @@ namespace UsersAPI.GeneratedModels
                     .HasName("file_name")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Id)
-                    .HasName("ix_pictures_id");
+                entity.HasIndex(e => new { e.Id, e.FileName, e.FilePath })
+                    .HasName("id")
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
+
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
 
                 entity.Property(e => e.FileName)
                     .HasCharSet("utf8mb4")
@@ -341,7 +365,7 @@ namespace UsersAPI.GeneratedModels
             modelBuilder.Entity<Users>(entity =>
             {
                 entity.HasIndex(e => e.Id)
-                    .HasName("ix_users_id");
+                    .HasName("id");
 
                 entity.HasIndex(e => e.UserEmail)
                     .HasName("user_email")
@@ -353,7 +377,10 @@ namespace UsersAPI.GeneratedModels
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
 
+                entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
+
                 entity.Property(e => e.FirstName)
+                    .HasDefaultValueSql("'user'")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_general_ci");
 

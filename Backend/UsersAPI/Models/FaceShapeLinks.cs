@@ -1,8 +1,7 @@
-﻿using UsersAPI.Models.Validation;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using UsersAPI.Models.Validation;
 
 namespace UsersAPI.Models
 {
@@ -15,13 +14,13 @@ namespace UsersAPI.Models
         }
 
         [Key]
-        [Column("id")]
+        [Column("id", TypeName = "bigint(20) unsigned")]
         public ulong? Id { get; set; }
 
         [Required(ErrorMessage = "Face shape ID is required", AllowEmptyStrings = false)]
         [NotNullOrEmptyOrWhiteSpace(ErrorMessage = @"Face shape ID should not be empty or white space")]
         [RegularExpression(@"^[1-9]{1}$|^[1-9][0-9]+$", ErrorMessage = @"Face shape ID must only contain numbers (0 is not allowed)")]
-        [Column("face_shape_id")]
+        [Column("face_shape_id", TypeName = "bigint(20) unsigned")]
         public ulong FaceShapeId { get; set; }
 
         [Required(ErrorMessage = "Link name is required", AllowEmptyStrings = false)]
@@ -29,6 +28,7 @@ namespace UsersAPI.Models
         [MaxLength(128)]
         [Column("link_name", TypeName = "varchar(128)")]
         public string LinkName { get; set; }
+
 
         [Required(ErrorMessage = "Link URL is required", AllowEmptyStrings = false)]
         [NotNullOrEmptyOrWhiteSpace(ErrorMessage = @"Link URL should not be empty or white space")]
@@ -38,8 +38,7 @@ namespace UsersAPI.Models
 
         [Column("date_created", TypeName = "datetime")]
         public DateTime? DateCreated { get; set; }
-
-        [Column("date_modified", TypeName = "datetime")]
+        [Column("date_updated", TypeName = "datetime")]
         public DateTime? DateUpdated { get; set; }
 
         [ForeignKey(nameof(FaceShapeId))]

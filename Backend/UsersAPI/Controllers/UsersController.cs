@@ -25,13 +25,13 @@ namespace UsersAPI.Controllers
     [Route("users")]
     public class UsersController : ControllerBase
     {
-        private readonly hair_project_dbContext _context;
+        private readonly hairdressing_project_dbContext _context;
         private readonly IUsersContext _usersContext;
         private readonly IAuthorizationService _authorizationService;
         private readonly IAuthenticationService _authenticationService;
         private readonly IEmailService _emailService;
 
-        public UsersController(hair_project_dbContext context,
+        public UsersController(hairdressing_project_dbContext context,
             IAuthenticationService authenticationService,
             IAuthorizationService authorizationService,
             IEmailService emailService,
@@ -54,7 +54,7 @@ namespace UsersAPI.Controllers
             [FromQuery(Name = "search")] string search = ""
             )
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -84,7 +84,7 @@ namespace UsersAPI.Controllers
         [HttpGet("count")]
         public async Task<ActionResult<int>> GetUsersCount([FromQuery(Name = "search")] string search = "")
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -115,12 +115,12 @@ namespace UsersAPI.Controllers
         [HttpGet("{id:long}")]
         public async Task<ActionResult<Users>> GetUser(ulong id)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var users = await _context.Users.Where(u => u.Id == id).Include(u => u.UserFeatures).ToListAsync();
+            var users = await _context.Users.Where(u => u.Id == id).ToListAsync();
 
             if (users.Count < 1)
             {
@@ -194,7 +194,7 @@ namespace UsersAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsers(ulong id, [FromBody] UpdatedUser user)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -316,7 +316,7 @@ namespace UsersAPI.Controllers
         [HttpPut("{id:long}/change_password")]
         public async Task<IActionResult> SetNewPassword(ulong id, [FromBody]ValidatedChangeUserPasswordModel user)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -365,7 +365,7 @@ namespace UsersAPI.Controllers
         [HttpPut("{id}/change_role")]
         public async Task<IActionResult> ChangeUserRole(ulong id, [FromBody] Models.Validation.ValidatedUserRoleModel user)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -411,7 +411,7 @@ namespace UsersAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Users>> PostUsers([FromBody] SignUpUser user)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -544,7 +544,7 @@ namespace UsersAPI.Controllers
             }
 
             // Return 200 OK with token in cookie
-            var existingUser = await _context.Users.Where(u => u.Id == authenticatedUser.Id).Include(u => u.UserFeatures).FirstOrDefaultAsync();
+            var existingUser = await _context.Users.Where(u => u.Id == authenticatedUser.Id).FirstOrDefaultAsync();
 
             authenticatedUser.BaseUser = existingUser;
 
@@ -559,7 +559,7 @@ namespace UsersAPI.Controllers
         [HttpGet("authenticate")]
         public async Task<IActionResult> AuthenticateUser()
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -636,7 +636,7 @@ HairdressingProject Admin.
         [HttpDelete("{id}")]
         public async Task<ActionResult<Users>> DeleteUsers(ulong id)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }

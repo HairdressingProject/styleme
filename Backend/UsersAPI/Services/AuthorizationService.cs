@@ -9,26 +9,41 @@ namespace UsersAPI.Services
 {
     public interface IAuthorizationService
     {
-        string GetAuthCookie(HttpRequest request);
+        string GetAuthToken(HttpRequest request);
         void SetAuthCookie(HttpRequest request, HttpResponse response, string token);
-        bool ValidateJWTCookie(HttpRequest request);
+        bool ValidateJWTToken(HttpRequest request);
         Task<bool> IsAdminOrDeveloper(HttpRequest request);
     }
 
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly hair_project_dbContext _context;
+        private readonly hairdressing_project_dbContext _context;
 
-        public AuthorizationService(IAuthenticationService authenticationService, hair_project_dbContext context)
+        public AuthorizationService(IAuthenticationService authenticationService, hairdressing_project_dbContext context)
         {
             _authenticationService = authenticationService;
             _context = context;
         }
 
-        public string GetAuthCookie(HttpRequest request)
+        public string GetAuthToken(HttpRequest request)
         {
-            return request.Cookies["auth"];
+            if (request.Cookies["auth"] != null)
+            {
+                return request.Cookies["auth"];
+            }
+            
+            if (request.Headers.ContainsKey("Authorization"))
+            {
+                if (request.Headers["Authorization"].ToString().StartsWith("Bearer "))
+                {
+                    return request.Headers["Authorization"].ToString().Substring(7);
+                }
+
+                return request.Headers["Authorization"].ToString();
+            }
+
+            return null;
         }
 
         public void SetAuthCookie(HttpRequest request, HttpResponse response, string token)
@@ -56,17 +71,17 @@ namespace UsersAPI.Services
             response.Headers.Append("Access-Control-Allow-Origin", origin);
         }
 
-        public bool ValidateJWTCookie(HttpRequest request)
+        public bool ValidateJWTToken(HttpRequest request)
         {
-            var token = GetAuthCookie(request);
+            var token = GetAuthToken(request);
             return _authenticationService.ValidateUserToken(token);
         }
 
         public async Task<bool> IsAdminOrDeveloper(HttpRequest request)
         {
-            if (ValidateJWTCookie(request))
+            if (ValidateJWTToken(request))
             {
-                var authCookie = GetAuthCookie(request);
+                var authCookie = GetAuthToken(request);
                 string id = _authenticationService.GetUserIdFromToken(authCookie);
 
                 if (ulong.TryParse(id, out ulong idParsed))
