@@ -17,3 +17,9 @@ class HistoryActions:
         db.commit()
         db.refresh(db_history)
         return db_history
+
+    def read_history_by_id(self, db: Session, original_picture_id):
+        return db.query(History).filter(History.original_picture_id == original_picture_id).first()
+
+    def change_hair_colour(self, db: Session, picture_id, colour_id):
+        return db.query(History).update().where(original_picture_id=picture_id).values(hair_colour_id=colour_id)
