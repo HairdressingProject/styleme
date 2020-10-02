@@ -28,7 +28,22 @@ namespace UsersAPI.Services
 
         public string GetAuthToken(HttpRequest request)
         {
-            return request.Cookies["auth"] ?? request.Headers["Authorization"];
+            if (request.Cookies["auth"] != null)
+            {
+                return request.Cookies["auth"];
+            }
+            
+            if (request.Headers.ContainsKey("Authorization"))
+            {
+                if (request.Headers["Authorization"].ToString().StartsWith("Bearer "))
+                {
+                    return request.Headers["Authorization"].ToString().Substring(7);
+                }
+
+                return request.Headers["Authorization"].ToString();
+            }
+
+            return null;
         }
 
         public void SetAuthCookie(HttpRequest request, HttpResponse response, string token)

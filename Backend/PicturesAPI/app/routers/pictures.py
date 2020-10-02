@@ -10,6 +10,7 @@ router = APIRouter()
 picture_service = services.PictureService()
 picture_actions = actions.PictureActions()
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -20,7 +21,6 @@ def get_db():
 
 @router.post("/pictures", status_code=status.HTTP_201_CREATED)
 async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
-
     save_path = PICTURE_UPLOAD_FOLDER
 
     file_name = picture_service.save_picture(file, save_path)
@@ -43,7 +43,6 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             print(face_shape, "face_shape result")
             print(type(face_shape))
 
-
             new_picture = models.Picture(file_name=picture_info[1], file_path=picture_info[0],
                                          file_size=picture_info[2], height=picture_info[3], width=picture_info[4])
 
@@ -61,12 +60,12 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             user_id = 1
 
             # ToDo: redirect to POST /history/face_shape ?
-            new_history = models.History(picture_id=orig_pic.id, original_picture_id=orig_pic.id, face_shape_id=face_shape_id, user_id=user_id)
+            new_history = models.History(picture_id=orig_pic.id, original_picture_id=orig_pic.id,
+                                         face_shape_id=face_shape_id, user_id=user_id)
             print(new_history)
             print(new_history.picture_id)
             history_actions.add_history(db=db, history=new_history)
             print(new_history)
-
 
             return face_shape[0]
     else:
@@ -91,8 +90,10 @@ async def change_hair_colour(picture_id: int, colour: str, db: Session = Depends
     print(selected_picture.file_name)
     print(selected_picture.file_path)
 
-    picture_service.change_hair_colour(file_name=selected_picture.file_name, selected_colour=colour, file_path=selected_picture.file_path)
+    picture_service.change_hair_colour(file_name=selected_picture.file_name, selected_colour=colour,
+                                       file_path=selected_picture.file_path)
     # return picture_actions.read_picture_by_id(db, picture_id=picture_id)
+
 
 @router.get("/pictures/{user_picture_id}/change_hairstyle/{model_picture_id}")
 async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
@@ -101,13 +102,10 @@ async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Sess
 
     picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
 
+
 @router.get("/pictures_str/{user_picture_id}/change_hairstyle/{model_picture_id}")
 async def change_hairstyle_str(user_picture_id: str, model_picture_id: str, db: Session = Depends(get_db)):
     # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
     # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
 
     picture_service.change_hairstyle_str(user_picture=user_picture_id, model_picture=model_picture_id)
-
-
-
-

@@ -204,33 +204,40 @@ namespace UsersAPI
                 ctx => !WhitelistedRoutes.Any(r => ctx.Request.Path.Value.Contains(r)),
                 builder => {
                     builder.Use(async (ctx, next) => {
-                        string authToken = ctx.Request.Cookies["auth"] ?? ctx.Request.Headers["Authorization"];
-                        if (authToken != null && authenticationService.ValidateUserToken(authToken)) {
-                            string userId = authenticationService.GetUserIdFromToken(authToken);
-                            if (ulong.TryParse(userId, out ulong id)) {
-                                using (var serviceScope = app.ApplicationServices.CreateScope()) {
-                                    var services = serviceScope.ServiceProvider;
+                        using (var servicesScope = app.ApplicationServices.CreateScope())
+                        {
+                            var services = servicesScope.ServiceProvider;
+                            var _authService = services.GetService<IAuthorizationService>();
+                            string authToken = _authService.GetAuthToken(ctx.Request);
+
+                            if (authToken != null && authenticationService.ValidateUserToken(authToken))
+                            {
+                                string userId = authenticationService.GetUserIdFromToken(authToken);
+                                if (ulong.TryParse(userId, out ulong id))
+                                {
                                     var _dbCtx = services.GetService<hairdressing_project_dbContext>();
 
-                                    var user = await _dbCtx.Users.FindAsync(id);    
+                                    var user = await _dbCtx.Users.FindAsync(id);
 
-                                    if (user != null && user.UserRole == "admin") {
+                                    if (user != null && user.UserRole == "admin")
+                                    {
                                         await next();
                                         return;
                                     }
                                 }
                             }
-                        }
-                        ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        ctx.Response.ContentType = "application/json";
-                        var response = new JsonResponse
-                        {
-                            Message = "You do not have permission to access this data",
-                            Status = 401
-                        };
+                            ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            ctx.Response.ContentType = "application/json";
+                            var response = new JsonResponse
+                            {
+                                Message = "You do not have permission to access this data",
+                                Status = 401
+                            };
 
-                        var jsonResponse = JsonSerializer.Serialize(response);
-                        await ctx.Response.WriteAsync(jsonResponse);
+                            var jsonResponse = JsonSerializer.Serialize(response);
+                            await ctx.Response.WriteAsync(jsonResponse);
+                        }
+                        
                     });
                 }
             );
