@@ -21,7 +21,7 @@ After all collections have been successfully imported, you can now explore all r
 ### 2 - Setting up the database
 From the [Database](/Database "Database") folder, run:
 ```
-mysql -u root -p < database_v.2.1.sql
+mysql -u root -p < database_v3.sql
 ```
 
 ### 3 - Generating pepper
@@ -92,8 +92,6 @@ After you have set up your request, simply click __Send__.
 
 ### Extra - Pagination & Searching
 The "Colours" folder in the project's main Postman-collection outlines how pagination & searching work requests work in the project's API.
-
-<sup> Private GitHub Source: https://github.com/HairdressingProject/Admin-Portal-v2/edit/master/Backend/README.md </sup>
 
 
 

@@ -511,3 +511,6 @@ appsettings.Production.json
 # Secrets
 secrets/
 secret_constants.php
+
+# Backend folder (for gh-pages branch)
+Backend/

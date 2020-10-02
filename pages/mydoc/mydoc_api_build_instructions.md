@@ -76,7 +76,7 @@ We are going to use the `dotnet ef dbcontext scaffold` [command](https://docs.mi
 
 
 ```bash
-dotnet ef dbcontext scaffold "Server=localhost;Database=hair_project_db;User=dev_admin;Password=administrator;TreatTinyAsBoolean=true;" "Pomelo.EntityFrameworkCore.MySql" -o Models
+dotnet ef dbcontext scaffold "Server=localhost;Database=hairdressing_project_db;User=dev_admin;Password=administrator;TreatTinyAsBoolean=true;" "Pomelo.EntityFrameworkCore.MySql" -o GeneratedModels -d
 ```
 
 This create the Models folder with all classes and the database context.
