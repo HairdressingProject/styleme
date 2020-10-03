@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.orm import Session
 
 from app import models
@@ -22,6 +24,11 @@ class PictureActions:
 
     def read_pictures(self, db: Session, skip: int = 0, limit: int = 100):
         return db.query(Picture).offset(skip).limit(limit).all()
+
+    def read_models(self, db: Session, skip: int = 0, limit: int = 100) -> List[models.Picture]:
+        search_results = db.query(models.Picture).filter(models.Picture.file_path.ilike("%pictures/models%")).offset(skip).limit(
+            limit).all()
+        return search_results
 
     def delete_picture(self, db: Session, picture_id: int) -> models.Picture:
         """

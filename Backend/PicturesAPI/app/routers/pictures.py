@@ -94,6 +94,11 @@ def read_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     pictures = picture_actions.read_pictures(db, skip=skip, limit=limit)
     return pictures
 
+@router.get("/models/", response_model=List[schemas.Picture])
+def read_model_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    pictures = picture_actions.read_models(db, skip=skip, limit=limit)
+    return pictures
+
 # @router.post("/pictures/change_face_shape")
 # def change_face_shape(picture_id: int, new_face_shape: str, db: Session = Depends(get_db())):
 #     selected_picture_history = history_actions.rea
