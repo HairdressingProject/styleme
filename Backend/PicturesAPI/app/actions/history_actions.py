@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Union
 
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -84,17 +85,46 @@ class HistoryActions:
 
         return history_entry
 
-    def delete_history(self, db: Session, history_id: int) -> models.History:
+    def add_face_shape(self, db: Session,
+                       history_record_with_new_face_shape: schemas.HistoryAddFaceShape) -> Union[models.History, None]:
         """
-        Deletes a history record from the database
+        Similar to add_history, this method adds a new history record to the database based on the latest one,
+        with a new face_shape_id
         :param db: db session instance
-        :param history_id: ID of the history entry to be updated
-        :return: History instance
+        :param history_record_with_new_face_shape: history
+        record with user_id and face_shape_id to be added
+        :return: new history record with updated face_shape_id or
+        None if there are no history entries associated with this user
         """
-        history_entry: models.History = db.query(models.History).filter(models.History.id == history_id).first()
+        latest_history_entry: models.History = db.query(models.History).filter(
+            models.History.user_id == history_record_with_new_face_shape.user_id).order_by(
+            desc(models.History.id)).first()
 
-        if history_entry is not None:
-            db.delete(history_entry)
+        if latest_history_entry is not None:
+            new_history_entry = models.History(picture_id=latest_history_entry.picture_id,
+                                               original_picture_id=latest_history_entry.original_picture_id,
+                                               hair_colour_id=latest_history_entry.hair_colour_id,
+                                               hair_style_id=latest_history_entry.hair_style_id,
+                                               face_shape_id=history_record_with_new_face_shape.face_shape_id,
+                                               user_id=latest_history_entry.user_id)
+            db.add(new_history_entry)
             db.commit()
+            db.refresh(new_history_entry)
+            return new_history_entry
+        return None
 
-        return history_entry
+
+def delete_history(self, db: Session, history_id: int) -> models.History:
+    """
+    Deletes a history record from the database
+    :param db: db session instance
+    :param history_id: ID of the history entry to be updated
+    :return: History instance
+    """
+    history_entry: models.History = db.query(models.History).filter(models.History.id == history_id).first()
+
+    if history_entry is not None:
+        db.delete(history_entry)
+        db.commit()
+
+    return history_entry

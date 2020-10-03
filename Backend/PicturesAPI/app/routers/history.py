@@ -75,6 +75,42 @@ async def add_history(history: schemas.HistoryCreate, db: Session = Depends(get_
     return history_actions.add_history(db=db, history=history)
 
 
+@router.post("/add_face_shape", status_code=status.HTTP_201_CREATED)
+async def add_face_shape(history_record_with_new_face_shape: schemas.HistoryAddFaceShape,
+                         response: Response,
+                         db: Session = Depends(get_db)):
+    """
+    POST /history/add_face_shape
+    This route is similar to POST /history, except that it only takes face_shape_id into consideration.
+    The new history record will be based on the latest one, with the new face shape added to face_shape_id
+    :param db: db session instance
+    :param response: response object
+    :param history_record_with_new_face_shape: A history record that only contains face_shape_id
+    """
+    face_shape_entry = db.query(models.FaceShape).filter(
+        models.FaceShape.id == history_record_with_new_face_shape.face_shape_id).first()
+
+    user_entry = db.query(models.User).filter(models.User.id == history_record_with_new_face_shape.user_id).first()
+
+    if face_shape_entry is None or user_entry is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "message": "Face shape or user entry not found"
+        }
+
+    new_history_record = history_actions.add_face_shape(db=db,
+                                                        history_record_with_new_face_shape=history_record_with_new_face_shape)
+
+    if new_history_record is None:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "message": "There is no previous history record associated with this user. Please upload a picture first "
+                       "and then update your face shape."
+        }
+
+    return new_history_record
+
+
 @router.put("/{history_id}", status_code=status.HTTP_200_OK)
 async def update_history(history_id: int, history: schemas.HistoryUpdate, response: Response,
                          db: Session = Depends(get_db)):
