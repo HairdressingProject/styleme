@@ -293,7 +293,10 @@ class PictureService:
 
         request_obj = hair_transfer_request(user_picture, model_picture)
 
-        perform_swap(request_obj)
+        result = perform_swap(request_obj)
+        picture_info = PictureService.get_picture_info(self, result[0], result[1])
+        print(picture_info, "picture info")
+        return picture_info
 
     def change_hairstyle_str(self, user_picture: str, model_picture: str):
 

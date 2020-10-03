@@ -97,24 +97,22 @@ def perform_swap(request_obj):
     split_uploader = uploader.split('/')
 
     if len(split_username) == 3 & len(split_uploader) == 3:
-        new_file_name = split_username[2].split('.')[0] + '_' + split_uploader[2].split('.')[0]
+        new_file_name = split_username[2].split('.')[0] + '_' + split_uploader[2].split('.')[0] + '.jpg'
     else:
-        new_file_name = username.split('.')[0] + '_' + uploader.split('.')[0]
-
+        new_file_name = username.split('.')[0] + '_' + uploader.split('.')[0] + '.jpg'
 
     # save_dir = os.path.dirname(__file__) + '/pictures/trash/hairswaps/'
     save_dir = HAIR_STYLE_RESULTS_PATH
     pictures_dir = PICTURE_UPLOAD_FOLDER
     print(save_dir)
-    index = int(count(save_dir)/3) + 1
+    index = int(count(save_dir) / 3) + 1
     print(index)
     hair_model_path = pictures_dir + str(uploader)
     print(hair_model_path, "hair model path")
     selfie_path = pictures_dir + str(username)
     print(selfie_path, "Selfie path")
-    swap_path = save_dir + new_file_name + '.jpg'
+    swap_path = save_dir + new_file_name
     print(swap_path, "swap path")
-
 
     selfie = request_obj.files['selfie']
     # print(selfie)
@@ -148,7 +146,8 @@ def perform_swap(request_obj):
         os.remove(swap_path)
     cv2.imwrite(swap_path, new_look)
 
-    return swap_path
+
+    return [save_dir, new_file_name]
 
 
 def increment_rScore(request_obj):

@@ -148,7 +148,25 @@ async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Sess
     user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
     model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
 
-    picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
+    # apply hair transfer
+    picture_info = picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
+    print(picture_info)
+
+    # create new picture and add to db
+    new_picture = models.Picture(file_name=picture_info[1], file_path=picture_info[0],
+                                 file_size=picture_info[2], height=picture_info[3], width=picture_info[4])
+
+    mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
+
+    # fake user_id
+    user_id = 1
+
+    # create new history record and add to db
+    # ToDo: fix history logic
+    new_history = models.History(picture_id=mod_pic.id, original_picture_id=user_picture.id, hair_style_id=1,
+                                 user_id=user_id)
+
+    history_actions.add_history(db=db, history=new_history)
 
 @router.get("/pictures_str/{user_picture_id}/change_hairstyle/{model_picture_id}")
 async def change_hairstyle_str(user_picture_id: str, model_picture_id: str, db: Session = Depends(get_db)):
