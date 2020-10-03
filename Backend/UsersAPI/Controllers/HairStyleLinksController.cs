@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2_1;
+using UsersAPI.Models;
 
-namespace AdminApi.Controllers
+namespace UsersAPI.Controllers
 {
     /**
      * HairStyleLinksController
@@ -17,10 +17,10 @@ namespace AdminApi.Controllers
     [ApiController]
     public class HairStyleLinksController : ControllerBase
     {
-        private readonly hair_project_dbContext _context;
+        private readonly hairdressing_project_dbContext _context;
         private readonly Services.IAuthorizationService _authorizationService;
 
-        public HairStyleLinksController(hair_project_dbContext context, Services.IAuthorizationService authorizationService)
+        public HairStyleLinksController(hairdressing_project_dbContext context, Services.IAuthorizationService authorizationService)
         {
             _context = context;
             _authorizationService = authorizationService;
@@ -34,7 +34,7 @@ namespace AdminApi.Controllers
             [FromQuery(Name = "search")] string search = ""
             )
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -77,7 +77,7 @@ namespace AdminApi.Controllers
         [HttpGet("count")]
         public async Task<ActionResult<int>> GetHairStyleLinksCount([FromQuery(Name = "search")] string search = "")
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -111,7 +111,7 @@ namespace AdminApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<HairStyleLinks>> GetHairStyleLinks(ulong id)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -130,7 +130,7 @@ namespace AdminApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHairStyleLinks(ulong id, [FromBody] HairStyleLinks hairStyleLinks)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -172,7 +172,7 @@ namespace AdminApi.Controllers
         [HttpPost]
         public async Task<ActionResult<HairStyleLinks>> PostHairStyleLinks([FromBody] HairStyleLinks hairStyleLinks)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -194,7 +194,7 @@ namespace AdminApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<HairStyleLinks>> DeleteHairStyleLinks(ulong id)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }

@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "AdminApi": {
+    "UsersAPI": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api",

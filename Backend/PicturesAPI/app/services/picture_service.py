@@ -2,7 +2,9 @@ import os
 import hashlib
 from datetime import datetime
 import face_recognition
-from app.settings import PICTURE_UPLOAD_FOLDER, PICTURE_PROCESSED_FOLDER, FACE_SHAPE_RESULTS_PATH
+from app.models import Picture
+from app.settings import PICTURE_UPLOAD_FOLDER, PICTURE_PROCESSED_FOLDER, FACE_SHAPE_RESULTS_PATH, \
+    HAIR_COLOUR_RESULTS_PATH
 import pathlib
 import shutil
 import cv2
@@ -12,6 +14,8 @@ from app.libraries.fmPyTorch.makeup import hair
 from app.libraries.Hair_Style_Recommendation.functions_only_save import make_face_df_save, find_face_shape
 import numpy as np
 import pandas as pd
+
+from app.libraries.HairTransfer.QuantumProcessor import perform_swap
 
 
 class PictureService:
@@ -105,7 +109,7 @@ class PictureService:
         :param save_path: str: (optional) 'foo/bar', DEFAULT=PICTURE_UPLOAD_FOLDER
         :return: str: Face shape or Error message
         """
-        # save_path = FACE_SHAPE_RESULTS_PATH
+        save_path = FACE_SHAPE_RESULTS_PATH
 
         df = pd.DataFrame(
             columns=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17',
@@ -140,14 +144,15 @@ class PictureService:
 
         # generate data frame with the new picture information
         file_url = file_path + file_name
-        make_face_df_save(file_url, file_num, df)
+        # make_face_df_save(file_url, file_num, df)
+        make_face_df_save(file_path, file_name, save_path, file_num, df)
 
         # run model to predict the face shape
         face_shape = find_face_shape(df, file_num)
 
         return (face_shape)
 
-    def crop_picture(self, file_url):
+    def crop_picture(self, file_path, file_name, save_path):
         """
         crop a picture, using fmPytorch library
         :param file_url: str: complete path to file ('foo/bar.jpg')
@@ -161,13 +166,13 @@ class PictureService:
 
         img_size = 512
         pre = Preprocess()
-        img = cv2.cvtColor(cv2.imread(file_url), cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(cv2.imread(file_path + file_name), cv2.COLOR_BGR2RGB)
         face_rgba = pre.process(img)
         face_rgba = cv2.resize(face_rgba, (int(img_size), int(img_size)), interpolation=cv2.INTER_AREA)
         face = face_rgba[:, :, : 3].copy()
         face_crop = face.astype(np.uint8)
         picture_crop = cv2.cvtColor(face_crop, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(file_url + "_NEW_cropped.jpg", picture_crop)
+        cv2.imwrite(save_path + file_name + "_cropped.jpg", picture_crop)
 
     def crop_picture_data(self, file_name):
 
@@ -185,7 +190,7 @@ class PictureService:
         # ToDo: handle exceptions
         os.remove(path + file_name)
 
-    def get_picture_info(self, file_name, path):
+    def get_picture_info(self, path, file_name):
         """
         Retrieve information about file
         :param file_name:
@@ -217,7 +222,7 @@ class PictureService:
 
         return (path, file_name, file_size, height, width, created_at)
 
-    def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER):
+    def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER, save_path=HAIR_COLOUR_RESULTS_PATH):
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
         cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
 
@@ -245,8 +250,8 @@ class PictureService:
         parsing = evaluate(portrait, cp)
         part = [table['hair']]
 
-        colours = {"green": [25, 250, 32], "yellow": [30, 252, 249], "orange": [30, 108, 252], "burgundy": [32, 0, 128], "ruby": [95, 17, 224], "coral": [80, 127, 255], "violet": [211, 0, 148]}
-
+        colours = {"green": [25, 250, 32], "yellow": [30, 252, 249], "orange": [30, 108, 252], "burgundy": [32, 0, 128],
+                   "ruby": [95, 17, 224], "coral": [80, 127, 255], "violet": [211, 0, 148]}
 
         # blonde : [123, 201, 227],
         # DarkRed : [0, 0, 139],
@@ -260,12 +265,44 @@ class PictureService:
         # Chocolate : [19, 69, 139]
 
         image = hair(portrait, parsing, part, colours[str(selected_colour)])
-        cv2.imwrite('pictures/hair_colour/makeup.png', image)
 
-    def change_hairstyle(self, user_picture_id: int, model_picture_id: int):
-        model_picture_path='path'
-        model_picture_file_name='file_name'
+        # cv2.imwrite('pictures/hair_colour/makeup.png', image)
+        new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + '.' + file_name.split('.')[1]
+        full_path = save_path + new_file_name
+        print(full_path, "full path")
+        cv2.imwrite(full_path, image)
+        picture_info = PictureService.get_picture_info(self, save_path, new_file_name)
+        print(picture_info)
 
-        user_picture_path='path (history)'
-        user_pciture_file_name='file_na,e'
+        return picture_info
 
+
+    def change_hairstyle(self, user_picture: Picture, model_picture: Picture):
+
+        class hair_transfer_request(object):
+            def __init__(self, user_picture, model_picture):
+                self.selfie = cv2.imread(user_picture.file_path + user_picture.file_name)
+                self.hair_model = cv2.imread(model_picture.file_path + model_picture.file_name)
+                self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
+
+                self.form = {'username': user_picture.file_path + user_picture.file_name,
+                             'uploader': model_picture.file_path + model_picture.file_name}
+
+        request_obj = hair_transfer_request(user_picture, model_picture)
+
+        perform_swap(request_obj)
+
+    def change_hairstyle_str(self, user_picture: str, model_picture: str):
+
+        class hair_transfer_request(object):
+            def __init__(self, user_picture, model_picture):
+                print(user_picture)
+                print(model_picture)
+                self.selfie = cv2.imread('pictures/original/' + user_picture)
+                self.hair_model = cv2.imread('pictures/original/' + model_picture)
+                self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
+                self.form = {'username': user_picture, 'uploader': model_picture}
+
+        request_obj = hair_transfer_request(user_picture, model_picture)
+
+        perform_swap(request_obj)

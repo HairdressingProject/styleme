@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using MimeKit;
 using System;
 
-namespace AdminApi.Services
+namespace UsersAPI.Services
 {
     public interface IEmailService
     {

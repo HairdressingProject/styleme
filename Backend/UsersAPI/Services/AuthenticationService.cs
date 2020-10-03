@@ -5,18 +5,18 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using AdminApi.Entities;
-using AdminApi.Helpers;
+using UsersAPI.Entities;
+using UsersAPI.Helpers;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2_1;
+using UsersAPI.Models;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
-using AdminApi.Services.Context;
+using UsersAPI.Services.Context;
 
-namespace AdminApi.Services
+namespace UsersAPI.Services
 {
     public interface IAuthenticationService
     {
@@ -31,14 +31,14 @@ namespace AdminApi.Services
 
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly hair_project_dbContext _context;
+        private readonly hairdressing_project_dbContext _context;
         private readonly IUsersContext _usersContext;
         private readonly AppSettings _appSettings;
         private readonly IConfiguration _configuration;
 
         public AuthenticationService(
             IOptions<AppSettings> appSettings, 
-            hair_project_dbContext context, 
+            hairdressing_project_dbContext context, 
             IConfiguration configuration
             )
         {

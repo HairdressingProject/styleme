@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminApi.Models_v2_1;
+using UsersAPI.Models;
 using Microsoft.AspNetCore.Cors;
 
-namespace AdminApi.Controllers
+namespace UsersAPI.Controllers
 {
     /**
-     * FaceShapesControllerC:\Users\Stefan\Desktop\Complex UX\Admin-Portal-v2\Backend\AdminApi\Controllers\FaceShapesController.cs
+     * FaceShapesControllerC:\Users\Stefan\Desktop\Complex UX\Admin-Portal-v2\Backend\UsersAPI\Controllers\FaceShapesController.cs
      * This controller handles all routes in the format: "/face_shapes/"
      * 
     **/
@@ -18,10 +18,10 @@ namespace AdminApi.Controllers
     [ApiController]
     public class FaceShapesController : ControllerBase
     {
-        private readonly hair_project_dbContext _context;
+        private readonly hairdressing_project_dbContext _context;
         private readonly Services.IAuthorizationService _authorizationService;
 
-        public FaceShapesController(hair_project_dbContext context, Services.IAuthorizationService authorizationService)
+        public FaceShapesController(hairdressing_project_dbContext context, Services.IAuthorizationService authorizationService)
         {
             _context = context;
             _authorizationService = authorizationService;
@@ -35,7 +35,7 @@ namespace AdminApi.Controllers
             [FromQuery(Name = "search")] string search = ""
             )
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -70,7 +70,7 @@ namespace AdminApi.Controllers
         [HttpGet("count")]
         public async Task<ActionResult<int>> GetFaceShapesCount([FromQuery(Name = "search")] string search = "")
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -99,7 +99,7 @@ namespace AdminApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FaceShapes>> GetFaceShapes(ulong id)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -118,7 +118,7 @@ namespace AdminApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFaceShapes(ulong id, [FromBody] FaceShapes faceShapes)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -151,7 +151,7 @@ namespace AdminApi.Controllers
         [HttpPost]
         public async Task<ActionResult<FaceShapes>> PostFaceShapes([FromBody] FaceShapes faceShapes)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
@@ -166,7 +166,7 @@ namespace AdminApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<FaceShapes>> DeleteFaceShapes(ulong id)
         {
-            if (!_authorizationService.ValidateJWTCookie(Request))
+            if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }

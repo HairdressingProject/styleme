@@ -6,22 +6,38 @@ File: history.py
 """
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, constr
+
+from pydantic import BaseModel
 
 
 class HistoryBase(BaseModel):
     id: int
     picture_id: int
-    original_picture_id: int
-    previous_picture_id: int
-    hair_colour_id: int
-    hair_style_id: int
-    face_shape_id: int
+    original_picture_id: Optional[int] = None
+    previous_picture_id: Optional[int] = None
+    hair_colour_id: Optional[int] = None
+    hair_style_id: Optional[int] = None
+    face_shape_id: Optional[int] = None
     user_id: int
 
 
-class HistoryCreateUpdate(HistoryBase):
+class HistoryCreate(BaseModel):
+    picture_id: int
+    original_picture_id: Optional[int] = None
+    previous_picture_id: Optional[int] = None
+    hair_colour_id: Optional[int] = None
+    hair_style_id: Optional[int] = None
+    face_shape_id: Optional[int] = None
+    user_id: int
+
+
+class HistoryUpdate(HistoryBase):
     pass
+
+
+class HistoryAddFaceShape(BaseModel):
+    user_id: int
+    face_shape_id: int
 
 
 class History(HistoryBase):

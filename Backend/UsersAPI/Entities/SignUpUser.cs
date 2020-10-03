@@ -1,10 +1,10 @@
-﻿using AdminApi.Helpers;
-using AdminApi.Validation;
+﻿using UsersAPI.Helpers;
+using UsersAPI.Models.Validation;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AdminApi.Entities
+namespace UsersAPI.Entities
 {
     public class SignUpUser
     {

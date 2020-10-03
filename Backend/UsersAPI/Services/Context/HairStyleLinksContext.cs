@@ -1,16 +1,16 @@
-﻿using AdminApi.Helpers.Exceptions;
-using AdminApi.Models_v2_1;
+﻿using UsersAPI.Helpers.Exceptions;
+using UsersAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AdminApi.Services.Context
+namespace UsersAPI.Services.Context
 {
     public class HairStyleLinksContext : IHairStyleLinksContext
     {
-        private readonly hair_project_dbContext _context;
+        private readonly hairdressing_project_dbContext _context;
         private readonly IAuthenticationService _authenticationService;
         public List<HairStyleLinks> HairStyleLinks { get; set; }
 
@@ -28,7 +28,7 @@ namespace AdminApi.Services.Context
         /// </summary>
         /// <param name="context">EF's database context</param>
         /// <param name="authenticationService">Authentication service for users</param>
-        public HairStyleLinksContext(hair_project_dbContext context, IAuthenticationService authenticationService)
+        public HairStyleLinksContext(hairdressing_project_dbContext context, IAuthenticationService authenticationService)
         {
             _context = context;
             _authenticationService = authenticationService;
