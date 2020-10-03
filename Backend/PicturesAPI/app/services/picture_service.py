@@ -164,6 +164,9 @@ class PictureService:
         # # path_to_upload = processed_path + file_name
         # path_to_upload = original_path + file_name + "_NEW_cropped.jpg"
 
+        new_file_name = file_name.split('.')[0]
+        new_file_extension = file_name.split('.')[1]
+
         img_size = 512
         pre = Preprocess()
         img = cv2.cvtColor(cv2.imread(file_path + file_name), cv2.COLOR_BGR2RGB)
@@ -172,7 +175,7 @@ class PictureService:
         face = face_rgba[:, :, : 3].copy()
         face_crop = face.astype(np.uint8)
         picture_crop = cv2.cvtColor(face_crop, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(save_path + file_name + "_cropped.jpg", picture_crop)
+        cv2.imwrite(save_path + new_file_name + "_cropped." + new_file_extension, picture_crop)
 
     def crop_picture_data(self, file_name):
 
