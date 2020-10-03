@@ -298,8 +298,8 @@ class PictureService:
             def __init__(self, user_picture, model_picture):
                 print(user_picture)
                 print(model_picture)
-                self.selfie = cv2.imread('pictures/original/' + user_picture)
-                self.hair_model = cv2.imread('pictures/original/' + model_picture)
+                self.selfie = cv2.imread(PICTURE_UPLOAD_FOLDER + user_picture)
+                self.hair_model = cv2.imread(PICTURE_UPLOAD_FOLDER + model_picture)
                 self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
                 self.form = {'username': user_picture, 'uploader': model_picture}
 

@@ -91,6 +91,17 @@ def perform_swap(request_obj):
     print(uploader, "uploader")
     print(username, "username")
 
+    # The new filename format is: '{user_picture_filename}_{model_picture_filename}.jpg'
+
+    split_username = username.split('/')
+    split_uploader = uploader.split('/')
+
+    if len(split_username) == 3 & len(split_uploader) == 3:
+        new_file_name = split_username[2].split('.')[0] + '_' + split_uploader[2].split('.')[0]
+    else:
+        new_file_name = username.split('.')[0] + '_' + uploader.split('.')[0]
+
+
     # save_dir = os.path.dirname(__file__) + '/pictures/trash/hairswaps/'
     save_dir = HAIR_STYLE_RESULTS_PATH
     pictures_dir = PICTURE_UPLOAD_FOLDER
@@ -101,7 +112,7 @@ def perform_swap(request_obj):
     print(hair_model_path, "hair model path")
     selfie_path = pictures_dir + str(username)
     print(selfie_path, "Selfie path")
-    swap_path = save_dir + 'result' + '.jpg'
+    swap_path = save_dir + new_file_name + '.jpg'
     print(swap_path, "swap path")
 
 
