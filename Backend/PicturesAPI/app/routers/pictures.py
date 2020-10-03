@@ -22,11 +22,8 @@ def get_db():
 
 
 @router.post("/pictures", status_code=status.HTTP_201_CREATED)
-async def upload_picture(is_model: bool, file: UploadFile = File(...), db: Session = Depends(get_db)):
-    if is_model is True:
-        save_path = MODEL_UPLOAD_FOLDER
-    else:
-        save_path = PICTURE_UPLOAD_FOLDER
+async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    save_path = PICTURE_UPLOAD_FOLDER
 
     print(save_path)
 
@@ -92,11 +89,6 @@ async def read_picture(picture_id: int, db: Session = Depends(get_db)):
 @router.get("/pictures/", response_model=List[schemas.Picture])
 def read_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     pictures = picture_actions.read_pictures(db, skip=skip, limit=limit)
-    return pictures
-
-@router.get("/models/", response_model=List[schemas.Picture])
-def read_model_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    pictures = picture_actions.read_models(db, skip=skip, limit=limit)
     return pictures
 
 # @router.post("/pictures/change_face_shape")
