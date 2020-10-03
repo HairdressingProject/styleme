@@ -135,8 +135,16 @@ def make_face_df_save(file_path, file_name, save_path, filenum, df):
         #     continue
         #crop_image.show()
         # -------- end of Original code --------
+        print(save_path+file_name+"_cropped.jpg")
+
+        new_file_name = file_name.split('.')[0]
+        new_file_extension = file_name.split('.')[1]
+
+        neww = save_path + new_file_name + "_cropped." + new_file_extension
+        print(neww)
         
-        nn = str(save_path + file_name)+"_cropped.jpg"
+        # nn = str(save_path + file_name)+"_cropped.jpg"
+        nn = str(save_path + new_file_name + "_cropped." + new_file_extension)
         pts = []
         face = 0
         image = face_recognition.load_image_file(nn)
@@ -195,10 +203,9 @@ def make_face_df_save(file_path, file_name, save_path, filenum, df):
 
             for facial_feature in facial_features2:
                     #d.line(face_landmarks[facial_feature], width=5)
-                    d.point(face_landmarks[facial_feature], fill = (255,255,255))
-            
-            
-            pil_image.save(str(save_path + file_name) + '__rotated_pts.jpg', 'JPEG', quality = 100)
+                    d.point(face_landmarks[facial_feature], fill=(255,255,255))
+
+            pil_image.save(str(save_path + file_name.split('.')[0]) + '_rotated_pts.jpg', 'JPEG', quality=100)
 
             # take_measurements width & height measurements
         msmt = []

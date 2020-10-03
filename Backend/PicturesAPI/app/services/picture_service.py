@@ -164,6 +164,9 @@ class PictureService:
         # # path_to_upload = processed_path + file_name
         # path_to_upload = original_path + file_name + "_NEW_cropped.jpg"
 
+        new_file_name = file_name.split('.')[0]
+        new_file_extension = file_name.split('.')[1]
+
         img_size = 512
         pre = Preprocess()
         img = cv2.cvtColor(cv2.imread(file_path + file_name), cv2.COLOR_BGR2RGB)
@@ -172,7 +175,7 @@ class PictureService:
         face = face_rgba[:, :, : 3].copy()
         face_crop = face.astype(np.uint8)
         picture_crop = cv2.cvtColor(face_crop, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(save_path + file_name + "_cropped.jpg", picture_crop)
+        cv2.imwrite(save_path + new_file_name + "_cropped." + new_file_extension, picture_crop)
 
     def crop_picture_data(self, file_name):
 
@@ -290,7 +293,10 @@ class PictureService:
 
         request_obj = hair_transfer_request(user_picture, model_picture)
 
-        perform_swap(request_obj)
+        result = perform_swap(request_obj)
+        picture_info = PictureService.get_picture_info(self, result[0], result[1])
+        print(picture_info, "picture info")
+        return picture_info
 
     def change_hairstyle_str(self, user_picture: str, model_picture: str):
 
@@ -298,8 +304,8 @@ class PictureService:
             def __init__(self, user_picture, model_picture):
                 print(user_picture)
                 print(model_picture)
-                self.selfie = cv2.imread('pictures/original/' + user_picture)
-                self.hair_model = cv2.imread('pictures/original/' + model_picture)
+                self.selfie = cv2.imread(PICTURE_UPLOAD_FOLDER + user_picture)
+                self.hair_model = cv2.imread(PICTURE_UPLOAD_FOLDER + model_picture)
                 self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
                 self.form = {'username': user_picture, 'uploader': model_picture}
 

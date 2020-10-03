@@ -1,10 +1,10 @@
 from typing import List
 
-from fastapi import APIRouter, File, Depends, UploadFile, status
+from fastapi import APIRouter, File, Depends, UploadFile, status, Response
 from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
-from app.settings import PICTURE_UPLOAD_FOLDER
+from app.settings import PICTURE_UPLOAD_FOLDER, MODEL_UPLOAD_FOLDER
 
 router = APIRouter()
 picture_service = services.PictureService()
@@ -22,8 +22,13 @@ def get_db():
 
 
 @router.post("/pictures", status_code=status.HTTP_201_CREATED)
-async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    save_path = PICTURE_UPLOAD_FOLDER
+async def upload_picture(is_model: bool, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    if is_model is True:
+        save_path = MODEL_UPLOAD_FOLDER
+    else:
+        save_path = PICTURE_UPLOAD_FOLDER
+
+    print(save_path)
 
     file_name = picture_service.save_picture(file, save_path)
     face_detected = picture_service.detect_face(file_name, save_path)
@@ -79,9 +84,19 @@ async def read_picture(picture_id: int, db: Session = Depends(get_db)):
     return picture_actions.read_picture_by_id(db, picture_id=picture_id)
 
 
+# @router.get("/pictures/{picture_filename}", response_model=schemas.Picture)
+# async def read_picture_by_filename(picture_filename: str, db: Session = Depends(get_db)):
+#     return picture_actions.read_picture_by_file_name(db, file_name=picture_filename)
+
+
 @router.get("/pictures/", response_model=List[schemas.Picture])
 def read_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     pictures = picture_actions.read_pictures(db, skip=skip, limit=limit)
+    return pictures
+
+@router.get("/models/", response_model=List[schemas.Picture])
+def read_model_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    pictures = picture_actions.read_models(db, skip=skip, limit=limit)
     return pictures
 
 # @router.post("/pictures/change_face_shape")
@@ -89,7 +104,7 @@ def read_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 #     selected_picture_history = history_actions.rea
 
 
-@router.get("/pictures/{picture_id}/hair_colour")
+@router.post("/pictures/{picture_id}/hair_colour")
 async def change_hair_colour(picture_id: int, colour: str, db: Session = Depends(get_db)):
     selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
     print(selected_picture.file_name)
@@ -143,34 +158,57 @@ async def change_hair_colour(picture_id: int, colour: str, db: Session = Depends
     # history_actions.change_hair_colour(db, picture_id=picture_id, colour_id=colour_id)
     # # return picture_actions.read_picture_by_id(db, picture_id=picture_id)
 
-@router.get("/pictures/{user_picture_id}/change_hairstyle/{model_picture_id}")
+@router.post("/pictures/{user_picture_id}/change_hairstyle/{model_picture_id}")
+async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
+    user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
+    model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
+
+    # apply hair transfer
+    picture_info = picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
+    print(picture_info)
+
+    # create new picture and add to db
+    new_picture = models.Picture(file_name=picture_info[1], file_path=picture_info[0],
+                                 file_size=picture_info[2], height=picture_info[3], width=picture_info[4])
+
+    mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
+
+    # fake user_id
+    user_id = 1
+
+    # create new history record and add to db
+    # ToDo: fix history logic
+    new_history = models.History(picture_id=mod_pic.id, original_picture_id=user_picture.id, hair_style_id=1,
+                                 user_id=user_id)
+
+    history_actions.add_history(db=db, history=new_history)
+
+
+@router.post("/pictures_str/{user_picture_file_name}/change_hairstyle/{model_picture_file_name}")
+async def change_hairstyle_str(user_picture_file_name: str, model_picture_file_name: str, db: Session = Depends(get_db)):
+    # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
+    # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
+
+    picture_service.change_hairstyle_str(user_picture=user_picture_file_name, model_picture=model_picture_file_name)
+
+
+@router.post("/pictures/{user_picture_id}/change_hairstyle/{model_picture_id}")
 async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
     user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
     model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
 
     picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
 
-@router.get("/pictures_str/{user_picture_id}/change_hairstyle/{model_picture_id}")
-async def change_hairstyle_str(user_picture_id: str, model_picture_id: str, db: Session = Depends(get_db)):
-    # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-    # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
 
-    picture_service.change_hairstyle_str(user_picture=user_picture_id, model_picture=model_picture_id)
+@router.delete("/pictures/{picture_id}", status_code=status.HTTP_200_OK)
+async def delete_picture(picture_id: int, response: Response, db: Session = Depends(get_db)):
+    """
+    DELETE /pictures/{picture_id}
+    :param db: db session instance
+    :param response: response object
+    :param picture_id: ID of the picture record to be deleted from the database
+    """
+    if not db.query(models.Picture).filter(models.Picture.id == picture_id).first():
+        response.status_code = status.HTTP_404_NOT_FOUND
 
-
-
-
-@router.get("/pictures/{user_picture_id}/change_hairstyle/{model_picture_id}")
-async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
-    user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-    model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
-
-    picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
-
-
-@router.get("/pictures_str/{user_picture_id}/change_hairstyle/{model_picture_id}")
-async def change_hairstyle_str(user_picture_id: str, model_picture_id: str, db: Session = Depends(get_db)):
-    # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-    # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
-
-    picture_service.change_hairstyle_str(user_picture=user_picture_id, model_picture=model_picture_id)
+    return picture_actions.delete_picture(db=db, picture_id=picture_id)
