@@ -44,6 +44,18 @@ class HistoryActions:
         """
         return db.query(models.History).filter(models.History.user_id == user_id).all()
 
+    def get_picture_history(self, db: Session, filename: str) -> List[models.History]:
+        """
+        Retrieves all history records associated with a picture identified by its filename
+        :param db: db session instance
+        :param filename: file name of the picture
+        :return: history records containing picture_id that correspond to the picture identified by its filename
+        """
+        return db.query(models.History).join(models.Picture,
+                                             models.History.picture_id == models.Picture.id) \
+            .filter(
+            models.Picture.file_name.ilike("%" + filename.strip() + "%"))
+
     def add_history(self, db: Session, history: schemas.HistoryCreate) -> models.History:
         """
         Adds history entry to db
@@ -113,18 +125,17 @@ class HistoryActions:
             return new_history_entry
         return None
 
+    def delete_history(self, db: Session, history_id: int) -> models.History:
+        """
+        Deletes a history record from the database
+        :param db: db session instance
+        :param history_id: ID of the history entry to be updated
+        :return: History instance
+        """
+        history_entry: models.History = db.query(models.History).filter(models.History.id == history_id).first()
 
-def delete_history(self, db: Session, history_id: int) -> models.History:
-    """
-    Deletes a history record from the database
-    :param db: db session instance
-    :param history_id: ID of the history entry to be updated
-    :return: History instance
-    """
-    history_entry: models.History = db.query(models.History).filter(models.History.id == history_id).first()
+        if history_entry is not None:
+            db.delete(history_entry)
+            db.commit()
 
-    if history_entry is not None:
-        db.delete(history_entry)
-        db.commit()
-
-    return history_entry
+        return history_entry
