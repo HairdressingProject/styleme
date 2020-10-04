@@ -53,10 +53,11 @@ async def upload_model_picture(file: UploadFile = File(...), db: Session = Depen
             hair_style_id = 1
             hair_colour_id = 1
             hair_length_id = 1
-            new_model_picture = models.ModelPicture(file_name=picture_info[1], file_path=picture_info[0],
-                                              file_size=picture_info[2], height=picture_info[3], width=picture_info[4],
-                                              face_shape_id=face_shape_id, hair_style_id=hair_style_id,
-                                              hair_length_id=hair_length_id, hair_colour_id=hair_colour_id)
+            new_model_picture = models.ModelPicture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+                                                    file_size=picture_info.file_size, height=picture_info.height,
+                                                    width=picture_info.width,
+                                                    face_shape_id=face_shape_id, hair_style_id=hair_style_id,
+                                                    hair_length_id=hair_length_id, hair_colour_id=hair_colour_id)
 
             model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
 
@@ -66,6 +67,12 @@ async def upload_model_picture(file: UploadFile = File(...), db: Session = Depen
 
 
 @router.get("/", response_model=List[schemas.ModelPicture])
-def get_model_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    model_pictures = model_picture_actions.read_model_pictures(db, skip=skip, limit=limit)
+def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
+    model_pictures = model_picture_actions.read_model_pictures(db, skip=skip, limit=limit, search=search)
+    return model_pictures
+
+
+@router.get("/{model_picture_id}", response_model=schemas.ModelPicture)
+def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
+    return model_picture_actions.read_model_picture_by_id(db, picture_id=model_picture_id)
     return model_pictures
