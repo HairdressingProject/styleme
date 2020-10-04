@@ -15,6 +15,8 @@ conda install -c conda-forge python-dotenv
 * FastAPI and Database connector:
 ```shell script
 conda install -c conda-forge fastapi
+conda install -c conda-forge orjson
+conda install -c conda-forge requests
 conda install -c conda-forge sqlalchemy
 conda install -c conda-forge uvicorn
 conda install -c conda-forge pymysql
