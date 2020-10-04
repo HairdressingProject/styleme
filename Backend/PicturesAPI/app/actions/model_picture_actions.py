@@ -34,10 +34,10 @@ class ModelPictureActions:
 
     def delete_model_picture(self, db: Session, model_picture_id: int) -> models.ModelPicture:
         """
-        Deletes a picture record from the database
+        Deletes a model picture record from the database
         :param db: db session instance
         :param model_picture_id: ID of the history entry to be updated
-        :return: History instance
+        :return: Model picture
         """
         picture_entry: models.ModelPicture = db.query(models.ModelPicture).filter(
             models.ModelPicture.id == model_picture_id).first()
