@@ -50,9 +50,15 @@ async def upload_model_picture(file: UploadFile = File(...), db: Session = Depen
             # add model picture to db
             # fake face shape id
             face_shape_id = 1
-            new_picture = models.ModelPicture(file_name=picture_info[1], file_path=picture_info[0],
-                                         file_size=picture_info[2], height=picture_info[3],
-                                         width=picture_info[4], face_shape_id=face_shape_id)
+            hair_style_id = 1
+            hair_colour_id = 1
+            hair_length_id = 1
+            new_model_picture = models.ModelPicture(file_name=picture_info[1], file_path=picture_info[0],
+                                              file_size=picture_info[2], height=picture_info[3], width=picture_info[4],
+                                              face_shape_id=face_shape_id, hair_style_id=hair_style_id,
+                                              hair_length_id=hair_length_id, hair_colour_id=hair_colour_id)
+
+            model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
 
             return face_shape[0]
     else:
@@ -60,6 +66,6 @@ async def upload_model_picture(file: UploadFile = File(...), db: Session = Depen
 
 
 @router.get("/", response_model=List[schemas.ModelPicture])
-def read_model_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    model_pictures = model_picture_actions.read_models(db, skip=skip, limit=limit)
+def get_model_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    model_pictures = model_picture_actions.read_model_pictures(db, skip=skip, limit=limit)
     return model_pictures
