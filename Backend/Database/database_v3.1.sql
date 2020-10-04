@@ -263,7 +263,14 @@ INSERT INTO hairdressing_project_db.accounts(`user_id`) VALUES (1);
 
 INSERT INTO hairdressing_project_db.colours(`colour_name`, `colour_hash`)
 VALUES 
-('green','#21323');
+('sunny_yellow', '#F9E726'),
+('juicy_orange', '#EC6126'),
+('fiery_red', '#B80C44'),
+('hot_pink', '#CF34B1'),
+('mysterious_violet', '#402D87'),
+('ocean_blue', '#013C7A'),
+('tropical_green', '#255638'),
+('jet_black', '#27221C');
 
 INSERT INTO hairdressing_project_db.face_shapes(`shape_name`)
 VALUES
@@ -275,7 +282,7 @@ VALUES
 ('inverted_triangular'),
 ('round'),
 ('oval'),
-('oblong');
+('long');
  
 INSERT INTO  hairdressing_project_db.hair_styles(`hair_style_name`)
 VALUES 

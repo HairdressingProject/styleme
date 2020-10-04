@@ -21,6 +21,15 @@ class PictureCreateUpdate(PictureBase):
     width: conint(ge=0)
 
 
+class PictureInfo(BaseModel):
+    file_name: constr(max_length=255)
+    file_path: constr(max_length=255)
+    file_size: conint(ge=0)
+    height: conint(ge=0)
+    width: conint(ge=0)
+    created_at: float
+
+
 class Picture(PictureBase):
     date_created: datetime
     date_updated: Optional[datetime] = None

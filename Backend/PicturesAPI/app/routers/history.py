@@ -53,6 +53,33 @@ async def get_user_history(user_id: int, response: Response, db: Session = Depen
     return history_actions.get_user_history(db=db, user_id=user_id)
 
 
+@router.get("/pictures/{filename}", status_code=status.HTTP_200_OK)
+async def get_picture_history(filename: str, response: Response, db: Session = Depends(get_db)):
+    """
+    GET /history/pictures/{filename}
+    Gets all history records associated with a picture identified by its filename
+    The filename can be linked to the original picture, previous one or current one
+    :param filename: Picture filename
+    :param response: response object
+    :param db: db session instance
+    """
+    if not filename.strip():
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "message": "Please provide a valid filename for the picture"
+        }
+
+    found_picture = db.query(models.Picture).filter(models.Picture.file_name == filename).first()
+
+    if not found_picture:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "message": "Picture not found"
+        }
+
+    return history_actions.get_picture_history(db=db, filename=filename)
+
+
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_entire_history(skip: int = 0, limit: int = 1000, search: str = "", db: Session = Depends(get_db)):
     """
