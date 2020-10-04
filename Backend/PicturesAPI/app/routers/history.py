@@ -69,7 +69,8 @@ async def get_picture_history(filename: str, response: Response, db: Session = D
             "message": "Please provide a valid filename for the picture"
         }
 
-    found_picture = db.query(models.Picture).filter(models.Picture.file_name == filename).first()
+    found_picture = db.query(models.Picture).filter(
+        models.Picture.file_name.ilike("%" + filename.strip() + "%")).first()
 
     if not found_picture:
         response.status_code = status.HTTP_404_NOT_FOUND

@@ -54,7 +54,7 @@ class HistoryActions:
         return db.query(models.History).join(models.Picture,
                                              models.History.picture_id == models.Picture.id) \
             .filter(
-            models.Picture.file_name.ilike("%" + filename.strip() + "%"))
+            models.Picture.file_name.ilike("%" + filename.strip() + "%")).first()
 
     def add_history(self, db: Session, history: schemas.HistoryCreate) -> models.History:
         """
