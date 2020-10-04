@@ -1,5 +1,6 @@
 from typing import List, Union
 
+from fastapi import Response, status
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
@@ -139,3 +140,71 @@ class HistoryActions:
             db.commit()
 
         return history_entry
+
+    def validate_history_entry(self, db: Session, history: Union[schemas.HistoryCreate, schemas.HistoryUpdate]) -> (
+            bool, str):
+        """
+        Validates HistoryCreate instances, checking for existing entries in the database
+        :param db: db session instance
+        :param history: HistoryCreate instance to be validated
+        :return: Validation result in the format (result, message)
+        """
+        found_picture = db.query(models.Picture).filter(models.Picture.id == history.picture_id).first()
+
+        if not found_picture:
+            return False, "Invalid picture_id"
+
+        if history.original_picture_id is not None:
+            if history.original_picture_id > 0:
+                found_original = db.query(models.Picture).filter(
+                    models.Picture.id == history.original_picture_id).first()
+                if not found_original:
+                    return False, "Invalid original_picture_id"
+            else:
+                return False, "Invalid original_picture_id"
+
+        if history.previous_picture_id is not None:
+            if history.previous_picture_id > 0:
+                found_previous = db.query(models.Picture).filter(
+                    models.Picture.id == history.previous_picture_id).first()
+                if not found_previous:
+                    return False, "Invalid previous_picture_id"
+            else:
+                return False, "Invalid previous_picture_id"
+
+        if history.hair_colour_id is not None:
+            if history.hair_colour_id > 0:
+                found_colour = db.query(models.HairColour).filter(
+                    models.HairColour.id == history.hair_colour_id).first()
+                if not found_colour:
+                    return False, "Invalid hair_colour_id"
+            else:
+                return False, "Invalid hair_colour_id"
+
+        if history.hair_style_id is not None:
+            if history.hair_style_id > 0:
+                found_hair_style = db.query(models.HairStyle).filter(
+                    models.HairStyle.id == history.hair_style_id).first()
+                if not found_hair_style:
+                    return False, "Invalid hair_style_id"
+            else:
+                return False, "Invalid hair_style_id"
+
+        if history.face_shape_id is not None:
+            if history.face_shape_id > 0:
+                found_face_shape = db.query(models.FaceShape).filter(
+                    models.FaceShape.id == history.face_shape_id).first()
+                if not found_face_shape:
+                    return False, "Invalid face_shape_id"
+            else:
+                return False, "Invalid face_shape_id"
+
+        if history.user_id is not None:
+            if history.user_id > 0:
+                found_user_id = db.query(models.User).filter(models.User.id == history.user_id).first()
+                if not found_user_id:
+                    return False, "Invalid user_id"
+            else:
+                return False, "Invalid user_id"
+
+        return True, ""
