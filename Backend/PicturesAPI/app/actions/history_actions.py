@@ -144,7 +144,7 @@ class HistoryActions:
     def validate_history_entry(self, db: Session, history: Union[schemas.HistoryCreate, schemas.HistoryUpdate]) -> (
             bool, str):
         """
-        Validates HistoryCreate instances, checking for existing entries in the database
+        Validates HistoryCreate and HistoryUpdate instances, checking for existing entries in the database
         :param db: db session instance
         :param history: HistoryCreate instance to be validated
         :return: Validation result in the format (result, message)

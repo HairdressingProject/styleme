@@ -99,7 +99,7 @@ async def add_history(history: schemas.HistoryCreate, response: Response, db: Se
     POST /history
     :param db: db session instance
     :param response: response object
-    :param history: HistoryCreateUpdate instance to be added to the database
+    :param history: HistoryCreate instance to be added to the database
     """
     validation_result = history_actions.validate_history_entry(db=db, history=history)
     if not validation_result[0]:
