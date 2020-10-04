@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 from app.libraries.HairTransfer.QuantumProcessor import perform_swap
+from app import schemas
 
 
 class PictureService:
@@ -193,7 +194,7 @@ class PictureService:
         # ToDo: handle exceptions
         os.remove(path + file_name)
 
-    def get_picture_info(self, path, file_name):
+    def get_picture_info(self, path, file_name) -> schemas.PictureInfo:
         """
         Retrieve information about file
         :param file_name:
@@ -223,9 +224,12 @@ class PictureService:
         # print(height)
         # print(width)
 
-        return (path, file_name, file_size, height, width, created_at)
+        picture_info: schemas.PictureInfo = schemas.PictureInfo(file_path=path, file_name=file_name, height=height,
+                                                                width=width, created_at=created_at, file_size=file_size)
+        return picture_info
 
-    def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER, save_path=HAIR_COLOUR_RESULTS_PATH):
+    def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER,
+                           save_path=HAIR_COLOUR_RESULTS_PATH):
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
         cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
 
@@ -278,7 +282,6 @@ class PictureService:
         print(picture_info)
 
         return picture_info
-
 
     def change_hairstyle(self, user_picture: Picture, model_picture: Picture):
 

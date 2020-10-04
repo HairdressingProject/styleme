@@ -41,29 +41,31 @@ class History(Base):
 
 
 Picture.history = relationship(
-    "History", back_populates="picture", foreign_keys=[History.picture_id]
+    "History", back_populates="picture", foreign_keys=[History.picture_id], cascade="all, delete-orphan, save-update"
 )
 
 Picture.original_history = relationship(
-    "History", back_populates="original_picture", foreign_keys=[History.original_picture_id]
+    "History", back_populates="original_picture", foreign_keys=[History.original_picture_id],
+    cascade="all, delete-orphan, save-update"
 )
 
 Picture.previous_history = relationship(
-    "History", back_populates="previous_picture", foreign_keys=[History.previous_picture_id]
+    "History", back_populates="previous_picture", foreign_keys=[History.previous_picture_id],
+    cascade="all, delete-orphan, save-update"
 )
 
 User.history = relationship(
-    "History", order_by=History.date_updated, back_populates="user"
+    "History", order_by=History.date_updated, back_populates="user", cascade="all, delete-orphan"
 )
 
 HairColour.history = relationship(
-    "History", back_populates="hair_colour"
+    "History", back_populates="hair_colour", cascade="all, delete-orphan, save-update"
 )
 
 HairStyle.history = relationship(
-    "History", back_populates="hair_style"
+    "History", back_populates="hair_style", cascade="all, delete-orphan, save-update"
 )
 
 FaceShape.history = relationship(
-    "History", back_populates="face_shape"
+    "History", back_populates="face_shape", cascade="all, delete-orphan, save-update"
 )

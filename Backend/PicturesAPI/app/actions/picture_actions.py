@@ -19,14 +19,18 @@ class PictureActions:
     def read_picture_by_id(self, db: Session, picture_id):
         return db.query(Picture).filter(Picture.id == picture_id).first()
 
-    # def read_picture_by_file_name(self, db: Session, file_name):
-    #     return db.query(Picture).filter(Picture.file_name == file_name)
+    def read_picture_by_file_name(self, db: Session, file_name: str, skip: int = 0, limit: int = 100) -> List[Picture]:
+        return db.query(Picture).filter(Picture.file_name.ilike("%" + file_name.strip() + "%")).offset(skip).limit(
+            limit).all()
 
-    def read_pictures(self, db: Session, skip: int = 0, limit: int = 100):
-        return db.query(Picture).offset(skip).limit(limit).all()
+    def read_pictures(self, db: Session, skip: int = 0, limit: int = 100, search: str = ""):
+        if not search.strip():
+            return db.query(Picture).offset(skip).limit(limit).all()
+        return self.read_picture_by_file_name(db=db, file_name=search, skip=skip, limit=limit)
 
     def read_models(self, db: Session, skip: int = 0, limit: int = 100) -> List[models.Picture]:
-        search_results = db.query(models.Picture).filter(models.Picture.file_path.ilike("%pictures/models%")).offset(skip).limit(
+        search_results = db.query(models.Picture).filter(models.Picture.file_path.ilike("%pictures/models%")).offset(
+            skip).limit(
             limit).all()
         return search_results
 

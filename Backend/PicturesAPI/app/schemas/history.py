@@ -35,6 +35,11 @@ class HistoryUpdate(HistoryBase):
     pass
 
 
+class HistoryAddFaceShape(BaseModel):
+    user_id: int
+    face_shape_id: int
+
+
 class History(HistoryBase):
     date_created: datetime
     date_updated: Optional[datetime] = None

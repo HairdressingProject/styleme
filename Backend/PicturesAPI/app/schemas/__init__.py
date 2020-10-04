@@ -7,6 +7,6 @@ from .hair_style import HairStyle, HairStyleBase, HairStyleCreateUpdate
 from .hair_style_link import HairStyleLink, HairStyleLinkBase, HairStyleLinkCreateUpdate
 from .hair_length_link import HairLengthLink, HairLengthLinkBase, HairLengthLinkCreateUpdate
 from .face_shape_link import FaceShapeLinkBase, FaceShapeLink, FaceShapeLinkCreateUpdate
-from .history import HistoryBase, History, HistoryCreate, HistoryUpdate
+from .history import HistoryBase, History, HistoryCreate, HistoryUpdate, HistoryAddFaceShape
 from .model_picture import ModelPictureBase, ModelPicture, ModelPictureCreateUpdate
-from .picture import Picture, PictureCreateUpdate, PictureBase
+from .picture import Picture, PictureCreateUpdate, PictureBase, PictureInfo
