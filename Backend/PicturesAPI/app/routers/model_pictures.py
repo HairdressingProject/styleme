@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, File, Depends, UploadFile, status
+from fastapi import APIRouter, File, Depends, UploadFile, status, Response
 from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
@@ -76,3 +76,24 @@ def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Se
 def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
     return model_picture_actions.read_model_picture_by_id(db, picture_id=model_picture_id)
     return model_pictures
+
+@router.delete("/{model_picture_id}", status_code=status.HTTP_200_OK)
+async def delete_picture(model_picture_id: int, response: Response, db: Session = Depends(get_db)):
+    """
+    DELETE /models/{model_picture_id}
+    :param db: db session instance
+    :param response: response object
+    :param model_picture_id: ID of the model picture record to be deleted from the database
+    """
+    print(" *************** DELETE PICTURE *************************")
+    if not db.query(models.ModelPicture).filter(models.ModelPicture.id == model_picture_id).first():
+        response.status_code = status.HTTP_404_NOT_FOUND
+
+    # get the selected model picture
+    selected_picture = model_picture_actions.read_model_picture_by_id(db, model_picture_id)
+    print(selected_picture.file_path + selected_picture.file_name)
+
+    # delete the selected model picture from disk
+    picture_service.delete_picture(selected_picture.file_path, selected_picture.file_name)
+
+    return model_picture_actions.delete_model_picture(db=db, model_picture_id=model_picture_id)

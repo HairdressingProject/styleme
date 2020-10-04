@@ -11,8 +11,8 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 api_router = APIRouter()
-api_router.include_router(pictures.router, tags=["Pictures"])
-api_router.include_router(model_pictures.router, prefix="/model_pictures", tags=["ModelPictures"])
+api_router.include_router(pictures.router, prefix="/pictures", tags=["Pictures"])
+api_router.include_router(model_pictures.router, prefix="/models", tags=["ModelPictures"])
 api_router.include_router(history.router, prefix="/history", tags=["History"],
                           responses={404: {"description": "Not found"}})
 api_router.include_router(test.router, tags=["test"])
