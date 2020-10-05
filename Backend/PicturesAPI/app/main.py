@@ -12,6 +12,7 @@ from app.database.db import SessionLocal, engine, Base
 from app.settings import API_HOST, ADMIN_PORTAL_HOST, USERS_API_URL
 
 from app.routers import pictures
+from app.routers import model_pictures
 from app.routers import history
 from app.routers import test
 import time
@@ -101,6 +102,7 @@ async def authorise_user(request: Request, call_next):
 
 api_router = APIRouter()
 api_router.include_router(pictures.router, prefix="/pictures", tags=["Pictures"])
+api_router.include_router(model_pictures.router, prefix="/models", tags=["ModelPictures"])
 api_router.include_router(history.router, prefix="/history", tags=["History"],
                           responses={404: {"description": "Not found"}})
 api_router.include_router(test.router, tags=["test"])
