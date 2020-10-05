@@ -69,7 +69,8 @@ async def get_picture_history(filename: str, response: Response, db: Session = D
             "message": "Please provide a valid filename for the picture"
         }
 
-    found_picture = db.query(models.Picture).filter(models.Picture.file_name == filename).first()
+    found_picture = db.query(models.Picture).filter(
+        models.Picture.file_name.ilike("%" + filename.strip() + "%")).first()
 
     if not found_picture:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -93,12 +94,20 @@ async def get_entire_history(skip: int = 0, limit: int = 1000, search: str = "",
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_history(history: schemas.HistoryCreate, db: Session = Depends(get_db)):
+async def add_history(history: schemas.HistoryCreate, response: Response, db: Session = Depends(get_db)):
     """
     POST /history
     :param db: db session instance
-    :param history: HistoryCreateUpdate instance to be added to the database
+    :param response: response object
+    :param history: HistoryCreate instance to be added to the database
     """
+    validation_result = history_actions.validate_history_entry(db=db, history=history)
+    if not validation_result[0]:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "message": validation_result[1]
+        }
+
     return history_actions.add_history(db=db, history=history)
 
 
@@ -148,8 +157,24 @@ async def update_history(history_id: int, history: schemas.HistoryUpdate, respon
     :param response: response object
     :param history_id: ID of the history record to be updated
     """
+    if history_id != history.id:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "message": "History ID in the endpoint does not match the one sent in the request body"
+        }
+
     if not db.query(models.History).filter(models.History.id == history_id).first():
         response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "message": "History entry not found"
+        }
+
+    validation_result = history_actions.validate_history_entry(db=db, history=history)
+    if not validation_result[0]:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "message": validation_result[1]
+        }
 
     return history_actions.update_history(db=db, history_id=history_id, history=history)
 
