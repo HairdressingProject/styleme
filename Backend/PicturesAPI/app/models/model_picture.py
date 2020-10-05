@@ -4,7 +4,7 @@ Author: Diego C. <20026893@tafe.wa.edu.au>
 Created at: 28/09/2020 8:53 pm
 File: model_picture.py
 """
-from sqlalchemy import Column, Integer, BIGINT, String, ForeignKey
+from sqlalchemy import Column, Integer, BIGINT, String, ForeignKey, DateTime, func, text
 from sqlalchemy.orm import relationship
 from app.database.db import Base
 from .hair_style import HairStyle
@@ -25,6 +25,8 @@ class ModelPicture(Base):
     hair_length_id = Column(BIGINT, ForeignKey("hair_lengths.id"))
     face_shape_id = Column(BIGINT, ForeignKey("face_shapes.id"))
     hair_colour_id = Column(BIGINT, ForeignKey("colours.id"))
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
+    date_updated = Column(DateTime(timezone=True), server_default=text("NULL"), onupdate=func.now())
 
     hair_style = relationship(
         "HairStyle", back_populates="model_picture"

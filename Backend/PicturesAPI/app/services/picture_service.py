@@ -3,6 +3,7 @@ import hashlib
 from datetime import datetime
 import face_recognition
 from app.models import Picture
+from app.models import ModelPicture
 from app.settings import PICTURE_UPLOAD_FOLDER, PICTURE_PROCESSED_FOLDER, FACE_SHAPE_RESULTS_PATH, \
     HAIR_COLOUR_RESULTS_PATH
 import pathlib
@@ -283,7 +284,10 @@ class PictureService:
 
         return picture_info
 
-    def change_hairstyle(self, user_picture: Picture, model_picture: Picture):
+    def change_hairstyle(self, user_picture: Picture, model_picture: ModelPicture):
+
+        print(user_picture.file_path + user_picture.file_name, "User picture")
+        print(model_picture.file_path + model_picture.file_name, "Model picture")
 
         class hair_transfer_request(object):
             def __init__(self, user_picture, model_picture):
@@ -309,6 +313,21 @@ class PictureService:
                 print(model_picture)
                 self.selfie = cv2.imread(PICTURE_UPLOAD_FOLDER + user_picture)
                 self.hair_model = cv2.imread(PICTURE_UPLOAD_FOLDER + model_picture)
+                self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
+                self.form = {'username': user_picture, 'uploader': model_picture}
+
+        request_obj = hair_transfer_request(user_picture, model_picture)
+
+        perform_swap(request_obj)
+
+    def change_hairstyle_str_path(self, user_picture: str, model_picture: str):
+
+        class hair_transfer_request(object):
+            def __init__(self, user_picture, model_picture):
+                print(user_picture)
+                print(model_picture)
+                self.selfie = cv2.imread('pictures/face_shape/' + user_picture)
+                self.hair_model = cv2.imread('pictures/face_shape/' + model_picture)
                 self.files = {'selfie': self.selfie, 'hair_model': self.hair_model}
                 self.form = {'username': user_picture, 'uploader': model_picture}
 
