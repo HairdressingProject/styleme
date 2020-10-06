@@ -258,19 +258,9 @@ class PictureService:
         parsing = evaluate(portrait, cp)
         part = [table['hair']]
 
-        colours = {"green": [25, 250, 32], "yellow": [30, 252, 249], "orange": [30, 108, 252], "burgundy": [32, 0, 128],
-                   "ruby": [95, 17, 224], "coral": [80, 127, 255], "violet": [211, 0, 148]}
+        colours = {"tropical_green": [56, 86, 37], "sunny_yellow": [38, 231, 249], "juicy_orange": [38, 97, 236], "fiery_red": [68, 12, 184],
+                   "hot_pink": [177, 52, 207], "mysterious_violet": [135, 45, 64], "ocean_blue": [122, 60, 1], "jet_black": [28, 34, 39]}
 
-        # blonde : [123, 201, 227],
-        # DarkRed : [0, 0, 139],
-        # DarkCyan : [139, 139, 0],
-        # DarkMagenta : [139, 0, 139],
-        # Coral : [80, 127, 255],
-        # Violet : [211, 0, 148],
-        # SeaGreen : [128, 205, 67],
-        # Peach : [185, 218, 255],
-        # Gold : [0, 215, 255],
-        # Chocolate : [19, 69, 139]
 
         image = hair(portrait, parsing, part, colours[str(selected_colour)])
 
