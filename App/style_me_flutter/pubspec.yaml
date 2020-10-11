@@ -45,8 +45,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/woman.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -72,5 +72,15 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
+  fonts:
+    - family: Klavika
+      fonts:
+        - asset: assets/fonts/klavika-medium.otf
+        - asset: assets/fonts/klavika-medium-italic.otf
+          style: italic
+        - asset: assets/fonts/klavika-light.otf
+          weight: 300
+        - asset: assets/fonts/klavika-bold.otf
+          weight: 700
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
