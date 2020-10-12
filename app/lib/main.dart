@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/logo_banner.dart';
 import 'package:app/views/pages/sign_in.dart';
+import 'package:app/views/pages/sign_up.dart';
 
 
 void main() {
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
       home: SplashScreen(),
       routes: {
         SignIn.routeName: (context) => SignIn(),
-        Home.routeName: (context) => Home()
+        Home.routeName: (context) => Home(),
+        SignUp.routeName: (context) => SignUp()
       },
     );
   }
@@ -47,6 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 5), () {
       Navigator.of(context).pushReplacementNamed(SignIn.routeName);
       Navigator.of(context).pushReplacementNamed(Home.routeName);
+      Navigator.of(context).pushReplacementNamed(SignUp.routeName);
     });
     super.initState();
   }
