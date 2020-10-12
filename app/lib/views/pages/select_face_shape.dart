@@ -1,7 +1,5 @@
-import 'package:app/widgets/logo_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
-import 'package:app/widgets/custom_button.dart';
 import 'package:app/widgets/face_card.dart';
 
 class SelectFaceShape extends StatelessWidget {
@@ -16,16 +14,16 @@ class SelectFaceShape extends StatelessWidget {
         drawerItems: buildDefaultDrawerItems(context),
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(5.0),
             child: GridView.count(
               crossAxisCount: 2,
               mainAxisSpacing: 50.0,
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               children: [
-                FaceCard(text: 'Round', path: 'assets/icons/round.png',),
-                FaceCard(text: 'Square', path: 'assets/icons/square.png',),
-                FaceCard(text: 'Round', path: 'assets/icons/round.png',),
-                FaceCard(text: 'Round', path: 'assets/icons/round.png',)
+                FaceCard(text: 'Round', path: 'assets/icons/round.png', selected: false),
+                FaceCard(text: 'Square', path: 'assets/icons/square.png', selected: false),
+                FaceCard(text: 'Round', path: 'assets/icons/round.png', selected: true),
+                FaceCard(text: 'Round', path: 'assets/icons/round.png', selected: false)
               ],
             )
           )
