@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
+import 'package:app/views/pages/select_face_shape.dart';
 
 class Home extends StatelessWidget {
   static final String routeName = '/homeRoute';
@@ -37,10 +38,10 @@ class Home extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
-                    child: CustomButton(icon: Icon(Icons.check), text: "Select or take picture", enabled: true,)
+                    child: CustomButton(icon: Icon(Icons.check), text: "Select or take picture", enabled: true)
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
-                    child: CustomButton(icon: Icon(Icons.check), text: "Select your face shape", enabled: false,)
+                    child: CustomButton(icon: Icon(Icons.check), text: "Select your face shape", enabled: true, action: SelectFaceShape(),)
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
                     child: CustomButton(icon: Icon(Icons.check), text: "Select a hair style", enabled: true,)
