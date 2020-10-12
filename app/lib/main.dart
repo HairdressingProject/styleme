@@ -17,11 +17,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hairdressing Project DEMO',
       darkTheme: ThemeData(brightness: Brightness.dark),
-      themeMode: ThemeMode.dark,
-      theme: ThemeData(        
+      themeMode: ThemeMode.light,
+      theme: ThemeData(      
+        buttonColor: Colors.blueAccent,  
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        fontFamily: 'Klavika'
+        fontFamily: 'Klavika',
+        disabledColor: Colors.grey
       ),
       home: SplashScreen(),
       routes: {
@@ -49,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 5), () {
       Navigator.of(context).pushReplacementNamed(SignIn.routeName);
       Navigator.of(context).pushReplacementNamed(Home.routeName);
-      Navigator.of(context).pushReplacementNamed(SignUp.routeName);
+      // Navigator.of(context).pushReplacementNamed(SignUp.routeName);
     });
     super.initState();
   }

@@ -15,7 +15,8 @@ class CustomButton extends StatelessWidget {
     return
     MaterialButton(
       onPressed: this.enabled ? () {} : null, 
-      color: Colors.blue,
+      color: Theme.of(context).buttonColor,
+      disabledColor: Theme.of(context).disabledColor,
       height: MediaQuery.of(context).size.height / 15,
       minWidth: double.infinity,
       child: Row(
