@@ -1,30 +1,53 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  CustomButton({Key key, this.icon, @required this.text, @required this.enabled, this.action}) : super(key: key);
+  CustomButton(
+      {Key key,
+      this.icon,
+      @required this.text,
+      this.enabled = true,
+      this.alreadySelected = false,
+      this.action})
+      : super(key: key);
 
   final String text;
   final Icon icon;
   final bool enabled;
-  Widget action;
+  final bool alreadySelected;
+  final Widget action;
 
   bool notNull(Object o) => o != null;
+
   @override
   Widget build(BuildContext context) {
-    return
-    MaterialButton(
-      onPressed: this.enabled ? () {Navigator.push(context, MaterialPageRoute(builder: (context) => action ?? null));} : null, 
-      color: Theme.of(context).buttonColor,
+    return MaterialButton(
+      onPressed: this.enabled
+          ? () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => action ?? null));
+            }
+          : null,
+      color: alreadySelected
+          ? Theme.of(context).buttonColor
+          : Color.fromARGB(255, 74, 169, 242),
       disabledColor: Theme.of(context).disabledColor,
+      disabledTextColor: Colors.white,
       height: MediaQuery.of(context).size.height / 15,
       minWidth: double.infinity,
       child: Row(
         children: [
           this.icon ?? null,
-          // notNull(this.icon) ? const Padding(padding: EdgeInsets.only(left: 15.0)) : null,
-          Expanded(child: Text(this.text, textAlign: TextAlign.center,),),
+          Expanded(
+            child: Text(
+              this.text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 16,
+                  letterSpacing: 0.8,
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
         ].where(notNull).toList(),
       ),
     );
