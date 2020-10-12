@@ -22,10 +22,10 @@ class SelectFaceShape extends StatelessWidget {
               mainAxisSpacing: 50.0,
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               children: [
-                FaceCard(faceShape: 'Round', faceShapePicture: 'assets/icons/round.png',),
-                FaceCard(faceShape: 'Square', faceShapePicture: 'assets/icons/square.png',),
-                FaceCard(faceShape: 'Round', faceShapePicture: 'assets/icons/round.png',),
-                FaceCard(faceShape: 'Round', faceShapePicture: 'assets/icons/round.png',)
+                FaceCard(text: 'Round', path: 'assets/icons/round.png',),
+                FaceCard(text: 'Square', path: 'assets/icons/square.png',),
+                FaceCard(text: 'Round', path: 'assets/icons/round.png',),
+                FaceCard(text: 'Round', path: 'assets/icons/round.png',)
               ],
             )
           )

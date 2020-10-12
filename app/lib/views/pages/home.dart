@@ -38,25 +38,25 @@ class Home extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
-                    child: CustomButton(icon: Icon(Icons.check), text: "Select or take picture", enabled: true)
+                    child: CustomButton(icon: Icon(Icons.check), text: "Select or take picture", enabled: false)
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
                     child: CustomButton(icon: Icon(Icons.check), text: "Select your face shape", enabled: true, action: SelectFaceShape(),)
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
-                    child: CustomButton(icon: Icon(Icons.check), text: "Select a hair style", enabled: true,)
+                    child: CustomButton(icon: Icon(Icons.check), text: "Select a hair style", enabled: false,)
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
-                    child: CustomButton(icon: Icon(Icons.add), text: "Colour your hair", enabled: true,)
+                    child: CustomButton(icon: Icon(Icons.add), text: "Colour your hair", enabled: false,)
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
-                    child: CustomButton(icon: Icon(Icons.access_time), text: "Save your results", enabled: true,)
+                    child: CustomButton(icon: Icon(Icons.access_time), text: "Save your results", enabled: false,)
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
-                    child: CustomButton(icon: Icon(Icons.access_time), text: "Compare results", enabled: true,)
+                    child: CustomButton(icon: Icon(Icons.access_time), text: "Compare results", enabled: false,)
                   ),
                   Padding(padding: const EdgeInsets.only(top: 35.0),
-                    child: CustomButton(icon: Icon(Icons.access_time), text: "Upload hair style", enabled: true,)
+                    child: CustomButton(icon: Icon(Icons.access_time), text: "Upload hair style", enabled: false,)
                   ),
                 ],
               ),

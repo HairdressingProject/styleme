@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 
 class FaceCard extends StatelessWidget {
-  FaceCard({Key key, this.faceShape, this.faceShapePicture}) : super(key: key);
+  FaceCard({Key key, this.text, this.path}) : super(key: key);
 
-  final String faceShape;
-  final String faceShapePicture;
+  final String text;
+  final String path;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +22,9 @@ class FaceCard extends StatelessWidget {
             color: Colors.red,
             child: Column(
               children: [
-                 Image.asset(faceShapePicture),
+                 Image.asset(path),
                  const Padding(padding: EdgeInsets.symmetric(horizontal: 5.0)),
-                 Text(faceShape)
+                 Text(text)
               ],
             ),
           ),
