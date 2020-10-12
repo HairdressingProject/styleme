@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 5), () {
       Navigator.of(context).pushReplacementNamed(SignIn.routeName);
       Navigator.of(context).pushReplacementNamed(Home.routeName);
-      Navigator.of(context).pushReplacementNamed(SelectFaceShape.routeName);
+      // Navigator.of(context).pushReplacementNamed(SelectFaceShape.routeName);
     });
     super.initState();
   }
