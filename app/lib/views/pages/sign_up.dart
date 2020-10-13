@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/widgets/logo_banner.dart';
 import 'package:app/widgets/custom_button.dart';
-
+import 'package:app/widgets/sign_up_form.dart';
 
 class SignUp extends StatefulWidget {
 
@@ -34,58 +34,11 @@ class _SignUpState extends State<SignUp> {
                   fontWeight: FontWeight.bold
                 )
               ),
-              Form(
-                child: Column(
-                  children: <Widget>[
-                    Padding(padding: const EdgeInsets.only(top: 35.0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Given name'
-                        ),
-                      ),
-                    ),
-                    Padding(padding: const EdgeInsets.only(top: 35.0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Family name'
-                        ),
-                      ),
-                    ),
-                    Padding(padding: const EdgeInsets.only(top: 35.0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Username'
-                        ),
-                      ),
-                    ),
-                    Padding(padding: const EdgeInsets.only(top: 35.0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Email'
-                        ),
-                      ),
-                    ),
-                    Padding(padding: const EdgeInsets.only(top: 35.0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Password'
-                        ),
-                      ),
-                    ),
-                    Padding(padding: const EdgeInsets.only(top: 35.0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Confirm password'
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Padding(padding: const EdgeInsets.only(top: 35.0),
-                child: CustomButton(text: "Sign up", enabled: true,)
-              ),
-              Padding(padding: const EdgeInsets.only(top: 60),
+              SignUpForm(),
+              // Padding(padding: const EdgeInsets.only(top: 35.0),
+              //   child: CustomButton(text: "Sign up", enabled: true,)
+              // ),
+              Padding(padding: const EdgeInsets.only(top: 5.0),
                 child: Text("Already registered? Sign in")
               ),
             ],
