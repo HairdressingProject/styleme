@@ -78,6 +78,7 @@ flutter:
     - family: Klavika
       fonts:
         - asset: assets/fonts/klavika-medium.otf
+          weight: 500
         - asset: assets/fonts/klavika-medium-italic.otf
           style: italic
         - asset: assets/fonts/klavika-light.otf

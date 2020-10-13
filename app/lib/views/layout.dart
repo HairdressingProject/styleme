@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
+import 'package:app/views/pages/sign_up.dart';
 
 const DrawerHeader defaultDrawerHeader = DrawerHeader(
   child: Center(
@@ -80,7 +81,7 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context) {
         ],
       ),
       onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => null))
+        Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()))
       },
     ),
     ListTile(
