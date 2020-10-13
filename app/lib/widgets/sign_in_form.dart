@@ -1,3 +1,4 @@
+import 'package:app/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -9,15 +10,17 @@ class SignInForm extends StatefulWidget {
 }
 
 class SignInFormState extends State<SignInForm> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignInFormState>.
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameOrEmailController =
-      TextEditingController();
   bool _isUsernameOrEmailTouched = false;
   bool _isUsernameOrEmailValid = false;
   String _usernameOrEmailErrorMsg;
@@ -105,142 +108,48 @@ class SignInFormState extends State<SignInForm> {
     return null;
   }
 
+  bool _validateForm() {
+    return _formKey.currentState.validate();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextFormField(
-              onTap: _setUsernameOrEmailTouched,
-              onChanged: _validateUsernameOrEmail,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1
-                  .copyWith(fontWeight: FontWeight.w500, fontSize: 16.0),
-              decoration: InputDecoration(
-                  labelText: 'Username or email *',
-                  helperText: _usernameOrEmailErrorMsg,
-                  helperStyle: Theme.of(context)
-                      .textTheme
-                      .bodyText2
-                      .copyWith(color: Colors.red[600]),
-                  labelStyle: _isUsernameOrEmailTouched
-                      ? _isUsernameOrEmailValid
-                          ? TextStyle(color: Colors.green[600])
-                          : TextStyle(color: Colors.red)
-                      : TextStyle(color: Colors.black),
-                  errorStyle: TextStyle(fontSize: 14.0),
-                  border: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 2.0)),
-                  enabledBorder: _isUsernameOrEmailTouched
-                      ? _isUsernameOrEmailValid
-                          ? UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.green, width: 2.0))
-                          : UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 2.0))
-                      : UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black, width: 2.0)),
-                  errorBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red, width: 2.0)),
-                  focusedBorder: _isUsernameOrEmailValid
-                      ? UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.green, width: 2.0))
-                      : UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                  suffixIcon: _isUsernameOrEmailTouched
-                      ? !_isUsernameOrEmailValid
-                          ? Icon(Icons.clear, color: Colors.red)
-                          : Icon(
-                              Icons.check,
-                              color: Colors.green,
-                            )
-                      : null),
-              controller: _usernameOrEmailController,
-              validator: _validateUsernameOrEmail),
+        children: [
+          CustomFormField(
+            label: 'Username or email *',
+            errorMsg: _usernameOrEmailErrorMsg,
+            isPassword: false,
+            isTouched: _isUsernameOrEmailTouched,
+            isValid: _isUsernameOrEmailValid,
+            setTouched: _setUsernameOrEmailTouched,
+            validation: _validateUsernameOrEmail,
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0),
           ),
-          TextFormField(
-            onTap: _setPasswordTouched,
-            onChanged: _validatePassword,
-            decoration: InputDecoration(
-              labelText: 'Password *',
-              helperText: _passwordErrorMsg,
-              helperStyle: Theme.of(context)
-                  .textTheme
-                  .bodyText2
-                  .copyWith(color: Colors.red[600]),
-              labelStyle: _isPasswordTouched
-                  ? _isPasswordValid
-                      ? TextStyle(color: Colors.green[600])
-                      : TextStyle(color: Colors.red)
-                  : TextStyle(color: Colors.black),
-              errorStyle: TextStyle(fontSize: 14.0),
-              border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2.0)),
-              enabledBorder: _isPasswordTouched
-                  ? _isPasswordValid
-                      ? UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.green, width: 2.0))
-                      : UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 2.0))
-                  : UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 2.0)),
-              errorBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red, width: 2.0)),
-              focusedBorder: _isPasswordValid
-                  ? UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.green, width: 2.0))
-                  : UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red, width: 2.0)),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                      onTap: _togglePasswordVisibility,
-                      child: _obscureText
-                          ? Icon(Icons.visibility, color: Colors.black87)
-                          : Icon(Icons.visibility_off, color: Colors.black)),
-                  const Padding(
-                    padding: EdgeInsets.only(right: 5.0),
-                  ),
-                  _isPasswordTouched
-                      ? !_isPasswordValid
-                          ? Icon(Icons.clear, color: Colors.red)
-                          : Icon(
-                              Icons.check,
-                              color: Colors.green,
-                            )
-                      : null
-                ].where((element) => element != null).toList(),
-              ),
-            ),
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1
-                .copyWith(fontWeight: FontWeight.w500, fontSize: 16.0),
+          CustomFormField(
+            label: 'Password *',
+            errorMsg: _passwordErrorMsg,
+            isPassword: true,
+            isTouched: _isPasswordTouched,
+            isValid: _isPasswordValid,
+            setTouched: _setPasswordTouched,
+            validation: _validatePassword,
             obscureText: _obscureText,
-            controller: _passwordController,
-            validator: _validatePassword,
+            toggleFieldVisibility: _togglePasswordVisibility,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 60.0),
+            padding: const EdgeInsets.symmetric(vertical: 40.0),
             child: MaterialButton(
+              disabledColor: Colors.grey[600],
+              disabledTextColor: Colors.white,
               onPressed: () {
-                // Validate returns true if the form is valid, or false
-                // otherwise.
-                if (_formKey.currentState.validate()) {
-                  // If the form is valid, display a Snackbar.
+                if (_validateForm()) {
+                  // send request to authenticate data with Users API
                   Scaffold.of(context)
                       .showSnackBar(SnackBar(content: Text('Processing Data')));
                 }
