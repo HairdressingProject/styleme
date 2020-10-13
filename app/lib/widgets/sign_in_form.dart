@@ -15,13 +15,94 @@ class SignInFormState extends State<SignInForm> {
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignInFormState>.
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _password = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameOrEmailController =
+      TextEditingController();
+  bool _isUsernameOrEmailTouched = false;
+  bool _isUsernameOrEmailValid = false;
+  String _usernameOrEmailErrorMsg;
+  bool _isPasswordTouched = false;
+  bool _isPasswordValid = false;
+  String _passwordErrorMsg;
   bool _obscureText = true;
 
-  bool validateEmail(String value) {
-    Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
-    return (!regex.hasMatch(value)) ? false : true;
+  _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  _setUsernameOrEmailTouched() {
+    if (!_isUsernameOrEmailTouched) {
+      setState(() {
+        _isUsernameOrEmailTouched = true;
+      });
+    }
+  }
+
+  _setPasswordTouched() {
+    if (!_isPasswordTouched) {
+      setState(() {
+        _isPasswordTouched = true;
+      });
+    }
+  }
+
+  String _validateUsernameOrEmail(String usernameInput) {
+    if (usernameInput.trim().isEmpty) {
+      String errorMsg = 'Username or email is required';
+      setState(() {
+        _isUsernameOrEmailValid = false;
+        _usernameOrEmailErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    if (usernameInput.length > 512) {
+      String errorMsg =
+          'Username or email should contain at most 512 characters';
+      setState(() {
+        _isUsernameOrEmailValid = false;
+        _passwordErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    setState(() {
+      _isUsernameOrEmailValid = true;
+      _usernameOrEmailErrorMsg = null;
+    });
+    return null;
+  }
+
+  String _validatePassword(String passwordInput) {
+    if (passwordInput.trim().isEmpty) {
+      String errorMsg = 'Password is required';
+      setState(() {
+        _isPasswordValid = false;
+        _passwordErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    if (passwordInput.trim().length < 6) {
+      String errorMsg = 'Password should contain at least 6 characters';
+      setState(() {
+        _isPasswordValid = false;
+        _passwordErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    if (passwordInput.length > 512) {
+      String errorMsg = 'Password should contain at most 512 characters';
+      setState(() {
+        _isPasswordValid = false;
+        _passwordErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    setState(() {
+      _isPasswordValid = true;
+      _passwordErrorMsg = null;
+    });
+    return null;
   }
 
   @override
@@ -33,52 +114,127 @@ class SignInFormState extends State<SignInForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Username or email',
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Username or email is required';
-              }
-              return null;
-            },
+              onTap: _setUsernameOrEmailTouched,
+              onChanged: _validateUsernameOrEmail,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1
+                  .copyWith(fontWeight: FontWeight.w500, fontSize: 16.0),
+              decoration: InputDecoration(
+                  labelText: 'Username or email *',
+                  helperText: _usernameOrEmailErrorMsg,
+                  helperStyle: Theme.of(context)
+                      .textTheme
+                      .bodyText2
+                      .copyWith(color: Colors.red[600]),
+                  labelStyle: _isUsernameOrEmailTouched
+                      ? _isUsernameOrEmailValid
+                          ? TextStyle(color: Colors.green[600])
+                          : TextStyle(color: Colors.red)
+                      : TextStyle(color: Colors.black),
+                  errorStyle: TextStyle(fontSize: 14.0),
+                  border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 2.0)),
+                  enabledBorder: _isUsernameOrEmailTouched
+                      ? _isUsernameOrEmailValid
+                          ? UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.green, width: 2.0))
+                          : UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 2.0))
+                      : UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.black, width: 2.0)),
+                  errorBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red, width: 2.0)),
+                  focusedBorder: _isUsernameOrEmailValid
+                      ? UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.green, width: 2.0))
+                      : UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
+                  suffixIcon: _isUsernameOrEmailTouched
+                      ? !_isUsernameOrEmailValid
+                          ? Icon(Icons.clear, color: Colors.red)
+                          : Icon(
+                              Icons.check,
+                              color: Colors.green,
+                            )
+                      : null),
+              controller: _usernameOrEmailController,
+              validator: _validateUsernameOrEmail),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.0),
           ),
-          // TextFormField(
-          //   decoration: InputDecoration(
-          //     labelText: 'Email',
-          //   ),
-          //   validator: (value) {
-          //     if (value.isEmpty) {
-          //       return 'Email is required';
-          //     }
-          //     else {
-          //       if (!validateEmail(value)) {
-          //         return 'This does not look like a valid email';
-          //       }
-          //     }
-          //     return null;
-          //   },
-          // ),
           TextFormField(
+            onTap: _setPasswordTouched,
+            onChanged: _validatePassword,
             decoration: InputDecoration(
-              labelText: 'Password',
+              labelText: 'Password *',
+              helperText: _passwordErrorMsg,
+              helperStyle: Theme.of(context)
+                  .textTheme
+                  .bodyText2
+                  .copyWith(color: Colors.red[600]),
+              labelStyle: _isPasswordTouched
+                  ? _isPasswordValid
+                      ? TextStyle(color: Colors.green[600])
+                      : TextStyle(color: Colors.red)
+                  : TextStyle(color: Colors.black),
+              errorStyle: TextStyle(fontSize: 14.0),
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 2.0)),
+              enabledBorder: _isPasswordTouched
+                  ? _isPasswordValid
+                      ? UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.green, width: 2.0))
+                      : UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 2.0))
+                  : UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 2.0)),
+              errorBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red, width: 2.0)),
+              focusedBorder: _isPasswordValid
+                  ? UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green, width: 2.0))
+                  : UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red, width: 2.0)),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                      onTap: _togglePasswordVisibility,
+                      child: _obscureText
+                          ? Icon(Icons.visibility, color: Colors.black87)
+                          : Icon(Icons.visibility_off, color: Colors.black)),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 5.0),
+                  ),
+                  _isPasswordTouched
+                      ? !_isPasswordValid
+                          ? Icon(Icons.clear, color: Colors.red)
+                          : Icon(
+                              Icons.check,
+                              color: Colors.green,
+                            )
+                      : null
+                ].where((element) => element != null).toList(),
+              ),
             ),
+            style: Theme.of(context)
+                .textTheme
+                .bodyText1
+                .copyWith(fontWeight: FontWeight.w500, fontSize: 16.0),
             obscureText: _obscureText,
-            controller: _password,
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Password is required';
-              }
-              else {
-                if(value.length < 6) {
-                  return 'Password should contain at least 6 characters';
-                }
-              }
-              return null;
-            },
+            controller: _passwordController,
+            validator: _validatePassword,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 35.0),
+            padding: const EdgeInsets.symmetric(vertical: 60.0),
             child: MaterialButton(
               onPressed: () {
                 // Validate returns true if the form is valid, or false
@@ -90,7 +246,7 @@ class SignInFormState extends State<SignInForm> {
                 }
               },
               color: Color.fromARGB(255, 74, 169, 242),
-              minWidth: double.infinity,              
+              minWidth: double.infinity,
               child: Text('Sign in'),
             ),
           ),
