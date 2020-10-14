@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
+import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -118,7 +121,7 @@ class SignInFormState extends State<SignInForm> {
     return _formKey.currentState.validate();
   }
 
-  Future<void> _signIn() async {
+  Future<bool> _signIn() async {
     String usernameOrEmailInput = _usernameOrEmailController.text;
     String passwordInput = _passwordController.text;
 
@@ -126,15 +129,23 @@ class SignInFormState extends State<SignInForm> {
         usernameOrEmail: usernameOrEmailInput, password: passwordInput);
 
     try {
-      var response = await Authentication.signIn(user: user);
-      print('''Status code: ${response.statusCode}
-      Body: ${response.body}
-      Headers: ${response.headers}
-      ''');
+      final response = await Authentication.signIn(user: user);
+      if (response.statusCode == HttpStatus.ok) {
+        // all good, save token to file
+        final tokenFile = await Authentication.saveToken(
+            token: Authentication.getAuthCookie(response: response));
+
+        if (tokenFile != null) {
+          return true;
+        }
+        return false;
+      }
     } catch (err) {
       print('Could not process sign in request');
       print(err);
+      return false;
     }
+    return false;
   }
 
   @override
@@ -174,17 +185,61 @@ class SignInFormState extends State<SignInForm> {
             child: MaterialButton(
               disabledColor: Colors.grey[600],
               disabledTextColor: Colors.white,
-              onPressed: () async {
-                if (_validateForm()) {
-                  // send request to authenticate data with Users API
-                  Scaffold.of(context)
-                      .showSnackBar(SnackBar(content: Text('Processing Data')));
-                  await _signIn();
-                }
-              },
+              onPressed: !_isProcessing
+                  ? () async {
+                      if (_validateForm()) {
+                        // send request to authenticate data with Users API
+                        setState(() {
+                          _isProcessing = true;
+                        });
+
+                        if (await _signIn()) {
+                          // all good, navigate to Home
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Home()));
+                        } else {
+                          // display error message
+                          setState(() {
+                            _isProcessing = false;
+                          });
+
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              action: SnackBarAction(
+                                label: 'Dismiss',
+                                onPressed: () {
+                                  Scaffold.of(context).hideCurrentSnackBar();
+                                },
+                              ),
+                              content: Text(
+                                'Invalid username, email or password',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2
+                                    .copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700),
+                              )));
+                        }
+                      }
+                    }
+                  : null,
               color: Color.fromARGB(255, 74, 169, 242),
               minWidth: double.infinity,
-              child: Text('Sign in'),
+              child: !_isProcessing
+                  ? Text(
+                      'Sign in',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .copyWith(color: Colors.white),
+                    )
+                  : Center(
+                      child: Theme(
+                      data: Theme.of(context).copyWith(
+                        accentColor: Color.fromARGB(255, 38, 166, 154),
+                      ),
+                      child: CircularProgressIndicator(),
+                    )),
             ),
           ),
         ],
