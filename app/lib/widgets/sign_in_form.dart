@@ -1,3 +1,5 @@
+import 'package:app/models/user.dart';
+import 'package:app/services/authentication.dart';
 import 'package:app/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,13 +23,17 @@ class SignInFormState extends State<SignInForm> {
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignInFormState>.
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameOrEmailController =
+      TextEditingController();
   bool _isUsernameOrEmailTouched = false;
   bool _isUsernameOrEmailValid = false;
   String _usernameOrEmailErrorMsg;
+  final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordTouched = false;
   bool _isPasswordValid = false;
   String _passwordErrorMsg;
   bool _obscureText = true;
+  bool _isProcessing = false;
 
   _togglePasswordVisibility() {
     setState(() {
@@ -112,6 +118,25 @@ class SignInFormState extends State<SignInForm> {
     return _formKey.currentState.validate();
   }
 
+  Future<void> _signIn() async {
+    String usernameOrEmailInput = _usernameOrEmailController.text;
+    String passwordInput = _passwordController.text;
+
+    var user = UserSignIn(
+        usernameOrEmail: usernameOrEmailInput, password: passwordInput);
+
+    try {
+      var response = await Authentication.signIn(user: user);
+      print('''Status code: ${response.statusCode}
+      Body: ${response.body}
+      Headers: ${response.headers}
+      ''');
+    } catch (err) {
+      print('Could not process sign in request');
+      print(err);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -127,6 +152,7 @@ class SignInFormState extends State<SignInForm> {
             isValid: _isUsernameOrEmailValid,
             setTouched: _setUsernameOrEmailTouched,
             validation: _validateUsernameOrEmail,
+            controller: _usernameOrEmailController,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -141,17 +167,19 @@ class SignInFormState extends State<SignInForm> {
             validation: _validatePassword,
             obscureText: _obscureText,
             toggleFieldVisibility: _togglePasswordVisibility,
+            controller: _passwordController,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 40.0),
             child: MaterialButton(
               disabledColor: Colors.grey[600],
               disabledTextColor: Colors.white,
-              onPressed: () {
+              onPressed: () async {
                 if (_validateForm()) {
                   // send request to authenticate data with Users API
                   Scaffold.of(context)
                       .showSnackBar(SnackBar(content: Text('Processing Data')));
+                  await _signIn();
                 }
               },
               color: Color.fromARGB(255, 74, 169, 242),

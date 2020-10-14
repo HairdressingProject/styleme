@@ -1,3 +1,5 @@
+import 'package:app/models/user.dart';
+import 'package:app/services/authentication.dart';
 import 'package:app/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +23,10 @@ class SignUpFormState extends State<SignUpForm> {
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignUpFormState>.
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _givenNameController = TextEditingController();
+  final TextEditingController _familyNameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -305,6 +311,32 @@ class SignUpFormState extends State<SignUpForm> {
     return _formKey.currentState.validate();
   }
 
+  Future<void> _signUp() async {
+    String givenNameInput = _givenNameController.text;
+    String familyNameInput = _familyNameController.text;
+    String usernameInput = _usernameController.text;
+    String emailInput = _emailController.text;
+    String passwordInput = _passwordController.text;
+
+    var user = UserSignUp(
+        username: usernameInput,
+        email: emailInput,
+        givenName: givenNameInput,
+        familyName: familyNameInput,
+        password: passwordInput);
+
+    try {
+      var response = await Authentication.signUp(user: user);
+      print('''Status code: ${response.statusCode}
+      Body: ${response.body}
+      Headers: ${response.headers}
+      ''');
+    } catch (err) {
+      print('Could not process sign up request');
+      print(err);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -320,6 +352,7 @@ class SignUpFormState extends State<SignUpForm> {
             isValid: _isGivenNameValid,
             setTouched: _setGivenNameTouched,
             validation: _validateGivenName,
+            controller: _givenNameController,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -332,6 +365,7 @@ class SignUpFormState extends State<SignUpForm> {
             isValid: _isFamilyNameValid,
             setTouched: _setFamilyNameTouched,
             validation: _validateFamilyName,
+            controller: _familyNameController,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -344,6 +378,7 @@ class SignUpFormState extends State<SignUpForm> {
             isValid: _isUsernameValid,
             setTouched: _setUsernameTouched,
             validation: _validateUsername,
+            controller: _usernameController,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -356,6 +391,7 @@ class SignUpFormState extends State<SignUpForm> {
             isValid: _isEmailValid,
             setTouched: _setEmailTouched,
             validation: _validateEmail,
+            controller: _emailController,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -392,11 +428,13 @@ class SignUpFormState extends State<SignUpForm> {
             child: MaterialButton(
               disabledColor: Colors.grey[600],
               disabledTextColor: Colors.white,
-              onPressed: () {
+              onPressed: () async {
                 if (_validateForm()) {
                   // send request to authenticate data with Users API
                   Scaffold.of(context)
                       .showSnackBar(SnackBar(content: Text('Processing Data')));
+
+                  await _signUp();
                 }
               },
               color: Color.fromARGB(255, 74, 169, 242),
