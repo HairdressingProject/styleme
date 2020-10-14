@@ -1,3 +1,4 @@
+import 'package:app/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
@@ -81,7 +82,8 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context) {
         ],
       ),
       onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()))
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SignUp()))
       },
     ),
     ListTile(
@@ -109,8 +111,10 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context) {
           Text('Log out'),
         ],
       ),
-      onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => null))
+      onTap: () async {
+        await Authentication.signOut();
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SignIn()));
       },
     ),
   ];

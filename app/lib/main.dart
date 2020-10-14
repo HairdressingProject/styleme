@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   Future<UserAuthenticate> _authenticatedUser;
+  bool _isProcessing = true;
 
   @override
   void initState() {
@@ -72,13 +73,20 @@ class MyAppState extends State<MyApp> {
         future: _authenticatedUser,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data != null) {
+            if (snapshot.data.id != -1) {
               // user is authenticated
               return Home();
             }
             return SignIn();
+          } else if (snapshot.hasError) {
+            return SignIn();
           }
-          return SignIn();
+          return Scaffold(
+            backgroundColor: Theme.of(context).backgroundColor,
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         },
       ),
       routes: {

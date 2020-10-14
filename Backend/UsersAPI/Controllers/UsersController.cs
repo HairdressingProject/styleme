@@ -177,7 +177,8 @@ namespace UsersAPI.Controllers
         public IActionResult LogoutUser()
         {
             // Invalidate token/cookie
-            Response.Cookies.Append("auth", "", new CookieOptions {
+            Response.Cookies.Append("auth", "", new CookieOptions
+            {
                 HttpOnly = true,
                 Expires = DateTime.Now.AddDays(-1),
                 Path = "/",
@@ -549,6 +550,7 @@ namespace UsersAPI.Controllers
             authenticatedUser.BaseUser = existingUser;
 
             _authorizationService.SetAuthCookie(Request, Response, authenticatedUser.Token);
+            Response.Headers.Append("X-Authorization-Token", authenticatedUser.Token);
 
             return Ok();
         }
@@ -559,12 +561,14 @@ namespace UsersAPI.Controllers
         [HttpGet("authenticate")]
         public async Task<IActionResult> AuthenticateUser()
         {
+            string authToken = _authorizationService.GetAuthToken(Request);
+
             if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
             }
 
-            var id = _authenticationService.GetUserIdFromToken(Request.Cookies["auth"]);
+            var id = _authenticationService.GetUserIdFromToken(authToken);
 
             if (id != null && ulong.TryParse(id, out ulong _id))
             {

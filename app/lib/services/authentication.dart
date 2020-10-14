@@ -76,6 +76,16 @@ class Authentication {
     }
   }
 
+  static Future<void> _deleteToken() async {
+    try {
+      final tokenFile = await _localTokenFile;
+      await tokenFile.delete();
+    } catch (err) {
+      print('Could not delete token file');
+      print(err);
+    }
+  }
+
   static Future<UserAuthenticate> authenticate() async {
     try {
       final localToken = await retrieveToken();
@@ -84,29 +94,27 @@ class Authentication {
         final authenticationUri =
             Uri.encodeFull('$USERS_API_URL/users/authenticate');
 
-        print('Sending this token: $localToken');
-
         final response = await get(authenticationUri, headers: {
-          "Cookies": "auth=$localToken",
+          "Authorization": "Bearer $localToken",
           "Origin": ADMIN_PORTAL_URL
         });
 
-        print('Response from authentication attempt:');
-        print('''Status code: ${response.statusCode}
-        Body: ${response.body}
-        Headers: ${response.headers}        
-        ''');
-
         if (response.statusCode == HttpStatus.ok) {
-          final UserAuthenticate authenticatedUser = jsonDecode(response.body);
+          final UserAuthenticate authenticatedUser =
+              UserAuthenticate.fromJson(jsonDecode(response.body));
           return authenticatedUser;
         }
       }
-      return null;
+      return UserAuthenticate(id: -1, userRole: 'user');
     } catch (err) {
       print('Authentication failed');
       print(err);
-      return null;
+      return UserAuthenticate(id: -1, userRole: 'user');
     }
+  }
+
+  static Future<void> signOut() async {
+    // delete locally stored token file
+    await _deleteToken();
   }
 }
