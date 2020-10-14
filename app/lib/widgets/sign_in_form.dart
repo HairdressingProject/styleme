@@ -1,3 +1,4 @@
+import 'package:app/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -9,19 +10,106 @@ class SignInForm extends StatefulWidget {
 }
 
 class SignInFormState extends State<SignInForm> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignInFormState>.
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _password = TextEditingController();
+  bool _isUsernameOrEmailTouched = false;
+  bool _isUsernameOrEmailValid = false;
+  String _usernameOrEmailErrorMsg;
+  bool _isPasswordTouched = false;
+  bool _isPasswordValid = false;
+  String _passwordErrorMsg;
   bool _obscureText = true;
 
-  bool validateEmail(String value) {
-    Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
-    return (!regex.hasMatch(value)) ? false : true;
+  _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  _setUsernameOrEmailTouched() {
+    if (!_isUsernameOrEmailTouched) {
+      setState(() {
+        _isUsernameOrEmailTouched = true;
+      });
+    }
+  }
+
+  _setPasswordTouched() {
+    if (!_isPasswordTouched) {
+      setState(() {
+        _isPasswordTouched = true;
+      });
+    }
+  }
+
+  String _validateUsernameOrEmail(String usernameInput) {
+    if (usernameInput.trim().isEmpty) {
+      String errorMsg = 'Username or email is required';
+      setState(() {
+        _isUsernameOrEmailValid = false;
+        _usernameOrEmailErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    if (usernameInput.length > 512) {
+      String errorMsg =
+          'Username or email should contain at most 512 characters';
+      setState(() {
+        _isUsernameOrEmailValid = false;
+        _passwordErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    setState(() {
+      _isUsernameOrEmailValid = true;
+      _usernameOrEmailErrorMsg = null;
+    });
+    return null;
+  }
+
+  String _validatePassword(String passwordInput) {
+    if (passwordInput.trim().isEmpty) {
+      String errorMsg = 'Password is required';
+      setState(() {
+        _isPasswordValid = false;
+        _passwordErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    if (passwordInput.trim().length < 6) {
+      String errorMsg = 'Password should contain at least 6 characters';
+      setState(() {
+        _isPasswordValid = false;
+        _passwordErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    if (passwordInput.length > 512) {
+      String errorMsg = 'Password should contain at most 512 characters';
+      setState(() {
+        _isPasswordValid = false;
+        _passwordErrorMsg = errorMsg;
+      });
+      return errorMsg;
+    }
+    setState(() {
+      _isPasswordValid = true;
+      _passwordErrorMsg = null;
+    });
+    return null;
+  }
+
+  bool _validateForm() {
+    return _formKey.currentState.validate();
   }
 
   @override
@@ -30,67 +118,44 @@ class SignInFormState extends State<SignInForm> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Username or email',
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Username or email is required';
-              }
-              return null;
-            },
+        children: [
+          CustomFormField(
+            label: 'Username or email *',
+            errorMsg: _usernameOrEmailErrorMsg,
+            isPassword: false,
+            isTouched: _isUsernameOrEmailTouched,
+            isValid: _isUsernameOrEmailValid,
+            setTouched: _setUsernameOrEmailTouched,
+            validation: _validateUsernameOrEmail,
           ),
-          // TextFormField(
-          //   decoration: InputDecoration(
-          //     labelText: 'Email',
-          //   ),
-          //   validator: (value) {
-          //     if (value.isEmpty) {
-          //       return 'Email is required';
-          //     }
-          //     else {
-          //       if (!validateEmail(value)) {
-          //         return 'This does not look like a valid email';
-          //       }
-          //     }
-          //     return null;
-          //   },
-          // ),
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Password',
-            ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.0),
+          ),
+          CustomFormField(
+            label: 'Password *',
+            errorMsg: _passwordErrorMsg,
+            isPassword: true,
+            isTouched: _isPasswordTouched,
+            isValid: _isPasswordValid,
+            setTouched: _setPasswordTouched,
+            validation: _validatePassword,
             obscureText: _obscureText,
-            controller: _password,
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Password is required';
-              }
-              else {
-                if(value.length < 6) {
-                  return 'Password should contain at least 6 characters';
-                }
-              }
-              return null;
-            },
+            toggleFieldVisibility: _togglePasswordVisibility,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 35.0),
+            padding: const EdgeInsets.symmetric(vertical: 40.0),
             child: MaterialButton(
+              disabledColor: Colors.grey[600],
+              disabledTextColor: Colors.white,
               onPressed: () {
-                // Validate returns true if the form is valid, or false
-                // otherwise.
-                if (_formKey.currentState.validate()) {
-                  // If the form is valid, display a Snackbar.
+                if (_validateForm()) {
+                  // send request to authenticate data with Users API
                   Scaffold.of(context)
                       .showSnackBar(SnackBar(content: Text('Processing Data')));
                 }
               },
               color: Color.fromARGB(255, 74, 169, 242),
-              minWidth: double.infinity,              
+              minWidth: double.infinity,
               child: Text('Sign in'),
             ),
           ),

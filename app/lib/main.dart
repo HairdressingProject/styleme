@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w300,
                   letterSpacing: 0.5))),
-      home: Home(),
+      home: SignUp(),
       routes: {
         SignIn.routeName: (context) => SignIn(),
         Home.routeName: (context) => Home(),
