@@ -113,6 +113,9 @@ class PictureService:
         """
         save_path = FACE_SHAPE_RESULTS_PATH
 
+        if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
+            os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
+
         df = pd.DataFrame(
             columns=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17',
                      '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
@@ -231,6 +234,10 @@ class PictureService:
 
     def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER,
                            save_path=HAIR_COLOUR_RESULTS_PATH):
+        
+        if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
+            os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
+
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
         cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
 

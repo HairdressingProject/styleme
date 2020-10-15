@@ -65,6 +65,12 @@ cd app/libraries/fmPytorch/cp
 wget https://github.com/zllrunning/face-makeup.PyTorch/raw/master/cp/79999_iter.pth
 ```
 
+Download the shape predictor (shape_predictor_68_face_landmarks.dat):
+```shell script
+cd app/libraries/HairTransfer
+wget https://github.com/Emmanuel-Ezenwere/HairTransfer/raw/master/shape_predictor_68_face_landmarks.dat
+```
+
 ### Run the application
 From your Anaconda Prompt (with the __StyleMe__ environment activated), run the command below from the project root directory (one level above the `app` directory):
 
