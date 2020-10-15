@@ -1,5 +1,6 @@
 from typing import List
-
+import os
+import pathlib
 from fastapi import APIRouter, File, Depends, UploadFile, status, Response
 from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
@@ -24,6 +25,9 @@ def get_db():
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def upload_model_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
     save_path = MODEL_UPLOAD_FOLDER
+
+    if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
+        os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
 
     print(save_path)
 
