@@ -33,9 +33,6 @@ class _SignUpState extends State<SignUp> {
             Text('Sign Up', style: Theme.of(context).textTheme.headline1),
             const Padding(padding: EdgeInsets.symmetric(vertical: 15.0)),
             SignUpForm(),
-            // Padding(padding: const EdgeInsets.only(top: 35.0),
-            //   child: CustomButton(text: "Sign up", enabled: true,)
-            // ),
             Padding(
                 padding: const EdgeInsets.only(top: 5.0),
                 child: Row(

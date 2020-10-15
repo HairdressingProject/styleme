@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,20 +13,33 @@ class Authentication {
     final String signInUri = Uri.encodeFull('$USERS_API_URL/users/sign_in');
     final String encodedUser = jsonEncode(user);
 
-    return await post(signInUri, body: encodedUser, headers: {
-      "Content-Type": "application/json",
-      "Origin": ADMIN_PORTAL_URL
-    });
+    try {
+      final response = await post(signInUri, body: encodedUser, headers: {
+        "Content-Type": "application/json",
+        "Origin": ADMIN_PORTAL_URL
+      }).timeout(const Duration(seconds: 5));
+      return response;
+    } catch (err) {
+      print('Server connection timed out');
+      print(err);
+      return null;
+    }
   }
 
   static Future<Response> signUp({@required UserSignUp user}) async {
     final String signUpUri = Uri.encodeFull('$USERS_API_URL/users/sign_up');
     final String encodedUser = jsonEncode(user);
 
-    return await post(signUpUri, body: encodedUser, headers: {
-      "Content-Type": "application/json",
-      "Origin": ADMIN_PORTAL_URL
-    });
+    try {
+      return await post(signUpUri, body: encodedUser, headers: {
+        "Content-Type": "application/json",
+        "Origin": ADMIN_PORTAL_URL
+      }).timeout(const Duration(seconds: 5));
+    } catch (err) {
+      print('Server connection timed out');
+      print(err);
+      return null;
+    }
   }
 
   static String getAuthCookie({@required Response response}) {

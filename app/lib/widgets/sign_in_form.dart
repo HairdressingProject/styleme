@@ -37,6 +37,7 @@ class SignInFormState extends State<SignInForm> {
   String _passwordErrorMsg;
   bool _obscureText = true;
   bool _isProcessing = false;
+  String _errorMsg;
 
   _togglePasswordVisibility() {
     setState(() {
@@ -130,6 +131,14 @@ class SignInFormState extends State<SignInForm> {
 
     try {
       final response = await Authentication.signIn(user: user);
+
+      if (response == null) {
+        setState(() {
+          _errorMsg = "Our servers are currently unavailable";
+        });
+        return false;
+      }
+
       if (response.statusCode == HttpStatus.ok) {
         // all good, save token to file
         final tokenFile = await Authentication.saveToken(
@@ -138,7 +147,10 @@ class SignInFormState extends State<SignInForm> {
         if (tokenFile != null) {
           return true;
         }
-        return false;
+      } else {
+        setState(() {
+          _errorMsg = "Invalid username, email or password";
+        });
       }
     } catch (err) {
       print('Could not process sign in request');
@@ -211,7 +223,7 @@ class SignInFormState extends State<SignInForm> {
                                 },
                               ),
                               content: Text(
-                                'Invalid username, email or password',
+                                _errorMsg,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText2
