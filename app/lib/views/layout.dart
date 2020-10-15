@@ -4,14 +4,10 @@ import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
 import 'package:app/views/pages/sign_up.dart';
 
-const DrawerHeader defaultDrawerHeader = DrawerHeader(
-  child: Center(
-      child: Text('Menu',
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-          ))),
-);
+DrawerHeader defaultDrawerHeader = DrawerHeader(
+    child: Row(
+  children: [Text('Menu')],
+));
 
 List<ListTile> buildDefaultDrawerItems(BuildContext context) {
   return [
@@ -126,7 +122,7 @@ class Layout extends StatelessWidget {
       this.header,
       this.body,
       this.title,
-      this.drawerHeader = defaultDrawerHeader,
+      this.drawerHeader,
       this.drawerItems})
       : super(key: key);
 
@@ -144,7 +140,7 @@ class Layout extends StatelessWidget {
         ),
         drawer: Drawer(
           child: ListView(
-            children: [drawerHeader, ...drawerItems],
+            children: [defaultDrawerHeader, ...drawerItems],
           ),
         ),
         body: body);

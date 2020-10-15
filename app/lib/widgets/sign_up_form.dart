@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
+import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +33,9 @@ class SignUpFormState extends State<SignUpForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  bool _isProcessing = false;
+  String _errorMsg;
 
   @override
   void dispose() {
@@ -311,7 +317,7 @@ class SignUpFormState extends State<SignUpForm> {
     return _formKey.currentState.validate();
   }
 
-  Future<void> _signUp() async {
+  Future<bool> _signUp() async {
     String givenNameInput = _givenNameController.text;
     String familyNameInput = _familyNameController.text;
     String usernameInput = _usernameController.text;
@@ -326,14 +332,42 @@ class SignUpFormState extends State<SignUpForm> {
         password: passwordInput);
 
     try {
-      var response = await Authentication.signUp(user: user);
-      print('''Status code: ${response.statusCode}
-      Body: ${response.body}
-      Headers: ${response.headers}
-      ''');
+      final response = await Authentication.signUp(user: user);
+
+      if (response == null) {
+        setState(() {
+          _errorMsg = "Our servers are currently unavailable";
+        });
+        return false;
+      }
+
+      if (response.statusCode == HttpStatus.created ||
+          response.statusCode == HttpStatus.ok) {
+        // all good, save token to file
+        final tokenFile = await Authentication.saveToken(
+            token: Authentication.getAuthCookie(response: response));
+
+        if (tokenFile != null) {
+          return true;
+        }
+      } else if (response.statusCode == HttpStatus.conflict) {
+        setState(() {
+          _errorMsg = "User is already registered";
+        });
+      } else if (response.statusCode == HttpStatus.notFound) {
+        setState(() {
+          _errorMsg = "Our servers are currently unavailable";
+        });
+      } else {
+        setState(() {
+          _errorMsg = "Invalid fields. Please try again.";
+        });
+      }
+      return false;
     } catch (err) {
       print('Could not process sign up request');
       print(err);
+      return false;
     }
   }
 
@@ -428,18 +462,61 @@ class SignUpFormState extends State<SignUpForm> {
             child: MaterialButton(
               disabledColor: Colors.grey[600],
               disabledTextColor: Colors.white,
-              onPressed: () async {
-                if (_validateForm()) {
-                  // send request to authenticate data with Users API
-                  Scaffold.of(context)
-                      .showSnackBar(SnackBar(content: Text('Processing Data')));
+              onPressed: !_isProcessing
+                  ? () async {
+                      if (_validateForm()) {
+                        // send request to authenticate data with Users API
+                        setState(() {
+                          _isProcessing = true;
+                        });
 
-                  await _signUp();
-                }
-              },
+                        if (await _signUp()) {
+                          // all good, navigate to Home
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Home()));
+                        } else {
+                          // display error message
+                          setState(() {
+                            _isProcessing = false;
+                          });
+
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              action: SnackBarAction(
+                                label: 'Dismiss',
+                                onPressed: () {
+                                  Scaffold.of(context).hideCurrentSnackBar();
+                                },
+                              ),
+                              content: Text(
+                                _errorMsg,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2
+                                    .copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700),
+                              )));
+                        }
+                      }
+                    }
+                  : null,
               color: Color.fromARGB(255, 74, 169, 242),
               minWidth: double.infinity,
-              child: Text('Sign up'),
+              child: !_isProcessing
+                  ? Text(
+                      'Sign up',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .copyWith(color: Colors.white),
+                    )
+                  : Center(
+                      child: Theme(
+                      data: Theme.of(context).copyWith(
+                        accentColor: Color.fromARGB(255, 38, 166, 154),
+                      ),
+                      child: CircularProgressIndicator(),
+                    )),
             ),
           ),
         ],
