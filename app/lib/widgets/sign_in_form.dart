@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:app/models/user.dart';
+import 'package:app/services/authentication.dart';
+import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,13 +26,18 @@ class SignInFormState extends State<SignInForm> {
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignInFormState>.
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameOrEmailController =
+      TextEditingController();
   bool _isUsernameOrEmailTouched = false;
   bool _isUsernameOrEmailValid = false;
   String _usernameOrEmailErrorMsg;
+  final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordTouched = false;
   bool _isPasswordValid = false;
   String _passwordErrorMsg;
   bool _obscureText = true;
+  bool _isProcessing = false;
+  String _errorMsg;
 
   _togglePasswordVisibility() {
     setState(() {
@@ -112,6 +122,44 @@ class SignInFormState extends State<SignInForm> {
     return _formKey.currentState.validate();
   }
 
+  Future<bool> _signIn() async {
+    String usernameOrEmailInput = _usernameOrEmailController.text;
+    String passwordInput = _passwordController.text;
+
+    var user = UserSignIn(
+        usernameOrEmail: usernameOrEmailInput, password: passwordInput);
+
+    try {
+      final response = await Authentication.signIn(user: user);
+
+      if (response == null) {
+        setState(() {
+          _errorMsg = "Our servers are currently unavailable";
+        });
+        return false;
+      }
+
+      if (response.statusCode == HttpStatus.ok) {
+        // all good, save token to file
+        final tokenFile = await Authentication.saveToken(
+            token: Authentication.getAuthCookie(response: response));
+
+        if (tokenFile != null) {
+          return true;
+        }
+      } else {
+        setState(() {
+          _errorMsg = "Invalid username, email or password";
+        });
+      }
+    } catch (err) {
+      print('Could not process sign in request');
+      print(err);
+      return false;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -127,6 +175,7 @@ class SignInFormState extends State<SignInForm> {
             isValid: _isUsernameOrEmailValid,
             setTouched: _setUsernameOrEmailTouched,
             validation: _validateUsernameOrEmail,
+            controller: _usernameOrEmailController,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -141,22 +190,68 @@ class SignInFormState extends State<SignInForm> {
             validation: _validatePassword,
             obscureText: _obscureText,
             toggleFieldVisibility: _togglePasswordVisibility,
+            controller: _passwordController,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 40.0),
             child: MaterialButton(
               disabledColor: Colors.grey[600],
               disabledTextColor: Colors.white,
-              onPressed: () {
-                if (_validateForm()) {
-                  // send request to authenticate data with Users API
-                  Scaffold.of(context)
-                      .showSnackBar(SnackBar(content: Text('Processing Data')));
-                }
-              },
+              onPressed: !_isProcessing
+                  ? () async {
+                      if (_validateForm()) {
+                        // send request to authenticate data with Users API
+                        setState(() {
+                          _isProcessing = true;
+                        });
+
+                        if (await _signIn()) {
+                          // all good, navigate to Home
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Home()));
+                        } else {
+                          // display error message
+                          setState(() {
+                            _isProcessing = false;
+                          });
+
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              action: SnackBarAction(
+                                label: 'Dismiss',
+                                onPressed: () {
+                                  Scaffold.of(context).hideCurrentSnackBar();
+                                },
+                              ),
+                              content: Text(
+                                _errorMsg,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2
+                                    .copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700),
+                              )));
+                        }
+                      }
+                    }
+                  : null,
               color: Color.fromARGB(255, 74, 169, 242),
               minWidth: double.infinity,
-              child: Text('Sign in'),
+              child: !_isProcessing
+                  ? Text(
+                      'Sign in',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .copyWith(color: Colors.white),
+                    )
+                  : Center(
+                      child: Theme(
+                      data: Theme.of(context).copyWith(
+                        accentColor: Color.fromARGB(255, 38, 166, 154),
+                      ),
+                      child: CircularProgressIndicator(),
+                    )),
             ),
           ),
         ],

@@ -144,6 +144,11 @@ namespace UsersAPI.Services
 
         public bool ValidateUserToken(string token)
         {
+            if (string.IsNullOrEmpty(token))
+            {
+                return false;
+            }
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_appSettings.Secret);
 
@@ -169,6 +174,11 @@ namespace UsersAPI.Services
 
         public string GetUserIdFromToken(string token)
         {
+            if (string.IsNullOrEmpty(token))
+            {
+                return null;
+            }
+
             var handler = new JwtSecurityTokenHandler();
             var t = handler.ReadJwtToken(token);
 
