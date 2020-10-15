@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
 import 'package:app/views/pages/select_face_shape.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Home extends StatelessWidget {
   static final String routeName = '/homeRoute';
@@ -20,6 +21,13 @@ class Home extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SvgPicture.asset(
+                'assets/icons/home_top.svg',
+                semanticsLabel: 'Home page logo',
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0)
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
               ),
