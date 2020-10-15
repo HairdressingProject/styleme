@@ -234,6 +234,10 @@ class PictureService:
 
     def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER,
                            save_path=HAIR_COLOUR_RESULTS_PATH):
+        
+        if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
+            os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
+
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
         cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
 
