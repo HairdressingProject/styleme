@@ -111,7 +111,7 @@ class Authentication {
         final response = await get(authenticationUri, headers: {
           "Authorization": "Bearer $localToken",
           "Origin": ADMIN_PORTAL_URL
-        });
+        }).timeout(Duration(seconds: 5));
 
         if (response.statusCode == HttpStatus.ok) {
           final UserAuthenticate authenticatedUser =
