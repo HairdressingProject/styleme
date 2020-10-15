@@ -87,10 +87,13 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
 
   @override
   build(BuildContext context) {
-    return Layout(
-        title: 'Style Me',
-        header: 'Select Face Shape',
-        drawerItems: buildDefaultDrawerItems(context),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Select a face shape',
+            style: TextStyle(fontFamily: 'Klavika'),
+          ),
+        ),
         body: Scrollbar(
           child: Container(
             alignment: Alignment.center,
@@ -141,7 +144,7 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
                 ),
-                Container(
+                /* Container(
                   width: 200.0,
                   height: 40.0,
                   child: OutlinedButton(
@@ -159,10 +162,10 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
                           .copyWith(color: Colors.black),
                     ),
                   ),
-                ),
-                const Padding(
+                ), */
+                /*  const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
-                ),
+                ), */
               ],
             ),
           ),
