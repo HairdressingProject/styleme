@@ -1,3 +1,4 @@
+import 'package:app/views/pages/select_hair_style.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
@@ -25,9 +26,7 @@ class Home extends StatelessWidget {
                 'assets/icons/home_top.svg',
                 semanticsLabel: 'Home page logo',
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0)
-              ),
+              Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
               ),
@@ -62,6 +61,7 @@ class Home extends StatelessWidget {
                   child: CustomButton(
                     icon: Icon(Icons.check),
                     text: "Select a hair style",
+                    action: SelectHairStyle(),
                     alreadySelected: true,
                   )),
               Padding(

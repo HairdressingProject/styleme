@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-class FaceShapeCard extends StatelessWidget {
-  const FaceShapeCard(
+class SelectableCard extends StatelessWidget {
+  const SelectableCard(
       {Key key,
       @required this.imgPath,
       @required this.label,
       @required this.select,
+      this.type,
       this.selected = false})
       : super(key: key);
 
   final String imgPath;
   final String label;
   final bool selected;
+  final String type;
   final Function select;
 
   @override
@@ -29,7 +31,10 @@ class FaceShapeCard extends StatelessWidget {
                   children: [
                     Container(
                       alignment: Alignment.center,
-                      child: Image.asset(imgPath),
+                      height: 150,
+                      child: Image.asset(
+                        imgPath,
+                      ),
                     ),
                     selected
                         ? Container(

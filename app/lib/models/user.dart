@@ -105,7 +105,7 @@ class UserSignUp {
         'UserEmail': email,
         'FirstName': givenName,
         'LastName': familyName,
-        'UserRole': UserRole.user
+        'UserRole': UserRoles.user
       };
 
   @override
@@ -141,7 +141,7 @@ class UserAuthenticate {
   }
 }
 
-class UserRole {
+class UserRoles {
   static const admin = 'admin';
   static const user = 'user';
   static const dev = 'developer';

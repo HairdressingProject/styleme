@@ -1,5 +1,6 @@
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
+import 'package:app/views/pages/select_hair_style.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
@@ -17,7 +18,6 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   Future<UserAuthenticate> _authenticatedUser;
-  bool _isProcessing = true;
 
   @override
   void initState() {
@@ -93,7 +93,8 @@ class MyAppState extends State<MyApp> {
         SignIn.routeName: (context) => SignIn(),
         Home.routeName: (context) => Home(),
         SignUp.routeName: (context) => SignUp(),
-        SelectFaceShape.routeName: (context) => SelectFaceShape()
+        SelectFaceShape.routeName: (context) => SelectFaceShape(),
+        SelectHairStyle.routeName: (context) => SelectHairStyle(),
       },
     );
   }
