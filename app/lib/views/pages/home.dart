@@ -1,4 +1,5 @@
 import 'package:app/views/pages/select_hair_style.dart';
+import 'package:app/views/pages/upload_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
@@ -47,6 +48,7 @@ class Home extends StatelessWidget {
                     icon: Icon(Icons.check),
                     text: "Select or take picture",
                     alreadySelected: true,
+                    action: UploadPicture(),
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
