@@ -1,10 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, File, Depends, UploadFile, status, Response
+from fastapi import APIRouter, File, Depends, UploadFile, status, Response, HTTPException
 from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
 from app.settings import PICTURE_UPLOAD_FOLDER, MODEL_UPLOAD_FOLDER
+from fastapi.responses import FileResponse
 
 router = APIRouter()
 picture_service = services.PictureService()
@@ -71,10 +72,21 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             history_actions.add_history(db=db, history=new_history)
             print(new_history)
 
-            return face_shape[0]
+            results = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
+            return results[0]
     else:
         return {"No face detected (cant read image)"}
     # return face_detected
+
+@router.get("/file/{picture_id}", status_code=status.HTTP_200_OK)
+async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
+    selected_picture = picture_actions.read_picture_by_id(picture_id=picture_id, db=db)
+    if selected_picture:
+        file_path = selected_picture.file_path + '/' + selected_picture.file_name
+        print(file_path)
+        return FileResponse(file_path)
+    raise HTTPException(status_code=404, detail='Picture file not found')
+    
 
 
 @router.get("/{picture_id}", response_model=schemas.Picture)
