@@ -1,5 +1,3 @@
-import 'package:app/models/hair_colour.dart';
-import 'package:app/widgets/cards_grid.dart';
 import 'package:app/widgets/colour_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -101,7 +99,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Select a hair style',
+            'Select a hair colour',
             style: TextStyle(fontFamily: 'Klavika'),
           ),
         ),
@@ -134,7 +132,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
                   height: 150.0,
                 ),
                 const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5.0),
+                  padding: EdgeInsets.symmetric(vertical: 15.0),
                 ),
                 Text(
                   'Colour swatch',
