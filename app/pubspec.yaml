@@ -27,6 +27,7 @@ dependencies:
   http: ^0.12.2
   path_provider: ^1.6.18
   image_picker: ^0.6.7+12
+  image_crop: ^0.3.4
   hexcolor: ^1.0.6
 
 

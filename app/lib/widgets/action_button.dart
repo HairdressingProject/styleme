@@ -24,9 +24,7 @@ class ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: this.enabled
-          ? action
-          : null,
+      onPressed: this.enabled ? action : null,
       color: colour,
       disabledColor: Theme.of(context).disabledColor,
       disabledTextColor: Colors.white,
