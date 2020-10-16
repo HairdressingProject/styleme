@@ -4,10 +4,57 @@ import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
 import 'package:app/views/pages/sign_up.dart';
 
-DrawerHeader defaultDrawerHeader = DrawerHeader(
-    child: Row(
-  children: [Text('Menu')],
-));
+DrawerHeader buildDrawerHeader(BuildContext context) {
+  return DrawerHeader(
+      child: Column(
+    children: [
+      Container(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.close,
+                color: Colors.black,
+                size: 32.0,
+              ))),
+      const Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
+      Column(
+        children: [
+          Container(
+            // padding: const EdgeInsets.only(top: 50.0),
+            alignment: Alignment.centerLeft,
+            child: Icon(Icons.account_circle),
+          ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
+          Container(
+              alignment: Alignment.centerLeft,
+              // padding: const EdgeInsets.only(top: 80.0),
+              child: Text(
+                'Username',
+                style: Theme.of(context)
+                    .textTheme
+                    .headline2
+                    .copyWith(fontFamily: 'Klavika'),
+              )),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
+          Container(
+            alignment: Alignment.centerLeft,
+            // padding: const EdgeInsets.only(top: 100.0),
+            child: Text(
+              'User',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1
+                  .copyWith(fontFamily: 'Klavika'),
+            ),
+          ),
+        ],
+      ),
+    ],
+  ));
+}
 
 List<ListTile> buildDefaultDrawerItems(BuildContext context) {
   return [
@@ -140,7 +187,7 @@ class Layout extends StatelessWidget {
         ),
         drawer: Drawer(
           child: ListView(
-            children: [defaultDrawerHeader, ...drawerItems],
+            children: [buildDrawerHeader(context), ...drawerItems],
           ),
         ),
         body: body);
