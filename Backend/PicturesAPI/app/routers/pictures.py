@@ -26,9 +26,6 @@ def get_db():
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
     save_path = PICTURE_UPLOAD_FOLDER
-
-    print(save_path)
-
     file_name = picture_service.save_picture(file, save_path)
     face_detected = picture_service.detect_face(file_name, save_path)
 
@@ -36,18 +33,14 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
         # try to find face landmark points
         face_landmarks = picture_service.detect_face_landmarks(file_name, save_path)
         if face_landmarks is None:
-            return {"No face landmarks detected"}
+            raise HTTPException(status_code=422, detail="No face landmarks detected")
         else:
             picture_info = picture_service.get_picture_info(save_path, file_name)
-            print(picture_info, "Picture info")
 
             # detect face_shape
             face_shape = picture_service.detect_face_shape(file_name, save_path)
             if face_shape is None:
-                print("face shape is none")
-                return {"face shape detected"}
-            print(face_shape, "face_shape result")
-            print(type(face_shape))
+                raise HTTPException(status_code=422, detail="Face shape could not be detected")
 
             new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
                                          file_size=picture_info.file_size, height=picture_info.height,
@@ -60,23 +53,18 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
 
             # parse face shape string to int
             face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
-            print(face_shape_id)
 
             user_id = 1
 
             # ToDo: redirect to POST /history/face_shape ?
             new_history = models.History(picture_id=orig_pic.id, original_picture_id=orig_pic.id,
                                          face_shape_id=face_shape_id, user_id=user_id)
-            print(new_history)
-            print(new_history.picture_id)
             history_actions.add_history(db=db, history=new_history)
-            print(new_history)
 
             results = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
-            return results[0]
+            return {'picture': results[0], 'face_shape': face_shape[0]}
     else:
-        return {"No face detected (cant read image)"}
-    # return face_detected
+        raise HTTPException(status_code=422, detail="No face detected")
 
 
 @router.get("/file/{picture_id}", status_code=status.HTTP_200_OK)
