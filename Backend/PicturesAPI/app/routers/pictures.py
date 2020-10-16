@@ -122,7 +122,7 @@ async def get_picture_face_shape(picture_id: int, db: Session = Depends(get_db))
     :param db: db session instance
     :returns: Computed face shape
     :raises:
-        HTTPException: Status 400 if no face is detected from the picture, 404 if the picture is not found by its ID
+        HTTPException: Status 422 if no face is detected from the picture, 404 if the picture is not found by its ID
     """
     picture = picture_actions.read_picture_by_id(picture_id=picture_id, db=db)
 
