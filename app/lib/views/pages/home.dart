@@ -1,3 +1,4 @@
+import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
@@ -67,10 +68,10 @@ class Home extends StatelessWidget {
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
                   child: CustomButton(
-                    icon: Icon(Icons.add),
-                    text: "Colour your hair",
-                    enabled: true,
-                  )),
+                      icon: Icon(Icons.add),
+                      text: "Colour your hair",
+                      enabled: true,
+                      action: SelectHairColour())),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
                   child: CustomButton(

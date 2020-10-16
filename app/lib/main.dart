@@ -1,5 +1,6 @@
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
+import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
@@ -95,6 +96,7 @@ class MyAppState extends State<MyApp> {
         SignUp.routeName: (context) => SignUp(),
         SelectFaceShape.routeName: (context) => SelectFaceShape(),
         SelectHairStyle.routeName: (context) => SelectHairStyle(),
+        SelectHairColour.routeName: (context) => SelectHairColour(),
       },
     );
   }
