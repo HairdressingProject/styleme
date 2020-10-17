@@ -82,6 +82,9 @@ def sharpen(img):
 
 def hair(image, parsing, part=17, color=[ 255,0,0]):
 	b, g, r = color      #[10, 50, 250]       # [10, 250, 10]
+	print("b: ", b)
+	print("g: ", g)
+	print("r: ", r)
 	tar_color = np.zeros_like(image)
 	tar_color[:, :, 0] = b
 	tar_color[:, :, 1] = g

@@ -20,6 +20,16 @@ class _SelectHairColourState extends State<SelectHairColour> {
   double _lightnessValue;
   String _lightnessLabel;
   bool _isLoading = false;
+  int _r;
+  int _b;
+  int _g;
+  HSLColor _hsl;
+  double _alpha;
+  double _h;
+  double _s;
+  double _l;
+  Color _rgb;
+  Color _selectedColour;
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -39,6 +49,10 @@ class _SelectHairColourState extends State<SelectHairColour> {
         print(response.request.headers);
         print('Response from API:');
         print('${await response}');
+        print("Selected colour: ");
+        print(_selectedColour.red);
+        print(_selectedColour.blue);
+        print(_selectedColour.green);
 
         // ToDo: Improve error messages
         if(await response.statusCode == 200) {
@@ -87,13 +101,25 @@ class _SelectHairColourState extends State<SelectHairColour> {
       }).toList();
 
       _selectedColourCard = card;
+      Color myColor = HexColor(_selectedColourCard.colourHash);
+      print(myColor);
+      _r = myColor.red;
+      _g = myColor.green;
+      _b = myColor.blue;
+      _rgb = Color.fromARGB(255, _r, _g, _b);
+      _hsl = HSLColor.fromColor(myColor);
+      _alpha = _hsl.alpha;
+      _h = _hsl.hue;
+      _s = _hsl.saturation;
+      _l = _hsl.lightness;
+      _selectedColour = HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue/100).toColor();
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _lightnessValue = 0.0;
+    _lightnessValue = 50.0;
     _lightnessLabel = "0%";
     _colours = [
       ColourCard(
@@ -298,11 +324,15 @@ class _SelectHairColourState extends State<SelectHairColour> {
                         width: 100.0,
                         height: 100.0,
                         color: _selectedColourCard != null
-                            ? Color.alphaBlend(
-                                HexColor(_selectedColourCard.colourHash),
-                                Color.fromARGB(0, 255, 255, 255),
-                              )
-                            : Theme.of(context).backgroundColor)
+                            ? HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue/100).toColor()
+                            : HSLColor.fromColor(Theme.of(context).backgroundColor).toColor()
+                    )
+                        // color: _selectedColourCard != null
+                        //     ? Color.alphaBlend(
+                        //         HexColor(_selectedColourCard.colourHash),
+                        //         Color.fromARGB(0, 255, 255, 255),
+                        //       )
+                        //     : Theme.of(context).backgroundColor)
                   ],
                 ),
                 const Padding(
