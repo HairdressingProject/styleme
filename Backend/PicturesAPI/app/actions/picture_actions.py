@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from sqlalchemy.orm import Session
 
@@ -16,7 +16,7 @@ class PictureActions:
         db.refresh(db_picture)
         return db_picture
 
-    def read_picture_by_id(self, db: Session, picture_id):
+    def read_picture_by_id(self, db: Session, picture_id) -> Union[Picture, None]:
         return db.query(Picture).filter(Picture.id == picture_id).first()
 
     def read_picture_by_file_name(self, db: Session, file_name: str, skip: int = 0, limit: int = 100) -> List[Picture]:

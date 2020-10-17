@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
 from app.settings import PICTURE_UPLOAD_FOLDER, MODEL_UPLOAD_FOLDER
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, ORJSONResponse
 
 router = APIRouter()
 picture_service = services.PictureService()
@@ -26,9 +26,6 @@ def get_db():
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
     save_path = PICTURE_UPLOAD_FOLDER
-
-    print(save_path)
-
     file_name = picture_service.save_picture(file, save_path)
     face_detected = picture_service.detect_face(file_name, save_path)
 
@@ -36,18 +33,14 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
         # try to find face landmark points
         face_landmarks = picture_service.detect_face_landmarks(file_name, save_path)
         if face_landmarks is None:
-            return {"No face landmarks detected"}
+            raise HTTPException(status_code=422, detail="No face landmarks detected")
         else:
             picture_info = picture_service.get_picture_info(save_path, file_name)
-            print(picture_info, "Picture info")
 
             # detect face_shape
             face_shape = picture_service.detect_face_shape(file_name, save_path)
-            if (face_shape is None):
-                print("face shape is none")
-                return {"face shape detected"}
-            print(face_shape, "face_shape result")
-            print(type(face_shape))
+            if face_shape is None:
+                raise HTTPException(status_code=422, detail="Face shape could not be detected")
 
             new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
                                          file_size=picture_info.file_size, height=picture_info.height,
@@ -60,23 +53,19 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
 
             # parse face shape string to int
             face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
-            print(face_shape_id)
 
             user_id = 1
 
             # ToDo: redirect to POST /history/face_shape ?
             new_history = models.History(picture_id=orig_pic.id, original_picture_id=orig_pic.id,
                                          face_shape_id=face_shape_id, user_id=user_id)
-            print(new_history)
-            print(new_history.picture_id)
             history_actions.add_history(db=db, history=new_history)
-            print(new_history)
 
             results = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
-            return results[0]
+            return {'picture': results[0], 'face_shape': face_shape[0]}
     else:
-        return {"No face detected (cant read image)"}
-    # return face_detected
+        raise HTTPException(status_code=422, detail="No face detected")
+
 
 @router.get("/file/{picture_id}", status_code=status.HTTP_200_OK)
 async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
@@ -86,7 +75,6 @@ async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
         print(file_path)
         return FileResponse(file_path)
     raise HTTPException(status_code=404, detail='Picture file not found')
-    
 
 
 @router.get("/{picture_id}", response_model=schemas.Picture)
@@ -113,6 +101,44 @@ async def read_picture_by_filename(picture_filename: str, response: Response, db
 def read_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
     pictures = picture_actions.read_pictures(db, skip=skip, limit=limit, search=search)
     return pictures
+
+
+@router.get("/face_shape/{picture_id}")
+async def get_picture_face_shape(picture_id: int, db: Session = Depends(get_db)):
+    """Get face shape from a picture identified by its ID
+    :param picture_id: ID of the picture to be processed
+    :param db: db session instance
+    :returns: Computed face shape
+    :raises:
+        HTTPException: Status 422 if no face is detected from the picture, 404 if the picture is not found by its ID
+    """
+    picture = picture_actions.read_picture_by_id(picture_id=picture_id, db=db)
+
+    if picture:
+        face_detected = picture_service.detect_face(picture.file_name, picture.file_path)
+
+        if face_detected is True:
+            # try to find face landmark points
+            face_landmarks = picture_service.detect_face_landmarks(picture.file_name, picture.file_path)
+            if face_landmarks is None:
+                raise HTTPException(status_code=422, detail="Could not detect face landmarks from picture")
+            else:
+                picture_info = picture_service.get_picture_info(picture.file_path, picture.file_name)
+                print(picture_info, "Picture info")
+
+                # detect face_shape
+                face_shape = picture_service.detect_face_shape(picture.file_name, picture.file_path)
+                if face_shape is None:
+                    print("face shape is none")
+                    return {"face shape detected"}
+                print(face_shape, "face_shape result")
+                print(type(face_shape))
+            try:
+                return {'face_shape': face_shape[0]}
+            except:
+                raise HTTPException(status_code=422, detail="Could not compute face shape from picture")
+        raise HTTPException(status_code=422, detail="Could not detect a face in the picture")
+    raise HTTPException(status_code=404, detail="Could not find picture by id")
 
 
 # @router.get("/models/", response_model=List[schemas.Picture])
@@ -217,7 +243,7 @@ async def change_hairstyle_str(user_picture_file_name: str, model_picture_file_n
 
 @router.post("_test/{picture_url}/change_hairstyle/{model_url}")
 async def change_hairstyle_str_path(picture_url: str, model_url: str,
-                               db: Session = Depends(get_db)):
+                                    db: Session = Depends(get_db)):
     # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
     # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
 
@@ -245,12 +271,11 @@ async def delete_picture(picture_id: int, response: Response, db: Session = Depe
     selected_pictures = picture_actions.read_pictures(db, search=selected_file_name)
 
     for pic in selected_pictures:
-        print(pic.file_path+pic.file_name)
+        print(pic.file_path + pic.file_name)
         # delete from db
         picture_actions.delete_picture(db=db, picture_id=pic.id)
         # delete from disk
         picture_service.delete_picture(pic.file_path, pic.file_name)
-
 
     # return picture_actions.delete_picture(db=db, picture_id=picture_id)
     return selected_pictures
