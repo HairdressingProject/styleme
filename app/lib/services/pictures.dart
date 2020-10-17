@@ -66,4 +66,20 @@ class PicturesService {
       return null;
     }
   }
+
+  static Future<http.Response> changeHairColour({int pictureId, String colourName}) async {
+    try {
+      final response = await http
+        .post(Uri.encodeFull(
+          '$picturesUri/$pictureId/hair_colour?colour=$colourName'))
+        .timeout(const Duration(seconds: 10));
+      return response;
+    }
+    catch(err) {
+      print('Failed to colour hair');
+      print(err);
+    return null;
+    }
+  }
+
 }

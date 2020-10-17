@@ -1,7 +1,11 @@
+import 'dart:isolate';
+
 import 'package:app/widgets/colour_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:app/services/pictures.dart';
+import 'package:app/widgets/action_button.dart';
 
 class SelectHairColour extends StatefulWidget {
   static final String routeName = '/selectHairColourRoute';
@@ -15,11 +19,49 @@ class _SelectHairColourState extends State<SelectHairColour> {
   ColourCard _selectedColourCard;
   double _lightnessValue;
   String _lightnessLabel;
+  bool _isLoading = false;
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   _saveChanges() {
-    // TODO: Save _selectedColour
+    // TODO: Save _selectedColour 
+    _changeHairColour();
   }
+
+  Future<void> _changeHairColour() async {
+    if(_selectedColourCard != null) {
+      setState(() {
+        _isLoading = true;
+      });      
+      final response = await PicturesService.changeHairColour(pictureId: 60, colourName: _selectedColourCard.colourName);
+      if (response != null){
+        print(response.request);
+        print(response.request.headers);
+        print('Response from API:');
+        print('${await response}');
+
+        // ToDo: Improve error messages
+        if(await response.statusCode == 200) {
+          _displayMessage(message: 'Hair colour successfully applied');
+        }
+        else {
+          _displayMessage(message: 'Hair colour already applied');
+        }
+              
+      }
+      else {
+        _displayMessage(message: 'Hair colour failed. Please try .');
+      }
+      setState(() {
+        _isLoading = false;
+      });      
+    }
+    else {
+      _displayMessage(message: 'Please select a hair colour');
+    }
+
+  }
+
 
   _selectColour(ColourCard card) {
     setState(() {
@@ -29,6 +71,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
             select: _selectColour,
             colourHash: c.colourHash,
             colourLabel: c.colourLabel,
+            colourName: c.colourName,
             selected: true,
           );
         } else {
@@ -36,6 +79,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
             select: _selectColour,
             colourHash: c.colourHash,
             colourLabel: c.colourLabel,
+            colourName: c.colourName,
             selected: false,
           );
         }
@@ -55,34 +99,42 @@ class _SelectHairColourState extends State<SelectHairColour> {
       ColourCard(
           select: _selectColour,
           colourHash: '#F9E726',
+          colourName: 'sunny_yellow',
           colourLabel: 'Sunny yellow'),
       ColourCard(
           select: _selectColour,
           colourHash: '#EC6126',
+          colourName: 'juicy_orange',
           colourLabel: 'Juicy orange'),
       ColourCard(
           select: _selectColour,
           colourHash: '#B80C44',
+          colourName: 'fiery_red',
           colourLabel: 'Fiery red'),
       ColourCard(
           select: _selectColour,
           colourHash: '#CF34B1',
+          colourName: 'hot_pink',
           colourLabel: 'Hot pink'),
       ColourCard(
           select: _selectColour,
           colourHash: '#402D87',
+          colourName: 'mysterious_violet',
           colourLabel: 'Mysterious violet'),
       ColourCard(
           select: _selectColour,
           colourHash: '#013C7A',
+          colourName: 'ocean_blue',
           colourLabel: 'Ocean blue'),
       ColourCard(
           select: _selectColour,
           colourHash: '#255638',
+          colourName: 'tropital_green',
           colourLabel: 'Tropical green'),
       ColourCard(
           select: _selectColour,
           colourHash: '#27221C',
+          colourName: 'jet_black',
           colourLabel: 'Jet black')
     ];
   }
@@ -94,9 +146,26 @@ class _SelectHairColourState extends State<SelectHairColour> {
     });
   }
 
+
+  _displayMessage({@required String message}) {
+    final snackBar = SnackBar(
+      content: Text(message,
+          style: Theme.of(context).textTheme.bodyText1.copyWith(
+              fontFamily: 'Klavika', fontSize: 12.0, color: Colors.white)),
+      action: SnackBarAction(
+        label: 'Dismiss',
+        onPressed: () {
+          _scaffoldKey.currentState.hideCurrentSnackBar();
+        },
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
   @override
   build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(
             'Select a hair colour',
@@ -160,6 +229,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
                           select: _selectColour,
                           colourHash: _colours[index].colourHash,
                           colourLabel: _colours[index].colourLabel,
+                          colourName: _colours[index].colourName,
                           selected: _colours[index].selected,
                         );
                       },
@@ -238,23 +308,20 @@ class _SelectHairColourState extends State<SelectHairColour> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 30.0),
                 ),
-                Container(
-                  width: 200.0,
-                  height: 40.0,
-                  child: MaterialButton(
-                    disabledColor: Colors.grey[600],
-                    disabledTextColor: Colors.white,
-                    onPressed: _saveChanges,
-                    color: Color.fromARGB(255, 74, 169, 242),
-                    minWidth: double.infinity,
-                    child: Text(
-                      'Save changes',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          .copyWith(color: Colors.white),
-                    ),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                  child: 
+                    _isLoading
+                      ?
+                      Center(
+                        child: CircularProgressIndicator(),
+                      )
+                      :
+                      ActionButton(
+                        text: 'Save changes',
+                        action: _saveChanges,
+                        colour: Color.fromARGB(255, 74, 169, 242)
+                      ),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 20.0),
