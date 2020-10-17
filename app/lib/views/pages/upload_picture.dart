@@ -59,6 +59,13 @@ class _UploadPictureState extends State<UploadPicture> {
       if (response != null) {
         print('Response from API:');
         print('${await response.stream.bytesToString()}');
+
+        // The app crashes and complains that there is no Scaffold in the current context
+        /*
+        final snackBar =
+            SnackBar(content: Text('Picture successfully uploaded'));
+        Scaffold.of(context).showSnackBar(snackBar);
+        */
       }
     }
     setState(() {
