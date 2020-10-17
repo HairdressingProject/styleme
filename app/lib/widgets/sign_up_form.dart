@@ -15,6 +15,8 @@ class SignUpForm extends StatefulWidget {
 }
 
 class SignUpFormState extends State<SignUpForm> {
+  User _user;
+
   @override
   void initState() {
     super.initState();
@@ -348,7 +350,13 @@ class SignUpFormState extends State<SignUpForm> {
             token: Authentication.getAuthCookie(response: response));
 
         if (tokenFile != null) {
-          return true;
+          final user = await Authentication.authenticate();
+          if (user.id != -1) {
+            setState(() {
+              _user = user;
+            });
+            return true;
+          }
         }
       } else if (response.statusCode == HttpStatus.conflict) {
         setState(() {
@@ -472,8 +480,10 @@ class SignUpFormState extends State<SignUpForm> {
 
                         if (await _signUp()) {
                           // all good, navigate to Home
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => Home()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Home(user: _user)));
                         } else {
                           // display error message
                           setState(() {

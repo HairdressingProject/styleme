@@ -1,3 +1,4 @@
+import 'package:app/models/user.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
@@ -9,14 +10,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class Home extends StatelessWidget {
   static final String routeName = '/homeRoute';
-  Home({Key key}) : super(key: key);
+  final User user;
+  Home({Key key, @required this.user}) : super(key: key);
 
   @override
   build(BuildContext context) {
     return Layout(
+        user: user,
         title: 'Style Me',
         header: 'Home',
-        drawerItems: buildDefaultDrawerItems(context),
+        drawerItems: buildDefaultDrawerItems(context, user),
         body: SingleChildScrollView(
             child: Center(
                 child: Padding(

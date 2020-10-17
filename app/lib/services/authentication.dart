@@ -100,9 +100,9 @@ class Authentication {
     }
   }
 
-  static Future<UserAuthenticate> authenticate() async {
-    UserAuthenticate unauthenticatedUser =
-        UserAuthenticate(id: -1, userRole: 'user');
+  static Future<User> authenticate() async {
+    User nullUser = User(
+        id: -1, username: null, email: null, givenName: null, userRole: null);
 
     try {
       final localToken = await retrieveToken();
@@ -118,22 +118,34 @@ class Authentication {
           }).timeout(Duration(seconds: 5), onTimeout: () => null);
 
           if (response.statusCode == HttpStatus.ok) {
-            final UserAuthenticate authenticatedUser =
+            final UserAuthenticate authenticatedUserData =
                 UserAuthenticate.fromJson(jsonDecode(response.body));
-            return authenticatedUser;
+
+            final userUri = Uri.encodeFull(
+                '$USERS_API_URL/users/${authenticatedUserData.id}');
+
+            final userResponse = await get(userUri, headers: {
+              "Authorization": "Bearer $localToken",
+              "Origin": ADMIN_PORTAL_URL
+            }).timeout(const Duration(seconds: 5), onTimeout: () => null);
+
+            if (userResponse.statusCode == HttpStatus.ok) {
+              final user = User.fromJson(jsonDecode(userResponse.body)['user']);
+              return user;
+            }
           }
-          return unauthenticatedUser;
+          return nullUser;
         } catch (err) {
           print('Authentication attempt timed out');
           print(err);
-          return unauthenticatedUser;
+          return nullUser;
         }
       }
-      return unauthenticatedUser;
+      return nullUser;
     } catch (err) {
       print('Authentication failed');
       print(err);
-      return unauthenticatedUser;
+      return nullUser;
     }
   }
 

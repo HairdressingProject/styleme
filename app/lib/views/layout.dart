@@ -1,10 +1,11 @@
+import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
 import 'package:app/views/pages/sign_up.dart';
 
-DrawerHeader buildDrawerHeader(BuildContext context) {
+DrawerHeader buildDrawerHeader(BuildContext context, User user) {
   return DrawerHeader(
       child: Column(
     children: [
@@ -32,7 +33,7 @@ DrawerHeader buildDrawerHeader(BuildContext context) {
               alignment: Alignment.centerLeft,
               // padding: const EdgeInsets.only(top: 80.0),
               child: Text(
-                'Username',
+                user.username,
                 style: Theme.of(context)
                     .textTheme
                     .headline2
@@ -43,7 +44,7 @@ DrawerHeader buildDrawerHeader(BuildContext context) {
             alignment: Alignment.centerLeft,
             // padding: const EdgeInsets.only(top: 100.0),
             child: Text(
-              'User',
+              user.userRole,
               style: Theme.of(context)
                   .textTheme
                   .bodyText1
@@ -56,7 +57,7 @@ DrawerHeader buildDrawerHeader(BuildContext context) {
   ));
 }
 
-List<ListTile> buildDefaultDrawerItems(BuildContext context) {
+List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
   return [
     ListTile(
       title: Row(
@@ -69,7 +70,8 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context) {
         ],
       ),
       onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Home()))
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Home(user: user)))
       },
     ),
     ListTile(
@@ -170,9 +172,11 @@ class Layout extends StatelessWidget {
       this.body,
       this.title,
       this.drawerHeader,
-      this.drawerItems})
+      this.drawerItems,
+      @required this.user})
       : super(key: key);
 
+  final User user;
   final String header;
   final String title;
   final DrawerHeader drawerHeader;
@@ -187,7 +191,10 @@ class Layout extends StatelessWidget {
         ),
         drawer: Drawer(
           child: ListView(
-            children: [buildDrawerHeader(context), ...drawerItems],
+            children: [
+              buildDrawerHeader(context, user),
+              ...buildDefaultDrawerItems(context, user)
+            ],
           ),
         ),
         body: body);
