@@ -315,8 +315,9 @@ class PictureService:
 
         image = hair(portrait, parsing, part, selected_colour2)
 
-        new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + '.' + file_name.split('.')[1]
+        new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + 'R_' + str(r) + 'B_' + str(b) + 'G_' + str(g) + '.' + file_name.split('.')[1]
         full_path = save_path + new_file_name
+        print(full_path)
         print(full_path, "full path")
         cv2.imwrite(full_path, image)
         picture_info = PictureService.get_picture_info(self, save_path, new_file_name)

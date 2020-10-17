@@ -43,7 +43,8 @@ class _SelectHairColourState extends State<SelectHairColour> {
       setState(() {
         _isLoading = true;
       });      
-      final response = await PicturesService.changeHairColour(pictureId: 60, colourName: _selectedColourCard.colourName);
+      //final response = await PicturesService.changeHairColour(pictureId: 60, colourName: _selectedColourCard.colourName);
+      final response = await PicturesService.changeHairColourRGB(pictureId: 126, colourName: _selectedColourCard.colourName, r: _r, b: _b, g:_g);
       if (response != null){
         print(response.request);
         print(response.request.headers);
@@ -169,6 +170,12 @@ class _SelectHairColourState extends State<SelectHairColour> {
     setState(() {
       _lightnessValue = value;
       _lightnessLabel = '${_lightnessValue.toStringAsFixed(1)}%';
+
+      _selectedColour = HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue/100).toColor();
+
+      _r = _selectedColour.red;
+      _b = _selectedColour.blue;
+      _g = _selectedColour.green;      
     });
   }
 
