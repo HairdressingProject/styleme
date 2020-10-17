@@ -19,10 +19,10 @@ class FaceShape {
   }
 
   FaceShape.fromJson(Map<String, dynamic> json)
-      : id = json['Id'],
-        shapeName = json['ShapeName'],
-        dateCreated = json['DateCreated'],
-        dateUpdated = json['DateUpdated'];
+      : id = json['id'],
+        shapeName = json['shapeName'],
+        dateCreated = json['dateCreated'],
+        dateUpdated = json['dateUpdated'];
 
   Map<String, dynamic> toJson() => {
         'Id': this.id,
