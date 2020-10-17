@@ -1,12 +1,8 @@
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
-import 'package:app/views/pages/select_hair_colour.dart';
-import 'package:app/views/pages/select_hair_style.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
-import 'package:app/views/pages/sign_up.dart';
-import 'package:app/views/pages/select_face_shape.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +15,6 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   Future<User> _authenticatedUser;
-  User _resolvedUser;
 
   @override
   void initState() {

@@ -168,6 +168,7 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
 class Layout extends StatelessWidget {
   Layout(
       {Key key,
+      this.scaffoldKey,
       this.header,
       this.body,
       this.title,
@@ -176,6 +177,7 @@ class Layout extends StatelessWidget {
       @required this.user})
       : super(key: key);
 
+  final Key scaffoldKey;
   final User user;
   final String header;
   final String title;
@@ -186,6 +188,7 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: scaffoldKey,
         appBar: AppBar(
           title: Text(title),
         ),

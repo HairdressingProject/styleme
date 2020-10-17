@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:app/models/face_shape.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/services/pictures.dart';
+import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,6 +13,10 @@ import 'dart:io';
 class UploadPicture extends StatefulWidget {
   static final String routeName = '/uploadPicture';
   static const String defaultImageUrl = 'assets/icons/image_placeholder.png';
+  final OnPictureUploaded onPictureUploaded;
+
+  const UploadPicture({Key key, @required this.onPictureUploaded})
+      : super(key: key);
 
   @override
   _UploadPictureState createState() => _UploadPictureState();
@@ -23,11 +29,13 @@ class _UploadPictureState extends State<UploadPicture> {
   bool _isUploading = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final picker = ImagePicker();
+  OnPictureUploaded _onPictureUploaded;
 
   @override
   void initState() {
     super.initState();
     _imagePicked = false;
+    _onPictureUploaded = widget.onPictureUploaded;
   }
 
   Future<void> getImageFromCamera() async {
@@ -65,15 +73,23 @@ class _UploadPictureState extends State<UploadPicture> {
         final rawAPIResponse = await response.stream.bytesToString();
         if (rawAPIResponse != null && rawAPIResponse.isNotEmpty) {
           final parsedAPIResponse = jsonDecode(rawAPIResponse);
-          print('Picture:');
-          print(Picture.fromJson(parsedAPIResponse['picture']));
-          print('Face shape:');
-          print(parsedAPIResponse['face_shape']);
+          final Picture pictureUploaded =
+              Picture.fromJson(parsedAPIResponse['picture']);
+
+          final FaceShape faceShape =
+              FaceShape(shapeName: parsedAPIResponse['face_shape']);
+
+          _onPictureUploaded(
+              newPicture: pictureUploaded,
+              pictureFile: _image,
+              newFaceShape: faceShape);
+
+          Navigator.pop(_scaffoldKey.currentContext);
         }
 
-        _displayMessage(message: 'Picture successfully uploaded');
+        //  _displayMessage(message: 'Picture successfully uploaded');
       } else {
-        _displayMessage(message: 'Upload failed. Please try another picture.');
+        // _displayMessage(message: 'Upload failed. Please try another picture.');
       }
     }
     setState(() {
@@ -82,21 +98,6 @@ class _UploadPictureState extends State<UploadPicture> {
   }
 
   bool notNull(Object o) => o != null;
-
-  _displayMessage({@required String message}) {
-    final snackBar = SnackBar(
-      content: Text(message,
-          style: Theme.of(context).textTheme.bodyText1.copyWith(
-              fontFamily: 'Klavika', fontSize: 12.0, color: Colors.white)),
-      action: SnackBarAction(
-        label: 'Dismiss',
-        onPressed: () {
-          _scaffoldKey.currentState.hideCurrentSnackBar();
-        },
-      ),
-    );
-    _scaffoldKey.currentState.showSnackBar(snackBar);
-  }
 
   @override
   Widget build(BuildContext context) {
