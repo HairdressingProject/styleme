@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:app/models/picture.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/widgets/action_button.dart';
 import 'package:flutter/material.dart';
@@ -57,9 +60,16 @@ class _UploadPictureState extends State<UploadPicture> {
     });
     if (_imagePicked && _image != null) {
       final response = await PicturesService.upload(picture: _image);
-      if (response != null) {
-        print('Response from API:');
-        print('${await response.stream.bytesToString()}');
+      if (response.statusCode == HttpStatus.created ||
+          response.statusCode == HttpStatus.ok) {
+        final rawAPIResponse = await response.stream.bytesToString();
+        if (rawAPIResponse != null && rawAPIResponse.isNotEmpty) {
+          final parsedAPIResponse = jsonDecode(rawAPIResponse);
+          print('Picture:');
+          print(Picture.fromJson(parsedAPIResponse['picture']));
+          print('Face shape:');
+          print(parsedAPIResponse['face_shape']);
+        }
 
         _displayMessage(message: 'Picture successfully uploaded');
       } else {
