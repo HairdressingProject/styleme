@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:app/models/face_shape.dart';
 import 'package:app/models/picture.dart';
+import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/action_button.dart';
@@ -86,10 +87,10 @@ class _UploadPictureState extends State<UploadPicture> {
 
           Navigator.pop(_scaffoldKey.currentContext);
         }
-
-        //  _displayMessage(message: 'Picture successfully uploaded');
       } else {
-        // _displayMessage(message: 'Upload failed. Please try another picture.');
+        NotificationService.notify(
+            scaffoldKey: _scaffoldKey,
+            message: 'Upload failed. Please try another picture.');
       }
     }
     setState(() {

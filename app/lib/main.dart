@@ -88,14 +88,6 @@ class MyAppState extends State<MyApp> {
           );
         },
       ),
-      /*  routes: {
-        SignIn.routeName: (context) => SignIn(),
-        Home.routeName: (context) => FutureBuilder<User>(builder: (context, snapshot)),
-        SignUp.routeName: (context) => SignUp(),
-        SelectFaceShape.routeName: (context) => SelectFaceShape(),
-        SelectHairStyle.routeName: (context) => SelectHairStyle(),
-        SelectHairColour.routeName: (context) => SelectHairColour(),
-      }, */
     );
   }
 }

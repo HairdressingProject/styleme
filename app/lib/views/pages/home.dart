@@ -5,6 +5,7 @@ import 'package:app/models/hair_colour.dart';
 import 'package:app/models/hair_style.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
+import 'package:app/services/notification.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
@@ -19,6 +20,15 @@ typedef OnPictureUploaded = void Function(
     @required File pictureFile,
     FaceShape newFaceShape,
     String message});
+
+typedef OnFaceShapeUpdated = void Function(
+    {@required FaceShape newFaceShape, String message});
+
+typedef OnHairStyleUpdated = void Function(
+    {@required HairStyle newHairStyle, String message});
+
+typedef OnHairColourUpdated = void Function(
+    {@required HairStyle newHairStyle, String message});
 
 class Home extends StatefulWidget {
   final User user;
@@ -60,7 +70,7 @@ class _HomeState extends State<Home> {
       _message = message ?? 'Picture successfully uploaded';
     });
 
-    _displayMessage(message: _message);
+    NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
   }
 
   void _onFaceShapeUpdated({@required FaceShape newFaceShape, String message}) {
@@ -70,7 +80,7 @@ class _HomeState extends State<Home> {
       _message = message ?? 'Face shape updated to ${newFaceShape.shapeName}';
     });
 
-    _displayMessage(message: _message);
+    NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
   }
 
   void _onHairStyleUpdated({@required HairStyle newHairStyle, String message}) {
@@ -81,7 +91,7 @@ class _HomeState extends State<Home> {
           message ?? 'Hair style updated to ${newHairStyle.hairStyleName}';
     });
 
-    _displayMessage(message: _message);
+    NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
   }
 
   void _onHairColourUpdated(
@@ -93,7 +103,7 @@ class _HomeState extends State<Home> {
           message ?? 'Hair colour updated to ${newHairColour.colourName}';
     });
 
-    _displayMessage(message: _message);
+    NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
   }
 
   void _onPreviewPicture() {
@@ -120,21 +130,6 @@ class _HomeState extends State<Home> {
   bool _isButtonEnabled(String currentRoute, String previousRoute) {
     return _completedRoutes.contains(currentRoute) ||
         _completedRoutes.contains(previousRoute);
-  }
-
-  _displayMessage({@required String message}) {
-    final snackBar = SnackBar(
-      content: Text(message,
-          style: Theme.of(context).textTheme.bodyText1.copyWith(
-              fontFamily: 'Klavika', fontSize: 14.0, color: Colors.white)),
-      action: SnackBarAction(
-        label: 'Dismiss',
-        onPressed: () {
-          scaffoldKey.currentState.hideCurrentSnackBar();
-        },
-      ),
-    );
-    scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   @override
@@ -172,7 +167,9 @@ class _HomeState extends State<Home> {
                           child: Image.file(_currentPictureFile),
                         ),
                       ))
-                  : null,
+                  : const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.0),
+                    ),
               Padding(
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
@@ -196,7 +193,10 @@ class _HomeState extends State<Home> {
                     icon: _handleButtonIcon(
                         SelectFaceShape.routeName, UploadPicture.routeName),
                     text: "Select your face shape",
-                    action: SelectFaceShape(),
+                    action: SelectFaceShape(
+                      initialFaceShape: _currentFaceShape,
+                      onFaceShapeUpdated: _onFaceShapeUpdated,
+                    ),
                     alreadySelected:
                         _completedRoutes.contains(SelectFaceShape.routeName),
                     enabled: _isButtonEnabled(
