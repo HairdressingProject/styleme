@@ -100,6 +100,31 @@ class Authentication {
     }
   }
 
+  static Future<int> retrieveIdFromToken() async {
+    try {
+      final userToken = await Authentication.retrieveToken();
+
+      if (userToken != null && userToken.isNotEmpty) {
+        final authResponse = await get(
+            Uri.encodeFull('$PICTURES_API_URL/users/authenticate'),
+            headers: {
+              "Authorization": "Bearer $userToken",
+              "Origin": ADMIN_PORTAL_URL
+            }).timeout(const Duration(seconds: 5));
+
+        final authData =
+            UserAuthenticate.fromJson(jsonDecode(authResponse.body));
+
+        return authData.id;
+      }
+    } catch (err) {
+      print('Failed to authenticate user in order to retrieve history');
+      print(err);
+      return null;
+    }
+    return null;
+  }
+
   static Future<User> authenticate() async {
     User nullUser = User(
         id: -1, username: null, email: null, givenName: null, userRole: null);

@@ -43,3 +43,26 @@ class FaceShapes {
   static const oval = 'oval';
   static const oblong = 'long';
 }
+
+class AddFaceShapeHistoryEntry {
+  final int userId;
+  final int faceShapeId;
+
+  const AddFaceShapeHistoryEntry(
+      {@required this.userId, @required this.faceShapeId});
+
+  @override
+  String toString() {
+    return '''Face shape history entry:
+    Face shape ID: $faceShapeId
+    User ID: $userId
+    ''';
+  }
+
+  AddFaceShapeHistoryEntry.fromJson(Map<String, dynamic> json)
+      : userId = json['user_id'],
+        faceShapeId = json['face_shape_id'];
+
+  Map<String, dynamic> toJson() =>
+      {'face_shape_id': this.faceShapeId, 'user_id': this.userId};
+}

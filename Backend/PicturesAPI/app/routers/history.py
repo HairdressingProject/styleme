@@ -81,7 +81,7 @@ async def get_picture_history(filename: str, response: Response, db: Session = D
     return history_actions.get_picture_history(db=db, filename=filename)
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("", status_code=status.HTTP_200_OK)
 async def get_entire_history(skip: int = 0, limit: int = 1000, search: str = "", db: Session = Depends(get_db)):
     """
     GET /history[?skip=0&limit=1000&search=""]
@@ -93,7 +93,7 @@ async def get_entire_history(skip: int = 0, limit: int = 1000, search: str = "",
     return history_actions.get_entire_history(db=db, skip=skip, limit=limit, search=search)
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def add_history(history: schemas.HistoryCreate, response: Response, db: Session = Depends(get_db)):
     """
     POST /history
@@ -111,7 +111,7 @@ async def add_history(history: schemas.HistoryCreate, response: Response, db: Se
     return history_actions.add_history(db=db, history=history)
 
 
-@router.post("/add_face_shape", status_code=status.HTTP_201_CREATED)
+@router.post("/face_shape", status_code=status.HTTP_201_CREATED)
 async def add_face_shape(history_record_with_new_face_shape: schemas.HistoryAddFaceShape,
                          response: Response,
                          db: Session = Depends(get_db)):
