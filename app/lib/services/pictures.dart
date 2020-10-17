@@ -17,7 +17,7 @@ class PicturesService {
 
     try {
       final response =
-          await request.send().timeout(const Duration(seconds: 10));
+          await request.send().timeout(const Duration(seconds: 60));
       return response;
     } catch (err) {
       print('Failed to upload picture');
