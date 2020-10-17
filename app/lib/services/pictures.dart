@@ -23,19 +23,6 @@ class PicturesService {
       print(err);
       return null;
     }
-
-    /* try {
-      final response = await http.post(picturesUri,
-          body: pictureBytes,
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }).timeout(const Duration(seconds: 10));
-      return response;
-    } catch (err) {
-      print('Failed to upload picture');
-      print(err);
-      return null;
-    } */
   }
 
   static Future<http.Response> getById({@required int pictureId}) async {
