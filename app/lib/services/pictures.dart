@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:app/services/constants.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,33 +8,22 @@ class PicturesService {
       Uri.encodeFull('$PICTURES_API_URL/pictures');
 
   static Future<http.StreamedResponse> upload({@required File picture}) async {
-    final request = http.MultipartRequest('POST', Uri.parse(picturesUri));
+    final request =
+        http.MultipartRequest('POST', Uri.parse('$PICTURES_API_URL/pictures'));
 
     request.files.add(http.MultipartFile(
-        'picture', picture.readAsBytes().asStream(), picture.lengthSync()));
+        'file', picture.readAsBytes().asStream(), picture.lengthSync(),
+        filename: picture.path.split('/').last));
 
     try {
       final response =
-          await request.send().timeout(const Duration(seconds: 10));
+          await request.send().timeout(const Duration(seconds: 60));
       return response;
     } catch (err) {
       print('Failed to upload picture');
       print(err);
       return null;
     }
-
-    /* try {
-      final response = await http.post(picturesUri,
-          body: pictureBytes,
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }).timeout(const Duration(seconds: 10));
-      return response;
-    } catch (err) {
-      print('Failed to upload picture');
-      print(err);
-      return null;
-    } */
   }
 
   static Future<http.Response> getById({@required int pictureId}) async {

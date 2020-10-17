@@ -23,7 +23,7 @@ def get_db():
         db.close()
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
     save_path = PICTURE_UPLOAD_FOLDER
     file_name = picture_service.save_picture(file, save_path)

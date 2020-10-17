@@ -18,6 +18,7 @@ class _UploadPictureState extends State<UploadPicture> {
   String _imageUrl = UploadPicture.defaultImageUrl;
   File _image;
   bool _isUploading = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final picker = ImagePicker();
 
   @override
@@ -59,6 +60,10 @@ class _UploadPictureState extends State<UploadPicture> {
       if (response != null) {
         print('Response from API:');
         print('${await response.stream.bytesToString()}');
+
+        _displayMessage(message: 'Picture successfully uploaded');
+      } else {
+        _displayMessage(message: 'Upload failed. Please try another picture.');
       }
     }
     setState(() {
@@ -68,9 +73,25 @@ class _UploadPictureState extends State<UploadPicture> {
 
   bool notNull(Object o) => o != null;
 
+  _displayMessage({@required String message}) {
+    final snackBar = SnackBar(
+      content: Text(message,
+          style: Theme.of(context).textTheme.bodyText1.copyWith(
+              fontFamily: 'Klavika', fontSize: 12.0, color: Colors.white)),
+      action: SnackBarAction(
+        label: 'Dismiss',
+        onPressed: () {
+          _scaffoldKey.currentState.hideCurrentSnackBar();
+        },
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(
             'Upload your picture',
