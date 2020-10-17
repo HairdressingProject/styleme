@@ -1,3 +1,6 @@
+import 'package:app/models/face_shape.dart';
+import 'package:app/services/notification.dart';
+import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/selectable_card.dart';
 import 'package:app/widgets/cards_grid.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +8,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class SelectFaceShape extends StatefulWidget {
   static final String routeName = '/selectFaceShapeRoute';
+  final FaceShape initialFaceShape;
+  final OnFaceShapeUpdated onFaceShapeUpdated;
+
+  SelectFaceShape(
+      {Key key, this.initialFaceShape, @required this.onFaceShapeUpdated})
+      : super(key: key);
 
   @override
   _SelectFaceShapeState createState() => _SelectFaceShapeState();
@@ -13,10 +22,15 @@ class SelectFaceShape extends StatefulWidget {
 class _SelectFaceShapeState extends State<SelectFaceShape> {
   List<SelectableCard> _faceShapes;
   SelectableCard _selectedFaceShape;
+  FaceShape _initialFaceShape;
+  OnFaceShapeUpdated _onFaceShapeUpdated;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
+    _onFaceShapeUpdated = widget.onFaceShapeUpdated;
+    _initialFaceShape = widget.initialFaceShape;
 
     _faceShapes = [
       SelectableCard(
@@ -31,7 +45,6 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
       SelectableCard(
           imgPath: 'assets/icons/square.png',
           label: 'Square',
-          selected: true,
           select: _selectFaceShape),
       SelectableCard(
         imgPath: 'assets/icons/diamond.png',
@@ -48,7 +61,40 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
           select: _selectFaceShape),
     ];
 
-    _selectedFaceShape = _faceShapes[2];
+    if (_initialFaceShape != null) {
+      _selectedFaceShape = _faceShapes.firstWhere(
+          (element) =>
+              element.label.toLowerCase().contains(_initialFaceShape.shapeName),
+          orElse: () => null);
+
+      if (_selectedFaceShape != null) {
+        _faceShapes = _faceShapes.map((e) {
+          if (e.label == _selectedFaceShape.label) {
+            e = SelectableCard(
+              imgPath: _selectedFaceShape.imgPath,
+              label: _selectedFaceShape.label,
+              select: _selectFaceShape,
+              selected: true,
+            );
+          } else {
+            e = SelectableCard(
+              imgPath: e.imgPath,
+              label: e.label,
+              select: e.select,
+              selected: false,
+            );
+          }
+          return e;
+        }).toList();
+
+        Future.delayed(const Duration(seconds: 2), () {
+          NotificationService.notify(
+              scaffoldKey: _scaffoldKey,
+              message:
+                  'Your face shape has been detected as ${_selectedFaceShape.label}');
+        });
+      }
+    }
   }
 
   _selectFaceShape(SelectableCard faceShape) {
@@ -79,13 +125,18 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
   }
 
   _saveChanges() {
-    // TODO: save changes with _selectedFaceShape
-    print('Selected face shape: ${_selectedFaceShape.label}');
+    _onFaceShapeUpdated(
+        newFaceShape: FaceShape(shapeName: _selectedFaceShape.label));
+    setState(() {
+      _initialFaceShape = FaceShape(shapeName: _selectedFaceShape.label);
+    });
+    Navigator.pop(context);
   }
 
   @override
   build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(
             'Select a face shape',

@@ -15,7 +15,7 @@ class User {
       @required this.username,
       @required this.email,
       @required this.givenName,
-      @required this.familyName,
+      this.familyName,
       @required this.userRole,
       this.dateCreated,
       this.dateUpdated});
@@ -34,14 +34,14 @@ class User {
   }
 
   User.fromJson(Map<String, dynamic> json)
-      : id = json['Id'],
-        username = json['UserName'],
-        email = json['UserEmail'],
-        givenName = json['FirstName'],
-        familyName = json['LastName'],
-        userRole = json['UserRole'],
-        dateCreated = json['DateCreated'],
-        dateUpdated = json['DateUpdated'];
+      : id = json['id'],
+        username = json['userName'],
+        email = json['userEmail'],
+        givenName = json['firstName'],
+        familyName = json['lastName'],
+        userRole = json['userRole'],
+        dateCreated = json['dateCreated'],
+        dateUpdated = json['dateUpdated'];
 
   Map<String, dynamic> toJson() => {
         'Id': this.id,
@@ -127,8 +127,8 @@ class UserAuthenticate {
   const UserAuthenticate({@required this.id, @required this.userRole});
 
   UserAuthenticate.fromJson(Map<String, dynamic> json)
-      : id = json['Id'],
-        userRole = json['UserRole'];
+      : id = json['id'],
+        userRole = json['userRole'];
 
   Map<String, dynamic> toJson() => {'Id': id, 'UserRole': userRole};
 
