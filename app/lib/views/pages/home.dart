@@ -8,6 +8,8 @@ import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/face_shape.dart';
+import 'package:app/services/hair_colour.dart';
+import 'package:app/services/hair_style.dart';
 import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
@@ -49,14 +51,13 @@ class _HomeState extends State<Home> {
   static final String routeName = '/homeRoute';
 
   User _user;
-  Future<Image> _currentPictureFileFuture;
   File _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
+  Future<FaceShape> _currentFaceShapeFuture;
   FaceShape _currentFaceShape;
   HairStyle _currentHairStyle;
   HairColour _currentHairColour;
-  Future<Set<History>> _historyFuture;
   Set<History> _history = Set<History>();
   String _message;
   Set<String> _completedRoutes = Set<String>();
@@ -86,7 +87,6 @@ class _HomeState extends State<Home> {
     return _fetchUserHistory().then((value) async {
       _history = value;
       if (_history != null && _history.isNotEmpty) {
-        // load latest face shape, hair style and hair colour entries here
         final latestPictureEntry =
             await PicturesService.getById(pictureId: _history.last.pictureId);
 
@@ -94,6 +94,27 @@ class _HomeState extends State<Home> {
             latestPictureEntry.body.isNotEmpty) {
           final latestPicture =
               Picture.fromJson(jsonDecode(latestPictureEntry.body));
+
+          _completedRoutes.add(UploadPicture.routeName);
+          // load latest face shape, hair style and hair colour entries here
+          _currentFaceShape = await _fetchLatestFaceShapeEntry();
+
+          if (_currentFaceShape != null) {
+            _completedRoutes.add(SelectFaceShape.routeName);
+          }
+
+          _currentHairStyle = await _fetchLatestHairStyleEntry();
+
+          if (_currentHairStyle != null) {
+            _completedRoutes.add(SelectHairStyle.routeName);
+          }
+
+          _currentHairColour = await _fetchLatestHairColourEntry();
+
+          if (_currentHairColour != null) {
+            _completedRoutes.add(SelectHairColour.routeName);
+          }
+
           return latestPicture;
         }
       }
@@ -101,14 +122,55 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Future<HairStyle> _fetchLatestHairStyleEntry() async {
+    if (_history != null &&
+        _history.isNotEmpty &&
+        _history.last.hairStyleId != null) {
+      final latestHairStyleResponse =
+          await HairStyleService.getById(id: _history.last.hairStyleId);
+
+      if (latestHairStyleResponse.statusCode == HttpStatus.ok &&
+          latestHairStyleResponse.body.isNotEmpty) {
+        final latestHairStyle =
+            HairStyle.fromJson(jsonDecode(latestHairStyleResponse.body));
+        return latestHairStyle;
+      }
+    }
+    return null;
+  }
+
   Future<FaceShape> _fetchLatestFaceShapeEntry() async {
-    // WIP
     if (_history != null &&
         _history.isNotEmpty &&
         _history.last.faceShapeId != null) {
       final latestFaceShapeResponse =
           await FaceShapeService.getById(id: _history.last.faceShapeId);
+
+      if (latestFaceShapeResponse.statusCode == HttpStatus.ok &&
+          latestFaceShapeResponse.body.isNotEmpty) {
+        final latestFaceShape =
+            FaceShape.fromJson(jsonDecode(latestFaceShapeResponse.body));
+        return latestFaceShape;
+      }
     }
+    return null;
+  }
+
+  Future<HairColour> _fetchLatestHairColourEntry() async {
+    if (_history != null &&
+        _history.isNotEmpty &&
+        _history.last.hairColourId != null) {
+      final latestHairColourResponse =
+          await HairColourService.getById(id: _history.last.hairColourId);
+
+      if (latestHairColourResponse.statusCode == HttpStatus.ok &&
+          latestHairColourResponse.body.isNotEmpty) {
+        final latestHairColour =
+            HairColour.fromJson(jsonDecode(latestHairColourResponse.body));
+        return latestHairColour;
+      }
+    }
+    return null;
   }
 
   void _onPictureUploaded(
@@ -247,57 +309,119 @@ class _HomeState extends State<Home> {
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
-                  child: CustomButton(
-                    icon: _handleButtonIcon(UploadPicture.routeName, null),
-                    text: "Select or take picture",
-                    alreadySelected:
-                        _completedRoutes.contains(UploadPicture.routeName),
-                    action: UploadPicture(
-                        onPictureUploaded: _onPictureUploaded, user: _user),
-                    enabled: true,
+                  child: FutureBuilder<Picture>(
+                    future: _currentPictureFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return CustomButton(
+                            icon: _handleButtonIcon(
+                                UploadPicture.routeName, null),
+                            text: "Select or take picture",
+                            alreadySelected: _completedRoutes
+                                .contains(UploadPicture.routeName),
+                            action: UploadPicture(
+                                onPictureUploaded: _onPictureUploaded,
+                                user: _user),
+                            enabled: true);
+                      }
+                      return CustomButton(
+                          icon: Icon(Icons.access_time),
+                          text: "Select or take picture",
+                          alreadySelected: false,
+                          action: UploadPicture(
+                              onPictureUploaded: _onPictureUploaded,
+                              user: _user),
+                          enabled: true);
+                    },
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
-                  child: CustomButton(
-                    icon: _handleButtonIcon(
-                        SelectFaceShape.routeName, UploadPicture.routeName),
-                    text: "Select your face shape",
-                    action: SelectFaceShape(
-                      userId: _user.id,
-                      initialFaceShape: _currentFaceShape,
-                      onFaceShapeUpdated: _onFaceShapeUpdated,
-                    ),
-                    alreadySelected:
-                        _completedRoutes.contains(SelectFaceShape.routeName),
-                    enabled: _isButtonEnabled(
-                        SelectFaceShape.routeName, UploadPicture.routeName),
+                  child: FutureBuilder<Picture>(
+                    future: _currentPictureFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return CustomButton(
+                          icon: _handleButtonIcon(SelectFaceShape.routeName,
+                              UploadPicture.routeName),
+                          text: "Select your face shape",
+                          action: SelectFaceShape(
+                            userId: _user.id,
+                            initialFaceShape: _currentFaceShape,
+                            onFaceShapeUpdated: _onFaceShapeUpdated,
+                          ),
+                          alreadySelected: _completedRoutes
+                              .contains(SelectFaceShape.routeName),
+                          enabled: _isButtonEnabled(SelectFaceShape.routeName,
+                              UploadPicture.routeName),
+                        );
+                      }
+                      return CustomButton(
+                        icon: Icon(Icons.access_time),
+                        text: "Select your face shape",
+                        action: SelectFaceShape(
+                          userId: _user.id,
+                          initialFaceShape: _currentFaceShape,
+                          onFaceShapeUpdated: _onFaceShapeUpdated,
+                        ),
+                        alreadySelected: false,
+                        enabled: false,
+                      );
+                    },
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
-                  child: CustomButton(
-                    icon: _handleButtonIcon(
-                        SelectHairStyle.routeName, SelectFaceShape.routeName),
-                    text: "Select a hair style",
-                    action: SelectHairStyle(),
-                    alreadySelected:
-                        _completedRoutes.contains(SelectHairStyle.routeName),
-                    enabled: _isButtonEnabled(
-                        SelectHairStyle.routeName, SelectFaceShape.routeName),
+                  child: FutureBuilder<Picture>(
+                    future: _currentPictureFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return CustomButton(
+                            icon: _handleButtonIcon(SelectHairStyle.routeName,
+                                SelectFaceShape.routeName),
+                            text: "Select a hair style",
+                            action: SelectHairStyle(),
+                            alreadySelected: _completedRoutes
+                                .contains(SelectHairStyle.routeName),
+                            enabled: _isButtonEnabled(SelectHairStyle.routeName,
+                                SelectFaceShape.routeName));
+                      }
+                      return CustomButton(
+                        icon: Icon(Icons.access_time),
+                        text: "Select your face shape",
+                        action: SelectFaceShape(
+                          userId: _user.id,
+                          initialFaceShape: _currentFaceShape,
+                          onFaceShapeUpdated: _onFaceShapeUpdated,
+                        ),
+                        alreadySelected: false,
+                        enabled: false,
+                      );
+                    },
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
-                  child: CustomButton(
-                      icon: _handleButtonIcon(SelectHairColour.routeName,
-                          SelectHairStyle.routeName),
-                      text: "Colour your hair",
-                      enabled: _isButtonEnabled(SelectHairColour.routeName,
-                          SelectHairStyle.routeName),
-                      alreadySelected:
-                          _completedRoutes.contains(SelectHairColour.routeName),
-                      action: SelectHairColour(
-                        currentPicture: _currentPicture,
-                        currentPictureFile: _currentPictureFile,
-                      ))),
+                  child: FutureBuilder<Picture>(
+                    future: _currentPictureFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return CustomButton(
+                            icon: _handleButtonIcon(SelectHairColour.routeName,
+                                SelectHairStyle.routeName),
+                            text: "Colour your hair",
+                            enabled: _isButtonEnabled(
+                                SelectHairColour.routeName,
+                                SelectHairStyle.routeName),
+                            alreadySelected: _completedRoutes
+                                .contains(SelectHairColour.routeName),
+                            action: SelectHairColour(
+                              currentPicture: _currentPicture,
+                              currentPictureFile: _currentPictureFile,
+                            ));
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
                   child: CustomButton(
