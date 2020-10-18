@@ -224,7 +224,10 @@ class _HomeState extends State<Home> {
                           SelectHairStyle.routeName),
                       alreadySelected:
                           _completedRoutes.contains(SelectHairColour.routeName),
-                      action: SelectHairColour())),
+                      action: SelectHairColour(
+                        currentPicture: _currentPicture,
+                        currentPictureFile: _currentPictureFile,
+                      ))),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
                   child: CustomButton(
