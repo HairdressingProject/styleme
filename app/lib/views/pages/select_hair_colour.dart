@@ -44,7 +44,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
         _isLoading = true;
       });      
       //final response = await PicturesService.changeHairColour(pictureId: 60, colourName: _selectedColourCard.colourName);
-      final response = await PicturesService.changeHairColourRGB(pictureId: 126, colourName: _selectedColourCard.colourName, r: _r, b: _b, g:_g);
+      final response = await PicturesService.changeHairColourRGB(pictureId: 217, colourName: _selectedColourCard.colourName, r: _r, b: _b, g:_g);
       if (response != null){
         print(response.request);
         print(response.request.headers);
