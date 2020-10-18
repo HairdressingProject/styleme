@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class SelectableCard extends StatelessWidget {
   const SelectableCard(
       {Key key,
+      this.id,
       @required this.imgPath,
       @required this.label,
       @required this.select,
@@ -10,11 +11,25 @@ class SelectableCard extends StatelessWidget {
       this.selected = false})
       : super(key: key);
 
+  final int id;
   final String imgPath;
   final String label;
   final bool selected;
   final String type;
   final Function select;
+
+  Widget _getImg() {
+    Widget img;
+    try {
+      img = Image.asset(imgPath);
+      return img;
+    } catch (err) {
+      img = Center(
+        child: Icon(Icons.image),
+      );
+      return img;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +47,7 @@ class SelectableCard extends StatelessWidget {
                     Container(
                       alignment: Alignment.center,
                       height: 150,
-                      child: Image.asset(
-                        imgPath,
-                      ),
+                      child: _getImg(),
                     ),
                     selected
                         ? Container(

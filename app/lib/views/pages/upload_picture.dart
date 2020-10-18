@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:app/models/face_shape.dart';
+import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
+import 'package:app/models/user.dart';
+import 'package:app/services/face_shape.dart';
+import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/home.dart';
@@ -15,8 +19,10 @@ class UploadPicture extends StatefulWidget {
   static final String routeName = '/uploadPicture';
   static const String defaultImageUrl = 'assets/icons/image_placeholder.png';
   final OnPictureUploaded onPictureUploaded;
+  final User user;
 
-  const UploadPicture({Key key, @required this.onPictureUploaded})
+  const UploadPicture(
+      {Key key, @required this.onPictureUploaded, @required this.user})
       : super(key: key);
 
   @override
@@ -31,12 +37,14 @@ class _UploadPictureState extends State<UploadPicture> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final picker = ImagePicker();
   OnPictureUploaded _onPictureUploaded;
+  User _user;
 
   @override
   void initState() {
     super.initState();
     _imagePicked = false;
     _onPictureUploaded = widget.onPictureUploaded;
+    _user = widget.user;
   }
 
   Future<void> getImageFromCamera() async {
@@ -80,12 +88,41 @@ class _UploadPictureState extends State<UploadPicture> {
           final FaceShape faceShape =
               FaceShape(shapeName: parsedAPIResponse['face_shape']);
 
-          _onPictureUploaded(
-              newPicture: pictureUploaded,
-              pictureFile: _image,
-              newFaceShape: faceShape);
+          final faceShapeDetectedResponse =
+              await FaceShapeService.getAll(faceShapeName: faceShape.shapeName);
 
-          Navigator.pop(_scaffoldKey.currentContext);
+          if (faceShapeDetectedResponse.statusCode == HttpStatus.ok &&
+              faceShapeDetectedResponse.body.isNotEmpty) {
+            final rawFaceShapes = List.from(
+                jsonDecode(faceShapeDetectedResponse.body)['faceShapes']);
+
+            if (rawFaceShapes.isNotEmpty) {
+              final faceShapeDetected = FaceShape.fromJson(rawFaceShapes[0]);
+
+              final historyEntry = History(
+                  pictureId: pictureUploaded.id,
+                  originalPictureId: pictureUploaded.id,
+                  faceShapeId: faceShapeDetected.id,
+                  userId: _user.id);
+
+              final historyEntryResponse =
+                  await HistoryService.post(history: historyEntry);
+
+              if (historyEntryResponse != null &&
+                  historyEntryResponse.body.isNotEmpty) {
+                final historyEntryAdded =
+                    History.fromJson(jsonDecode(historyEntryResponse.body));
+
+                _onPictureUploaded(
+                    newPicture: pictureUploaded,
+                    pictureFile: _image,
+                    historyEntryAdded: historyEntryAdded,
+                    newFaceShape: faceShape);
+
+                Navigator.pop(_scaffoldKey.currentContext);
+              }
+            }
+          }
         }
       } else {
         NotificationService.notify(

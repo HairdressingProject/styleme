@@ -1,14 +1,20 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/models/face_shape.dart';
 import 'package:app/models/hair_colour.dart';
 import 'package:app/models/hair_style.dart';
+import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
+import 'package:app/services/face_shape.dart';
+import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
+import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
@@ -18,6 +24,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 typedef OnPictureUploaded = void Function(
     {@required Picture newPicture,
     @required File pictureFile,
+    @required History historyEntryAdded,
     FaceShape newFaceShape,
     String message});
 
@@ -42,28 +49,77 @@ class _HomeState extends State<Home> {
   static final String routeName = '/homeRoute';
 
   User _user;
+  Future<Image> _currentPictureFileFuture;
   File _currentPictureFile;
+  Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
   FaceShape _currentFaceShape;
   HairStyle _currentHairStyle;
   HairColour _currentHairColour;
+  Future<Set<History>> _historyFuture;
+  Set<History> _history = Set<History>();
   String _message;
-  Set<String> _completedRoutes = Set();
+  Set<String> _completedRoutes = Set<String>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     _user = widget.user;
+    _currentPictureFuture = _fetchLatestPictureEntry();
+  }
+
+  Future<Set<History>> _fetchUserHistory() async {
+    if (_user != null) {
+      final historyResponse =
+          await HistoryService.getByUserId(userId: _user.id);
+      if (historyResponse.statusCode == HttpStatus.ok &&
+          historyResponse.body.isNotEmpty) {
+        final rawHistory = Set.from(jsonDecode(historyResponse.body));
+        return rawHistory.map((e) => History.fromJson(e)).toSet();
+      }
+    }
+    return null;
+  }
+
+  Future<Picture> _fetchLatestPictureEntry() async {
+    return _fetchUserHistory().then((value) async {
+      _history = value;
+      if (_history != null && _history.isNotEmpty) {
+        // load latest face shape, hair style and hair colour entries here
+        final latestPictureEntry =
+            await PicturesService.getById(pictureId: _history.last.pictureId);
+
+        if (latestPictureEntry.statusCode == HttpStatus.ok &&
+            latestPictureEntry.body.isNotEmpty) {
+          final latestPicture =
+              Picture.fromJson(jsonDecode(latestPictureEntry.body));
+          return latestPicture;
+        }
+      }
+      return null;
+    });
+  }
+
+  Future<FaceShape> _fetchLatestFaceShapeEntry() async {
+    // WIP
+    if (_history != null &&
+        _history.isNotEmpty &&
+        _history.last.faceShapeId != null) {
+      final latestFaceShapeResponse =
+          await FaceShapeService.getById(id: _history.last.faceShapeId);
+    }
   }
 
   void _onPictureUploaded(
       {@required Picture newPicture,
-      File pictureFile,
+      @required File pictureFile,
+      @required History historyEntryAdded,
       FaceShape newFaceShape,
       String message}) {
     setState(() {
       _completedRoutes.add(UploadPicture.routeName);
+      _history.add(historyEntryAdded);
       _currentPicture = newPicture;
       _currentPictureFile = pictureFile;
       _currentFaceShape = newFaceShape;
@@ -157,19 +213,32 @@ class _HomeState extends State<Home> {
               ),
               Text("Let's get stylish!",
                   style: Theme.of(context).textTheme.headline1),
-              _currentPictureFile != null
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 30.0),
-                      child: GestureDetector(
-                        onTap: _onPreviewPicture,
-                        child: Container(
-                          height: 200.0,
-                          child: Image.file(_currentPictureFile),
-                        ),
-                      ))
-                  : const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20.0),
-                    ),
+              FutureBuilder<Picture>(
+                future: _currentPictureFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30.0),
+                        child: GestureDetector(
+                          onTap: _onPreviewPicture,
+                          child: CachedNetworkImage(
+                            height: 200.0,
+                            imageUrl:
+                                '${PicturesService.picturesUri}/file/${snapshot.data.id}',
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => Center(
+                                    child: CircularProgressIndicator(
+                                        value: downloadProgress.progress)),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
+                        ));
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
               Padding(
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
@@ -183,8 +252,8 @@ class _HomeState extends State<Home> {
                     text: "Select or take picture",
                     alreadySelected:
                         _completedRoutes.contains(UploadPicture.routeName),
-                    action:
-                        UploadPicture(onPictureUploaded: _onPictureUploaded),
+                    action: UploadPicture(
+                        onPictureUploaded: _onPictureUploaded, user: _user),
                     enabled: true,
                   )),
               Padding(
@@ -194,6 +263,7 @@ class _HomeState extends State<Home> {
                         SelectFaceShape.routeName, UploadPicture.routeName),
                     text: "Select your face shape",
                     action: SelectFaceShape(
+                      userId: _user.id,
                       initialFaceShape: _currentFaceShape,
                       onFaceShapeUpdated: _onFaceShapeUpdated,
                     ),

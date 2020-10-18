@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app/models/face_shape.dart';
 import 'package:app/models/history.dart';
 import 'package:app/services/authentication.dart';
@@ -149,7 +151,7 @@ class HistoryService {
                   "Authorization": "Bearer $userToken",
                   "Origin": ADMIN_PORTAL_URL
                 },
-                body: history.toJson())
+                body: jsonEncode(history.toJson()))
             .timeout(const Duration(seconds: 10));
 
         return response;
@@ -163,7 +165,11 @@ class HistoryService {
   }
 
   static Future<http.Response> postFaceShapeEntry(
-      {@required AddFaceShapeHistoryEntry faceShapeEntry}) async {
+      {@required HistoryAddFaceShape faceShapeEntry}) async {
+    print('Sending this request body:');
+    final body = faceShapeEntry.toJson();
+
+    print(body);
     try {
       final userToken = await Authentication.retrieveToken();
 
@@ -175,7 +181,8 @@ class HistoryService {
                   "Authorization": "Bearer $userToken",
                   "Origin": ADMIN_PORTAL_URL
                 },
-                body: faceShapeEntry.toJson())
+                body: jsonEncode(body),
+                encoding: Encoding.getByName('utf-8'))
             .timeout(const Duration(seconds: 10));
 
         return response;

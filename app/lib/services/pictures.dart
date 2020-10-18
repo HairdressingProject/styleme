@@ -39,7 +39,7 @@ class PicturesService {
     }
   }
 
-  static Future<http.Response> getFileById({@required pictureId}) async {
+  static Future<http.Response> getFileById({@required int pictureId}) async {
     try {
       final response = await http
           .get(Uri.encodeFull('$picturesUri/file/$pictureId'))
@@ -67,34 +67,33 @@ class PicturesService {
     }
   }
 
-  static Future<http.Response> changeHairColour({int pictureId, String colourName}) async {
+  static Future<http.Response> changeHairColour(
+      {int pictureId, String colourName}) async {
     try {
       final response = await http
-        .post(Uri.encodeFull(
-          '$picturesUri/$pictureId/hair_colour?colour=$colourName'))
-        .timeout(const Duration(seconds: 10));
+          .post(Uri.encodeFull(
+              '$picturesUri/$pictureId/hair_colour?colour=$colourName'))
+          .timeout(const Duration(seconds: 10));
       return response;
-    }
-    catch(err) {
+    } catch (err) {
       print('Failed to colour hair');
       print(err);
-    return null;
+      return null;
     }
   }
 
-  static Future<http.Response> changeHairColourRGB({int pictureId, String colourName, int r, int g, int b}) async {
+  static Future<http.Response> changeHairColourRGB(
+      {int pictureId, String colourName, int r, int g, int b}) async {
     try {
       final response = await http
-        .post(Uri.encodeFull(
-          '$picturesUri/$pictureId/hair_colour2?colour=$colourName&r=$r&g=$g&b=$b'))
-        .timeout(const Duration(seconds: 10));
+          .post(Uri.encodeFull(
+              '$picturesUri/$pictureId/hair_colour2?colour=$colourName&r=$r&g=$g&b=$b'))
+          .timeout(const Duration(seconds: 10));
       return response;
-    }
-    catch(err) {
+    } catch (err) {
       print('Failed to colour hair');
       print(err);
-    return null;
+      return null;
     }
-  }  
-
+  }
 }
