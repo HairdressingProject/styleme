@@ -206,6 +206,35 @@ async def change_hair_colour(picture_id: int, colour: str, db: Session = Depends
     # # return picture_actions.read_picture_by_id(db, picture_id=picture_id)
 
 
+@router.post("/{picture_id}/hair_colour2")
+async def change_hair_colour2(picture_id: int, colour: str, r: int, g: int, b: int, db: Session = Depends(get_db)):
+    selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
+    print(selected_picture.file_name)
+    print(selected_picture.file_path)
+
+    # apply selected colour
+    picture_info = picture_service.change_hair_colour2(file_name=selected_picture.file_name, selected_colour=colour, r=r, g=g, b=b,
+                                                      file_path=selected_picture.file_path)
+    print(picture_info)
+
+    # create new picture and add to db
+    new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+                                 file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
+
+    mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
+
+    # fake user_id
+    user_id = 1
+
+    # create new history record and add to db
+    # ToDo: fix history logic
+    new_history = models.History(picture_id=mod_pic.id, original_picture_id=selected_picture.id, hair_colour_id=1,
+                                 user_id=user_id)
+
+    history_actions.add_history(db=db, history=new_history)
+
+    return new_picture
+
 @router.post("/{user_picture_id}/change_hairstyle/{model_picture_id}")
 async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
     user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)

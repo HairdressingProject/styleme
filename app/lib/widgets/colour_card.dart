@@ -8,12 +8,14 @@ class ColourCard extends StatelessWidget {
       @required this.select,
       this.selected = false,
       @required this.colourHash,
+      @required this.colourName,
       @required this.colourLabel})
       : super(key: key);
 
   final Function select;
   final bool selected;
   final String colourLabel;
+  final String colourName;
   final String colourHash;
 
   @override

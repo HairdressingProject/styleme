@@ -281,6 +281,50 @@ class PictureService:
 
         return picture_info
 
+
+    def change_hair_colour2(self, file_name, selected_colour, r, b, g, file_path=PICTURE_UPLOAD_FOLDER,
+                           save_path=HAIR_COLOUR_RESULTS_PATH):
+        
+        if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
+            os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
+
+        table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
+        cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
+
+        img_url = file_path + file_name  # @param {type: "string"}
+        print(img_url)
+
+        img_size = "512"  # @param [512,256]
+        img = cv2.cvtColor(cv2.imread(img_url), cv2.COLOR_BGR2RGB)
+        pre = Preprocess()
+        face_rgba = pre.process(img)
+
+        if face_rgba is not None:
+            # change background to white
+            face_rgba = cv2.resize(face_rgba, (int(img_size), int(img_size)), interpolation=cv2.INTER_AREA)
+            portrait = cv2.cvtColor(face_rgba, cv2.COLOR_RGB2BGR)
+            cv2.imwrite('pictures/hair_colour/portrait.png', portrait)
+
+        # cv2.imwrite('pictures/hair_colour/test.png', img)
+        # print(img)
+
+        parsing = evaluate(portrait, cp)
+        part = [table['hair']]
+
+        selected_colour2 = [b, g, r]
+
+        image = hair(portrait, parsing, part, selected_colour2)
+
+        new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + 'R_' + str(r) + 'B_' + str(b) + 'G_' + str(g) + '.' + file_name.split('.')[1]
+        full_path = save_path + new_file_name
+        print(full_path)
+        print(full_path, "full path")
+        cv2.imwrite(full_path, image)
+        picture_info = PictureService.get_picture_info(self, save_path, new_file_name)
+        print(picture_info)
+
+        return picture_info        
+
     def change_hairstyle(self, user_picture: Picture, model_picture: ModelPicture):
 
         print(user_picture.file_path + user_picture.file_name, "User picture")
