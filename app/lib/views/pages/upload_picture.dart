@@ -115,7 +115,6 @@ class _UploadPictureState extends State<UploadPicture> {
 
                 _onPictureUploaded(
                     newPicture: pictureUploaded,
-                    pictureFile: _image,
                     historyEntryAdded: historyEntryAdded,
                     newFaceShape: faceShape);
 

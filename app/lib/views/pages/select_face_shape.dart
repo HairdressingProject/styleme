@@ -165,7 +165,8 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
     final response =
         await HistoryService.postFaceShapeEntry(faceShapeEntry: faceShapeEntry);
 
-    if (response.statusCode == HttpStatus.ok) {
+    if (response.statusCode == HttpStatus.ok ||
+        response.statusCode == HttpStatus.created) {
       _onFaceShapeUpdated(
           newFaceShape: FaceShape(shapeName: _selectedFaceShape.label));
       setState(() {
@@ -174,15 +175,12 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
       });
       Navigator.pop(context);
     } else {
-      print('Response from API (error):');
-      print(response.body);
-      print(response.headers);
-      setState(() {
-        _isLoading = false;
-      });
       NotificationService.notify(
           scaffoldKey: _scaffoldKey, message: 'Could not updated face shape');
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

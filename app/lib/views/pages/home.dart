@@ -25,7 +25,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnPictureUploaded = void Function(
     {@required Picture newPicture,
-    @required File pictureFile,
     @required History historyEntryAdded,
     FaceShape newFaceShape,
     String message});
@@ -54,7 +53,6 @@ class _HomeState extends State<Home> {
   File _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
-  Future<FaceShape> _currentFaceShapeFuture;
   FaceShape _currentFaceShape;
   HairStyle _currentHairStyle;
   HairColour _currentHairColour;
@@ -175,7 +173,6 @@ class _HomeState extends State<Home> {
 
   void _onPictureUploaded(
       {@required Picture newPicture,
-      @required File pictureFile,
       @required History historyEntryAdded,
       FaceShape newFaceShape,
       String message}) {
@@ -183,7 +180,7 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(UploadPicture.routeName);
       _history.add(historyEntryAdded);
       _currentPicture = newPicture;
-      _currentPictureFile = pictureFile;
+      _currentPictureFuture = _fetchLatestPictureEntry();
       _currentFaceShape = newFaceShape;
       _message = message ?? 'Picture successfully uploaded';
     });
@@ -296,9 +293,21 @@ class _HomeState extends State<Home> {
                           ),
                         ));
                   }
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: Center(
+                        child: Column(children: [
+                          Text('A preview of your results will displayed here',
+                              style: TextStyle(
+                                  fontFamily: 'Klavika',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500)),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 5.0),
+                          ),
+                          Icon(Icons.image, size: 48)
+                        ]),
+                      ));
                 },
               ),
               Padding(
@@ -385,16 +394,11 @@ class _HomeState extends State<Home> {
                                 SelectFaceShape.routeName));
                       }
                       return CustomButton(
-                        icon: Icon(Icons.access_time),
-                        text: "Select your face shape",
-                        action: SelectFaceShape(
-                          userId: _user.id,
-                          initialFaceShape: _currentFaceShape,
-                          onFaceShapeUpdated: _onFaceShapeUpdated,
-                        ),
-                        alreadySelected: false,
-                        enabled: false,
-                      );
+                          icon: Icon(Icons.access_time),
+                          text: "Select a hair style",
+                          action: SelectHairStyle(),
+                          alreadySelected: false,
+                          enabled: false);
                     },
                   )),
               Padding(
@@ -417,8 +421,15 @@ class _HomeState extends State<Home> {
                               currentPictureFile: _currentPictureFile,
                             ));
                       }
-                      return Center(
-                        child: CircularProgressIndicator(),
+                      return CustomButton(
+                        icon: Icon(Icons.access_time),
+                        text: "Select your hair colour",
+                        action: SelectHairColour(
+                          currentPicture: _currentPicture,
+                          currentPictureFile: _currentPictureFile,
+                        ),
+                        alreadySelected: false,
+                        enabled: false,
                       );
                     },
                   )),

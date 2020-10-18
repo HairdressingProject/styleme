@@ -509,3 +509,6 @@ appsettings.Production.json
 # Secrets
 secrets/
 secret_constants.php
+
+# Hair transfer data set
+79999_iter.pth
