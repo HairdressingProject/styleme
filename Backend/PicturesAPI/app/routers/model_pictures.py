@@ -73,6 +73,8 @@ async def upload_model_picture(file: UploadFile = File(...), db: Session = Depen
                 print(
                     f'Updated model picture id: {updated_model_picture.id}, Face shape ID: {updated_model_picture.face_shape_id}')
 
+                face_shape_detected = face_shape_actions.get_face_shape(db=db,
+                                                                        face_shape_id=updated_model_picture.face_shape_id)
                 return {'model_picture': updated_model_picture, 'face_shape': face_shape_detected}
             else:
                 raise HTTPException(status_code=404,
