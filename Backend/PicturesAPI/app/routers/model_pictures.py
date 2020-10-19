@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
 from app.settings import MODEL_UPLOAD_FOLDER
+from fastapi.responses import FileResponse, ORJSONResponse
 
 router = APIRouter()
 picture_service = services.PictureService()
@@ -78,8 +79,17 @@ def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Se
 
 @router.get("/{model_picture_id}", response_model=schemas.ModelPicture)
 def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
-    return model_picture_actions.read_model_picture_by_id(db, picture_id=model_picture_id)
+    return model_picture_actions.read_model_picture_by_id(db, model_picture_id=model_picture_id)
     return model_pictures
+
+@router.get("/file/{model_picture_id}", status_code=status.HTTP_200_OK)
+async def read_model_picture_file(model_picture_id: int, db: Session = Depends(get_db)):
+    selected_picture = model_picture_actions.read_model_picture_by_id(model_picture_id=model_picture_id, db=db)
+    if selected_picture:
+        file_path = selected_picture.file_path + '/' + selected_picture.file_name
+        print(file_path)
+        return FileResponse(file_path)
+    raise HTTPException(status_code=404, detail='Picture file not found')
 
 @router.delete("/{model_picture_id}", status_code=status.HTTP_200_OK)
 async def delete_picture(model_picture_id: int, response: Response, db: Session = Depends(get_db)):
