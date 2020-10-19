@@ -334,7 +334,7 @@ class _HomeState extends State<Home> {
                             enabled: true);
                       }
                       return CustomButton(
-                          icon: Icon(Icons.access_time),
+                          icon: Icon(Icons.add),
                           text: "Select or take picture",
                           alreadySelected: false,
                           action: UploadPicture(

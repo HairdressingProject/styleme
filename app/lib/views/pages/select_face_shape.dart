@@ -47,7 +47,7 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
     'inverted_triangular': 'Inverted triangular',
     'round': 'Round',
     'oval': 'Oval',
-    'oblong': 'Oblong'
+    'long': 'Long'
   };
 
   @override
