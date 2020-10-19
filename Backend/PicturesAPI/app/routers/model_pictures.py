@@ -1,7 +1,7 @@
 from typing import List
 import os
 import pathlib
-from fastapi import APIRouter, File, Depends, UploadFile, status, Response
+from fastapi import APIRouter, File, Depends, UploadFile, status, Response, HTTPException
 from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
@@ -96,7 +96,8 @@ async def update_model_picture(model_picture_id: int, model_picture: schemas.Mod
             "message": "Model picture entry not found"
         }
 
-    return model_picture_actions.update_model_picture(db=db, model_picture_id=model_picture_id, model_picture=model_picture)
+    return model_picture_actions.update_model_picture(db=db, model_picture_id=model_picture_id,
+                                                      model_picture=model_picture)
 
 
 @router.get("", response_model=List[schemas.ModelPicture])
@@ -105,9 +106,13 @@ def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Se
     return model_pictures
 
 
-@router.get("/{model_picture_id}", response_model=schemas.ModelPicture)
+@router.get("/id/{model_picture_id}", response_model=schemas.ModelPicture)
 def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
-    return model_picture_actions.read_model_picture_by_id(db, model_picture_id=model_picture_id)
+    model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db, model_picture_id=model_picture_id)
+
+    if model_picture:
+        return model_picture
+    raise HTTPException(status_code=404, detail='Model picture not found by ID')
 
 
 @router.get("/file/{model_picture_id}", status_code=status.HTTP_200_OK)
