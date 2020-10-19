@@ -108,7 +108,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
       _g = myColor.green;
       _b = myColor.blue;
       _rgb = Color.fromARGB(255, _r, _g, _b);
-      _hsl = HSLColor.fromColor(myColor);
+      _hsl = HSLColor.fromColor(_rgb);
       _alpha = _hsl.alpha;
       _h = _hsl.hue;
       _s = _hsl.saturation;
