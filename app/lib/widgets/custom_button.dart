@@ -12,7 +12,7 @@ class CustomButton extends StatelessWidget {
       : super(key: key);
 
   final String text;
-  final Icon icon;
+  final Widget icon;
   final bool enabled;
   final bool alreadySelected;
   final Widget action;

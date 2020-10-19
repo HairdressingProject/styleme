@@ -13,14 +13,14 @@ class History {
   final String dateUpdated;
 
   History(
-      {@required this.id,
-      @required this.pictureId,
+      {this.id,
+      this.pictureId,
       this.originalPictureId,
       this.previousPictureId,
       this.hairColourId,
       this.hairStyleId,
       this.faceShapeId,
-      @required this.userId,
+      this.userId,
       this.dateCreated,
       this.dateUpdated});
 
@@ -63,6 +63,14 @@ class History {
         'date_created': this.dateCreated,
         'date_updated': this.dateUpdated
       };
+
+  @override
+  bool operator ==(other) {
+    return this.id == other.id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class HistoryAddFaceShape {
@@ -80,10 +88,10 @@ class HistoryAddFaceShape {
     ''';
   }
 
-  HistoryAddFaceShape.fromJson(Map<String, dynamic> json)
+  HistoryAddFaceShape.fromJson(Map<String, int> json)
       : userId = json['user_id'],
         faceShapeId = json['face_shape_id'];
 
-  Map<String, dynamic> toJson() =>
+  Map<String, int> toJson() =>
       {'user_id': this.userId, 'face_shape_id': this.faceShapeId};
 }

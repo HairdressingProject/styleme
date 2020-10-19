@@ -1,5 +1,7 @@
-import 'dart:isolate';
+import 'dart:io';
 
+import 'package:app/models/picture.dart';
+import 'package:app/services/notification.dart';
 import 'package:app/widgets/colour_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,12 +11,22 @@ import 'package:app/widgets/action_button.dart';
 
 class SelectHairColour extends StatefulWidget {
   static final String routeName = '/selectHairColourRoute';
+  final File currentPictureFile;
+  final Picture currentPicture;
+
+  const SelectHairColour(
+      {Key key,
+      @required this.currentPictureFile,
+      @required this.currentPicture})
+      : super(key: key);
 
   @override
   _SelectHairColourState createState() => _SelectHairColourState();
 }
 
 class _SelectHairColourState extends State<SelectHairColour> {
+  File _currentPictureFile;
+  Picture _currentPicture;
   List<ColourCard> _colours;
   ColourCard _selectedColourCard;
   double _lightnessValue;
@@ -34,49 +46,55 @@ class _SelectHairColourState extends State<SelectHairColour> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   _saveChanges() {
-    // TODO: Save _selectedColour 
+    // TODO: Save _selectedColour
     _changeHairColour();
   }
 
   Future<void> _changeHairColour() async {
-    if(_selectedColourCard != null) {
+    if (_selectedColourCard != null) {
       setState(() {
         _isLoading = true;
-      });      
+      });
       //final response = await PicturesService.changeHairColour(pictureId: 60, colourName: _selectedColourCard.colourName);
-      final response = await PicturesService.changeHairColourRGB(pictureId: 217, colourName: _selectedColourCard.colourName, r: _r, b: _b, g:_g);
-      if (response != null){
+      final response = await PicturesService.changeHairColourRGB(
+          pictureId: _currentPicture.id,
+          colourName: _selectedColourCard.colourName,
+          r: _r,
+          b: _b,
+          g: _g);
+      if (response != null) {
         print(response.request);
         print(response.request.headers);
         print('Response from API:');
-        print('${await response}');
+        print('${response.body}');
         print("Selected colour: ");
         print(_selectedColour.red);
         print(_selectedColour.blue);
         print(_selectedColour.green);
 
         // ToDo: Improve error messages
-        if(await response.statusCode == 200) {
-          _displayMessage(message: 'Hair colour successfully applied');
+        if (response.statusCode == 200) {
+          NotificationService.notify(
+              scaffoldKey: _scaffoldKey,
+              message: 'Hair colour successfully applied');
+        } else {
+          NotificationService.notify(
+              scaffoldKey: _scaffoldKey,
+              message: 'Hair colour already applied');
         }
-        else {
-          _displayMessage(message: 'Hair colour already applied');
-        }
-              
+      } else {
+        NotificationService.notify(
+            scaffoldKey: _scaffoldKey,
+            message: 'Could not apply hair colour. Please try again.');
       }
-      else {
-        _displayMessage(message: 'Hair colour failed. Please try .');
-      }
-      setState(() {
-        _isLoading = false;
-      });      
+    } else {
+      NotificationService.notify(
+          scaffoldKey: _scaffoldKey, message: 'Please select a hair colour');
     }
-    else {
-      _displayMessage(message: 'Please select a hair colour');
-    }
-
+    setState(() {
+      _isLoading = false;
+    });
   }
-
 
   _selectColour(ColourCard card) {
     setState(() {
@@ -113,13 +131,16 @@ class _SelectHairColourState extends State<SelectHairColour> {
       _h = _hsl.hue;
       _s = _hsl.saturation;
       _l = _hsl.lightness;
-      _selectedColour = HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue/100).toColor();
+      _selectedColour =
+          HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue / 100).toColor();
     });
   }
 
   @override
   void initState() {
     super.initState();
+    _currentPicture = widget.currentPicture;
+    _currentPictureFile = widget.currentPictureFile;
     _lightnessValue = 50.0;
     _lightnessLabel = "0%";
     _colours = [
@@ -171,28 +192,13 @@ class _SelectHairColourState extends State<SelectHairColour> {
       _lightnessValue = value;
       _lightnessLabel = '${_lightnessValue.toStringAsFixed(1)}%';
 
-      _selectedColour = HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue/100).toColor();
+      _selectedColour =
+          HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue / 100).toColor();
 
       _r = _selectedColour.red;
       _b = _selectedColour.blue;
-      _g = _selectedColour.green;      
+      _g = _selectedColour.green;
     });
-  }
-
-
-  _displayMessage({@required String message}) {
-    final snackBar = SnackBar(
-      content: Text(message,
-          style: Theme.of(context).textTheme.bodyText1.copyWith(
-              fontFamily: 'Klavika', fontSize: 12.0, color: Colors.white)),
-      action: SnackBarAction(
-        label: 'Dismiss',
-        onPressed: () {
-          _scaffoldKey.currentState.hideCurrentSnackBar();
-        },
-      ),
-    );
-    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   @override
@@ -229,8 +235,8 @@ class _SelectHairColourState extends State<SelectHairColour> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
                 ),
-                Image.asset(
-                  'assets/hair_styles/long_shaggy_layers.jpg',
+                Image.file(
+                  _currentPictureFile,
                   height: 150.0,
                 ),
                 const Padding(
@@ -331,15 +337,12 @@ class _SelectHairColourState extends State<SelectHairColour> {
                         width: 100.0,
                         height: 100.0,
                         color: _selectedColourCard != null
-                            ? HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue/100).toColor()
-                            : HSLColor.fromColor(Theme.of(context).backgroundColor).toColor()
-                    )
-                        // color: _selectedColourCard != null
-                        //     ? Color.alphaBlend(
-                        //         HexColor(_selectedColourCard.colourHash),
-                        //         Color.fromARGB(0, 255, 255, 255),
-                        //       )
-                        //     : Theme.of(context).backgroundColor)
+                            ? HSLColor.fromAHSL(
+                                    _alpha, _h, _s, _lightnessValue / 100)
+                                .toColor()
+                            : HSLColor.fromColor(
+                                    Theme.of(context).backgroundColor)
+                                .toColor())
                   ],
                 ),
                 const Padding(
@@ -347,18 +350,14 @@ class _SelectHairColourState extends State<SelectHairColour> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                  child: 
-                    _isLoading
-                      ?
-                      Center(
-                        child: CircularProgressIndicator(),
-                      )
-                      :
-                      ActionButton(
-                        text: 'Save changes',
-                        action: _saveChanges,
-                        colour: Color.fromARGB(255, 74, 169, 242)
-                      ),
+                  child: _isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ActionButton(
+                          text: 'Save changes',
+                          action: _saveChanges,
+                          colour: Color.fromARGB(255, 74, 169, 242)),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 20.0),

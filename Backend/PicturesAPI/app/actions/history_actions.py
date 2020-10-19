@@ -57,6 +57,19 @@ class HistoryActions:
             .filter(
             models.Picture.file_name.ilike("%" + filename.strip() + "%")).first()
 
+    def get_user_id_from_picture_id(self, db: Session, picture_id: int) -> Union[models.User, None]:
+        """
+        Retrieve a user from a picture_id, if available in history
+        :param db: db session instance
+        :param picture_id: file name of the picture
+        :return: user that uploaded the picture identified by picture_id
+        """
+        history_entry: models.History = db.query(models.History).filter(models.History.picture_id == picture_id).first()
+        if history_entry:
+            user: models.User = db.query(models.User).filter(models.User.id == history_entry.user_id).first()
+            return user
+        return None
+
     def add_history(self, db: Session, history: schemas.HistoryCreate) -> models.History:
         """
         Adds history entry to db

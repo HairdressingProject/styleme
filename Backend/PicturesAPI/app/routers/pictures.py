@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional, Union
 
 from fastapi import APIRouter, File, Depends, UploadFile, status, Response, HTTPException
 from sqlalchemy.orm import Session
@@ -213,8 +213,9 @@ async def change_hair_colour2(picture_id: int, colour: str, r: int, g: int, b: i
     print(selected_picture.file_path)
 
     # apply selected colour
-    picture_info = picture_service.change_hair_colour2(file_name=selected_picture.file_name, selected_colour=colour, r=r, g=g, b=b,
-                                                      file_path=selected_picture.file_path)
+    picture_info = picture_service.change_hair_colour2(file_name=selected_picture.file_name, selected_colour=colour,
+                                                       r=r, g=g, b=b,
+                                                       file_path=selected_picture.file_path)
     print(picture_info)
 
     # create new picture and add to db
@@ -235,6 +236,8 @@ async def change_hair_colour2(picture_id: int, colour: str, r: int, g: int, b: i
 
     return new_picture
 
+
+"""
 @router.post("/{user_picture_id}/change_hairstyle/{model_picture_id}")
 async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
     user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
@@ -259,17 +262,68 @@ async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Sess
                                  user_id=user_id)
 
     history_actions.add_history(db=db, history=new_history)
+"""
 
 
-@router.post("_str/{user_picture_file_name}/change_hairstyle/{model_picture_file_name}")
-async def change_hairstyle_str(user_picture_file_name: str, model_picture_file_name: str,
-                               db: Session = Depends(get_db)):
-    # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-    # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
+@router.post("/change_hair_style", status_code=status.HTTP_201_CREATED)
+async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_id: Optional[int] = None,
+                           user_picture_file_name: Optional[str] = None, model_picture_file_name: Optional[str] = None,
+                           db: Session = Depends(get_db)):
+    user_picture: Union[models.Picture, None] = None
+    model_picture: Union[models.ModelPicture, None] = None
 
-    picture_service.change_hairstyle_str(user_picture=user_picture_file_name, model_picture=model_picture_file_name)
+    if user_picture_id and model_picture_id:
+        user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
+        model_picture = model_picture_actions.read_model_picture_by_id(db, picture_id=model_picture_id)
+
+    elif user_picture_file_name and model_picture_file_name:
+        picture_results: List[models.Picture] = picture_actions.read_picture_by_file_name(db=db,
+                                                                                          file_name=user_picture_file_name,
+                                                                                          limit=1)
+        if len(picture_results):
+            user_picture = picture_results[0]
+            model_pictures_results = model_picture_actions.read_model_picture_by_file_name(db=db,
+                                                                                           file_name=model_picture_file_name,
+                                                                                           limit=1)
+            if len(model_pictures_results):
+                model_picture = model_pictures_results[0]
+
+    else:
+        raise HTTPException(status_code=400,
+                            detail='Please enter (user_picture_id AND model_picture_id) OR (user_picture_filename AND '
+                                   'model_picture_filename)')
+
+    if user_picture and model_picture:
+        # apply hair transfer
+        picture_info = picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
+        print(picture_info)
+
+        # create new picture and add to db
+        new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+                                     file_size=picture_info.file_size, height=picture_info.height,
+                                     width=picture_info.width)
+
+        mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
+
+        user = history_actions.get_user_id_from_picture_id(db=db, picture_id=user_picture.id)
+
+        if user:
+            model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db=db,
+                                                                                                picture_id=model_picture.id)
+            if model_picture:
+                new_history = models.History(picture_id=mod_pic.id, original_picture_id=user_picture.id,
+                                             hair_style_id=model_picture.hair_style_id,
+                                             user_id=user.id)
+
+                history_entry = history_actions.add_history(db=db, history=new_history)
+                return history_entry
+            raise HTTPException(status_code=404, detail='Model picture not found')
+        raise HTTPException(status_code=404, detail='No user associated with this picture was found')
+
+    raise HTTPException(status_code=404, detail='No user picture or model picture associated with these IDs were found')
 
 
+"""
 @router.post("_test/{picture_url}/change_hairstyle/{model_url}")
 async def change_hairstyle_str_path(picture_url: str, model_url: str,
                                     db: Session = Depends(get_db)):
@@ -277,6 +331,7 @@ async def change_hairstyle_str_path(picture_url: str, model_url: str,
     # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
 
     picture_service.change_hairstyle_str_path(user_picture=picture_url, model_picture=model_url)
+"""
 
 
 @router.delete("/{picture_id}", status_code=status.HTTP_200_OK, response_model=List[schemas.Picture])
