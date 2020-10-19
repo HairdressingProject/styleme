@@ -43,7 +43,8 @@ class HistoryActions:
         :param user_id: ID of the user to retrieve history records
         :return: History records of the user
         """
-        return db.query(models.History).filter(models.History.user_id == user_id).all()
+        user_history = db.query(models.History).filter(models.History.user_id == user_id).all()
+        return user_history
 
     def get_picture_history(self, db: Session, filename: str) -> List[models.History]:
         """

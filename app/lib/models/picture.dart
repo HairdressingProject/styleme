@@ -8,8 +8,15 @@ class Picture {
   final String dateCreated;
   final String dateUpdated;
 
-  Picture(this.id, this.fileName, this.filePath, this.fileSize, this.width,
-      this.height, this.dateCreated, this.dateUpdated);
+  Picture(
+      {this.id,
+      this.fileName,
+      this.filePath,
+      this.fileSize,
+      this.width,
+      this.height,
+      this.dateCreated,
+      this.dateUpdated});
 
   Picture.fromJson(Map<String, dynamic> json)
       : id = json['id'],

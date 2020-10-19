@@ -5,7 +5,7 @@ Created at: 02/10/2020 7:47 pm
 File: history.py
 """
 
-from fastapi import APIRouter, Depends, status, Response
+from fastapi import APIRouter, Depends, status, Response, HTTPException
 from sqlalchemy.orm import Session
 
 from app import actions, models, schemas
@@ -39,16 +39,15 @@ async def get_history(history_id: int, response: Response, db: Session = Depends
 
 
 @router.get("/users/{user_id}", status_code=status.HTTP_200_OK)
-async def get_user_history(user_id: int, response: Response, db: Session = Depends(get_db)):
+async def get_user_history(user_id: int, db: Session = Depends(get_db)):
     """
     GET /history/users/{user_id}
     :param db: db session instance
-    :param response: response object
     :param user_id: ID of the user to retrieve their history records
     """
 
     if not db.query(models.User).filter(models.User.id == user_id).first():
-        response.status_code = status.HTTP_404_NOT_FOUND
+        raise HTTPException(status_code=404, detail='No user associated with this ID was found')
 
     return history_actions.get_user_history(db=db, user_id=user_id)
 
