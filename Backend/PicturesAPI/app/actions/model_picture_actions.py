@@ -24,8 +24,8 @@ class ModelPictureActions:
             .filter(ModelPicture.file_name.ilike("%" + file_name.strip() + "%")) \
             .offset(skip).limit(limit).all()
 
-    def read_model_picture_by_id(self, db: Session, picture_id):
-        return db.query(ModelPicture).filter(ModelPicture.id == picture_id).first()
+    def read_model_picture_by_id(self, db: Session, model_picture_id):
+        return db.query(ModelPicture).filter(ModelPicture.id == model_picture_id).first()
 
     def read_model_pictures(self, db: Session, skip: int = 0, limit: int = 100, search: str = ""):
         if not search.strip():
