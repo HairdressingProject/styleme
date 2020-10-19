@@ -2,17 +2,16 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from app import models
+from app import models, schemas
 from app.models.model_picture import ModelPicture
-from app.schemas.model_picture import ModelPictureCreateUpdate
+from app.schemas.model_picture import ModelPictureCreate, ModelPictureUpdate
 
 
 class ModelPictureActions:
-    def add_model_picture(self, db: Session, picture: ModelPictureCreateUpdate):
+    def add_model_picture(self, db: Session, picture: ModelPictureCreate):
         db_picture = ModelPicture(file_name=picture.file_name, file_path=picture.file_path,
                                   file_size=picture.file_size, height=picture.height, width=picture.width,
-                                  face_shape_id=picture.face_shape_id, hair_style_id=picture.hair_style_id,
-                                  hair_length_id=picture.hair_length_id, hair_colour_id=picture.hair_colour_id)
+                                  face_shape_id=picture.face_shape_id)
         db.add(db_picture)
         db.commit()
         db.refresh(db_picture)
@@ -47,3 +46,31 @@ class ModelPictureActions:
             db.commit()
 
         return picture_entry
+
+    def update_model_picture(self, db: Session, model_picture_id: int, model_picture: schemas.ModelPictureUpdate) -> models.ModelPicture:
+        """
+        Updates a model picture record in the database
+        :param db: db session instance
+        :param model_picture_id: ID of the model picture entry to be updated
+        :param model_picture: new model picture record to be updated
+        :return: ModelPicture instance
+        """
+
+        model_picture_entry: models.ModelPicture = db.query(models.ModelPicture).filter(models.ModelPicture.id == model_picture_id).first()
+
+        if model_picture_entry is not None:
+            # model_picture_entry.file_name = model_picture.file_name
+            # model_picture_entry.file_path = model_picture.file_path
+            # model_picture_entry.file_size = model_picture.file_size
+            # model_picture_entry.height = model_picture.height
+            # model_picture_entry.width = model_picture.width
+            model_picture_entry.face_shape_id = model_picture.face_shape_id
+            model_picture_entry.hair_length_id = model_picture.hair_length_id
+            model_picture_entry.hair_style_id = model_picture.hair_style_id
+            model_picture_entry.hair_colour_id = model_picture.hair_colour_id
+
+            db.add(model_picture_entry)
+            db.commit()
+            db.refresh(model_picture_entry)
+
+        return model_picture_entry

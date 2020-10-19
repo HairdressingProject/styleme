@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse, ORJSONResponse
 router = APIRouter()
 picture_service = services.PictureService()
 model_picture_actions = actions.ModelPictureActions()
+face_shape_actions = actions.FaceShapeActions()
 history_actions = actions.HistoryActions()
 face_shape_service = services.FaceShapeService()
 
@@ -53,22 +54,49 @@ async def upload_model_picture(file: UploadFile = File(...), db: Session = Depen
             print(type(face_shape))
 
             # add model picture to db
-            # fake face shape id
-            face_shape_id = 1
-            hair_style_id = 1
-            hair_colour_id = 1
-            hair_length_id = 1
+            face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
+            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db, id=face_shape_id)
+            print(face_shape_detected.shape_name)
+            print(face_shape_detected.id)
+            # hair_style_id = 1
+            # hair_colour_id = 1
+            # hair_length_id = 1
             new_model_picture = models.ModelPicture(file_name=picture_info.file_name, file_path=picture_info.file_path,
                                                     file_size=picture_info.file_size, height=picture_info.height,
                                                     width=picture_info.width,
-                                                    face_shape_id=face_shape_id, hair_style_id=hair_style_id,
-                                                    hair_length_id=hair_length_id, hair_colour_id=hair_colour_id)
+                                                    face_shape_id=face_shape_id)
 
-            model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
+            results = model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
 
-            return face_shape[0]
+            return {'model_picture': results, 'face_shape': face_shape_detected.shape_name}
     else:
         return {"No face detected (cant read image)"}
+
+
+@router.put("/{model_picture_id}", status_code=status.HTTP_200_OK)
+async def update_model_picture(model_picture_id: int, model_picture: schemas.ModelPictureUpdate,
+                               response: Response, db: Session = Depends(get_db)):
+    """
+    PUT /models/{model_picture_id}
+    :param model_picture_id: ID of the model picture record to be updated
+    :param model_picture: ModelPictureUpdate instance to be updated in the database
+    :param response: response object
+    :param db: db session instance
+    :return:
+    """
+    if model_picture_id != model_picture.id:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "message": "Model picture ID in the endpoint does not match the one sent in the request body"
+        }
+
+    if not db.query(models.ModelPicture).filter(models.ModelPicture.id == model_picture_id).first():
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "message": "Model picture entry not found"
+        }
+
+    return model_picture_actions.update_model_picture(db=db, model_picture_id=model_picture_id, model_picture=model_picture)
 
 
 @router.get("", response_model=List[schemas.ModelPicture])
@@ -81,6 +109,7 @@ def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Se
 def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
     return model_picture_actions.read_model_picture_by_id(db, model_picture_id=model_picture_id)
 
+
 @router.get("/file/{model_picture_id}", status_code=status.HTTP_200_OK)
 async def read_model_picture_file(model_picture_id: int, db: Session = Depends(get_db)):
     selected_picture = model_picture_actions.read_model_picture_by_id(model_picture_id=model_picture_id, db=db)
@@ -89,6 +118,7 @@ async def read_model_picture_file(model_picture_id: int, db: Session = Depends(g
         print(file_path)
         return FileResponse(file_path)
     raise HTTPException(status_code=404, detail='Picture file not found')
+
 
 @router.delete("/{model_picture_id}", status_code=status.HTTP_200_OK)
 async def delete_picture(model_picture_id: int, response: Response, db: Session = Depends(get_db)):

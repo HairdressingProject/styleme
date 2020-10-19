@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:app/services/model_pictures.dart';
 import 'package:app/widgets/selectable_card.dart';
 import 'package:app/widgets/cards_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:app/models/model_picture.dart';
 
 class SelectHairStyle extends StatefulWidget {
   static final String routeName = '/selectHairStyleRoute';
@@ -17,6 +22,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   double _currentLengthFilter;
   String _currentLengthLabel;
   List<SelectableCard> _allHairStyles;
+  Future<Set<ModelPicture>> _allModels;
 
   @override
   void initState() {
@@ -24,6 +30,11 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     _filterByLength = false;
     _currentLengthFilter = 0;
     _currentLengthLabel = 'Short';
+
+    _allModels = _fetchModelPictures();
+    _allModels.then((m) {
+      print(m);
+    });
 
     _allHairStyles = [
       // short
@@ -165,6 +176,16 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
 
     _hairStyles = _allHairStyles;
     _selectedHairStyle = _hairStyles[0];
+  }
+
+  Future<Set<ModelPicture>> _fetchModelPictures() async {
+    final modelPictureResponse = await ModelPicturesService.getAll();
+    if (modelPictureResponse.statusCode == HttpStatus.ok && modelPictureResponse.body.isNotEmpty) {
+      final rawModelPictures = Set.from(jsonDecode(modelPictureResponse.body));
+      return rawModelPictures.map((e) => ModelPicture.fromJson(e)).toSet();
+    }
+    return null;
+
   }
 
   _selectHairStyle(SelectableCard hairStyle) {
