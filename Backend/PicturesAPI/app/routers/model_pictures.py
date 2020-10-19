@@ -1,7 +1,7 @@
 from typing import List
 import os
 import pathlib
-from fastapi import APIRouter, File, Depends, UploadFile, status, Response
+from fastapi import APIRouter, File, Depends, UploadFile, status, Response, HTTPException
 from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
@@ -36,41 +36,49 @@ async def upload_model_picture(file: UploadFile = File(...), db: Session = Depen
     file_name = picture_service.save_picture(file, save_path)
     face_detected = picture_service.detect_face(file_name, save_path)
 
-    if face_detected is True:
+    if face_detected:
         # try to find face landmark points
         face_landmarks = picture_service.detect_face_landmarks(file_name, save_path)
         if face_landmarks is None:
-            return {"No face landmarks detected"}
+            raise HTTPException(status_code=422, detail='No face landmarks detected')
         else:
             picture_info = picture_service.get_picture_info(save_path, file_name)
             print(picture_info, "Picture info")
 
             # detect face_shape
             face_shape = picture_service.detect_face_shape(file_name, save_path)
-            if (face_shape is None):
-                print("face shape is none")
-                return {"face shape detected"}
-            print(face_shape, "face_shape result")
-            print(type(face_shape))
+            if face_shape is None:
+                raise HTTPException(status_code=422, detail='Face shape could not be detected')
 
             # add model picture to db
-            face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
-            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db, id=face_shape_id)
-            print(face_shape_detected.shape_name)
-            print(face_shape_detected.id)
-            # hair_style_id = 1
-            # hair_colour_id = 1
-            # hair_length_id = 1
-            new_model_picture = models.ModelPicture(file_name=picture_info.file_name, file_path=picture_info.file_path,
-                                                    file_size=picture_info.file_size, height=picture_info.height,
-                                                    width=picture_info.width,
-                                                    face_shape_id=face_shape_id)
+            face_shape_results = face_shape_actions.get_face_shapes(db=db, limit=1, search=face_shape[0])
 
-            results = model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
+            if len(face_shape_results):
+                face_shape_detected: models.FaceShape = face_shape_results[0]
 
-            return {'model_picture': results, 'face_shape': face_shape_detected.shape_name}
+                new_model_picture = models.ModelPicture(file_name=picture_info.file_name,
+                                                        file_path=picture_info.file_path,
+                                                        file_size=picture_info.file_size, height=picture_info.height,
+                                                        width=picture_info.width,
+                                                        face_shape_id=face_shape_detected.id)
+
+                results = model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
+
+                new_model_picture = schemas.ModelPictureUpdate(id=results.id, face_shape_id=face_shape_detected.id)
+
+                updated_model_picture = model_picture_actions.update_model_picture(db=db,
+                                                                                   model_picture_id=new_model_picture.id,
+                                                                                   model_picture=new_model_picture)
+
+                print(
+                    f'Updated model picture id: {updated_model_picture.id}, Face shape ID: {updated_model_picture.face_shape_id}')
+
+                return {'model_picture': updated_model_picture, 'face_shape': face_shape_detected}
+            else:
+                raise HTTPException(status_code=404,
+                                    detail='Could not find face shape that matches results from the script')
     else:
-        return {"No face detected (cant read image)"}
+        raise HTTPException(status_code=422, detail='Could not detect faces from the image')
 
 
 @router.put("/{model_picture_id}", status_code=status.HTTP_200_OK)
@@ -96,7 +104,8 @@ async def update_model_picture(model_picture_id: int, model_picture: schemas.Mod
             "message": "Model picture entry not found"
         }
 
-    return model_picture_actions.update_model_picture(db=db, model_picture_id=model_picture_id, model_picture=model_picture)
+    return model_picture_actions.update_model_picture(db=db, model_picture_id=model_picture_id,
+                                                      model_picture=model_picture)
 
 
 @router.get("", response_model=List[schemas.ModelPicture])

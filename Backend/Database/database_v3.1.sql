@@ -282,10 +282,12 @@ VALUES
  
 INSERT INTO  hairdressing_project_db.hair_styles(`hair_style_name`)
 VALUES 
-('bob cut'),
-('layered'),
-('bangs'),
-('pixie cut');
+('short_pixie'),
+('medium_wavy'),
+('medium_side_swept_bangs'),
+('long_wavy'),
+('long_curly'),
+('long_side_swept_braided');
 
 INSERT INTO  hairdressing_project_db.hair_lengths(`hair_length_name`)
 VALUES 
