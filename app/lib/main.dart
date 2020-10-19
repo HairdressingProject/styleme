@@ -1,12 +1,8 @@
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
-import 'package:app/views/pages/select_hair_colour.dart';
-import 'package:app/views/pages/select_hair_style.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
-import 'package:app/views/pages/sign_up.dart';
-import 'package:app/views/pages/select_face_shape.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  Future<UserAuthenticate> _authenticatedUser;
+  Future<User> _authenticatedUser;
 
   @override
   void initState() {
@@ -70,13 +66,15 @@ class MyAppState extends State<MyApp> {
                   fontSize: 14,
                   fontWeight: FontWeight.w300,
                   letterSpacing: 0.5))),
-      home: FutureBuilder<UserAuthenticate>(
+      home: FutureBuilder<User>(
         future: _authenticatedUser,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.id != -1) {
               // user is authenticated
-              return Home();
+              return Home(
+                user: snapshot.data,
+              );
             }
             return SignIn();
           } else if (snapshot.hasError) {
@@ -90,14 +88,6 @@ class MyAppState extends State<MyApp> {
           );
         },
       ),
-      routes: {
-        SignIn.routeName: (context) => SignIn(),
-        Home.routeName: (context) => Home(),
-        SignUp.routeName: (context) => SignUp(),
-        SelectFaceShape.routeName: (context) => SelectFaceShape(),
-        SelectHairStyle.routeName: (context) => SelectHairStyle(),
-        SelectHairColour.routeName: (context) => SelectHairColour(),
-      },
     );
   }
 }

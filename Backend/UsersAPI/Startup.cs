@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using UsersAPI.Services.Context;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace UsersAPI
 {
@@ -30,8 +31,13 @@ namespace UsersAPI
     public class Startup
     {
         private readonly string AllowedOriginsConf = "Policy1";
-        private readonly string[] WhitelistedRoutes = new string[] {
+        private readonly string[] OpenRoutes = new string[] {
             "/users/sign_in", "/users/sign_up", "/users/authenticate", "/users/forgot_password"
+        };
+
+        private readonly string[] RestrictedRoutes = new string[]
+        {
+            "/users", "/colours", "/face_shapes", "/face_shape_links", "/hair_lengths", "/hair_length_links", "/hair_styles", "/hair_style_links"
         };
 
         public Startup(IConfiguration configuration)
@@ -153,23 +159,39 @@ namespace UsersAPI
             }); */
 
             // Forwarded Headers
-            services.Configure<ForwardedHeadersOptions>(options => {
-               options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
         }
 
         private static void RestrictToAdmins(IApplicationBuilder builder)
         {
-            builder.Use(async (ctx, next) => {
+            builder.Use(async (ctx, next) =>
+            {
                 Console.WriteLine("Requested colours route");
                 await next.Invoke();
             });
         }
 
+        private static async Task ReturnErrorMessage(HttpContext ctx, string message = "You do not have permission to access this data", int statusCode = StatusCodes.Status401Unauthorized)
+        {
+            ctx.Response.StatusCode = statusCode;
+            ctx.Response.ContentType = "application/json";
+            var response = new JsonResponse
+            {
+                Message = message,
+                Status = statusCode
+            };
+
+            var jsonResponse = JsonSerializer.Serialize(response);
+            await ctx.Response.WriteAsync(jsonResponse);
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
-            IApplicationBuilder app, 
-            IWebHostEnvironment env, 
+            IApplicationBuilder app,
+            IWebHostEnvironment env,
             IAuthenticationService authenticationService,
             hairdressing_project_dbContext dbContext
             )
@@ -178,15 +200,16 @@ namespace UsersAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-            else {
-               app.UseExceptionHandler("/error");
-               // app.UseHsts(); 
+            else
+            {
+                app.UseExceptionHandler("/error");
+                // app.UseHsts(); 
             }
 
             // Forwarded headers
             app.UseForwardedHeaders();
-            
-             // Global CORS
+
+            // Global CORS
             app.UseCors(AllowedOriginsConf);
 
             // app.UseHttpsRedirection();
@@ -195,15 +218,17 @@ namespace UsersAPI
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseMiddleware<LoggingService>();
 
             if (Program.RESTRICT_ACCESS)
             {
                 app.UseWhen(
-                ctx => !WhitelistedRoutes.Any(r => ctx.Request.Path.Value.Contains(r)),
-                builder => {
-                    builder.Use(async (ctx, next) => {
+                ctx => !OpenRoutes.Any(r => ctx.Request.Path.Value.Contains(r)),
+                builder =>
+                {
+                    builder.Use(async (ctx, next) =>
+                    {
                         using (var servicesScope = app.ApplicationServices.CreateScope())
                         {
                             var services = servicesScope.ServiceProvider;
@@ -219,29 +244,49 @@ namespace UsersAPI
 
                                     var user = await _dbCtx.Users.FindAsync(id);
 
-                                    if (user != null && user.UserRole == "admin")
+                                    if (user != null)
                                     {
+                                        if (RestrictedRoutes.Any(r => ctx.Request.Path.Value.Contains(r)))
+                                        {
+                                            if (ctx.Request.Path.Value.StartsWith("/users") || ctx.Request.Path.Value.StartsWith("/accounts"))
+                                            {
+                                                var reqId = ctx.Request.Path.Value.Split("/").Last();
+
+                                                if (!string.IsNullOrWhiteSpace(reqId) && reqId != "users")
+                                                {
+                                                    if (ulong.TryParse(reqId, out ulong parsedPathId))
+                                                    {
+                                                        if (id != parsedPathId && user.UserRole != "admin")
+                                                        {
+                                                            await ReturnErrorMessage(ctx);
+                                                            return;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (user.UserRole != "admin")
+                                                    {
+                                                        await ReturnErrorMessage(ctx);
+                                                        return;
+                                                    }
+                                                }
+                                            }
+                                        }
                                         await next();
                                         return;
                                     }
                                 }
                             }
-                            ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            ctx.Response.ContentType = "application/json";
-                            var response = new JsonResponse
-                            {
-                                Message = "You do not have permission to access this data",
-                                Status = 401
-                            };
 
-                            var jsonResponse = JsonSerializer.Serialize(response);
-                            await ctx.Response.WriteAsync(jsonResponse);
+                            await ReturnErrorMessage(ctx);
+                            return;
                         }
-                        
+
                     });
                 }
             );
-            }            
+            }
 
             app.UseEndpoints(endpoints =>
             {

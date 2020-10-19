@@ -38,6 +38,7 @@ class SignInFormState extends State<SignInForm> {
   bool _obscureText = true;
   bool _isProcessing = false;
   String _errorMsg;
+  User _user;
 
   _togglePasswordVisibility() {
     setState(() {
@@ -145,7 +146,14 @@ class SignInFormState extends State<SignInForm> {
             token: Authentication.getAuthCookie(response: response));
 
         if (tokenFile != null) {
-          return true;
+          final user = await Authentication.authenticate();
+
+          if (user.id != -1) {
+            setState(() {
+              _user = user;
+            });
+            return true;
+          }
         }
       } else {
         setState(() {
@@ -207,8 +215,10 @@ class SignInFormState extends State<SignInForm> {
 
                         if (await _signIn()) {
                           // all good, navigate to Home
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => Home()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Home(user: _user)));
                         } else {
                           // display error message
                           setState(() {

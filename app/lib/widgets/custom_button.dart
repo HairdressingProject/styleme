@@ -29,7 +29,7 @@ class CustomButton extends StatelessWidget {
             }
           : null,
       color: alreadySelected
-          ? Theme.of(context).buttonColor
+          ? Color.fromARGB(255, 38, 166, 154)
           : Color.fromARGB(255, 74, 169, 242),
       disabledColor: Theme.of(context).disabledColor,
       disabledTextColor: Colors.white,

@@ -97,7 +97,7 @@ async def read_picture_by_filename(picture_filename: str, response: Response, db
 """
 
 
-@router.get("/", response_model=List[schemas.Picture])
+@router.get("", response_model=List[schemas.Picture])
 def read_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
     pictures = picture_actions.read_pictures(db, skip=skip, limit=limit, search=search)
     return pictures

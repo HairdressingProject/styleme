@@ -22,10 +22,10 @@ class HairStyle {
   }
 
   HairStyle.fromJson(Map<String, dynamic> json)
-      : id = json['Id'],
+      : id = json['id'],
         hairStyleName = json['hairStyleName'],
-        dateCreated = json['DateCreated'],
-        dateUpdated = json['DateUpdated'];
+        dateCreated = json['dateCreated'],
+        dateUpdated = json['dateUpdated'];
 
   Map<String, dynamic> toJson() => {
         'Id': this.id,

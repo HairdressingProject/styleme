@@ -23,7 +23,7 @@ def get_db():
         db.close()
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_model_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
     save_path = MODEL_UPLOAD_FOLDER
 
@@ -71,7 +71,7 @@ async def upload_model_picture(file: UploadFile = File(...), db: Session = Depen
         return {"No face detected (cant read image)"}
 
 
-@router.get("/", response_model=List[schemas.ModelPicture])
+@router.get("", response_model=List[schemas.ModelPicture])
 def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
     model_pictures = model_picture_actions.read_model_pictures(db, skip=skip, limit=limit, search=search)
     return model_pictures
@@ -80,7 +80,6 @@ def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Se
 @router.get("/{model_picture_id}", response_model=schemas.ModelPicture)
 def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
     return model_picture_actions.read_model_picture_by_id(db, model_picture_id=model_picture_id)
-    return model_pictures
 
 @router.get("/file/{model_picture_id}", status_code=status.HTTP_200_OK)
 async def read_model_picture_file(model_picture_id: int, db: Session = Depends(get_db)):
