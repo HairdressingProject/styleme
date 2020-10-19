@@ -56,7 +56,7 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             # parse face shape string to int
             face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
 
-            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db, id=face_shape_id)
+            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db, face_shape_id=face_shape_id)
 
             user_id = 1
 

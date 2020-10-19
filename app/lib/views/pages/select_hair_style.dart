@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:app/models/hair_style.dart';
+import 'package:app/services/hair_style.dart';
 import 'package:app/services/model_pictures.dart';
 import 'package:app/widgets/selectable_card.dart';
 import 'package:app/widgets/cards_grid.dart';
@@ -17,14 +19,13 @@ class SelectHairStyle extends StatefulWidget {
 }
 
 class _SelectHairStyleState extends State<SelectHairStyle> {
+  Future<List<SelectableCard>> _allHairStyleCardsFuture;
+  List<SelectableCard> _allHairStyles;
   List<SelectableCard> _hairStyles;
   SelectableCard _selectedHairStyle;
   bool _filterByLength;
   double _currentLengthFilter;
   String _currentLengthLabel;
-  List<SelectableCard> _allHairStyles;
-
-  Future<Set<ModelPicture>> _allModels;
 
   @override
   void initState() {
@@ -33,15 +34,16 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     _currentLengthFilter = 0;
     _currentLengthLabel = 'Short';
 
-    _allModels = _fetchModelPictures();
+    _allHairStyleCardsFuture = _fetchModelPictures();
 
-    _allModels.then((m) {
-      _hairStyles = _buildModelPictureCards(m);
+    _allHairStyleCardsFuture.then((hs) {
+      _allHairStyles = hs;
+      _hairStyles = hs;
     });
   }
 
   List<SelectableCard> _buildModelPictureCards(
-      Set<ModelPicture> modelPictures) {
+      List<ModelPicture> modelPictures, List<HairStyle> hairStyles) {
     if (modelPictures != null && modelPictures.isNotEmpty) {
       return modelPictures
           .map((e) => SelectableCard(
@@ -55,30 +57,38 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                               value: downloadProgress.progress)),
                   errorWidget: (context, url, error) => Icon(Icons.error)),
               id: e.id,
-              // imgPath: e.filePath + e.fileName,
-              label: e.hairStyleId.toString(),
+              label: hairStyles
+                  .firstWhere((element) => element.id == e.hairStyleId)
+                  .hairStyleName,
               select: _selectHairStyle))
           .toList();
     }
-    return [];
+    return List<SelectableCard>();
   }
 
-  Future<Set<ModelPicture>> _fetchModelPictures() async {
+  Future<List<SelectableCard>> _fetchModelPictures() async {
     final response = await ModelPicturesService.getAll();
     if (response != null) {
       if (response.statusCode == HttpStatus.ok && response.body.isNotEmpty) {
-        final rawModelPictures = Set.from(jsonDecode(response.body));
+        final rawModelPictures = List.from(jsonDecode(response.body));
         final modelPictures =
-            rawModelPictures.map((e) => ModelPicture.fromJson(e)).toSet();
-        return modelPictures;
+            rawModelPictures.map((e) => ModelPicture.fromJson(e)).toList();
+
+        final hairStylesResponse = await HairStyleService.getAll();
+
+        if (hairStylesResponse.statusCode == HttpStatus.ok &&
+            response.body.isNotEmpty) {
+          final rawHairStyles =
+              jsonDecode(hairStylesResponse.body)['hairStyles'];
+          final hairStyles = List.from(rawHairStyles)
+              .map((e) => HairStyle.fromJson(e))
+              .toList();
+          return _buildModelPictureCards(modelPictures, hairStyles);
+        }
       }
     }
     return null;
   }
-
-  // Future<ModelPicture> _fetchModelPictureById(modelPictureId) async {
-  //   final response = await ModelPicturesService.getFileById(modelPictureId: modelPictureId);
-  // }
 
   _selectHairStyle(SelectableCard hairStyle) {
     if (!hairStyle.selected) {
@@ -86,6 +96,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
         _allHairStyles = _allHairStyles.map((card) {
           if (card == hairStyle) {
             card = SelectableCard(
+                id: card.id,
                 imgPath: card.imgPath,
                 label: card.label,
                 select: _selectHairStyle,
@@ -93,6 +104,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                 type: card.type);
           } else {
             card = SelectableCard(
+              id: card.id,
               imgPath: card.imgPath,
               label: card.label,
               select: _selectHairStyle,
@@ -104,9 +116,9 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
         }).toList();
 
         _hairStyles = _allHairStyles
-            .where(
-                (hs) => _hairStyles.any((element) => element.label == hs.label))
+            .where((hs) => _hairStyles.any((element) => element.id == hs.id))
             .toList();
+
         _selectedHairStyle = hairStyle;
       });
     }
@@ -122,8 +134,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       _filterByLength = selected;
       if (selected) {
         _hairStyles = _allHairStyles
-            .where((hs) =>
-                hs.type.toLowerCase() == _currentLengthLabel.toLowerCase())
+            .where((hs) => hs.label == _currentLengthLabel.toLowerCase())
             .toList();
       } else {
         _hairStyles = _allHairStyles;
@@ -230,14 +241,14 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                 ),
                 const Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0)),
-                FutureBuilder(
-                    future: _allModels,
+                FutureBuilder<List<SelectableCard>>(
+                    future: _allHairStyleCardsFuture,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        Container(
+                        return Container(
                           height: viewportConstraints.maxHeight - 320.0,
                           child: CardsGrid(
-                            cards: _hairStyles,
+                            cards: _hairStyles ?? snapshot.data,
                           ),
                         );
                       }

@@ -26,8 +26,7 @@ class SelectableCard extends StatelessWidget {
     try {
       if (type == 'modelPicture') {
         img = modelPicture;
-      }
-      else {
+      } else {
         img = Image.asset(imgPath);
       }
       return img;
@@ -84,5 +83,10 @@ class SelectableCard extends StatelessWidget {
                 )
               ],
             )));
+  }
+
+  @override
+  bool operator ==(other) {
+    return (other is SelectableCard) && other.id == this.id;
   }
 }
