@@ -23,7 +23,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   double _currentLengthFilter;
   String _currentLengthLabel;
   List<SelectableCard> _allHairStyles;
-  
+
   Future<Set<ModelPicture>> _allModels;
 
   @override
@@ -37,171 +37,30 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
 
     _allModels.then((m) {
       _hairStyles = _buildModelPictureCards(m);
-      print(m);
-      print("_hsirStyles[0]");
-      print(_hairStyles[0].imgPath);
     });
-
-
-    _allHairStyles = [
-      // short
-      SelectableCard(
-        imgPath: 'assets/hair_styles/short_french_bob.jpg',
-        label: 'Short french bob',
-        select: _selectHairStyle,
-        type: 'short',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/short_afro_mohawk.jpg',
-        label: 'Short afro mohawk',
-        select: _selectHairStyle,
-        type: 'short',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/short_fringe.jpg',
-        label: 'Short fringe',
-        select: _selectHairStyle,
-        type: 'short',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/short_box_braids.jpg',
-        label: 'Short box braids',
-        select: _selectHairStyle,
-        type: 'short',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/short_side_swept_bangs.jpg',
-        label: 'Short side bangs',
-        select: _selectHairStyle,
-        type: 'short',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/short_edgy_undercut.jpg',
-        label: 'Short edgy undercut',
-        select: _selectHairStyle,
-        type: 'short',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/short_soft_curls.jpg',
-        label: 'Short soft curls',
-        select: _selectHairStyle,
-        type: 'short',
-      ),
-      // medium
-      SelectableCard(
-        imgPath: 'assets/hair_styles/medium_angled_bob.jpg',
-        label: 'Medium angled bob',
-        select: _selectHairStyle,
-        type: 'medium',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/medium_ashy_ombre.jpg',
-        label: 'Medium ashy ombre',
-        select: _selectHairStyle,
-        type: 'medium',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/medium_asymmetrical_bob.jpg',
-        label: 'Medium asymm. bob',
-        select: _selectHairStyle,
-        type: 'medium',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/medium_curly_bangs.jpg',
-        label: 'Medium curly bangs',
-        select: _selectHairStyle,
-        type: 'medium',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/medium_curly_bob.jpg',
-        label: 'Medium curly bob',
-        select: _selectHairStyle,
-        type: 'medium',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/medium_side_swept_braids.jpg',
-        label: 'Medium side braids',
-        select: _selectHairStyle,
-        type: 'medium',
-      ),
-      // long
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_beach_curls.jpg',
-        label: 'Long beach curls',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_braided_pigtails.jpg',
-        label: 'Long braided pigtails',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_curls.jpg',
-        label: 'Long curls',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_curly_middle_part.jpg',
-        label: 'Long curls m. part',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_shaggy_layers.jpg',
-        label: 'Long shaggy layers',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_sleek_ponytail.jpg',
-        label: 'Long sleek ponytail',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_smooth_layers_and_bangs.jpg',
-        label: 'Long layers and bangs',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_top_knot.jpg',
-        label: 'Long top knot',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-      SelectableCard(
-        imgPath: 'assets/hair_styles/long_voluminous_waves.jpg',
-        label: 'Long vol. waves',
-        select: _selectHairStyle,
-        type: 'long',
-      ),
-    ];
-
-    _hairStyles = _allHairStyles;
-    _selectedHairStyle = _hairStyles[0];
   }
 
-  List<SelectableCard> _buildModelPictureCards(Set<ModelPicture> modelPictures) {
-    return modelPictures
-      .map((e) => SelectableCard(
-        type: 'modelPicture',
-        modelPicture: CachedNetworkImage(
-          imageUrl: '${ModelPicturesService.modelPicturesUri}/file/${e.id}',
-          progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-            child: CircularProgressIndicator(
-              value: downloadProgress.progress)),
-              errorWidget: (context, url, error) => Icon(Icons.error)
-        ),
-        id: e.id,
-        // imgPath: e.filePath + e.fileName,
-        label: e.hairStyleId.toString(),
-        select: _selectHairStyle
-      ))
-      .toList();
+  List<SelectableCard> _buildModelPictureCards(
+      Set<ModelPicture> modelPictures) {
+    if (modelPictures != null && modelPictures.isNotEmpty) {
+      return modelPictures
+          .map((e) => SelectableCard(
+              type: 'modelPicture',
+              modelPicture: CachedNetworkImage(
+                  imageUrl:
+                      '${ModelPicturesService.modelPicturesUri}/file/${e.id}',
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      Center(
+                          child: CircularProgressIndicator(
+                              value: downloadProgress.progress)),
+                  errorWidget: (context, url, error) => Icon(Icons.error)),
+              id: e.id,
+              // imgPath: e.filePath + e.fileName,
+              label: e.hairStyleId.toString(),
+              select: _selectHairStyle))
+          .toList();
+    }
+    return [];
   }
 
   Future<Set<ModelPicture>> _fetchModelPictures() async {
@@ -209,9 +68,10 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     if (response != null) {
       if (response.statusCode == HttpStatus.ok && response.body.isNotEmpty) {
         final rawModelPictures = Set.from(jsonDecode(response.body));
-        final modelPictures = rawModelPictures.map((e) => ModelPicture.fromJson(e)).toSet();
+        final modelPictures =
+            rawModelPictures.map((e) => ModelPicture.fromJson(e)).toSet();
         return modelPictures;
-      } 
+      }
     }
     return null;
   }
@@ -370,12 +230,21 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                 ),
                 const Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0)),
-                Container(
-                  height: viewportConstraints.maxHeight - 320.0,
-                  child: CardsGrid(
-                    cards: _hairStyles,
-                  ),
-                ),
+                FutureBuilder(
+                    future: _allModels,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        Container(
+                          height: viewportConstraints.maxHeight - 320.0,
+                          child: CardsGrid(
+                            cards: _hairStyles,
+                          ),
+                        );
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
                 ),
