@@ -195,8 +195,8 @@ class PictureService:
         cv2.imwrite(file_name.as_posix() + "_NEW_cropped.jpg", picture_crop)
 
     def delete_picture(self, path, file_name):
-        # ToDo: handle exceptions
-        os.remove(path + file_name)
+        if os.path.exists(os.path.join(path, file_name)):
+            os.remove(path + file_name)
 
     def get_picture_info(self, path, file_name) -> schemas.PictureInfo:
         """

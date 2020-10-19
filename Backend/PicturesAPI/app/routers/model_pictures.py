@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional, Union
 import os
 import pathlib
 from fastapi import APIRouter, File, Depends, UploadFile, status, Response, HTTPException
@@ -13,6 +13,7 @@ picture_service = services.PictureService()
 model_picture_actions = actions.ModelPictureActions()
 face_shape_actions = actions.FaceShapeActions()
 history_actions = actions.HistoryActions()
+hair_length_actions = actions.HairLengthActions()
 face_shape_service = services.FaceShapeService()
 
 
@@ -25,62 +26,80 @@ def get_db():
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def upload_model_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    save_path = MODEL_UPLOAD_FOLDER
+async def upload_model_picture(hair_length: Optional[str] = None, hair_length_id: Optional[int] = None,
+                               file: UploadFile = File(...), db: Session = Depends(get_db)):
+    if not hair_length_id and not hair_length:
+        raise HTTPException(status_code=400, detail='Please provide either a valid hair_length or hair_length_id')
 
-    if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
-        os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
+    hair_length_results: Union[models.HairLength, List[models.HairLength], None] = None
 
-    print(save_path)
-
-    file_name = picture_service.save_picture(file, save_path)
-    face_detected = picture_service.detect_face(file_name, save_path)
-
-    if face_detected:
-        # try to find face landmark points
-        face_landmarks = picture_service.detect_face_landmarks(file_name, save_path)
-        if face_landmarks is None:
-            raise HTTPException(status_code=422, detail='No face landmarks detected')
-        else:
-            picture_info = picture_service.get_picture_info(save_path, file_name)
-            print(picture_info, "Picture info")
-
-            # detect face_shape
-            face_shape = picture_service.detect_face_shape(file_name, save_path)
-            if face_shape is None:
-                raise HTTPException(status_code=422, detail='Face shape could not be detected')
-
-            # add model picture to db
-            face_shape_results = face_shape_actions.get_face_shapes(db=db, limit=1, search=face_shape[0])
-
-            if len(face_shape_results):
-                face_shape_detected: models.FaceShape = face_shape_results[0]
-
-                new_model_picture = models.ModelPicture(file_name=picture_info.file_name,
-                                                        file_path=picture_info.file_path,
-                                                        file_size=picture_info.file_size, height=picture_info.height,
-                                                        width=picture_info.width,
-                                                        face_shape_id=face_shape_detected.id)
-
-                results = model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
-
-                new_model_picture = schemas.ModelPictureUpdate(id=results.id, face_shape_id=face_shape_detected.id)
-
-                updated_model_picture = model_picture_actions.update_model_picture(db=db,
-                                                                                   model_picture_id=new_model_picture.id,
-                                                                                   model_picture=new_model_picture)
-
-                print(
-                    f'Updated model picture id: {updated_model_picture.id}, Face shape ID: {updated_model_picture.face_shape_id}')
-
-                face_shape_detected = face_shape_actions.get_face_shape(db=db,
-                                                                        face_shape_id=updated_model_picture.face_shape_id)
-                return {'model_picture': updated_model_picture, 'face_shape': face_shape_detected}
-            else:
-                raise HTTPException(status_code=404,
-                                    detail='Could not find face shape that matches results from the script')
+    if hair_length_id:
+        hair_length_results = hair_length_actions.get_hair_length(db=db, hair_length_id=hair_length_id)
     else:
-        raise HTTPException(status_code=422, detail='Could not detect faces from the image')
+        hair_length_results = hair_length_actions.get_hair_lengths(db=db, limit=1, search=hair_length.strip())
+
+    if hair_length_results:
+        if isinstance(hair_length_results, list):
+            if len(hair_length_results):
+                hair_length_results = hair_length_results[0]
+
+        hair_length_results_id: int = hair_length_results.id
+        save_path = MODEL_UPLOAD_FOLDER
+
+        if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
+            os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
+
+        file_name = picture_service.save_picture(file, save_path)
+        face_detected = picture_service.detect_face(file_name, save_path)
+
+        if face_detected:
+            # try to find face landmark points
+            face_landmarks = picture_service.detect_face_landmarks(file_name, save_path)
+            if face_landmarks is None:
+                raise HTTPException(status_code=422, detail='No face landmarks detected')
+            else:
+                picture_info = picture_service.get_picture_info(save_path, file_name)
+
+                # detect face_shape
+                face_shape = picture_service.detect_face_shape(file_name, save_path)
+                if face_shape is None:
+                    raise HTTPException(status_code=422, detail='Face shape could not be detected')
+
+                # add model picture to db
+                face_shape_results = face_shape_actions.get_face_shapes(db=db, limit=1, search=face_shape[0])
+
+                if len(face_shape_results):
+                    face_shape_detected: models.FaceShape = face_shape_results[0]
+
+                    new_model_picture = models.ModelPicture(file_name=picture_info.file_name,
+                                                            file_path=picture_info.file_path,
+                                                            file_size=picture_info.file_size,
+                                                            height=picture_info.height,
+                                                            width=picture_info.width,
+                                                            face_shape_id=face_shape_detected.id)
+
+                    results = model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
+
+                    new_model_picture = schemas.ModelPictureUpdate(id=results.id, face_shape_id=face_shape_detected.id,
+                                                                   hair_length_id=hair_length_results.id)
+
+                    updated_model_picture = model_picture_actions.update_model_picture(db=db,
+                                                                                       model_picture_id=new_model_picture.id,
+                                                                                       model_picture=new_model_picture)
+
+                    face_shape_detected = face_shape_actions.get_face_shape(db=db,
+                                                                            face_shape_id=updated_model_picture.face_shape_id)
+
+                    hair_length_results = hair_length_actions.get_hair_length(db=db,
+                                                                              hair_length_id=hair_length_results_id)
+                    return {'model_picture': updated_model_picture, 'face_shape': face_shape_detected,
+                            'hair_length': hair_length_results}
+                else:
+                    raise HTTPException(status_code=404,
+                                        detail='Could not find face shape that matches results from the script')
+        else:
+            raise HTTPException(status_code=422, detail='Could not detect faces from the image')
+    raise HTTPException(status_code=404, detail='Hair length not found by ID')
 
 
 @router.put("/{model_picture_id}", status_code=status.HTTP_200_OK)
@@ -139,13 +158,11 @@ async def delete_picture(model_picture_id: int, response: Response, db: Session 
     :param response: response object
     :param model_picture_id: ID of the model picture record to be deleted from the database
     """
-    print(" *************** DELETE PICTURE *************************")
     if not db.query(models.ModelPicture).filter(models.ModelPicture.id == model_picture_id).first():
-        response.status_code = status.HTTP_404_NOT_FOUND
+        raise HTTPException(status_code=404, detail='Model picture not found by ID')
 
     # get the selected model picture
     selected_picture = model_picture_actions.read_model_picture_by_id(db, model_picture_id)
-    print(selected_picture.file_path + selected_picture.file_name)
 
     # delete the selected model picture from disk
     picture_service.delete_picture(selected_picture.file_path, selected_picture.file_name)
