@@ -66,8 +66,9 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
                                          face_shape_id=face_shape_id, user_id=user_id)
             new_history_entry: models.History = history_actions.add_history(db=db, history=new_history)
 
-            results = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
-            return {'picture': results[0], 'face_shape': face_shape[0], 'history_entry': new_history_entry}
+            results: List[models.Picture] = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
+            face_shape: models.FaceShape = face_shape_actions.get_face_shape(db=db, id=new_history_entry.face_shape_id)
+            return {'picture': results[0], 'face_shape': face_shape, 'history_entry': new_history_entry}
     else:
         raise HTTPException(status_code=422, detail="No face detected")
 
