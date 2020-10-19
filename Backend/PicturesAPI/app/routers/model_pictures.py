@@ -153,8 +153,13 @@ def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Se
     return model_pictures
 
 
-@router.get("/{model_picture_id}", response_model=schemas.ModelPicture)
+@router.get("/id/{model_picture_id}", response_model=schemas.ModelPicture)
 def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
+    model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db=db,
+                                                                                        model_picture_id=model_picture_id)
+
+    if not model_picture:
+        raise HTTPException(status_code=404, detail='Model picture not found by ID')
     return model_picture_actions.read_model_picture_by_id(db, model_picture_id=model_picture_id)
 
 
