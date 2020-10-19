@@ -276,10 +276,6 @@ INSERT INTO hairdressing_project_db.face_shapes(`shape_name`)
 VALUES
 ('heart'),
 ('square'),
-('rectangular'),
-('diamond'), 
-('triangular'),
-('inverted_triangular'),
 ('round'),
 ('oval'),
 ('long');
@@ -293,30 +289,6 @@ VALUES
 
 INSERT INTO  hairdressing_project_db.hair_lengths(`hair_length_name`)
 VALUES 
-('forme_massive'),
-('forme_degradee'),
-('forme_progressive'),
-('forme_uniforme');
-
-INSERT INTO hairdressing_project_db.face_shape_links(`face_shape_id`, `link_name`, `link_url`)
-VALUES 
-(1, 'heart', 'linkUrl'),
-(2, 'square', 'linkUrl'),
-(3, 'rectangular', 'linkUrl'),
-(4, 'diamond', 'linkUrl'),
-(5, 'triangular', 'linkUrl'),
-(6, 'inverted_triangular', 'linkUrl');
-
-INSERT INTO hairdressing_project_db.hair_style_links(`hair_style_id`, `link_name`, `link_url`)
-VALUES 
-(1, 'bob cut', 'linkUrl'),
-(2, 'layered', 'linkUrl'),
-(3, 'bangs', 'linkUrl'),
-(4, 'pixie', 'linkUrl');
-
-INSERT INTO hairdressing_project_db.hair_length_links(`hair_length_id`, `link_name`, `link_url`)
-VALUES
-(1, 'forme_massive', 'linkUrl'),
-(2, 'forme_degradee', 'linkUrl'),
-(3, 'forme_progressive', 'linkUrl'),
-(4, 'forme_uniforme', 'linkUrl');
+('short'),
+('medium'),
+('long');
