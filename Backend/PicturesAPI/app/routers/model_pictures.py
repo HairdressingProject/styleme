@@ -14,6 +14,7 @@ model_picture_actions = actions.ModelPictureActions()
 face_shape_actions = actions.FaceShapeActions()
 history_actions = actions.HistoryActions()
 hair_length_actions = actions.HairLengthActions()
+hair_style_actions = actions.HairStyleActions()
 face_shape_service = services.FaceShapeService()
 
 
@@ -27,23 +28,37 @@ def get_db():
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_model_picture(hair_length: Optional[str] = None, hair_length_id: Optional[int] = None,
+                               hair_style_id: Optional[int] = None, hair_style: Optional[str] = None,
                                file: UploadFile = File(...), db: Session = Depends(get_db)):
     if not hair_length_id and not hair_length:
         raise HTTPException(status_code=400, detail='Please provide either a valid hair_length or hair_length_id')
+    if not hair_style_id and not hair_style:
+        raise HTTPException(status_code=400, detail='Please provide either a valid hair_style or hair_style_id')
 
     hair_length_results: Union[models.HairLength, List[models.HairLength], None] = None
+    hair_style_results: Union[models.HairStyle, List[models.HairStyle], None] = None
 
     if hair_length_id:
         hair_length_results = hair_length_actions.get_hair_length(db=db, hair_length_id=hair_length_id)
     else:
         hair_length_results = hair_length_actions.get_hair_lengths(db=db, limit=1, search=hair_length.strip())
 
-    if hair_length_results:
+    if hair_style_id:
+        hair_style_results = hair_style_actions.get_hair_style(db=db, hair_style_id=hair_style_id)
+    else:
+        hair_style_results = hair_style_actions.get_hair_styles(db=db, limit=1, search=hair_style.strip())
+
+    if hair_length_results and hair_style_results:
         if isinstance(hair_length_results, list):
             if len(hair_length_results):
                 hair_length_results = hair_length_results[0]
 
+        if isinstance(hair_style_results, list):
+            if len(hair_style_results):
+                hair_style_results = hair_style_results[0]
+
         hair_length_results_id: int = hair_length_results.id
+        hair_style_results_id: int = hair_style_results.id
         save_path = MODEL_UPLOAD_FOLDER
 
         if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
@@ -81,7 +96,8 @@ async def upload_model_picture(hair_length: Optional[str] = None, hair_length_id
                     results = model_picture_actions.add_model_picture(db=db, picture=new_model_picture)
 
                     new_model_picture = schemas.ModelPictureUpdate(id=results.id, face_shape_id=face_shape_detected.id,
-                                                                   hair_length_id=hair_length_results.id)
+                                                                   hair_length_id=hair_length_results.id,
+                                                                   hair_style_id=hair_style_results_id)
 
                     updated_model_picture = model_picture_actions.update_model_picture(db=db,
                                                                                        model_picture_id=new_model_picture.id,
@@ -92,14 +108,16 @@ async def upload_model_picture(hair_length: Optional[str] = None, hair_length_id
 
                     hair_length_results = hair_length_actions.get_hair_length(db=db,
                                                                               hair_length_id=hair_length_results_id)
+
+                    hair_style_results = hair_style_actions.get_hair_style(db=db, hair_style_id=hair_style_results_id)
                     return {'model_picture': updated_model_picture, 'face_shape': face_shape_detected,
-                            'hair_length': hair_length_results}
+                            'hair_length': hair_length_results, 'hair_style': hair_style_results}
                 else:
                     raise HTTPException(status_code=404,
                                         detail='Could not find face shape that matches results from the script')
         else:
             raise HTTPException(status_code=422, detail='Could not detect faces from the image')
-    raise HTTPException(status_code=404, detail='Hair length not found by ID')
+    raise HTTPException(status_code=404, detail='Hair length or hair style not found')
 
 
 @router.put("/{model_picture_id}", status_code=status.HTTP_200_OK)
