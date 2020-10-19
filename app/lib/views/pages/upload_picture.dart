@@ -86,41 +86,28 @@ class _UploadPictureState extends State<UploadPicture> {
               Picture.fromJson(parsedAPIResponse['picture']);
 
           final FaceShape faceShape =
-              FaceShape(shapeName: parsedAPIResponse['face_shape']);
+              FaceShape.fromJson(parsedAPIResponse['face_shape']);
 
-          final faceShapeDetectedResponse =
-              await FaceShapeService.getAll(faceShapeName: faceShape.shapeName);
+          final historyEntry = History(
+              pictureId: pictureUploaded.id,
+              originalPictureId: pictureUploaded.id,
+              faceShapeId: faceShape.id,
+              userId: _user.id);
 
-          if (faceShapeDetectedResponse.statusCode == HttpStatus.ok &&
-              faceShapeDetectedResponse.body.isNotEmpty) {
-            final rawFaceShapes = List.from(
-                jsonDecode(faceShapeDetectedResponse.body)['faceShapes']);
+          final historyEntryResponse =
+              await HistoryService.post(history: historyEntry);
 
-            if (rawFaceShapes.isNotEmpty) {
-              final faceShapeDetected = FaceShape.fromJson(rawFaceShapes[0]);
+          if (historyEntryResponse != null &&
+              historyEntryResponse.body.isNotEmpty) {
+            final historyEntryAdded =
+                History.fromJson(jsonDecode(historyEntryResponse.body));
 
-              final historyEntry = History(
-                  pictureId: pictureUploaded.id,
-                  originalPictureId: pictureUploaded.id,
-                  faceShapeId: faceShapeDetected.id,
-                  userId: _user.id);
+            _onPictureUploaded(
+                newPicture: pictureUploaded,
+                historyEntryAdded: historyEntryAdded,
+                newFaceShape: faceShape);
 
-              final historyEntryResponse =
-                  await HistoryService.post(history: historyEntry);
-
-              if (historyEntryResponse != null &&
-                  historyEntryResponse.body.isNotEmpty) {
-                final historyEntryAdded =
-                    History.fromJson(jsonDecode(historyEntryResponse.body));
-
-                _onPictureUploaded(
-                    newPicture: pictureUploaded,
-                    historyEntryAdded: historyEntryAdded,
-                    newFaceShape: faceShape);
-
-                Navigator.pop(_scaffoldKey.currentContext);
-              }
-            }
+            Navigator.pop(_scaffoldKey.currentContext);
           }
         }
       } else {
