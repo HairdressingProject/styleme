@@ -20,5 +20,18 @@ class ModelPicturesService {
         return null;
       }
   }
+
+  static Future<http.Response> getFileById({@required int modelPictureId}) async {
+    try {
+      final response = await http
+          .get(Uri.encodeFull('$modelPicturesUri/file/$modelPictureId'))
+          .timeout(const Duration(seconds: 10));
+      return response;
+    } catch (err) {
+      print('Failed to get model picture file by id');
+      print(err);
+      return null;
+    }
+  }  
   
 }

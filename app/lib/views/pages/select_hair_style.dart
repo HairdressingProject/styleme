@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app/services/model_pictures.dart';
 import 'package:app/widgets/selectable_card.dart';
 import 'package:app/widgets/cards_grid.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:app/models/model_picture.dart';
@@ -22,6 +23,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   double _currentLengthFilter;
   String _currentLengthLabel;
   List<SelectableCard> _allHairStyles;
+  
   Future<Set<ModelPicture>> _allModels;
 
   @override
@@ -32,9 +34,14 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     _currentLengthLabel = 'Short';
 
     _allModels = _fetchModelPictures();
+
     _allModels.then((m) {
+      _hairStyles = _buildModelPictureCards(m);
       print(m);
+      print("_hsirStyles[0]");
+      print(_hairStyles[0].imgPath);
     });
+
 
     _allHairStyles = [
       // short
@@ -178,15 +185,40 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     _selectedHairStyle = _hairStyles[0];
   }
 
+  List<SelectableCard> _buildModelPictureCards(Set<ModelPicture> modelPictures) {
+    return modelPictures
+      .map((e) => SelectableCard(
+        type: 'modelPicture',
+        modelPicture: CachedNetworkImage(
+          imageUrl: '${ModelPicturesService.modelPicturesUri}/file/${e.id}',
+          progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+            child: CircularProgressIndicator(
+              value: downloadProgress.progress)),
+              errorWidget: (context, url, error) => Icon(Icons.error)
+        ),
+        id: e.id,
+        // imgPath: e.filePath + e.fileName,
+        label: e.hairStyleId.toString(),
+        select: _selectHairStyle
+      ))
+      .toList();
+  }
+
   Future<Set<ModelPicture>> _fetchModelPictures() async {
-    final modelPictureResponse = await ModelPicturesService.getAll();
-    if (modelPictureResponse.statusCode == HttpStatus.ok && modelPictureResponse.body.isNotEmpty) {
-      final rawModelPictures = Set.from(jsonDecode(modelPictureResponse.body));
-      return rawModelPictures.map((e) => ModelPicture.fromJson(e)).toSet();
+    final response = await ModelPicturesService.getAll();
+    if (response != null) {
+      if (response.statusCode == HttpStatus.ok && response.body.isNotEmpty) {
+        final rawModelPictures = Set.from(jsonDecode(response.body));
+        final modelPictures = rawModelPictures.map((e) => ModelPicture.fromJson(e)).toSet();
+        return modelPictures;
+      } 
     }
     return null;
-
   }
+
+  // Future<ModelPicture> _fetchModelPictureById(modelPictureId) async {
+  //   final response = await ModelPicturesService.getFileById(modelPictureId: modelPictureId);
+  // }
 
   _selectHairStyle(SelectableCard hairStyle) {
     if (!hairStyle.selected) {
