@@ -11,6 +11,7 @@ router = APIRouter()
 picture_service = services.PictureService()
 picture_actions = actions.PictureActions()
 history_actions = actions.HistoryActions()
+hair_colour_actions = actions.HairColourActions()
 model_picture_actions = actions.ModelPictureActions()
 face_shape_service = services.FaceShapeService()
 
@@ -141,73 +142,18 @@ async def get_picture_face_shape(picture_id: int, db: Session = Depends(get_db))
     raise HTTPException(status_code=404, detail="Could not find picture by id")
 
 
-# @router.get("/models/", response_model=List[schemas.Picture])
-# def read_model_pictures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     pictures = picture_actions.read_models(db, skip=skip, limit=limit)
-#     return pictures
+@router.get("/change_hair_colour/{picture_id}", status_code=status.HTTP_200_OK)
+async def change_hair_colour(picture_id: int, colour: str, r: int, g: int, b: int, db: Session = Depends(get_db)):
+    """Applies changes to hair colour based on a base colour name (e.g. hot pink) and RGB values, which vary by lightness
+    :param picture_id: ID of the picture to be processed
+    :param db: db session instance
+    :param colour: Base hair colour name
+    :param r: Red channel of the colour
+    :param g: Green channel of the colour
+    :param b: Blue channel of the colour
+    :returns: New picture object and history entry reflecting changes
+    """
 
-
-# @router.post("/change_face_shape")
-# def change_face_shape(picture_id: int, new_face_shape: str, db: Session = Depends(get_db())):
-#     selected_picture_history = history_actions.rea
-
-
-@router.post("/{picture_id}/hair_colour")
-async def change_hair_colour(picture_id: int, colour: str, db: Session = Depends(get_db)):
-    selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
-    print(selected_picture.file_name)
-    print(selected_picture.file_path)
-
-    # apply selected colour
-    picture_info = picture_service.change_hair_colour(file_name=selected_picture.file_name, selected_colour=colour,
-                                                      file_path=selected_picture.file_path)
-    print(picture_info)
-
-    # create new picture and add to db
-    new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
-                                 file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
-
-    mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
-
-    # fake user_id
-    user_id = 1
-
-    # create new history record and add to db
-    # ToDo: fix history logic
-    new_history = models.History(picture_id=mod_pic.id, original_picture_id=selected_picture.id, hair_colour_id=1,
-                                 user_id=user_id)
-
-    history_actions.add_history(db=db, history=new_history)
-
-    return new_picture
-
-    # # ToDo: After hair color picture is generated, we need to:
-    # # 1. create new Picture (add picture to db)
-    # # 2. Create new history (add history to db)
-    #
-    # new_picture = models.Picture(file_name=picture_info[1], file_path=picture_info[0],
-    #                              file_size=picture_info[2], height=picture_info[3], width=picture_info[4])
-    #
-    #
-    #
-    # history_actions = actions.HistoryActions()
-    #
-    # new_history = models.History(picture_id=picture_id, original_picture_id=orig_pic.id, face_shape_id=face_shape_id,
-    #                              user_id=user_id)
-    # print(new_history)
-    # print(new_history.picture_id)
-    # history_actions.add_history(db=db, history=new_history)
-    # print(new_history)
-    #
-    #
-    #
-    # colour_id = 55
-    # history_actions.change_hair_colour(db, picture_id=picture_id, colour_id=colour_id)
-    # # return picture_actions.read_picture_by_id(db, picture_id=picture_id)
-
-
-@router.post("/{picture_id}/hair_colour2")
-async def change_hair_colour2(picture_id: int, colour: str, r: int, g: int, b: int, db: Session = Depends(get_db)):
     selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
     print(selected_picture.file_name)
     print(selected_picture.file_path)
@@ -225,16 +171,20 @@ async def change_hair_colour2(picture_id: int, colour: str, r: int, g: int, b: i
     mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
 
     # fake user_id
-    user_id = 1
+    user: models.User = history_actions.get_user_id_from_picture_id(db=db, picture_id=picture_id)
 
-    # create new history record and add to db
-    # ToDo: fix history logic
-    new_history = models.History(picture_id=mod_pic.id, original_picture_id=selected_picture.id, hair_colour_id=1,
-                                 user_id=user_id)
-
-    history_actions.add_history(db=db, history=new_history)
-
-    return new_picture
+    if user:
+        hair_colour_results: List[models.HairColour] = hair_colour_actions.get_hair_colours(db=db, search=colour,
+                                                                                            limit=1)
+        if len(hair_colour_results):
+            hair_colour = hair_colour_results[0]
+            new_history = models.History(picture_id=mod_pic.id, original_picture_id=selected_picture.id,
+                                         hair_colour_id=hair_colour.id,
+                                         user_id=user.id)
+            history_entry: models.History = history_actions.add_history(db=db, history=new_history)
+            return {'history_entry': history_entry, 'picture': mod_pic}
+        raise HTTPException(status_code=404, detail='No hair colour record associated with this colour name was found')
+    raise HTTPException(status_code=404, detail='No user associated with this picture ID was found')
 
 
 """
@@ -265,7 +215,7 @@ async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Sess
 """
 
 
-@router.post("/change_hair_style", status_code=status.HTTP_201_CREATED)
+@router.get("/change_hair_style", status_code=status.HTTP_200_OK)
 async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_id: Optional[int] = None,
                            user_picture_file_name: Optional[str] = None, model_picture_file_name: Optional[str] = None,
                            db: Session = Depends(get_db)):
