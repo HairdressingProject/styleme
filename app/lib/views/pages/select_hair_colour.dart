@@ -156,7 +156,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
       ColourCard(
           select: _selectColour,
           colourHash: '#255638',
-          colourName: 'tropital_green',
+          colourName: 'tropical_green',
           colourLabel: 'Tropical green'),
       ColourCard(
           select: _selectColour,
