@@ -12,6 +12,7 @@ picture_service = services.PictureService()
 picture_actions = actions.PictureActions()
 history_actions = actions.HistoryActions()
 model_picture_actions = actions.ModelPictureActions()
+face_shape_actions = actions.FaceShapeActions()
 face_shape_service = services.FaceShapeService()
 
 
@@ -54,15 +55,17 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             # parse face shape string to int
             face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
 
+            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db, id=face_shape_id)
+
             user_id = 1
 
             # ToDo: redirect to POST /history/face_shape ?
             new_history = models.History(picture_id=orig_pic.id, original_picture_id=orig_pic.id,
                                          face_shape_id=face_shape_id, user_id=user_id)
-            history_actions.add_history(db=db, history=new_history)
+            new_history_entry: models.History = history_actions.add_history(db=db, history=new_history)
 
             results = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
-            return {'picture': results[0], 'face_shape': face_shape[0]}
+            return {'picture': results[0], 'face_shape': face_shape[0], 'history_entry': new_history_entry}
     else:
         raise HTTPException(status_code=422, detail="No face detected")
 

@@ -18,18 +18,41 @@ class ModelPictureBase(BaseModel):
     file_size: int
     height: int
     width: int
-    hair_style_id: int
-    hair_length_id: int
+    hair_style_id: Optional[int] = None
+    hair_length_id: Optional[int] = None
     face_shape_id: int
-    hair_colour_id: int
+    hair_colour_id: Optional[int] = None
 
 
-class ModelPictureCreateUpdate(ModelPictureBase):
-    file_name: constr(max_length=255)
-    file_path: constr(max_length=255)
-    file_size: conint(ge=0)
-    height: conint(ge=0)
-    width: conint(ge=0)
+# class ModelPictureCreateUpdate(ModelPictureBase):
+#     file_name: constr(max_length=255)
+#     file_path: constr(max_length=255)
+#     file_size: conint(ge=0)
+#     height: conint(ge=0)
+#     width: conint(ge=0)
+#     hair_style_id: conint(ge=0)
+#     hair_length_id: conint(ge=0)
+#     hair_colour_id: conint(ge=0)
+#     face_shape_id: conint(ge=0)
+
+class ModelPictureCreate(BaseModel):
+    file_name: str
+    file_path: str
+    file_size: int
+    height: int
+    width: int
+    hair_style_id: Optional[int] = None
+    hair_length_id: Optional[int] = None
+    face_shape_id: int
+    hair_colour_id: Optional[int] = None
+
+
+class ModelPictureUpdate(BaseModel):
+    id: int
+    hair_style_id: Optional[int] = None
+    hair_length_id: Optional[int] = None
+    face_shape_id: Optional[int] = None
+    hair_colour_id: Optional[int] = None
 
 
 class ModelPicture(ModelPictureBase):
