@@ -82,7 +82,7 @@ async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
     raise HTTPException(status_code=404, detail='Picture file not found')
 
 
-@router.get("/{picture_id}", response_model=schemas.Picture)
+@router.get("/id/{picture_id}", response_model=schemas.Picture)
 async def read_picture(picture_id: int, db: Session = Depends(get_db)):
     return picture_actions.read_picture_by_id(db, picture_id=picture_id)
 
@@ -196,34 +196,6 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, g: int, b: in
     raise HTTPException(status_code=404, detail='No hair colour record associated with this colour name was found')
 
 
-"""
-@router.post("/{user_picture_id}/change_hairstyle/{model_picture_id}")
-async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
-    user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-    model_picture = model_picture_actions.read_model_picture_by_id(db, picture_id=model_picture_id)
-
-    # apply hair transfer
-    picture_info = picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
-    print(picture_info)
-
-    # create new picture and add to db
-    new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
-                                 file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
-
-    mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
-
-    # fake user_id
-    user_id = 1
-
-    # create new history record and add to db
-    # ToDo: fix history logic
-    new_history = models.History(picture_id=mod_pic.id, original_picture_id=user_picture.id, hair_style_id=1,
-                                 user_id=user_id)
-
-    history_actions.add_history(db=db, history=new_history)
-"""
-
-
 @router.get("/change_hair_style", status_code=status.HTTP_200_OK)
 async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_id: Optional[int] = None,
                            user_picture_file_name: Optional[str] = None, model_picture_file_name: Optional[str] = None,
@@ -233,7 +205,7 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
 
     if user_picture_id and model_picture_id:
         user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-        model_picture = model_picture_actions.read_model_picture_by_id(db, picture_id=model_picture_id)
+        model_picture = model_picture_actions.read_model_picture_by_id(db, model_picture_id=model_picture_id)
 
     elif user_picture_file_name and model_picture_file_name:
         picture_results: List[models.Picture] = picture_actions.read_picture_by_file_name(db=db,
@@ -268,29 +240,19 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
 
         if user:
             model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db=db,
-                                                                                                picture_id=model_picture.id)
+                                                                                                model_picture_id=model_picture.id)
             if model_picture:
                 new_history = models.History(picture_id=mod_pic.id, original_picture_id=user_picture.id,
                                              hair_style_id=model_picture.hair_style_id,
                                              user_id=user.id)
 
                 history_entry = history_actions.add_history(db=db, history=new_history)
-                return history_entry
+                mod_pic: models.Picture = picture_actions.read_picture_by_id(picture_id=user_picture.id, db=db)
+                return {"picture": mod_pic, "history_entry": history_entry}
             raise HTTPException(status_code=404, detail='Model picture not found')
         raise HTTPException(status_code=404, detail='No user associated with this picture was found')
 
     raise HTTPException(status_code=404, detail='No user picture or model picture associated with these IDs were found')
-
-
-"""
-@router.post("_test/{picture_url}/change_hairstyle/{model_url}")
-async def change_hairstyle_str_path(picture_url: str, model_url: str,
-                                    db: Session = Depends(get_db)):
-    # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-    # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
-
-    picture_service.change_hairstyle_str_path(user_picture=picture_url, model_picture=model_url)
-"""
 
 
 @router.delete("/{picture_id}", status_code=status.HTTP_200_OK, response_model=List[schemas.Picture])
