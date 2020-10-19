@@ -75,10 +75,13 @@ class _HomeState extends State<Home> {
       if (historyResponse.statusCode == HttpStatus.ok &&
           historyResponse.body.isNotEmpty) {
         final rawHistory = Set.from(jsonDecode(historyResponse.body));
-        return rawHistory.map((e) => History.fromJson(e)).toSet();
+        if (rawHistory != null && rawHistory.isNotEmpty) {
+          return rawHistory.map((e) => History.fromJson(e)).toSet();
+        }
+        return Set<History>();
       }
     }
-    return null;
+    return Set<History>();
   }
 
   Future<Picture> _fetchLatestPictureEntry() async {
@@ -116,7 +119,11 @@ class _HomeState extends State<Home> {
           return latestPicture;
         }
       }
-      return null;
+      return Picture(id: -1);
+    }).catchError((err) {
+      print('Could not fetch user history');
+      print(err);
+      return Picture(id: -1);
     });
   }
 
@@ -275,7 +282,7 @@ class _HomeState extends State<Home> {
               FutureBuilder<Picture>(
                 future: _currentPictureFuture,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.hasData && snapshot.data.id != -1) {
                     return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 30.0),
                         child: GestureDetector(

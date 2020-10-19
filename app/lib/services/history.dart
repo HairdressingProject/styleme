@@ -75,7 +75,7 @@ class HistoryService {
     }
   }
 
-  static Future<http.Response> getByUserId({int userId}) async {
+  static Future<http.Response> getByUserId({@required int userId}) async {
     var id = userId ?? await Authentication.retrieveIdFromToken();
     if (id == null) return null;
 
