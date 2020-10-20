@@ -49,14 +49,8 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       return modelPictures
           .map((e) => SelectableCard(
               type: 'modelPicture',
-              modelPicture: CachedNetworkImage(
-                  imageUrl:
-                      '${ModelPicturesService.modelPicturesUri}/file/${e.id}',
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      Center(
-                          child: CircularProgressIndicator(
-                              value: downloadProgress.progress)),
-                  errorWidget: (context, url, error) => Icon(Icons.error)),
+              modelPicture: Image.network(
+                  '${ModelPicturesService.modelPicturesUri}/file/${e.id}'),
               id: e.id,
               label: _allHairStyles
                   .firstWhere((element) => element.id == e.hairStyleId)
@@ -76,17 +70,19 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
           if (card.id == hairStyle.id) {
             card = SelectableCard(
                 id: card.id,
-                imgPath: card.imgPath,
                 label: card.label,
                 select: _selectHairStyle,
+                modelPicture: Image.network(
+                    '${ModelPicturesService.modelPicturesUri}/file/${card.id}'),
                 selected: true,
                 type: card.type);
           } else {
             card = SelectableCard(
               id: card.id,
-              imgPath: card.imgPath,
               label: card.label,
               select: _selectHairStyle,
+              modelPicture: Image.network(
+                  '${ModelPicturesService.modelPicturesUri}/file/${card.id}'),
               selected: false,
               type: card.type,
             );

@@ -19,7 +19,7 @@ class SelectableCard extends StatelessWidget {
   final bool selected;
   final String type;
   final Function select;
-  final CachedNetworkImage modelPicture;
+  final Widget modelPicture;
 
   Widget _getImg() {
     Widget img;

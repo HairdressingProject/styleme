@@ -29,5 +29,5 @@ for hl in hair_lengths_dirs:
             print(file)
             url = "http://localhost:8000/models?hair_length=" + file_info[0] + "&hair_style=" + file_info[1]
             print(url)
-            # requests.post(url, headers, files=file)
+            requests.post(url, headers, files=file)
             print(i)

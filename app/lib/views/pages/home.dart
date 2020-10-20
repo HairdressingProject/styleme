@@ -154,6 +154,19 @@ class _HomeState extends State<Home> {
     return List<ModelPicture>();
   }
 
+  Future<List<Image>> _fetchAllModelPicturesFiles(
+      List<ModelPicture> allModelPictures) async {
+    allModelPictures.map((e) async {
+      final allModelPicturesResponseFile =
+          await ModelPicturesService.getFileById(modelPictureId: e.id);
+
+      if (allModelPicturesResponseFile.statusCode == HttpStatus.ok &&
+          allModelPicturesResponseFile.body.isNotEmpty) {
+        return Image.memory(allModelPicturesResponseFile.bodyBytes);
+      }
+    }).toList();
+  }
+
   Future<List<History>> _fetchUserHistory() async {
     if (_user != null) {
       final historyResponse =
