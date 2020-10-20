@@ -2,30 +2,30 @@ from typing import List, Union
 
 from sqlalchemy.orm import Session
 
-from app import models, schemas
+from app import models
+from app.models.picture import Picture
+from app.schemas.picture import PictureCreateUpdate
 
 
 class PictureActions:
-    def add_picture(self, db: Session, picture: schemas.PictureCreateUpdate) -> models.Picture:
-        db_picture = models.Picture(file_name=picture.file_name, file_path=picture.file_path,
-                                    file_size=picture.file_size,
-                                    height=picture.height, width=picture.width)
+    def add_picture(self, db: Session, picture: PictureCreateUpdate):
+        db_picture = Picture(file_name=picture.file_name, file_path=picture.file_path, file_size=picture.file_size,
+                             height=picture.height, width=picture.width)
         db.add(db_picture)
         db.commit()
         db.refresh(db_picture)
         return db_picture
 
-    def read_picture_by_id(self, db: Session, picture_id) -> Union[models.Picture, None]:
-        return db.query(models.Picture).filter(models.Picture.id == picture_id).first()
+    def read_picture_by_id(self, db: Session, picture_id) -> Union[Picture, None]:
+        return db.query(Picture).filter(Picture.id == picture_id).first()
 
-    def read_picture_by_file_name(self, db: Session, file_name: str, skip: int = 0, limit: int = 100) -> List[models.Picture]:
-        return db.query(models.Picture).filter(models.Picture.file_name.ilike("%" + file_name.strip() + "%")).offset(
-            skip).limit(
+    def read_picture_by_file_name(self, db: Session, file_name: str, skip: int = 0, limit: int = 100) -> List[Picture]:
+        return db.query(Picture).filter(Picture.file_name.ilike("%" + file_name.strip() + "%")).offset(skip).limit(
             limit).all()
 
     def read_pictures(self, db: Session, skip: int = 0, limit: int = 100, search: str = ""):
         if not search.strip():
-            return db.query(models.Picture).offset(skip).limit(limit).all()
+            return db.query(Picture).offset(skip).limit(limit).all()
         return self.read_picture_by_file_name(db=db, file_name=search, skip=skip, limit=limit)
 
     def read_models(self, db: Session, skip: int = 0, limit: int = 100) -> List[models.Picture]:
