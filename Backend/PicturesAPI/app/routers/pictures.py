@@ -76,7 +76,7 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
 async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
     selected_picture = picture_actions.read_picture_by_id(picture_id=picture_id, db=db)
     if selected_picture:
-        file_path = selected_picture.file_path + '/' + selected_picture.file_name
+        file_path = selected_picture.file_path + selected_picture.file_name
         print(file_path)
         return FileResponse(file_path)
     raise HTTPException(status_code=404, detail='Picture file not found')
