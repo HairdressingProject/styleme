@@ -5,7 +5,6 @@ import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/face_shape.dart';
-import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/home.dart';
@@ -91,13 +90,13 @@ class _UploadPictureState extends State<UploadPicture> {
           final faceShapeDetectedResponse = await FaceShapeService.getAll(
               faceShapeName: parsedAPIResponse['face_shape']);
 
-          final historyEntryResponse =
-              await HistoryService.post(history: historyEntry);
+          if (faceShapeDetectedResponse.statusCode == HttpStatus.ok &&
+              faceShapeDetectedResponse.body.isNotEmpty) {
+            final rawFaceShapes = List.from(
+                jsonDecode(faceShapeDetectedResponse.body)['faceShapes']);
 
-          if (historyEntryResponse != null &&
-              historyEntryResponse.body.isNotEmpty) {
-            final historyEntryAdded =
-                History.fromJson(jsonDecode(historyEntryResponse.body));
+            if (rawFaceShapes.isNotEmpty) {
+              final faceShapeDetected = FaceShape.fromJson(rawFaceShapes[0]);
 
               _onPictureUploaded(
                   newPicture: pictureUploaded,
