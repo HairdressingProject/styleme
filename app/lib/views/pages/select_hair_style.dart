@@ -1,8 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:app/models/hair_style.dart';
-import 'package:app/services/hair_style.dart';
 import 'package:app/services/model_pictures.dart';
 import 'package:app/widgets/selectable_card.dart';
 import 'package:app/widgets/cards_grid.dart';
@@ -13,15 +9,21 @@ import 'package:app/models/model_picture.dart';
 
 class SelectHairStyle extends StatefulWidget {
   static final String routeName = '/selectHairStyleRoute';
+  final List<HairStyle> allHairStyles;
+  final List<ModelPicture> allModelPictures;
+
+  const SelectHairStyle(
+      {Key key, @required this.allHairStyles, @required this.allModelPictures})
+      : super(key: key);
 
   @override
   _SelectHairStyleState createState() => _SelectHairStyleState();
 }
 
 class _SelectHairStyleState extends State<SelectHairStyle> {
-  Future<List<SelectableCard>> _allHairStyleCardsFuture;
-  List<SelectableCard> _allHairStyles;
-  List<SelectableCard> _hairStyles;
+  List<HairStyle> _allHairStyles;
+  List<SelectableCard> _allHairStyleCards;
+  List<SelectableCard> _hairStyleCards;
   SelectableCard _selectedHairStyle;
   bool _filterByLength;
   double _currentLengthFilter;
@@ -32,19 +34,18 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     super.initState();
     _filterByLength = false;
     _currentLengthFilter = 0;
-    _currentLengthLabel = 'Short';
-
-    _allHairStyleCardsFuture = _fetchModelPictures();
-
-    _allHairStyleCardsFuture.then((hs) {
-      _allHairStyles = hs;
-      _hairStyles = hs;
-    });
+    _allHairStyles = widget.allHairStyles;
+    _currentLengthLabel = _allHairStyles[0].label;
+    _allHairStyleCards = _buildModelPictureCards(widget.allModelPictures);
+    _hairStyleCards = _allHairStyleCards;
   }
 
   List<SelectableCard> _buildModelPictureCards(
-      List<ModelPicture> modelPictures, List<HairStyle> hairStyles) {
-    if (modelPictures != null && modelPictures.isNotEmpty) {
+      List<ModelPicture> modelPictures) {
+    if (modelPictures != null &&
+        modelPictures.isNotEmpty &&
+        _allHairStyles != null &&
+        _allHairStyles.isNotEmpty) {
       return modelPictures
           .map((e) => SelectableCard(
               type: 'modelPicture',
@@ -57,46 +58,21 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                               value: downloadProgress.progress)),
                   errorWidget: (context, url, error) => Icon(Icons.error)),
               id: e.id,
-              label: hairStyles
+              label: _allHairStyles
                   .firstWhere((element) => element.id == e.hairStyleId)
-                  .hairStyleName,
+                  .label,
               select: _selectHairStyle))
           .toList();
     }
     return List<SelectableCard>();
   }
 
-  Future<List<SelectableCard>> _fetchModelPictures() async {
-    final response = await ModelPicturesService.getAll();
-    if (response != null) {
-      if (response.statusCode == HttpStatus.ok && response.body.isNotEmpty) {
-        final rawModelPictures = List.from(jsonDecode(response.body));
-        final modelPictures =
-            rawModelPictures.map((e) => ModelPicture.fromJson(e)).toList();
-
-        final hairStylesResponse = await HairStyleService.getAll();
-
-        if (hairStylesResponse.statusCode == HttpStatus.ok &&
-            response.body.isNotEmpty) {
-          final rawHairStyles =
-              jsonDecode(hairStylesResponse.body)['hairStyles'];
-          final hairStyles = List.from(rawHairStyles)
-              .map((e) => HairStyle.fromJson(e))
-              .toList();
-          return _buildModelPictureCards(modelPictures, hairStyles);
-        }
-      }
-    }
-    return null;
-  }
-
   _selectHairStyle(SelectableCard hairStyle) {
-    // TODO: Fetch all hair styles and model pictures from Home instead of here
     print('Selected hair style card: ${hairStyle.label} (ID = ${hairStyle.id}');
 
     if (!hairStyle.selected) {
       setState(() {
-        _allHairStyles = _allHairStyles.map((card) {
+        _allHairStyleCards = _allHairStyleCards.map((card) {
           if (card.id == hairStyle.id) {
             card = SelectableCard(
                 id: card.id,
@@ -118,8 +94,9 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
           return card;
         }).toList();
 
-        _hairStyles = _allHairStyles
-            .where((hs) => _hairStyles.any((element) => element.id == hs.id))
+        _hairStyleCards = _allHairStyleCards
+            .where(
+                (hs) => _hairStyleCards.any((element) => element.id == hs.id))
             .toList();
 
         _selectedHairStyle = hairStyle;
@@ -129,18 +106,19 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
 
   _saveChanges() {
     // TODO: save changes with _selectedHairStyle
-    print('Selected face shape: ${_selectedHairStyle.label}');
+    print(
+        'Selected hair style: ${_selectedHairStyle.label} (ID = ${_selectedHairStyle.id}');
   }
 
   void _toggleFilterByLength(bool selected) {
     setState(() {
       _filterByLength = selected;
       if (selected) {
-        _hairStyles = _allHairStyles
+        _hairStyleCards = _allHairStyleCards
             .where((hs) => hs.label == _currentLengthLabel.toLowerCase())
             .toList();
       } else {
-        _hairStyles = _allHairStyles;
+        _hairStyleCards = _allHairStyleCards;
       }
     });
   }
@@ -157,7 +135,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       }
 
       if (_filterByLength) {
-        _hairStyles = _allHairStyles
+        _hairStyleCards = _allHairStyleCards
             .where((hs) =>
                 hs.type.toLowerCase() == _currentLengthLabel.toLowerCase())
             .toList();
@@ -244,21 +222,11 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                 ),
                 const Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0)),
-                FutureBuilder<List<SelectableCard>>(
-                    future: _allHairStyleCardsFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Container(
-                          height: viewportConstraints.maxHeight - 320.0,
-                          child: CardsGrid(
-                            cards: _hairStyles ?? snapshot.data,
-                          ),
-                        );
-                      }
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }),
+                Container(
+                    height: viewportConstraints.maxHeight - 320.0,
+                    child: CardsGrid(
+                      cards: _hairStyleCards,
+                    )),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
                 ),

@@ -6,6 +6,7 @@ import 'package:app/models/hair_colour.dart';
 import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
 import 'package:app/models/history.dart';
+import 'package:app/models/model_picture.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/face_shape.dart';
@@ -13,6 +14,7 @@ import 'package:app/services/hair_colour.dart';
 import 'package:app/services/hair_length.dart';
 import 'package:app/services/hair_style.dart';
 import 'package:app/services/history.dart';
+import 'package:app/services/model_pictures.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
@@ -55,17 +57,14 @@ class _HomeState extends State<Home> {
   File _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
-  Future<List<FaceShape>> _allFaceShapesFuture;
-  List<FaceShape> _allFaceShapes;
-  FaceShape _currentFaceShape;
-  Future<List<HairStyle>> _allHairStylesFuture;
-  List<HairStyle> _allHairStyles;
-  HairStyle _currentHairStyle;
-  Future<List<HairColour>> _allHairColoursFuture;
   List<HairColour> _allHairColours;
-  HairColour _currentHairColour;
-  Future<List<HairLength>> _allHairLengthsFuture;
   List<HairLength> _allHairLengths;
+  List<FaceShape> _allFaceShapes;
+  List<HairStyle> _allHairStyles;
+  List<ModelPicture> _allModelPictures;
+  FaceShape _currentFaceShape;
+  HairStyle _currentHairStyle;
+  HairColour _currentHairColour;
   List<History> _history = List<History>();
   String _message;
   bool _faceShapeAlreadyDetected = false;
@@ -76,28 +75,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _user = widget.user;
-
-    _allHairColoursFuture = _fetchAllHairColours();
-
-    _allFaceShapesFuture = _fetchAllFaceShapes();
-
-    _allHairStylesFuture = _fetchAllHairStyles();
-
-    _allHairLengthsFuture = _fetchAllHairLengths();
-
-    Future.wait([
-      _allFaceShapesFuture,
-      _allHairStylesFuture,
-      _allHairColoursFuture,
-      _allHairLengthsFuture
-    ]).then((results) {
-      _allFaceShapes = results[0];
-      _allHairStyles = results[1];
-      _allHairColours = results[2];
-      _allHairLengths = results[3];
-
-      _currentPictureFuture = _fetchLatestPictureEntry();
-    });
+    _currentPictureFuture = _fetchLatestPictureEntry();
   }
 
   Future<List<HairColour>> _fetchAllHairColours() async {
@@ -159,6 +137,23 @@ class _HomeState extends State<Home> {
     return List<HairLength>();
   }
 
+  Future<List<ModelPicture>> _fetchAllModelPictures() async {
+    final allModelPicturesResponse = await ModelPicturesService.getAll();
+
+    if (allModelPicturesResponse.statusCode == HttpStatus.ok &&
+        allModelPicturesResponse.body.isNotEmpty) {
+      final rawModelPictures = jsonDecode(allModelPicturesResponse.body);
+      final rawModelPicturesList = List.from(rawModelPictures);
+
+      if (rawModelPicturesList.isNotEmpty) {
+        return rawModelPicturesList
+            .map((e) => ModelPicture.fromJson(e))
+            .toList();
+      }
+    }
+    return List<ModelPicture>();
+  }
+
   Future<List<History>> _fetchUserHistory() async {
     if (_user != null) {
       final historyResponse =
@@ -178,6 +173,12 @@ class _HomeState extends State<Home> {
   Future<Picture> _fetchLatestPictureEntry() async {
     return _fetchUserHistory().then((value) async {
       _history = value;
+      _allHairColours = await _fetchAllHairColours();
+      _allHairLengths = await _fetchAllHairLengths();
+      _allFaceShapes = await _fetchAllFaceShapes();
+      _allHairStyles = await _fetchAllHairStyles();
+      _allModelPictures = await _fetchAllModelPictures();
+
       if (_history != null && _history.isNotEmpty) {
         final latestPictureEntry =
             await PicturesService.getById(pictureId: _history.last.pictureId);
@@ -487,11 +488,17 @@ class _HomeState extends State<Home> {
                     future: _currentPictureFuture,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        print('All model pictures (from Home)');
+                        print(_allModelPictures);
+
                         return CustomButton(
                             icon: _handleButtonIcon(SelectHairStyle.routeName,
                                 SelectFaceShape.routeName),
                             text: "Select a hair style",
-                            action: SelectHairStyle(),
+                            action: SelectHairStyle(
+                              allHairStyles: _allHairStyles,
+                              allModelPictures: _allModelPictures,
+                            ),
                             alreadySelected: _completedRoutes
                                 .contains(SelectHairStyle.routeName),
                             enabled: _isButtonEnabled(SelectHairStyle.routeName,
@@ -500,7 +507,10 @@ class _HomeState extends State<Home> {
                       return CustomButton(
                           icon: Icon(Icons.access_time),
                           text: "Select a hair style",
-                          action: SelectHairStyle(),
+                          action: SelectHairStyle(
+                            allHairStyles: _allHairStyles,
+                            allModelPictures: _allModelPictures,
+                          ),
                           alreadySelected: false,
                           enabled: false);
                     },
