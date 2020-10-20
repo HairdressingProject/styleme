@@ -68,6 +68,7 @@ class _HomeState extends State<Home> {
   List<HairLength> _allHairLengths;
   List<History> _history = List<History>();
   String _message;
+  bool _faceShapeAlreadyDetected = false;
   List<String> _completedRoutes = List<String>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -289,7 +290,8 @@ class _HomeState extends State<Home> {
     setState(() {
       _completedRoutes.add(SelectFaceShape.routeName);
       _currentFaceShape = newFaceShape;
-      _message = message ?? 'Face shape updated to ${newFaceShape.shapeName}';
+      _message = message ?? 'Face shape updated to ${newFaceShape.label}';
+      _faceShapeAlreadyDetected = true;
     });
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
@@ -457,6 +459,7 @@ class _HomeState extends State<Home> {
                             initialFaceShape: _currentFaceShape,
                             allFaceShapes: _allFaceShapes,
                             onFaceShapeUpdated: _onFaceShapeUpdated,
+                            faceShapeAlreadyDetected: _faceShapeAlreadyDetected,
                           ),
                           alreadySelected: _completedRoutes
                               .contains(SelectFaceShape.routeName),
@@ -471,6 +474,7 @@ class _HomeState extends State<Home> {
                           userId: _user.id,
                           initialFaceShape: _currentFaceShape,
                           onFaceShapeUpdated: _onFaceShapeUpdated,
+                          faceShapeAlreadyDetected: _faceShapeAlreadyDetected,
                         ),
                         alreadySelected: false,
                         enabled: false,

@@ -16,13 +16,15 @@ class SelectFaceShape extends StatefulWidget {
   final OnFaceShapeUpdated onFaceShapeUpdated;
   final List<FaceShape> allFaceShapes;
   final int userId;
+  final bool faceShapeAlreadyDetected;
 
   SelectFaceShape(
       {Key key,
       this.initialFaceShape,
       @required this.onFaceShapeUpdated,
       @required this.userId,
-      this.allFaceShapes})
+      this.allFaceShapes,
+      this.faceShapeAlreadyDetected})
       : super(key: key);
 
   @override
@@ -50,12 +52,14 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
     _selectedFaceShape = _faceShapeCards
         .firstWhere((element) => element.id == _initialFaceShape.id);
 
-    /* Future.delayed(const Duration(seconds: 2), () {
-      NotificationService.notify(
-          scaffoldKey: _scaffoldKey,
-          message:
-              'Your face shape has been detected as ${_initialFaceShape.label}');
-    }); */
+    if (!widget.faceShapeAlreadyDetected) {
+      Future.delayed(const Duration(seconds: 2), () {
+        NotificationService.notify(
+            scaffoldKey: _scaffoldKey,
+            message:
+                'Your face shape has been detected as ${_initialFaceShape.label}');
+      });
+    }
   }
 
   List<SelectableCard> _buildFaceShapeCards(List<FaceShape> faceShapes) {
@@ -95,9 +99,6 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
         }).toList();
 
         _selectedFaceShape = faceShape;
-        print('Face shape cards after changing state:');
-        print(_faceShapeCards
-            .map((e) => '(Label: ${e.label}, Selected: ${e.selected})'));
       });
     }
   }
@@ -115,10 +116,12 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
     if (response.statusCode == HttpStatus.ok ||
         response.statusCode == HttpStatus.created) {
       _onFaceShapeUpdated(
-          newFaceShape: FaceShape(shapeName: _selectedFaceShape.label));
+          newFaceShape: _faceShapes
+              .firstWhere((element) => element.id == _selectedFaceShape.id));
       setState(() {
         _isLoading = false;
-        _initialFaceShape = FaceShape(shapeName: _selectedFaceShape.label);
+        _initialFaceShape = _faceShapes
+            .firstWhere((element) => element.id == _initialFaceShape.id);
       });
       Navigator.pop(context);
     } else {

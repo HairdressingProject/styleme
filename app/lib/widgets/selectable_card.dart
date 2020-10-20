@@ -84,9 +84,4 @@ class SelectableCard extends StatelessWidget {
               ],
             )));
   }
-
-  @override
-  bool operator ==(other) {
-    return (other is SelectableCard) && other.id == this.id;
-  }
 }
