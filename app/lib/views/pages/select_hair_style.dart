@@ -7,6 +7,7 @@ import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/services/hair_style.dart';
 import 'package:app/services/model_pictures.dart';
+import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/selectable_card.dart';
@@ -45,6 +46,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   bool _filterByLength;
   double _currentLengthFilter;
   String _currentLengthLabel;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -142,6 +144,11 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
               .firstWhere((element) => element.id == _selectedHairStyle.id));
 
       Navigator.pop(context);
+    } else {
+      NotificationService.notify(
+          scaffoldKey: _scaffoldKey,
+          message:
+              "Failed to change hair style. Please try a different picture.");
     }
 
     setState(() {
@@ -192,6 +199,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   @override
   build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(
             'Select a hair style',
