@@ -13,6 +13,7 @@ import 'package:app/services/hair_style.dart';
 import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
+import 'package:app/views/pages/preview.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
@@ -66,6 +67,10 @@ class _HomeState extends State<Home> {
     super.initState();
     _user = widget.user;
     _currentPictureFuture = _fetchLatestPictureEntry();
+
+    _currentPictureFuture.then((p) {
+      _currentPicture = p;
+    });
   }
 
   Future<Set<History>> _fetchUserHistory() async {
@@ -229,8 +234,12 @@ class _HomeState extends State<Home> {
   }
 
   void _onPreviewPicture() {
-    // TODO: to be implemented
-    print('Previewing picture');
+    if (_currentPicture != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Preview(picture: _currentPicture)));
+    }
   }
 
   Icon _handleButtonIcon(String currentRoute, String previousRoute) {

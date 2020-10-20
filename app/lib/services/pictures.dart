@@ -29,7 +29,7 @@ class PicturesService {
   static Future<http.Response> getById({@required int pictureId}) async {
     try {
       final response = await http
-          .get(Uri.encodeFull('$picturesUri/$pictureId'))
+          .get(Uri.encodeFull('$picturesUri/id/$pictureId'))
           .timeout(const Duration(seconds: 10));
       return response;
     } catch (err) {
