@@ -462,8 +462,6 @@ class _HomeState extends State<Home> {
                     future: _currentPictureFuture,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        print('Current face shape: $_currentFaceShape');
-
                         return CustomButton(
                           icon: _handleButtonIcon(SelectFaceShape.routeName,
                               UploadPicture.routeName),
@@ -501,9 +499,6 @@ class _HomeState extends State<Home> {
                     future: _currentPictureFuture,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        print('All model pictures (from Home)');
-                        print(_allModelPictures);
-
                         return CustomButton(
                             icon: _handleButtonIcon(SelectHairStyle.routeName,
                                 SelectFaceShape.routeName),
@@ -511,6 +506,7 @@ class _HomeState extends State<Home> {
                             action: SelectHairStyle(
                               allHairStyles: _allHairStyles,
                               allModelPictures: _allModelPictures,
+                              allHairLengths: _allHairLengths,
                             ),
                             alreadySelected: _completedRoutes
                                 .contains(SelectHairStyle.routeName),

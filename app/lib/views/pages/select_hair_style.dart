@@ -1,8 +1,8 @@
+import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
 import 'package:app/services/model_pictures.dart';
 import 'package:app/widgets/selectable_card.dart';
 import 'package:app/widgets/cards_grid.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:app/models/model_picture.dart';
@@ -11,9 +11,13 @@ class SelectHairStyle extends StatefulWidget {
   static final String routeName = '/selectHairStyleRoute';
   final List<HairStyle> allHairStyles;
   final List<ModelPicture> allModelPictures;
+  final List<HairLength> allHairLengths;
 
   const SelectHairStyle(
-      {Key key, @required this.allHairStyles, @required this.allModelPictures})
+      {Key key,
+      @required this.allHairStyles,
+      @required this.allModelPictures,
+      this.allHairLengths})
       : super(key: key);
 
   @override
@@ -49,7 +53,8 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       return modelPictures
           .map((e) => SelectableCard(
               type: 'modelPicture',
-              modelPicture: Image.network(
+              modelPicture: e,
+              modelPictureWidget: Image.network(
                   '${ModelPicturesService.modelPicturesUri}/file/${e.id}'),
               id: e.id,
               label: _allHairStyles
@@ -62,8 +67,6 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   }
 
   _selectHairStyle(SelectableCard hairStyle) {
-    print('Selected hair style card: ${hairStyle.label} (ID = ${hairStyle.id}');
-
     if (!hairStyle.selected) {
       setState(() {
         _allHairStyleCards = _allHairStyleCards.map((card) {
@@ -72,7 +75,8 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                 id: card.id,
                 label: card.label,
                 select: _selectHairStyle,
-                modelPicture: Image.network(
+                modelPicture: card.modelPicture,
+                modelPictureWidget: Image.network(
                     '${ModelPicturesService.modelPicturesUri}/file/${card.id}'),
                 selected: true,
                 type: card.type);
@@ -81,7 +85,8 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
               id: card.id,
               label: card.label,
               select: _selectHairStyle,
-              modelPicture: Image.network(
+              modelPicture: card.modelPicture,
+              modelPictureWidget: Image.network(
                   '${ModelPicturesService.modelPicturesUri}/file/${card.id}'),
               selected: false,
               type: card.type,
@@ -110,8 +115,12 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     setState(() {
       _filterByLength = selected;
       if (selected) {
+        final hairLengthFilterId = widget.allHairLengths
+            .firstWhere((element) => element.label == _currentLengthLabel)
+            .id;
+
         _hairStyleCards = _allHairStyleCards
-            .where((hs) => hs.label == _currentLengthLabel.toLowerCase())
+            .where((hs) => hs.modelPicture.hairLengthId == hairLengthFilterId)
             .toList();
       } else {
         _hairStyleCards = _allHairStyleCards;
@@ -131,9 +140,12 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       }
 
       if (_filterByLength) {
+        final hairLengthFilterId = widget.allHairLengths
+            .firstWhere((element) => element.label == _currentLengthLabel)
+            .id;
+
         _hairStyleCards = _allHairStyleCards
-            .where((hs) =>
-                hs.type.toLowerCase() == _currentLengthLabel.toLowerCase())
+            .where((hs) => hs.modelPicture.hairLengthId == hairLengthFilterId)
             .toList();
       }
     });

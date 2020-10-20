@@ -1,3 +1,4 @@
+import 'package:app/models/model_picture.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,7 @@ class SelectableCard extends StatelessWidget {
       @required this.select,
       this.modelPicture,
       this.type,
+      this.modelPictureWidget,
       this.selected = false})
       : super(key: key);
 
@@ -19,13 +21,14 @@ class SelectableCard extends StatelessWidget {
   final bool selected;
   final String type;
   final Function select;
-  final Widget modelPicture;
+  final Widget modelPictureWidget;
+  final ModelPicture modelPicture;
 
   Widget _getImg() {
     Widget img;
     try {
       if (type == 'modelPicture') {
-        img = modelPicture;
+        img = modelPictureWidget;
       } else {
         img = Image.asset(imgPath);
       }
