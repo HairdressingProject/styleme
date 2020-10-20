@@ -12,6 +12,7 @@ from pydantic import BaseModel, constr
 class HairStyleBase(BaseModel):
     id: int
     hair_style_name: str
+    label: str
 
 
 class HairStyleCreateUpdate(HairStyleBase):

@@ -91,10 +91,13 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   }
 
   _selectHairStyle(SelectableCard hairStyle) {
+    // TODO: Fetch all hair styles and model pictures from Home instead of here
+    print('Selected hair style card: ${hairStyle.label} (ID = ${hairStyle.id}');
+
     if (!hairStyle.selected) {
       setState(() {
         _allHairStyles = _allHairStyles.map((card) {
-          if (card == hairStyle) {
+          if (card.id == hairStyle.id) {
             card = SelectableCard(
                 id: card.id,
                 imgPath: card.imgPath,

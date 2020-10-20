@@ -77,6 +77,10 @@ namespace UsersAPI.Models
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_general_ci");
 
+                entity.Property(e => e.Label)
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_general_ci");
+
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("current_timestamp()");
 
                 entity.Property(e => e.DateUpdated).ValueGeneratedOnUpdate();
@@ -123,6 +127,10 @@ namespace UsersAPI.Models
                     .HasDefaultValueSql("'** ERROR: missing category **'")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_general_ci");
+
+                entity.Property(e => e.Label)
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_general_ci");
             });
 
             modelBuilder.Entity<HairLengthLinks>(entity =>
@@ -166,6 +174,10 @@ namespace UsersAPI.Models
                     .HasDefaultValueSql("'** ERROR: missing category **'")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_general_ci");
+
+                entity.Property(e => e.Label)
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_general_ci");
             });
 
             modelBuilder.Entity<HairStyleLinks>(entity =>
@@ -207,6 +219,10 @@ namespace UsersAPI.Models
 
                 entity.Property(e => e.HairStyleName)
                     .HasDefaultValueSql("'** ERROR: missing category **'")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_general_ci");
+
+                entity.Property(e => e.Label)
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_general_ci");
             });
