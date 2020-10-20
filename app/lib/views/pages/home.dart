@@ -20,7 +20,6 @@ import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
@@ -164,6 +163,7 @@ class _HomeState extends State<Home> {
           allModelPicturesResponseFile.body.isNotEmpty) {
         return Image.memory(allModelPicturesResponseFile.bodyBytes);
       }
+      return null;
     }).toList();
   }
 
@@ -221,6 +221,7 @@ class _HomeState extends State<Home> {
             _completedRoutes.add(SelectHairColour.routeName);
           }
 
+          _currentPicture = latestPicture;
           return latestPicture;
         }
       }
@@ -393,16 +394,9 @@ class _HomeState extends State<Home> {
                         padding: const EdgeInsets.symmetric(vertical: 30.0),
                         child: GestureDetector(
                           onTap: _onPreviewPicture,
-                          child: CachedNetworkImage(
+                          child: Image.network(
+                            '${PicturesService.picturesUri}/file/${snapshot.data.id}',
                             height: 200.0,
-                            imageUrl:
-                                '${PicturesService.picturesUri}/file/${snapshot.data.id}',
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Center(
-                                    child: CircularProgressIndicator(
-                                        value: downloadProgress.progress)),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
                           ),
                         ));
                   }
@@ -507,6 +501,8 @@ class _HomeState extends State<Home> {
                               allHairStyles: _allHairStyles,
                               allModelPictures: _allModelPictures,
                               allHairLengths: _allHairLengths,
+                              onHairStyleUpdated: _onHairStyleUpdated,
+                              currentUserPicture: _currentPicture,
                             ),
                             alreadySelected: _completedRoutes
                                 .contains(SelectHairStyle.routeName),
@@ -519,6 +515,9 @@ class _HomeState extends State<Home> {
                           action: SelectHairStyle(
                             allHairStyles: _allHairStyles,
                             allModelPictures: _allModelPictures,
+                            allHairLengths: _allHairLengths,
+                            onHairStyleUpdated: _onHairStyleUpdated,
+                            currentUserPicture: _currentPicture,
                           ),
                           alreadySelected: false,
                           enabled: false);

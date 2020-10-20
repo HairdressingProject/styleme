@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
+import 'package:app/models/picture.dart';
 import 'package:app/services/model_pictures.dart';
+import 'package:app/services/pictures.dart';
+import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/selectable_card.dart';
 import 'package:app/widgets/cards_grid.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +18,16 @@ class SelectHairStyle extends StatefulWidget {
   final List<HairStyle> allHairStyles;
   final List<ModelPicture> allModelPictures;
   final List<HairLength> allHairLengths;
+  final Picture currentUserPicture;
+  final OnHairStyleUpdated onHairStyleUpdated;
 
   const SelectHairStyle(
       {Key key,
       @required this.allHairStyles,
       @required this.allModelPictures,
-      this.allHairLengths})
+      @required this.allHairLengths,
+      @required this.onHairStyleUpdated,
+      @required this.currentUserPicture})
       : super(key: key);
 
   @override
@@ -25,6 +35,7 @@ class SelectHairStyle extends StatefulWidget {
 }
 
 class _SelectHairStyleState extends State<SelectHairStyle> {
+  bool _isLoading = false;
   List<HairStyle> _allHairStyles;
   List<SelectableCard> _allHairStyleCards;
   List<SelectableCard> _hairStyleCards;
@@ -105,10 +116,28 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     }
   }
 
-  _saveChanges() {
+  _saveChanges() async {
     // TODO: save changes with _selectedHairStyle
+    setState(() {
+      _isLoading = true;
+    });
+
     print(
-        'Selected hair style: ${_selectedHairStyle.label} (ID = ${_selectedHairStyle.id}');
+        'Changing to this hair style: ${_selectedHairStyle.label} (ID = ${_selectedHairStyle.id})');
+
+    final hairStyleChangeResponse = await PicturesService.changeHairStyle(
+        userPictureId: widget.currentUserPicture.id,
+        modelPictureId: _selectedHairStyle.id);
+
+    if (hairStyleChangeResponse.statusCode == HttpStatus.ok &&
+        hairStyleChangeResponse.body.isNotEmpty) {
+      print('Response from API:');
+      print(jsonDecode(hairStyleChangeResponse.body));
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _toggleFilterByLength(bool selected) {
@@ -244,16 +273,24 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                   child: MaterialButton(
                     disabledColor: Colors.grey[600],
                     disabledTextColor: Colors.white,
-                    onPressed: _saveChanges,
+                    onPressed: !_isLoading
+                        ? () async {
+                            await _saveChanges();
+                          }
+                        : null,
                     color: Color.fromARGB(255, 74, 169, 242),
                     minWidth: double.infinity,
-                    child: Text(
-                      'Save changes',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          .copyWith(color: Colors.white),
-                    ),
+                    child: !_isLoading
+                        ? Text(
+                            'Save changes',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                .copyWith(color: Colors.white),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(),
+                          ),
                   ),
                 ),
                 const Padding(

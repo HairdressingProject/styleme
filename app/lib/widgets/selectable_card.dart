@@ -1,5 +1,4 @@
 import 'package:app/models/model_picture.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class SelectableCard extends StatelessWidget {

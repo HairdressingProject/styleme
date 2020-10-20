@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:app/models/face_shape.dart';
 import 'package:app/models/history.dart';
 import 'package:app/services/authentication.dart';
 import 'package:app/services/constants.dart';

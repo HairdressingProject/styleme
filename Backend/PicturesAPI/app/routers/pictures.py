@@ -56,7 +56,8 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             # parse face shape string to int
             face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
 
-            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db, face_shape_id=face_shape_id)
+            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db,
+                                                                                      face_shape_id=face_shape_id)
 
             user_id = 1
 
@@ -81,7 +82,7 @@ async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
     raise HTTPException(status_code=404, detail='Picture file not found')
 
 
-@router.get("/{picture_id}", response_model=schemas.Picture)
+@router.get("/id/{picture_id}", response_model=schemas.Picture)
 async def read_picture(picture_id: int, db: Session = Depends(get_db)):
     return picture_actions.read_picture_by_id(db, picture_id=picture_id)
 
@@ -227,7 +228,7 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
 
     if user_picture_id and model_picture_id:
         user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-        model_picture = model_picture_actions.read_model_picture_by_id(db, picture_id=model_picture_id)
+        model_picture = model_picture_actions.read_model_picture_by_id(db, model_picture_id=model_picture_id)
 
     elif user_picture_file_name and model_picture_file_name:
         picture_results: List[models.Picture] = picture_actions.read_picture_by_file_name(db=db,
@@ -262,7 +263,7 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
 
         if user:
             model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db=db,
-                                                                                                picture_id=model_picture.id)
+                                                                                                model_picture_id=model_picture.id)
             if model_picture:
                 new_history = models.History(picture_id=mod_pic.id, original_picture_id=user_picture.id,
                                              hair_style_id=model_picture.hair_style_id,
@@ -295,14 +296,13 @@ async def delete_picture(picture_id: int, response: Response, db: Session = Depe
     :param response: response object
     :param picture_id: ID of the picture record to be deleted from the database
     """
-    print(" *************** DELETE PICTURE *************************")
-    if not db.query(models.Picture).filter(models.Picture.id == picture_id).first():
-        response.status_code = status.HTTP_404_NOT_FOUND
+    selected_picture = picture_actions.read_picture_by_id(db, picture_id)
+
+    if not selected_picture:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Picture to be deleted was not found')
 
     # get the file_name of the selected picture to delete
-    selected_picture = picture_actions.read_picture_by_id(db, picture_id)
     selected_file_name = selected_picture.file_name.split('.')[0]
-    print(selected_file_name)
 
     # search for all pictures containing the selected_file_name
     selected_pictures = picture_actions.read_pictures(db, search=selected_file_name)
