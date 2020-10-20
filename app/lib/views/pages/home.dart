@@ -314,10 +314,11 @@ class _HomeState extends State<Home> {
 
   void _onHairStyleUpdated({@required HairStyle newHairStyle, String message}) {
     setState(() {
+      _completedRoutes.add(SelectFaceShape.routeName);
       _completedRoutes.add(SelectHairStyle.routeName);
       _currentHairStyle = newHairStyle;
-      _message =
-          message ?? 'Hair style updated to ${newHairStyle.hairStyleName}';
+      _currentPictureFuture = _fetchLatestPictureEntry();
+      _message = message ?? 'Hair style updated to ${newHairStyle.label}';
     });
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);

@@ -167,8 +167,7 @@ def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
 async def read_model_picture_file(model_picture_id: int, db: Session = Depends(get_db)):
     selected_picture = model_picture_actions.read_model_picture_by_id(model_picture_id=model_picture_id, db=db)
     if selected_picture:
-        file_path = selected_picture.file_path + '/' + selected_picture.file_name
-        print(file_path)
+        file_path = selected_picture.file_path + selected_picture.file_name
         return FileResponse(file_path)
     raise HTTPException(status_code=404, detail='Picture file not found')
 

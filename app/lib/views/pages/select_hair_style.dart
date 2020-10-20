@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
+import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
+import 'package:app/services/hair_style.dart';
 import 'package:app/services/model_pictures.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/home.dart';
@@ -48,9 +50,9 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   void initState() {
     super.initState();
     _filterByLength = false;
-    _currentLengthFilter = 0;
+    _currentLengthFilter = 0.0;
+    _currentLengthLabel = widget.allHairLengths[0].label;
     _allHairStyles = widget.allHairStyles;
-    _currentLengthLabel = _allHairStyles[0].label;
     _allHairStyleCards = _buildModelPictureCards(widget.allModelPictures);
     _hairStyleCards = _allHairStyleCards;
   }
@@ -131,8 +133,15 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
 
     if (hairStyleChangeResponse.statusCode == HttpStatus.ok &&
         hairStyleChangeResponse.body.isNotEmpty) {
-      print('Response from API:');
-      print(jsonDecode(hairStyleChangeResponse.body));
+      final History historyEntry =
+          History.fromJson(jsonDecode(hairStyleChangeResponse.body));
+
+      // TODO (optional): pass to history object back to the Home screen
+      widget.onHairStyleUpdated(
+          newHairStyle: _allHairStyles
+              .firstWhere((element) => element.id == _selectedHairStyle.id));
+
+      Navigator.pop(context);
     }
 
     setState(() {
