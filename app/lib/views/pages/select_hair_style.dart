@@ -121,7 +121,6 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   }
 
   _saveChanges() async {
-    // TODO: save changes with _selectedHairStyle
     setState(() {
       _isLoading = true;
     });

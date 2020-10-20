@@ -262,16 +262,27 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
         user = history_actions.get_user_id_from_picture_id(db=db, picture_id=user_picture.id)
 
         if user:
-            model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db=db,
-                                                                                                model_picture_id=model_picture.id)
-            if model_picture:
-                new_history = models.History(picture_id=mod_pic.id, original_picture_id=user_picture.id,
-                                             hair_style_id=model_picture.hair_style_id,
-                                             user_id=user.id)
+            # get latest user history entry to add face_shape_id
+            history: List[models.History] = history_actions.get_user_history(db=db, user_id=user.id)
 
-                history_entry = history_actions.add_history(db=db, history=new_history)
-                return history_entry
-            raise HTTPException(status_code=404, detail='Model picture not found')
+            if len(history):
+                latest_entry = history[-1]
+                model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db=db,
+                                                                                                    model_picture_id=model_picture.id)
+                if model_picture:
+                    new_history: schemas.HistoryCreate = schemas.HistoryCreate(picture_id=mod_pic.id,
+                                                                               original_picture_id=user_picture.id,
+                                                                               previous_picture_id=latest_entry.picture_id,
+                                                                               hair_colour_id=latest_entry.hair_colour_id,
+                                                                               hair_style_id=model_picture.hair_style_id,
+                                                                               face_shape_id=latest_entry.face_shape_id,
+                                                                               user_id=user.id)
+
+                    history_entry = history_actions.add_history(db=db, history=new_history)
+                    return history_entry
+                raise HTTPException(status_code=404, detail='Model picture not found')
+            raise HTTPException(status_code=404,
+                                detail='No history associated with this user was found. Please upload a picture first.')
         raise HTTPException(status_code=404, detail='No user associated with this picture was found')
 
     raise HTTPException(status_code=404, detail='No user picture or model picture associated with these IDs were found')
