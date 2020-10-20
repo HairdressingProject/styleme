@@ -5,7 +5,6 @@ import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/face_shape.dart';
-import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/home.dart';
