@@ -37,6 +37,9 @@ namespace UsersAPI.Models
         [Column("colour_hash", TypeName = "varchar(64)")]
         public string ColourHash { get; set; }
 
+        [Column("label", TypeName = "varchar(255)")]
+        public string Label { get; set; }
+
         [Column("date_created", TypeName = "datetime")]
         public DateTime? DateCreated { get; set; }
         [Column("date_updated", TypeName = "datetime")]

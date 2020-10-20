@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/models/face_shape.dart';
 import 'package:app/models/history.dart';
-import 'package:app/services/face_shape.dart';
 import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/views/pages/home.dart';
@@ -16,13 +14,17 @@ class SelectFaceShape extends StatefulWidget {
   static final String routeName = '/selectFaceShapeRoute';
   final FaceShape initialFaceShape;
   final OnFaceShapeUpdated onFaceShapeUpdated;
+  final List<FaceShape> allFaceShapes;
   final int userId;
+  final bool faceShapeAlreadyDetected;
 
   SelectFaceShape(
       {Key key,
       this.initialFaceShape,
       @required this.onFaceShapeUpdated,
-      @required this.userId})
+      @required this.userId,
+      this.allFaceShapes,
+      this.faceShapeAlreadyDetected})
       : super(key: key);
 
   @override
@@ -32,105 +34,51 @@ class SelectFaceShape extends StatefulWidget {
 class _SelectFaceShapeState extends State<SelectFaceShape> {
   int _userId;
   bool _isLoading = false;
-  Future<List<FaceShape>> _faceShapes;
+  List<FaceShape> _faceShapes;
   List<SelectableCard> _faceShapeCards;
   SelectableCard _selectedFaceShape;
   FaceShape _initialFaceShape;
   OnFaceShapeUpdated _onFaceShapeUpdated;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final Map<String, String> faceShapeLabels = {
-    'heart': 'Heart',
-    'square': 'Square',
-    'rectangular': 'Rectangular',
-    'diamond': 'Diamond',
-    'triangular': 'Triangular',
-    'inverted_triangular': 'Inverted triangular',
-    'round': 'Round',
-    'oval': 'Oval',
-    'long': 'Long'
-  };
 
   @override
   void initState() {
     super.initState();
-    _faceShapes = _fetchFaceShapes();
+    _faceShapes = widget.allFaceShapes;
     _onFaceShapeUpdated = widget.onFaceShapeUpdated;
     _initialFaceShape = widget.initialFaceShape;
     _userId = widget.userId;
+    _faceShapeCards = _buildFaceShapeCards(_faceShapes);
+    _selectedFaceShape = _faceShapeCards
+        .firstWhere((element) => element.id == _initialFaceShape.id);
 
-    _faceShapes.then((f) {
-      _faceShapeCards = _buildFaceShapeCards(f);
-      _selectInitialFaceShape();
-    });
+    if (!widget.faceShapeAlreadyDetected) {
+      Future.delayed(const Duration(seconds: 2), () {
+        NotificationService.notify(
+            scaffoldKey: _scaffoldKey,
+            message:
+                'Your face shape has been detected as ${_initialFaceShape.label}');
+      });
+    }
   }
 
   List<SelectableCard> _buildFaceShapeCards(List<FaceShape> faceShapes) {
     return faceShapes
         .map((e) => SelectableCard(
-            id: e.id,
-            imgPath: 'assets/icons/${e.shapeName.toLowerCase()}.jpg',
-            label: faceShapeLabels[e.shapeName],
-            select: _selectFaceShape))
-        .toList();
-  }
-
-  _selectInitialFaceShape() {
-    if (_initialFaceShape != null) {
-      _selectedFaceShape = _faceShapeCards.firstWhere(
-          (element) =>
-              element.label.toLowerCase().contains(_initialFaceShape.shapeName),
-          orElse: () => null);
-
-      if (_selectedFaceShape != null) {
-        _faceShapeCards = _faceShapeCards.map((e) {
-          if (e.label == _selectedFaceShape.label) {
-            e = SelectableCard(
-              id: _selectedFaceShape.id,
-              imgPath: _selectedFaceShape.imgPath,
-              label: _selectedFaceShape.label,
-              select: _selectFaceShape,
-              selected: true,
-            );
-          } else {
-            e = SelectableCard(
-              id: _selectedFaceShape.id,
-              imgPath: e.imgPath,
+              id: e.id,
+              imgPath: 'assets/icons/${e.shapeName.toLowerCase()}.jpg',
               label: e.label,
-              select: e.select,
-              selected: false,
-            );
-          }
-          return e;
-        }).toList();
-
-        Future.delayed(const Duration(seconds: 2), () {
-          NotificationService.notify(
-              scaffoldKey: _scaffoldKey,
-              message:
-                  'Your face shape has been detected as ${_selectedFaceShape.label}');
-        });
-      }
-    }
-  }
-
-  Future<List<FaceShape>> _fetchFaceShapes() async {
-    final response = await FaceShapeService.getAll();
-    if (response != null) {
-      if (response.statusCode == 200 && response.body.isNotEmpty) {
-        final rawFaceShapes = jsonDecode(response.body)['faceShapes'];
-        final faceShapes =
-            List.from(rawFaceShapes).map((e) => FaceShape.fromJson(e)).toList();
-        return faceShapes;
-      }
-    }
-    return [];
+              select: _selectFaceShape,
+              selected: e.id == _initialFaceShape.id,
+            ))
+        .toList();
   }
 
   _selectFaceShape(SelectableCard faceShape) {
     if (!faceShape.selected) {
       setState(() {
         _faceShapeCards = _faceShapeCards.map((card) {
-          if (card == faceShape) {
+          if (card.id == faceShape.id) {
             card = SelectableCard(
               id: card.id,
               imgPath: card.imgPath,
@@ -168,10 +116,12 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
     if (response.statusCode == HttpStatus.ok ||
         response.statusCode == HttpStatus.created) {
       _onFaceShapeUpdated(
-          newFaceShape: FaceShape(shapeName: _selectedFaceShape.label));
+          newFaceShape: _faceShapes
+              .firstWhere((element) => element.id == _selectedFaceShape.id));
       setState(() {
         _isLoading = false;
-        _initialFaceShape = FaceShape(shapeName: _selectedFaceShape.label);
+        _initialFaceShape = _faceShapes
+            .firstWhere((element) => element.id == _initialFaceShape.id);
       });
       Navigator.pop(context);
     } else {
@@ -193,80 +143,67 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
             style: TextStyle(fontFamily: 'Klavika'),
           ),
         ),
-        body: FutureBuilder<List<FaceShape>>(
-          future: _faceShapes,
-          builder: (context, snapshot) {
-            Widget body;
-            if (snapshot.hasData) {
-              body = Scrollbar(
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5.0),
-                      ),
-                      SvgPicture.asset(
-                        'assets/icons/select_face_shape_top.svg',
-                        semanticsLabel: 'Select face shape',
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10.0),
-                      ),
-                      Text(
-                        'Select your face shape',
-                        style: Theme.of(context).textTheme.headline1,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20.0),
-                      ),
-                      Expanded(
-                          child: CardsGrid(
-                        cards: _faceShapeCards,
-                      )),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10.0),
-                      ),
-                      Container(
-                        width: 200.0,
-                        height: 40.0,
-                        child: MaterialButton(
-                          disabledColor: Colors.grey[600],
-                          disabledTextColor: Colors.white,
-                          onPressed: !_isLoading
-                              ? () async {
-                                  await _saveChanges();
-                                }
-                              : null,
-                          color: Color.fromARGB(255, 74, 169, 242),
-                          minWidth: double.infinity,
-                          child: !_isLoading
-                              ? Text(
-                                  'Save changes',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .copyWith(color: Colors.white),
-                                )
-                              : Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10.0),
-                      ),
-                    ],
+        body: Scrollbar(
+          child: Container(
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5.0),
+                ),
+                SvgPicture.asset(
+                  'assets/icons/select_face_shape_top.svg',
+                  semanticsLabel: 'Select face shape',
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                ),
+                Text(
+                  'Select your face shape',
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                ),
+                Expanded(
+                    child: CardsGrid(
+                  cards: _faceShapeCards,
+                )),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                ),
+                Container(
+                  width: 200.0,
+                  height: 40.0,
+                  child: MaterialButton(
+                    disabledColor: Colors.grey[600],
+                    disabledTextColor: Colors.white,
+                    onPressed: !_isLoading
+                        ? () async {
+                            await _saveChanges();
+                          }
+                        : null,
+                    color: Color.fromARGB(255, 74, 169, 242),
+                    minWidth: double.infinity,
+                    child: !_isLoading
+                        ? Text(
+                            'Save changes',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                .copyWith(color: Colors.white),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(),
+                          ),
                   ),
                 ),
-              );
-            } else {
-              body = Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return body;
-          },
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                ),
+              ],
+            ),
+          ),
         ));
   }
 }

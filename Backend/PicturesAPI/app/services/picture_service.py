@@ -195,8 +195,8 @@ class PictureService:
         cv2.imwrite(file_name.as_posix() + "_NEW_cropped.jpg", picture_crop)
 
     def delete_picture(self, path, file_name):
-        # ToDo: handle exceptions
-        os.remove(path + file_name)
+        if os.path.exists(os.path.join(path, file_name)):
+            os.remove(path + file_name)
 
     def get_picture_info(self, path, file_name) -> schemas.PictureInfo:
         """
@@ -232,10 +232,9 @@ class PictureService:
                                                                 width=width, created_at=created_at, file_size=file_size)
         return picture_info
 
-    """
-        def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER,
+    def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER,
                            save_path=HAIR_COLOUR_RESULTS_PATH):
-
+        
         if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
             os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
 
@@ -266,10 +265,9 @@ class PictureService:
         parsing = evaluate(portrait, cp)
         part = [table['hair']]
 
-        colours = {"tropical_green": [56, 86, 37], "sunny_yellow": [38, 231, 249], "juicy_orange": [38, 97, 236],
-                   "fiery_red": [68, 12, 184],
-                   "hot_pink": [177, 52, 207], "mysterious_violet": [135, 45, 64], "ocean_blue": [122, 60, 1],
-                   "jet_black": [28, 34, 39]}
+        colours = {"tropical_green": [56, 86, 37], "sunny_yellow": [38, 231, 249], "juicy_orange": [38, 97, 236], "fiery_red": [68, 12, 184],
+                   "hot_pink": [177, 52, 207], "mysterious_violet": [135, 45, 64], "ocean_blue": [122, 60, 1], "jet_black": [28, 34, 39]}
+
 
         image = hair(portrait, parsing, part, colours[str(selected_colour)])
 
@@ -282,11 +280,11 @@ class PictureService:
         print(picture_info)
 
         return picture_info
-    """
 
-    def change_hair_colour(self, file_name, selected_colour, r, b, g, file_path=PICTURE_UPLOAD_FOLDER,
+
+    def change_hair_colour2(self, file_name, selected_colour, r, b, g, file_path=PICTURE_UPLOAD_FOLDER,
                            save_path=HAIR_COLOUR_RESULTS_PATH):
-
+        
         if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
             os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
 
@@ -317,8 +315,7 @@ class PictureService:
 
         image = hair(portrait, parsing, part, selected_colour2)
 
-        new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + '_R' + str(r) + '_B' + str(
-            b) + '_G' + str(g) + '.' + file_name.split('.')[1]
+        new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + 'R_' + str(r) + 'B_' + str(b) + 'G_' + str(g) + '.' + file_name.split('.')[1]
         full_path = save_path + new_file_name
         print(full_path)
         print(full_path, "full path")
@@ -326,7 +323,7 @@ class PictureService:
         picture_info = PictureService.get_picture_info(self, save_path, new_file_name)
         print(picture_info)
 
-        return picture_info
+        return picture_info        
 
     def change_hairstyle(self, user_picture: Picture, model_picture: ModelPicture):
 

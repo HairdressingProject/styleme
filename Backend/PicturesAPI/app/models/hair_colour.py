@@ -11,7 +11,8 @@ from app.database.db import Base
 class HairColour(Base):
     __tablename__ = "colours"
     id = Column(BIGINT, primary_key=True, index=True)
-    colour_name = Column(String(64), nullable=False, server_default="** ERROR: missing category **")
+    colour_name = Column(String(64), nullable=False, unique=True)
+    label = Column(String(255))
     colour_hash = Column(String(64), nullable=False, server_default="** ERROR: missing category **")
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     date_updated = Column(DateTime(timezone=True), server_default=text("NULL"), onupdate=func.now())

@@ -3,21 +3,23 @@ import 'dart:io';
 
 import 'package:app/models/face_shape.dart';
 import 'package:app/models/hair_colour.dart';
+import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
 import 'package:app/models/history.dart';
+import 'package:app/models/model_picture.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/face_shape.dart';
 import 'package:app/services/hair_colour.dart';
+import 'package:app/services/hair_length.dart';
 import 'package:app/services/hair_style.dart';
 import 'package:app/services/history.dart';
+import 'package:app/services/model_pictures.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
-import 'package:app/views/pages/preview.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
@@ -54,12 +56,18 @@ class _HomeState extends State<Home> {
   File _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
+  List<HairColour> _allHairColours;
+  List<HairLength> _allHairLengths;
+  List<FaceShape> _allFaceShapes;
+  List<HairStyle> _allHairStyles;
+  List<ModelPicture> _allModelPictures;
   FaceShape _currentFaceShape;
   HairStyle _currentHairStyle;
   HairColour _currentHairColour;
-  Set<History> _history = Set<History>();
+  List<History> _history = List<History>();
   String _message;
-  Set<String> _completedRoutes = Set<String>();
+  bool _faceShapeAlreadyDetected = false;
+  List<String> _completedRoutes = List<String>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -67,31 +75,123 @@ class _HomeState extends State<Home> {
     super.initState();
     _user = widget.user;
     _currentPictureFuture = _fetchLatestPictureEntry();
-
-    _currentPictureFuture.then((p) {
-      _currentPicture = p;
-    });
   }
 
-  Future<Set<History>> _fetchUserHistory() async {
+  Future<List<HairColour>> _fetchAllHairColours() async {
+    final allHairColoursResponse = await HairColourService.getAll();
+
+    if (allHairColoursResponse.statusCode == HttpStatus.ok &&
+        allHairColoursResponse.body.isNotEmpty) {
+      final rawHairColours = jsonDecode(allHairColoursResponse.body)['colours'];
+      final rawHairColoursList = List.from(rawHairColours);
+      if (rawHairColoursList.isNotEmpty) {
+        return rawHairColoursList.map((e) => HairColour.fromJson(e)).toList();
+      }
+    }
+    return List<HairColour>();
+  }
+
+  Future<List<FaceShape>> _fetchAllFaceShapes() async {
+    final allFaceShapesResponse = await FaceShapeService.getAll();
+
+    if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
+        allFaceShapesResponse.body.isNotEmpty) {
+      final rawFaceShapes =
+          jsonDecode(allFaceShapesResponse.body)['faceShapes'];
+      final rawFaceShapesList = List.from(rawFaceShapes);
+      if (rawFaceShapesList.isNotEmpty) {
+        return rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
+      }
+    }
+    return List<FaceShape>();
+  }
+
+  Future<List<HairStyle>> _fetchAllHairStyles() async {
+    final allHairStylesResponse = await HairStyleService.getAll();
+
+    if (allHairStylesResponse.statusCode == HttpStatus.ok &&
+        allHairStylesResponse.body.isNotEmpty) {
+      final rawHairStyles =
+          jsonDecode(allHairStylesResponse.body)['hairStyles'];
+      final rawHairStylesList = List.from(rawHairStyles);
+      if (rawHairStylesList.isNotEmpty) {
+        return rawHairStylesList.map((e) => HairStyle.fromJson(e)).toList();
+      }
+    }
+    return List<HairStyle>();
+  }
+
+  Future<List<HairLength>> _fetchAllHairLengths() async {
+    final allHairLengthsResponse = await HairLengthService.getAll();
+
+    if (allHairLengthsResponse.statusCode == HttpStatus.ok &&
+        allHairLengthsResponse.body.isNotEmpty) {
+      final rawHairLengths =
+          jsonDecode(allHairLengthsResponse.body)['hairLengths'];
+      final rawHairLengthsList = List.from(rawHairLengths);
+      if (rawHairLengthsList.isNotEmpty) {
+        return rawHairLengthsList.map((e) => HairLength.fromJson(e)).toList();
+      }
+    }
+    return List<HairLength>();
+  }
+
+  Future<List<ModelPicture>> _fetchAllModelPictures() async {
+    final allModelPicturesResponse = await ModelPicturesService.getAll();
+
+    if (allModelPicturesResponse.statusCode == HttpStatus.ok &&
+        allModelPicturesResponse.body.isNotEmpty) {
+      final rawModelPictures = jsonDecode(allModelPicturesResponse.body);
+      final rawModelPicturesList = List.from(rawModelPictures);
+
+      if (rawModelPicturesList.isNotEmpty) {
+        return rawModelPicturesList
+            .map((e) => ModelPicture.fromJson(e))
+            .toList();
+      }
+    }
+    return List<ModelPicture>();
+  }
+
+  Future<List<Image>> _fetchAllModelPicturesFiles(
+      List<ModelPicture> allModelPictures) async {
+    allModelPictures.map((e) async {
+      final allModelPicturesResponseFile =
+          await ModelPicturesService.getFileById(modelPictureId: e.id);
+
+      if (allModelPicturesResponseFile.statusCode == HttpStatus.ok &&
+          allModelPicturesResponseFile.body.isNotEmpty) {
+        return Image.memory(allModelPicturesResponseFile.bodyBytes);
+      }
+      return null;
+    }).toList();
+  }
+
+  Future<List<History>> _fetchUserHistory() async {
     if (_user != null) {
       final historyResponse =
           await HistoryService.getByUserId(userId: _user.id);
       if (historyResponse.statusCode == HttpStatus.ok &&
           historyResponse.body.isNotEmpty) {
-        final rawHistory = Set.from(jsonDecode(historyResponse.body));
+        final rawHistory = List.from(jsonDecode(historyResponse.body));
         if (rawHistory != null && rawHistory.isNotEmpty) {
-          return rawHistory.map((e) => History.fromJson(e)).toSet();
+          return rawHistory.map((e) => History.fromJson(e)).toList();
         }
-        return Set<History>();
+        return List<History>();
       }
     }
-    return Set<History>();
+    return List<History>();
   }
 
   Future<Picture> _fetchLatestPictureEntry() async {
     return _fetchUserHistory().then((value) async {
       _history = value;
+      _allHairColours = await _fetchAllHairColours();
+      _allHairLengths = await _fetchAllHairLengths();
+      _allFaceShapes = await _fetchAllFaceShapes();
+      _allHairStyles = await _fetchAllHairStyles();
+      _allModelPictures = await _fetchAllModelPictures();
+
       if (_history != null && _history.isNotEmpty) {
         final latestPictureEntry =
             await PicturesService.getById(pictureId: _history.last.pictureId);
@@ -121,6 +221,7 @@ class _HomeState extends State<Home> {
             _completedRoutes.add(SelectHairColour.routeName);
           }
 
+          _currentPicture = latestPicture;
           return latestPicture;
         }
       }
@@ -204,7 +305,8 @@ class _HomeState extends State<Home> {
     setState(() {
       _completedRoutes.add(SelectFaceShape.routeName);
       _currentFaceShape = newFaceShape;
-      _message = message ?? 'Face shape updated to ${newFaceShape.shapeName}';
+      _message = message ?? 'Face shape updated to ${newFaceShape.label}';
+      _faceShapeAlreadyDetected = true;
     });
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
@@ -212,10 +314,11 @@ class _HomeState extends State<Home> {
 
   void _onHairStyleUpdated({@required HairStyle newHairStyle, String message}) {
     setState(() {
+      _completedRoutes.add(SelectFaceShape.routeName);
       _completedRoutes.add(SelectHairStyle.routeName);
       _currentHairStyle = newHairStyle;
-      _message =
-          message ?? 'Hair style updated to ${newHairStyle.hairStyleName}';
+      _currentPictureFuture = _fetchLatestPictureEntry();
+      _message = message ?? 'Hair style updated to ${newHairStyle.label}';
     });
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
@@ -234,12 +337,8 @@ class _HomeState extends State<Home> {
   }
 
   void _onPreviewPicture() {
-    if (_currentPicture != null) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Preview(picture: _currentPicture)));
-    }
+    // TODO: to be implemented
+    print('Previewing picture');
   }
 
   Icon _handleButtonIcon(String currentRoute, String previousRoute) {
@@ -296,16 +395,9 @@ class _HomeState extends State<Home> {
                         padding: const EdgeInsets.symmetric(vertical: 30.0),
                         child: GestureDetector(
                           onTap: _onPreviewPicture,
-                          child: CachedNetworkImage(
+                          child: Image.network(
+                            '${PicturesService.picturesUri}/file/${snapshot.data.id}',
                             height: 200.0,
-                            imageUrl:
-                                '${PicturesService.picturesUri}/file/${snapshot.data.id}',
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Center(
-                                    child: CircularProgressIndicator(
-                                        value: downloadProgress.progress)),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
                           ),
                         ));
                   }
@@ -372,7 +464,9 @@ class _HomeState extends State<Home> {
                           action: SelectFaceShape(
                             userId: _user.id,
                             initialFaceShape: _currentFaceShape,
+                            allFaceShapes: _allFaceShapes,
                             onFaceShapeUpdated: _onFaceShapeUpdated,
+                            faceShapeAlreadyDetected: _faceShapeAlreadyDetected,
                           ),
                           alreadySelected: _completedRoutes
                               .contains(SelectFaceShape.routeName),
@@ -387,6 +481,7 @@ class _HomeState extends State<Home> {
                           userId: _user.id,
                           initialFaceShape: _currentFaceShape,
                           onFaceShapeUpdated: _onFaceShapeUpdated,
+                          faceShapeAlreadyDetected: _faceShapeAlreadyDetected,
                         ),
                         alreadySelected: false,
                         enabled: false,
@@ -403,7 +498,13 @@ class _HomeState extends State<Home> {
                             icon: _handleButtonIcon(SelectHairStyle.routeName,
                                 SelectFaceShape.routeName),
                             text: "Select a hair style",
-                            action: SelectHairStyle(),
+                            action: SelectHairStyle(
+                              allHairStyles: _allHairStyles,
+                              allModelPictures: _allModelPictures,
+                              allHairLengths: _allHairLengths,
+                              onHairStyleUpdated: _onHairStyleUpdated,
+                              currentUserPicture: _currentPicture,
+                            ),
                             alreadySelected: _completedRoutes
                                 .contains(SelectHairStyle.routeName),
                             enabled: _isButtonEnabled(SelectHairStyle.routeName,
@@ -412,7 +513,13 @@ class _HomeState extends State<Home> {
                       return CustomButton(
                           icon: Icon(Icons.access_time),
                           text: "Select a hair style",
-                          action: SelectHairStyle(),
+                          action: SelectHairStyle(
+                            allHairStyles: _allHairStyles,
+                            allModelPictures: _allModelPictures,
+                            allHairLengths: _allHairLengths,
+                            onHairStyleUpdated: _onHairStyleUpdated,
+                            currentUserPicture: _currentPicture,
+                          ),
                           alreadySelected: false,
                           enabled: false);
                     },

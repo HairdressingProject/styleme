@@ -30,6 +30,10 @@ namespace UsersAPI.Models
         [MaxLength(128)]
         [Column("shape_name", TypeName = "varchar(128)")]
         public string ShapeName { get; set; }
+
+        [Column("label", TypeName = "varchar(255)")]
+        public string Label { get; set; }
+
         [Column("date_created", TypeName = "datetime")]
         public DateTime? DateCreated { get; set; }
         [Column("date_updated", TypeName = "datetime")]

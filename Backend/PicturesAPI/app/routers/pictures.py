@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, Optional, Union
 
 from fastapi import APIRouter, File, Depends, UploadFile, status, Response, HTTPException
@@ -57,7 +56,8 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             # parse face shape string to int
             face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
 
-            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db, id=face_shape_id)
+            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db,
+                                                                                      face_shape_id=face_shape_id)
 
             user_id = 1
 
@@ -66,9 +66,8 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
                                          face_shape_id=face_shape_id, user_id=user_id)
             new_history_entry: models.History = history_actions.add_history(db=db, history=new_history)
 
-            results: List[models.Picture] = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
-            face_shape: models.FaceShape = face_shape_actions.get_face_shape(db=db, id=new_history_entry.face_shape_id)
-            return {'picture': results[0], 'face_shape': face_shape, 'history_entry': new_history_entry}
+            results = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
+            return {'picture': results[0], 'face_shape': face_shape[0], 'history_entry': new_history_entry}
     else:
         raise HTTPException(status_code=422, detail="No face detected")
 
@@ -77,7 +76,7 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
 async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
     selected_picture = picture_actions.read_picture_by_id(picture_id=picture_id, db=db)
     if selected_picture:
-        file_path = selected_picture.file_path + '/' + selected_picture.file_name
+        file_path = selected_picture.file_path + selected_picture.file_name
         print(file_path)
         return FileResponse(file_path)
     raise HTTPException(status_code=404, detail='Picture file not found')
@@ -147,7 +146,7 @@ async def get_picture_face_shape(picture_id: int, db: Session = Depends(get_db))
     raise HTTPException(status_code=404, detail="Could not find picture by id")
 
 
-@router.get("/change_hair_colour/{picture_id}", status_code=status.HTTP_200_OK, response_class=ORJSONResponse)
+@router.get("/change_hair_colour/{picture_id}", status_code=status.HTTP_200_OK)
 async def change_hair_colour(picture_id: int, colour: str, r: int, g: int, b: int, db: Session = Depends(get_db)):
     """Applies changes to hair colour based on a base colour name (e.g. hot pink) and RGB values, which vary by lightness
     :param picture_id: ID of the picture to be processed
@@ -160,41 +159,64 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, g: int, b: in
     """
 
     selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
+    print(selected_picture.file_name)
+    print(selected_picture.file_path)
 
-    # get hair colour
-    hair_colour_results: List[models.HairColour] = hair_colour_actions.get_hair_colours(db=db, search=colour,
-                                                                                        limit=1)
-    if len(hair_colour_results):
-        hair_colour = hair_colour_results[0]
+    # apply selected colour
+    picture_info = picture_service.change_hair_colour2(file_name=selected_picture.file_name, selected_colour=colour,
+                                                       r=r, g=g, b=b,
+                                                       file_path=selected_picture.file_path)
+    print(picture_info)
 
-        # get user
-        user: models.User = history_actions.get_user_id_from_picture_id(db=db, picture_id=picture_id)
-        if user:
-            # apply selected colour
-            picture_info = picture_service.change_hair_colour(file_name=selected_picture.file_name,
-                                                              selected_colour=hair_colour.colour_name,
-                                                              r=r, g=g, b=b,
-                                                              file_path=selected_picture.file_path)
-            print(picture_info)
+    # create new picture and add to db
+    new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+                                 file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
 
-            picture_info.file_name = picture_info.file_name + f'_{datetime.now().timestamp()}'
+    mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
 
-            # create new picture and add to db
-            new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
-                                         file_size=picture_info.file_size, height=picture_info.height,
-                                         width=picture_info.width)
+    # fake user_id
+    user: models.User = history_actions.get_user_id_from_picture_id(db=db, picture_id=picture_id)
 
-            mod_pic: models.Picture = picture_actions.add_picture(db=db, picture=new_picture)
-
+    if user:
+        hair_colour_results: List[models.HairColour] = hair_colour_actions.get_hair_colours(db=db, search=colour,
+                                                                                            limit=1)
+        if len(hair_colour_results):
             hair_colour = hair_colour_results[0]
             new_history = models.History(picture_id=mod_pic.id, original_picture_id=selected_picture.id,
                                          hair_colour_id=hair_colour.id,
                                          user_id=user.id)
             history_entry: models.History = history_actions.add_history(db=db, history=new_history)
-            mod_pic: models.Picture = picture_actions.read_picture_by_id(picture_id=history_entry.picture_id, db=db)
-            return {"picture": mod_pic, "history_entry": history_entry}
-        raise HTTPException(status_code=404, detail='No user associated with this picture ID was found')
-    raise HTTPException(status_code=404, detail='No hair colour record associated with this colour name was found')
+            return {'history_entry': history_entry, 'picture': mod_pic}
+        raise HTTPException(status_code=404, detail='No hair colour record associated with this colour name was found')
+    raise HTTPException(status_code=404, detail='No user associated with this picture ID was found')
+
+
+"""
+@router.post("/{user_picture_id}/change_hairstyle/{model_picture_id}")
+async def change_hairstyle(user_picture_id: int, model_picture_id: int, db: Session = Depends(get_db)):
+    user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
+    model_picture = model_picture_actions.read_model_picture_by_id(db, picture_id=model_picture_id)
+
+    # apply hair transfer
+    picture_info = picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
+    print(picture_info)
+
+    # create new picture and add to db
+    new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+                                 file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
+
+    mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
+
+    # fake user_id
+    user_id = 1
+
+    # create new history record and add to db
+    # ToDo: fix history logic
+    new_history = models.History(picture_id=mod_pic.id, original_picture_id=user_picture.id, hair_style_id=1,
+                                 user_id=user_id)
+
+    history_actions.add_history(db=db, history=new_history)
+"""
 
 
 @router.get("/change_hair_style", status_code=status.HTTP_200_OK)
@@ -248,12 +270,22 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
                                              user_id=user.id)
 
                 history_entry = history_actions.add_history(db=db, history=new_history)
-                mod_pic: models.Picture = picture_actions.read_picture_by_id(picture_id=user_picture.id, db=db)
-                return {"picture": mod_pic, "history_entry": history_entry}
+                return history_entry
             raise HTTPException(status_code=404, detail='Model picture not found')
         raise HTTPException(status_code=404, detail='No user associated with this picture was found')
 
     raise HTTPException(status_code=404, detail='No user picture or model picture associated with these IDs were found')
+
+
+"""
+@router.post("_test/{picture_url}/change_hairstyle/{model_url}")
+async def change_hairstyle_str_path(picture_url: str, model_url: str,
+                                    db: Session = Depends(get_db)):
+    # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
+    # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
+
+    picture_service.change_hairstyle_str_path(user_picture=picture_url, model_picture=model_url)
+"""
 
 
 @router.delete("/{picture_id}", status_code=status.HTTP_200_OK, response_model=List[schemas.Picture])
@@ -264,14 +296,13 @@ async def delete_picture(picture_id: int, response: Response, db: Session = Depe
     :param response: response object
     :param picture_id: ID of the picture record to be deleted from the database
     """
-    print(" *************** DELETE PICTURE *************************")
-    if not db.query(models.Picture).filter(models.Picture.id == picture_id).first():
-        response.status_code = status.HTTP_404_NOT_FOUND
+    selected_picture = picture_actions.read_picture_by_id(db, picture_id)
+
+    if not selected_picture:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Picture to be deleted was not found')
 
     # get the file_name of the selected picture to delete
-    selected_picture = picture_actions.read_picture_by_id(db, picture_id)
     selected_file_name = selected_picture.file_name.split('.')[0]
-    print(selected_file_name)
 
     # search for all pictures containing the selected_file_name
     selected_pictures = picture_actions.read_pictures(db, search=selected_file_name)

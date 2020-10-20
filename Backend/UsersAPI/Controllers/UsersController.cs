@@ -563,6 +563,11 @@ namespace UsersAPI.Controllers
         {
             string authToken = _authorizationService.GetAuthToken(Request);
 
+            if (string.IsNullOrEmpty(authToken))
+            {
+                return Unauthorized();
+            }
+
             if (!_authorizationService.ValidateJWTToken(Request))
             {
                 return Unauthorized(new { errors = new { Token = new string[] { "Invalid token" } }, status = 401 });
@@ -573,7 +578,10 @@ namespace UsersAPI.Controllers
             if (id != null && ulong.TryParse(id, out ulong _id))
             {
                 var user = await _context.Users.FindAsync(_id);
-                return Ok(new { Id = user.Id, UserRole = user.UserRole });
+                if (user != null)
+                {
+                    return Ok(new { Id = user.Id, UserRole = user.UserRole });
+                }
             }
             return NotFound();
         }
