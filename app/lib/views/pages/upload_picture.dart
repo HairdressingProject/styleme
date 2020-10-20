@@ -85,14 +85,11 @@ class _UploadPictureState extends State<UploadPicture> {
           final Picture pictureUploaded =
               Picture.fromJson(parsedAPIResponse['picture']);
 
-          final FaceShape faceShape =
-              FaceShape.fromJson(parsedAPIResponse['face_shape']);
+          final History historyEntry =
+              History.fromJson(parsedAPIResponse['history_entry']);
 
-          final historyEntry = History(
-              pictureId: pictureUploaded.id,
-              originalPictureId: pictureUploaded.id,
-              faceShapeId: faceShape.id,
-              userId: _user.id);
+          final faceShapeDetectedResponse = await FaceShapeService.getAll(
+              faceShapeName: parsedAPIResponse['face_shape']);
 
           final historyEntryResponse =
               await HistoryService.post(history: historyEntry);
@@ -102,12 +99,13 @@ class _UploadPictureState extends State<UploadPicture> {
             final historyEntryAdded =
                 History.fromJson(jsonDecode(historyEntryResponse.body));
 
-            _onPictureUploaded(
-                newPicture: pictureUploaded,
-                historyEntryAdded: historyEntryAdded,
-                newFaceShape: faceShape);
+              _onPictureUploaded(
+                  newPicture: pictureUploaded,
+                  historyEntryAdded: historyEntry,
+                  newFaceShape: faceShapeDetected);
 
-            Navigator.pop(_scaffoldKey.currentContext);
+              Navigator.pop(_scaffoldKey.currentContext);
+            }
           }
         }
       } else {

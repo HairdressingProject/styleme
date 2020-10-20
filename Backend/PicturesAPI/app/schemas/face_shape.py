@@ -14,6 +14,7 @@ from pydantic import BaseModel
 class FaceShapeBase(BaseModel):
     id: int
     shape_name: str
+    label: str
 
 
 class FaceShapeCreateUpdate(FaceShapeBase):

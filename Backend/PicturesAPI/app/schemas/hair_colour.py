@@ -14,6 +14,7 @@ class HairColourBase(BaseModel):
     id: int
     colour_name: str
     colour_hash: str
+    label: str
 
 
 class HairColourCreateUpdate(HairColourBase):

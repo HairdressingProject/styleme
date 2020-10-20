@@ -63,7 +63,8 @@ ENGINE = INNODB;
 CREATE TABLE IF NOT EXISTS hairdressing_project_db.face_shapes
 (
     `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
-    `shape_name`    VARCHAR(128) NOT NULL DEFAULT '** ERROR: missing category **',
+    `shape_name`    VARCHAR(128) UNIQUE NOT NULL,
+    `label`         VARCHAR(255) DEFAULT NULL,
     `date_created`  DATETIME DEFAULT NOW(),
     `date_updated`  DATETIME DEFAULT NULL ON UPDATE NOW(),
     INDEX (`id`)
@@ -94,7 +95,8 @@ ENGINE = INNODB;
 CREATE TABLE IF NOT EXISTS hairdressing_project_db.hair_styles
 (
     `id`              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
-    `hair_style_name` VARCHAR(128) NOT NULL DEFAULT '** ERROR: missing category **',
+    `hair_style_name` VARCHAR(128) UNIQUE NOT NULL,
+    `label`           VARCHAR(255) DEFAULT NULL,
     `date_created`    DATETIME NOT NULL DEFAULT NOW(),
     `date_updated`    DATETIME DEFAULT NULL ON UPDATE NOW(),
     INDEX (`id`)
@@ -125,7 +127,8 @@ ENGINE = INNODB;
 CREATE TABLE IF NOT EXISTS hairdressing_project_db.hair_lengths
 (
     `id`               BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
-    `hair_length_name` VARCHAR(128) NOT NULL DEFAULT '** ERROR: missing category **',
+    `hair_length_name` VARCHAR(128) UNIQUE NOT NULL,
+    `label`            VARCHAR(255) DEFAULT NULL,
     `date_created`     DATETIME NOT NULL DEFAULT NOW(),
     `date_updated`     DATETIME DEFAULT NULL ON UPDATE NOW(),
     INDEX (`id`)
@@ -156,8 +159,9 @@ ENGINE = INNODB;
 CREATE TABLE IF NOT EXISTS hairdressing_project_db.colours
 (
     `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
-    `colour_name`   VARCHAR(64) NOT NULL DEFAULT '** ERROR: missing category **',
+    `colour_name`   VARCHAR(64) NOT NULL UNIQUE,
     `colour_hash`   VARCHAR(64) NOT NULL DEFAULT '** ERROR: missing category **',
+    `label`         VARCHAR(255) DEFAULT NULL,
     `date_created`  DATETIME DEFAULT NOW(),
     `date_updated`  DATETIME DEFAULT NULL ON UPDATE NOW(),
     INDEX(`id`)
@@ -254,43 +258,36 @@ COLLATE utf8mb4_general_ci
 ENGINE = INNODB;
 
 -- DATABASE SEED --
-
-INSERT INTO hairdressing_project_db.users(`user_name`, `user_password_hash`, `user_password_salt`, `user_email`, `first_name`, `user_role`)
-VALUES
-('admin', '123456', 'whatever', 'admin@mail.com', 'Admin', 'admin');
-
-INSERT INTO hairdressing_project_db.accounts(`user_id`) VALUES (1);
-
-INSERT INTO hairdressing_project_db.colours(`colour_name`, `colour_hash`)
+INSERT INTO hairdressing_project_db.colours(`colour_name`, `colour_hash`, `label`)
 VALUES 
-('sunny_yellow', '#F9E726'),
-('juicy_orange', '#EC6126'),
-('fiery_red', '#B80C44'),
-('hot_pink', '#CF34B1'),
-('mysterious_violet', '#402D87'),
-('ocean_blue', '#013C7A'),
-('tropical_green', '#255638'),
-('jet_black', '#27221C');
+('sunny_yellow', '#F9E726', 'Sunny yellow'),
+('juicy_orange', '#EC6126', 'Juicy orange'),
+('fiery_red', '#B80C44', 'Fiery red'),
+('hot_pink', '#CF34B1', 'Hot pink'),
+('mysterious_violet', '#402D87', 'Mysterious violet'),
+('ocean_blue', '#013C7A', 'Ocean blue'),
+('tropical_green', '#255638', 'Tropical green'),
+('jet_black', '#27221C', 'Jet black');
 
-INSERT INTO hairdressing_project_db.face_shapes(`shape_name`)
+INSERT INTO hairdressing_project_db.face_shapes(`shape_name`, `label`)
 VALUES
-('heart'),
-('square'),
-('round'),
-('oval'),
-('long');
+('heart', 'Heart'),
+('square', 'Square'),
+('round', 'Round'),
+('oval', 'Oval'),
+('long', 'Long');
  
-INSERT INTO  hairdressing_project_db.hair_styles(`hair_style_name`)
+INSERT INTO  hairdressing_project_db.hair_styles(`hair_style_name`, `label`)
 VALUES 
-('short_pixie'),
-('medium_wavy'),
-('medium_side_swept_bangs'),
-('long_wavy'),
-('long_curly'),
-('long_side_swept_braided');
+('curly', 'Curly'),
+('wavy', 'Wavy'),
+('side_swept', 'Side swept'),
+('pixie_cut', 'Pixie cut'),
+('side_swept_bangs', 'Side swept bangs'),
+('side_swept_braided', 'Side swept braided');
 
-INSERT INTO  hairdressing_project_db.hair_lengths(`hair_length_name`)
+INSERT INTO  hairdressing_project_db.hair_lengths(`hair_length_name`, `label`)
 VALUES 
-('short'),
-('medium'),
-('long');
+('short', 'Short'),
+('medium', 'Medium'),
+('long', 'Long');

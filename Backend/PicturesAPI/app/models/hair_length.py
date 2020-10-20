@@ -11,6 +11,7 @@ from app.database.db import Base
 class HairLength(Base):
     __tablename__ = "hair_lengths"
     id = Column(BIGINT, primary_key=True, index=True)
-    hair_length_name = Column(String(128), nullable=False, server_default="** ERROR: missing category **")
+    hair_length_name = Column(String(128), nullable=False, unique=True)
+    label = Column(String(255))
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     date_updated = Column(DateTime(timezone=True), server_default=text("NULL"), onupdate=func.now())

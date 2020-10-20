@@ -57,7 +57,8 @@ async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get
             # parse face shape string to int
             face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
 
-            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db, id=face_shape_id)
+            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db,
+                                                                                      face_shape_id=face_shape_id)
 
             user_id = 1
 
@@ -264,14 +265,13 @@ async def delete_picture(picture_id: int, response: Response, db: Session = Depe
     :param response: response object
     :param picture_id: ID of the picture record to be deleted from the database
     """
-    print(" *************** DELETE PICTURE *************************")
-    if not db.query(models.Picture).filter(models.Picture.id == picture_id).first():
-        response.status_code = status.HTTP_404_NOT_FOUND
+    selected_picture = picture_actions.read_picture_by_id(db, picture_id)
+
+    if not selected_picture:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Picture to be deleted was not found')
 
     # get the file_name of the selected picture to delete
-    selected_picture = picture_actions.read_picture_by_id(db, picture_id)
     selected_file_name = selected_picture.file_name.split('.')[0]
-    print(selected_file_name)
 
     # search for all pictures containing the selected_file_name
     selected_pictures = picture_actions.read_pictures(db, search=selected_file_name)
