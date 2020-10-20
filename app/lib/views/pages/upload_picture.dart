@@ -91,13 +91,13 @@ class _UploadPictureState extends State<UploadPicture> {
           final faceShapeDetectedResponse = await FaceShapeService.getAll(
               faceShapeName: parsedAPIResponse['face_shape']);
 
-          if (faceShapeDetectedResponse.statusCode == HttpStatus.ok &&
-              faceShapeDetectedResponse.body.isNotEmpty) {
-            final rawFaceShapes = List.from(
-                jsonDecode(faceShapeDetectedResponse.body)['faceShapes']);
+          final historyEntryResponse =
+              await HistoryService.post(history: historyEntry);
 
-            if (rawFaceShapes.isNotEmpty) {
-              final faceShapeDetected = FaceShape.fromJson(rawFaceShapes[0]);
+          if (historyEntryResponse != null &&
+              historyEntryResponse.body.isNotEmpty) {
+            final historyEntryAdded =
+                History.fromJson(jsonDecode(historyEntryResponse.body));
 
               _onPictureUploaded(
                   newPicture: pictureUploaded,
