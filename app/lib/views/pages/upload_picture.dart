@@ -85,11 +85,11 @@ class _UploadPictureState extends State<UploadPicture> {
           final Picture pictureUploaded =
               Picture.fromJson(parsedAPIResponse['picture']);
 
-          final FaceShape faceShape =
-              FaceShape(shapeName: parsedAPIResponse['face_shape']);
+          final History historyEntry =
+              History.fromJson(parsedAPIResponse['history_entry']);
 
-          final faceShapeDetectedResponse =
-              await FaceShapeService.getAll(faceShapeName: faceShape.shapeName);
+          final faceShapeDetectedResponse = await FaceShapeService.getAll(
+              faceShapeName: parsedAPIResponse['face_shape']);
 
           if (faceShapeDetectedResponse.statusCode == HttpStatus.ok &&
               faceShapeDetectedResponse.body.isNotEmpty) {
@@ -99,27 +99,12 @@ class _UploadPictureState extends State<UploadPicture> {
             if (rawFaceShapes.isNotEmpty) {
               final faceShapeDetected = FaceShape.fromJson(rawFaceShapes[0]);
 
-              final historyEntry = History(
-                  pictureId: pictureUploaded.id,
-                  originalPictureId: pictureUploaded.id,
-                  faceShapeId: faceShapeDetected.id,
-                  userId: _user.id);
+              _onPictureUploaded(
+                  newPicture: pictureUploaded,
+                  historyEntryAdded: historyEntry,
+                  newFaceShape: faceShapeDetected);
 
-              final historyEntryResponse =
-                  await HistoryService.post(history: historyEntry);
-
-              if (historyEntryResponse != null &&
-                  historyEntryResponse.body.isNotEmpty) {
-                final historyEntryAdded =
-                    History.fromJson(jsonDecode(historyEntryResponse.body));
-
-                _onPictureUploaded(
-                    newPicture: pictureUploaded,
-                    historyEntryAdded: historyEntryAdded,
-                    newFaceShape: faceShape);
-
-                Navigator.pop(_scaffoldKey.currentContext);
-              }
+              Navigator.pop(_scaffoldKey.currentContext);
             }
           }
         }
