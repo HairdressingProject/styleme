@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:app/models/hair_colour.dart';
 import 'package:app/models/picture.dart';
+import 'package:app/models/history.dart';
 import 'package:app/services/notification.dart';
+import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/colour_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -13,11 +17,15 @@ class SelectHairColour extends StatefulWidget {
   static final String routeName = '/selectHairColourRoute';
   final Image currentPictureFile;
   final Picture currentPicture;
+  final OnHairColourUpdated onHairColourUpdated;
+  final HairColour currentHairColour;
 
   const SelectHairColour(
       {Key key,
       @required this.currentPictureFile,
-      @required this.currentPicture})
+      @required this.currentPicture,
+      @required this.onHairColourUpdated,
+      @required this.currentHairColour})
       : super(key: key);
 
   @override
@@ -25,6 +33,7 @@ class SelectHairColour extends StatefulWidget {
 }
 
 class _SelectHairColourState extends State<SelectHairColour> {
+  HairColour _currentHairColour;
   Image _currentPictureFile;
   Picture _currentPicture;
   List<ColourCard> _colours;
@@ -47,6 +56,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
 
   _saveChanges() {
     // TODO: Save _selectedColour
+    print('Cahnging hair colour to ${_selectedColourCard.colourLabel}');
     _changeHairColour();
   }
 
@@ -62,9 +72,32 @@ class _SelectHairColourState extends State<SelectHairColour> {
           pictureId: _currentPicture.id,
           colourName: _selectedColourCard.colourName,
           r: _r,
-          b: _b,
-          g: _g);
-      if (response != null) {
+          g: _g,
+          b: _b);
+      if (response.statusCode == HttpStatus.ok &&
+          response.body.isNotEmpty) {
+
+        print(response.body);
+        
+        final History historyEntry =
+          History.fromJson(jsonDecode(response.body));
+
+        final HairColour hairColourEntry =
+          HairColour.fromJson(jsonDecode(response.body)['hair_colour']);
+
+        print(hairColourEntry);
+
+        print('_currentHairColour');
+        print(_currentHairColour);
+
+        print('_selectedColourCard.colourName');
+        print(_selectedColourCard.colourName);        
+
+        widget.onHairColourUpdated(
+          newHairColour: _currentHairColour
+        );
+          
+
         print(response.request);
         print(response.request.headers);
         print('Response from API:');
@@ -75,15 +108,16 @@ class _SelectHairColourState extends State<SelectHairColour> {
         print(_selectedColour.green);
 
         // ToDo: Improve error messages
-        if (response.statusCode == 200) {
-          NotificationService.notify(
-              scaffoldKey: _scaffoldKey,
-              message: 'Hair colour successfully applied');
-        } else {
-          NotificationService.notify(
-              scaffoldKey: _scaffoldKey,
-              message: 'Hair colour already applied');
-        }
+        // if (response.statusCode == 200) {
+        //   NotificationService.notify(
+        //       scaffoldKey: _scaffoldKey,
+        //       message: 'Hair colour successfully applied');
+        // } else {
+        //   NotificationService.notify(
+        //       scaffoldKey: _scaffoldKey,
+        //       message: 'Hair colour already applied');
+        // }
+        Navigator.pop(context);
       } else {
         NotificationService.notify(
             scaffoldKey: _scaffoldKey,
@@ -143,6 +177,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
     super.initState();
     _currentPicture = widget.currentPicture;
     _currentPictureFile = widget.currentPictureFile;
+    _currentHairColour = widget.currentHairColour;
     _lightnessValue = 50.0;
     _lightnessLabel = "0%";
     _colours = [

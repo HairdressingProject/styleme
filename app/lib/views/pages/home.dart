@@ -39,7 +39,7 @@ typedef OnHairStyleUpdated = void Function(
     {@required HairStyle newHairStyle, String message});
 
 typedef OnHairColourUpdated = void Function(
-    {@required HairStyle newHairStyle, String message});
+    {@required HairColour newHairColour, String message});
 
 class Home extends StatefulWidget {
   final User user;
@@ -562,6 +562,8 @@ class _HomeState extends State<Home> {
                             action: SelectHairColour(
                               currentPicture: _currentPicture,
                               currentPictureFile: _currentPictureFile,
+                              onHairColourUpdated: _onHairColourUpdated,
+                              currentHairColour: _currentHairColour,
                             ));
                       }
                       return CustomButton(
@@ -570,6 +572,8 @@ class _HomeState extends State<Home> {
                         action: SelectHairColour(
                           currentPicture: _currentPicture,
                           currentPictureFile: _currentPictureFile,
+                          onHairColourUpdated: _onHairColourUpdated,
+                          currentHairColour: _currentHairColour,
                         ),
                         alreadySelected: false,
                         enabled: false,
