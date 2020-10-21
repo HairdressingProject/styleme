@@ -32,6 +32,57 @@ async def add_process_time_header(request: Request, call_next):
     return response
 
 
+@app.middleware("http")
+async def authorise_user(request: Request, call_next):
+    # TODO: check request URL before running this middleware
+    # Certain routes need to access user data (such as POST /pictures)
+    # In that case, this middleware should be skipped and the logic should move to the route itself
+    print(f'Request URL: {request.url}')
+    if "authorization" not in request.headers.keys() and "auth" not in request.cookies.keys():
+        print(f"No authorization header or auth cookie found")
+        return ORJSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "message": "Please sign in first"
+            }
+        )
+
+    authorization_header = request.headers.get("authorization")
+    auth_cookie = request.cookies.get("auth")
+
+    print(f"Authorization: {authorization_header}")
+    print(f"Auth cookie: {auth_cookie}")
+
+    users_api_req_headers = {
+        "origin": f"https://{ADMIN_PORTAL_HOST}"
+    }
+
+    if authorization_header:
+        users_api_req_headers["authorization"] = authorization_header
+
+    if auth_cookie:
+        users_api_req_headers["cookie"] = f"auth={auth_cookie}"
+
+    users_api_response = requests.get(f"{USERS_API_URL}/users/authenticate", headers=users_api_req_headers)
+    print("Response from users API:")
+    try:
+        print(users_api_response.json())
+    except json.decoder.JSONDecodeError:
+        pass
+
+    if users_api_response.ok:
+        print('User authorised')
+        response: Response = await call_next(request)
+        return response
+
+    return ORJSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={
+            "message": "Invalid credentials"
+        }
+    )
+
+
 # Use the ones below in a production environment
 """
 app.add_middleware(HTTPSRedirectMiddleware)
