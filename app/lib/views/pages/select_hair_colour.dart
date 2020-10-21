@@ -56,6 +56,8 @@ class _SelectHairColourState extends State<SelectHairColour> {
         _isLoading = true;
       });
       //final response = await PicturesService.changeHairColour(pictureId: 60, colourName: _selectedColourCard.colourName);
+      print("_currentPicture.id");
+      print(_currentPicture.id);
       final response = await PicturesService.changeHairColourRGB(
           pictureId: _currentPicture.id,
           colourName: _selectedColourCard.colourName,
@@ -235,7 +237,10 @@ class _SelectHairColourState extends State<SelectHairColour> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
                 ),
-                  _currentPictureFile,
+                Container(
+                  height: 150.0,
+                  child: _currentPictureFile,
+                ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 15.0),
                 ),

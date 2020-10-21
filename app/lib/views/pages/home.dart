@@ -548,6 +548,8 @@ class _HomeState extends State<Home> {
                     future: _currentPictureFuture,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        print("Home _currentPicture");
+                        print(_currentPicture);
                         return CustomButton(
                             icon: _handleButtonIcon(SelectHairColour.routeName,
                                 SelectHairStyle.routeName),

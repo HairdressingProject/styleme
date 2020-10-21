@@ -86,8 +86,8 @@ class PicturesService {
       {int pictureId, String colourName, int r, int g, int b}) async {
     try {
       final response = await http
-          .post(Uri.encodeFull(
-              '$picturesUri/$pictureId/hair_colour2?colour=$colourName&r=$r&g=$g&b=$b'))
+          .get(Uri.encodeFull(
+              '$picturesUri/change_hair_colour/$pictureId?colour=$colourName&r=$r&g=$g&b=$b'))
           .timeout(const Duration(seconds: 10));
       return response;
     } catch (err) {

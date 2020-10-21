@@ -163,7 +163,7 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, g: int, b: in
     print(selected_picture.file_path)
 
     # apply selected colour
-    picture_info = picture_service.change_hair_colour2(file_name=selected_picture.file_name, selected_colour=colour,
+    picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name, selected_colour=colour,
                                                        r=r, g=g, b=b,
                                                        file_path=selected_picture.file_path)
     print(picture_info)
