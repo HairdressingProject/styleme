@@ -18,5 +18,5 @@ class HairColourActions:
         return db.query(models.HairColour).filter(models.HairColour.colour_name.ilike('%' + search + '%')).offset(
             skip).limit(limit).all()
     
-    def get_hair_colour_by_id(self, db: Session, hair_colour_id: int):
+    def get_hair_colour_by_id(self, db: Session, hair_colour_id: int) -> models.HairColour:
         return db.query(models.HairColour).filter(models.HairColour.id == hair_colour_id).first()

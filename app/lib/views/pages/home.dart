@@ -218,6 +218,8 @@ class _HomeState extends State<Home> {
           }
 
           _currentHairColour = await _fetchLatestHairColourEntry();
+          print('current hair colour #######################');
+          print(_currentHairColour);
 
           if (_currentHairColour != null) {
             _completedRoutes.add(SelectHairColour.routeName);
@@ -294,6 +296,8 @@ class _HomeState extends State<Home> {
 
       if (latestHairColourResponse.statusCode == HttpStatus.ok &&
           latestHairColourResponse.body.isNotEmpty) {
+            print(">>>>>>>>>>> latestHairColourResponse.body");
+            print(latestHairColourResponse.body);
         final latestHairColour =
             HairColour.fromJson(jsonDecode(latestHairColourResponse.body));
         return latestHairColour;
@@ -348,8 +352,11 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(SelectHairColour.routeName);
       _currentHairColour = newHairColour;
       _message =
-          message ?? 'Hair colour updated to ${newHairColour.colourName}';
+          message ?? 'Hair colour updated to ${newHairColour.label}';
     });
+
+    // update current picture
+    _currentPictureFuture = _fetchLatestPictureEntry();
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
   }

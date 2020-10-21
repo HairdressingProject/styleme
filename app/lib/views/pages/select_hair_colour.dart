@@ -76,47 +76,21 @@ class _SelectHairColourState extends State<SelectHairColour> {
           b: _b);
       if (response.statusCode == HttpStatus.ok &&
           response.body.isNotEmpty) {
-
-        print(response.body);
         
         final History historyEntry =
           History.fromJson(jsonDecode(response.body));
 
         final HairColour hairColourEntry =
-          HairColour.fromJson(jsonDecode(response.body)['hair_colour']);
+          HairColour.fromJson2(jsonDecode(response.body)['hair_colour']);       
 
-        print(hairColourEntry);
-
-        print('_currentHairColour');
-        print(_currentHairColour);
-
-        print('_selectedColourCard.colourName');
-        print(_selectedColourCard.colourName);        
 
         widget.onHairColourUpdated(
-          newHairColour: _currentHairColour
+          newHairColour: hairColourEntry
         );
-          
 
-        print(response.request);
-        print(response.request.headers);
-        print('Response from API:');
-        print('${response.body}');
-        print("Selected colour: ");
-        print(_selectedColour.red);
-        print(_selectedColour.blue);
-        print(_selectedColour.green);
+        // update current colour
+        _currentHairColour = hairColourEntry;
 
-        // ToDo: Improve error messages
-        // if (response.statusCode == 200) {
-        //   NotificationService.notify(
-        //       scaffoldKey: _scaffoldKey,
-        //       message: 'Hair colour successfully applied');
-        // } else {
-        //   NotificationService.notify(
-        //       scaffoldKey: _scaffoldKey,
-        //       message: 'Hair colour already applied');
-        // }
         Navigator.pop(context);
       } else {
         NotificationService.notify(
