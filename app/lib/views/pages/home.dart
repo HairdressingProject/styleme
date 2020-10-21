@@ -53,7 +53,7 @@ class _HomeState extends State<Home> {
   static final String routeName = '/homeRoute';
 
   User _user;
-  File _currentPictureFile;
+  Image _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
   List<HairColour> _allHairColours;
@@ -211,6 +211,8 @@ class _HomeState extends State<Home> {
 
           _currentHairStyle = await _fetchLatestHairStyleEntry();
 
+          _currentPictureFile = await _fetchLatestPictureFile();
+
           if (_currentHairStyle != null) {
             _completedRoutes.add(SelectHairStyle.routeName);
           }
@@ -231,6 +233,22 @@ class _HomeState extends State<Home> {
       print(err);
       return Picture(id: -1);
     });
+  }
+
+  Future<Image> _fetchLatestPictureFile() async {
+    if(_history != null &&
+       _history.isNotEmpty &&
+       _history.last.pictureId != null) {
+
+        final latestPictureFile =
+            await PicturesService.getFileById(pictureId: _history.last.pictureId);
+
+          if (latestPictureFile.statusCode == HttpStatus.ok &&
+              latestPictureFile.body.isNotEmpty) {
+                return Image.memory(latestPictureFile.bodyBytes);
+          }
+          return null;  
+         }
   }
 
   Future<HairStyle> _fetchLatestHairStyleEntry() async {

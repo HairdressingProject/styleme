@@ -11,7 +11,7 @@ import 'package:app/widgets/action_button.dart';
 
 class SelectHairColour extends StatefulWidget {
   static final String routeName = '/selectHairColourRoute';
-  final File currentPictureFile;
+  final Image currentPictureFile;
   final Picture currentPicture;
 
   const SelectHairColour(
@@ -25,7 +25,7 @@ class SelectHairColour extends StatefulWidget {
 }
 
 class _SelectHairColourState extends State<SelectHairColour> {
-  File _currentPictureFile;
+  Image _currentPictureFile;
   Picture _currentPicture;
   List<ColourCard> _colours;
   ColourCard _selectedColourCard;
@@ -235,10 +235,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
                 ),
-                Image.file(
                   _currentPictureFile,
-                  height: 150.0,
-                ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 15.0),
                 ),
