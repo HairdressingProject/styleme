@@ -39,7 +39,7 @@ typedef OnHairStyleUpdated = void Function(
     {@required HairStyle newHairStyle, String message});
 
 typedef OnHairColourUpdated = void Function(
-    {@required HairStyle newHairStyle, String message});
+    {@required HairColour newHairColour, String message});
 
 class Home extends StatefulWidget {
   final User user;
@@ -53,7 +53,7 @@ class _HomeState extends State<Home> {
   static final String routeName = '/homeRoute';
 
   User _user;
-  File _currentPictureFile;
+  Image _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
   List<HairColour> _allHairColours;
@@ -211,11 +211,15 @@ class _HomeState extends State<Home> {
 
           _currentHairStyle = await _fetchLatestHairStyleEntry();
 
+          _currentPictureFile = await _fetchLatestPictureFile();
+
           if (_currentHairStyle != null) {
             _completedRoutes.add(SelectHairStyle.routeName);
           }
 
           _currentHairColour = await _fetchLatestHairColourEntry();
+          print('current hair colour #######################');
+          print(_currentHairColour);
 
           if (_currentHairColour != null) {
             _completedRoutes.add(SelectHairColour.routeName);
@@ -231,6 +235,22 @@ class _HomeState extends State<Home> {
       print(err);
       return Picture(id: -1);
     });
+  }
+
+  Future<Image> _fetchLatestPictureFile() async {
+    if(_history != null &&
+       _history.isNotEmpty &&
+       _history.last.pictureId != null) {
+
+        final latestPictureFile =
+            await PicturesService.getFileById(pictureId: _history.last.pictureId);
+
+          if (latestPictureFile.statusCode == HttpStatus.ok &&
+              latestPictureFile.body.isNotEmpty) {
+                return Image.memory(latestPictureFile.bodyBytes);
+          }
+          return null;  
+         }
   }
 
   Future<HairStyle> _fetchLatestHairStyleEntry() async {
@@ -276,6 +296,8 @@ class _HomeState extends State<Home> {
 
       if (latestHairColourResponse.statusCode == HttpStatus.ok &&
           latestHairColourResponse.body.isNotEmpty) {
+            print(">>>>>>>>>>> latestHairColourResponse.body");
+            print(latestHairColourResponse.body);
         final latestHairColour =
             HairColour.fromJson(jsonDecode(latestHairColourResponse.body));
         return latestHairColour;
@@ -330,8 +352,11 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(SelectHairColour.routeName);
       _currentHairColour = newHairColour;
       _message =
-          message ?? 'Hair colour updated to ${newHairColour.colourName}';
+          message ?? 'Hair colour updated to ${newHairColour.label}';
     });
+
+    // update current picture
+    _currentPictureFuture = _fetchLatestPictureEntry();
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
   }
@@ -530,6 +555,8 @@ class _HomeState extends State<Home> {
                     future: _currentPictureFuture,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        print("Home _currentPicture");
+                        print(_currentPicture);
                         return CustomButton(
                             icon: _handleButtonIcon(SelectHairColour.routeName,
                                 SelectHairStyle.routeName),
@@ -542,6 +569,8 @@ class _HomeState extends State<Home> {
                             action: SelectHairColour(
                               currentPicture: _currentPicture,
                               currentPictureFile: _currentPictureFile,
+                              onHairColourUpdated: _onHairColourUpdated,
+                              currentHairColour: _currentHairColour,
                             ));
                       }
                       return CustomButton(
@@ -550,6 +579,8 @@ class _HomeState extends State<Home> {
                         action: SelectHairColour(
                           currentPicture: _currentPicture,
                           currentPictureFile: _currentPictureFile,
+                          onHairColourUpdated: _onHairColourUpdated,
+                          currentHairColour: _currentHairColour,
                         ),
                         alreadySelected: false,
                         enabled: false,

@@ -147,7 +147,7 @@ async def get_picture_face_shape(picture_id: int, db: Session = Depends(get_db))
 
 
 @router.get("/change_hair_colour/{picture_id}", status_code=status.HTTP_200_OK)
-async def change_hair_colour(picture_id: int, colour: str, r: int, g: int, b: int, db: Session = Depends(get_db)):
+async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: int, db: Session = Depends(get_db)):
     """Applies changes to hair colour based on a base colour name (e.g. hot pink) and RGB values, which vary by lightness
     :param picture_id: ID of the picture to be processed
     :param db: db session instance
@@ -158,21 +158,46 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, g: int, b: in
     :returns: New picture object and history entry reflecting changes
     """
 
-    selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
-    print(selected_picture.file_name)
-    print(selected_picture.file_path)
+    selected_picture: Union[models.Picture, None] = None
+
+    if picture_id:
+        selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
+    else:
+        raise HTTPException(status_code=400, detail='Picture ID not found')
+
+    if selected_picture:
+        # apply hair colour
+        print(selected_picture.file_name)
+        print(selected_picture.file_path)
+        picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name, selected_colour=colour,
+                                                        r=r, b=b, g=g,
+                                                        file_path=selected_picture.file_path)        
+        print(picture_info)
+
+        # create new picture and add to db
+        new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+                                    file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)        
+        
+        mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
+
+
+        
+
+    # selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
+    # print(selected_picture.file_name)
+    # print(selected_picture.file_path)
 
     # apply selected colour
-    picture_info = picture_service.change_hair_colour2(file_name=selected_picture.file_name, selected_colour=colour,
-                                                       r=r, g=g, b=b,
-                                                       file_path=selected_picture.file_path)
-    print(picture_info)
+    # picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name, selected_colour=colour,
+    #                                                    r=r, g=g, b=b,
+    #                                                    file_path=selected_picture.file_path)
+    # print(picture_info)
 
     # create new picture and add to db
-    new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
-                                 file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
+    # new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+    #                              file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
 
-    mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
+    # mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
 
     # fake user_id
     user: models.User = history_actions.get_user_id_from_picture_id(db=db, picture_id=picture_id)
@@ -182,11 +207,16 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, g: int, b: in
                                                                                             limit=1)
         if len(hair_colour_results):
             hair_colour = hair_colour_results[0]
+            print(hair_colour.id)
             new_history = models.History(picture_id=mod_pic.id, original_picture_id=selected_picture.id,
                                          hair_colour_id=hair_colour.id,
                                          user_id=user.id)
             history_entry: models.History = history_actions.add_history(db=db, history=new_history)
-            return {'history_entry': history_entry, 'picture': mod_pic}
+
+            hair_colour_entry: models.HairColour = hair_colour_actions.get_hair_colour_by_id(db=db, hair_colour_id=hair_colour.id)
+            print(hair_colour_entry.colour_name)
+            
+            return {'history_entry': history_entry, 'picture': mod_pic, 'hair_colour': hair_colour_entry}
         raise HTTPException(status_code=404, detail='No hair colour record associated with this colour name was found')
     raise HTTPException(status_code=404, detail='No user associated with this picture ID was found')
 
