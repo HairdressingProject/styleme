@@ -26,16 +26,16 @@ class HairLength {
 
   HairLength.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        hairLengthName = json['hairLengthName'],
+        hairLengthName = json['hair_length_name'],
         label = json['label'],
-        dateCreated = json['dateCreated'],
-        dateUpdated = json['dateUpdated'];
+        dateCreated = json['date_created'],
+        dateUpdated = json['date_updated'];
 
   Map<String, dynamic> toJson() => {
-        'Id': this.id,
-        'HairLengthName': this.hairLengthName,
-        'Label': this.label,
-        'DateCreated': this.dateCreated,
-        'DateUpdated': this.dateUpdated
+        'id': this.id,
+        'hair_length_name': this.hairLengthName,
+        'label': this.label,
+        'date_created': this.dateCreated,
+        'date_updated': this.dateUpdated
       };
 }

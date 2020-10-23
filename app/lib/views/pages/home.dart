@@ -9,6 +9,7 @@ import 'package:app/models/history.dart';
 import 'package:app/models/model_picture.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
+import 'package:app/services/authentication.dart';
 import 'package:app/services/face_shape.dart';
 import 'package:app/services/hair_colour.dart';
 import 'package:app/services/hair_length.dart';
@@ -67,6 +68,7 @@ class _HomeState extends State<Home> {
   List<History> _history = List<History>();
   String _message;
   bool _faceShapeAlreadyDetected = false;
+  String _userToken;
   List<String> _completedRoutes = List<String>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -75,6 +77,11 @@ class _HomeState extends State<Home> {
     super.initState();
     _user = widget.user;
     _currentPictureFuture = _fetchLatestPictureEntry();
+  }
+
+  Future<String> _getUserToken() async {
+    final token = await Authentication.retrieveToken();
+    return token;
   }
 
   Future<List<HairColour>> _fetchAllHairColours() async {
@@ -97,7 +104,7 @@ class _HomeState extends State<Home> {
     if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
         allFaceShapesResponse.body.isNotEmpty) {
       final rawFaceShapes =
-          jsonDecode(allFaceShapesResponse.body)['faceShapes'];
+          jsonDecode(allFaceShapesResponse.body)['face_shapes'];
       final rawFaceShapesList = List.from(rawFaceShapes);
       if (rawFaceShapesList.isNotEmpty) {
         return rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
@@ -112,7 +119,7 @@ class _HomeState extends State<Home> {
     if (allHairStylesResponse.statusCode == HttpStatus.ok &&
         allHairStylesResponse.body.isNotEmpty) {
       final rawHairStyles =
-          jsonDecode(allHairStylesResponse.body)['hairStyles'];
+          jsonDecode(allHairStylesResponse.body)['hair_styles'];
       final rawHairStylesList = List.from(rawHairStyles);
       if (rawHairStylesList.isNotEmpty) {
         return rawHairStylesList.map((e) => HairStyle.fromJson(e)).toList();
@@ -127,7 +134,7 @@ class _HomeState extends State<Home> {
     if (allHairLengthsResponse.statusCode == HttpStatus.ok &&
         allHairLengthsResponse.body.isNotEmpty) {
       final rawHairLengths =
-          jsonDecode(allHairLengthsResponse.body)['hairLengths'];
+          jsonDecode(allHairLengthsResponse.body)['hair_lengths'];
       final rawHairLengthsList = List.from(rawHairLengths);
       if (rawHairLengthsList.isNotEmpty) {
         return rawHairLengthsList.map((e) => HairLength.fromJson(e)).toList();
@@ -185,6 +192,7 @@ class _HomeState extends State<Home> {
 
   Future<Picture> _fetchLatestPictureEntry() async {
     return _fetchUserHistory().then((value) async {
+      _userToken = await _getUserToken();
       _history = value;
       _allHairColours = await _fetchAllHairColours();
       _allHairLengths = await _fetchAllHairLengths();
@@ -238,19 +246,18 @@ class _HomeState extends State<Home> {
   }
 
   Future<Image> _fetchLatestPictureFile() async {
-    if(_history != null &&
-       _history.isNotEmpty &&
-       _history.last.pictureId != null) {
+    if (_history != null &&
+        _history.isNotEmpty &&
+        _history.last.pictureId != null) {
+      final latestPictureFile =
+          await PicturesService.getFileById(pictureId: _history.last.pictureId);
 
-        final latestPictureFile =
-            await PicturesService.getFileById(pictureId: _history.last.pictureId);
-
-          if (latestPictureFile.statusCode == HttpStatus.ok &&
-              latestPictureFile.body.isNotEmpty) {
-                return Image.memory(latestPictureFile.bodyBytes);
-          }
-          return null;  
-         }
+      if (latestPictureFile.statusCode == HttpStatus.ok &&
+          latestPictureFile.body.isNotEmpty) {
+        return Image.memory(latestPictureFile.bodyBytes);
+      }
+      return null;
+    }
   }
 
   Future<HairStyle> _fetchLatestHairStyleEntry() async {
@@ -296,8 +303,8 @@ class _HomeState extends State<Home> {
 
       if (latestHairColourResponse.statusCode == HttpStatus.ok &&
           latestHairColourResponse.body.isNotEmpty) {
-            print(">>>>>>>>>>> latestHairColourResponse.body");
-            print(latestHairColourResponse.body);
+        print(">>>>>>>>>>> latestHairColourResponse.body");
+        print(latestHairColourResponse.body);
         final latestHairColour =
             HairColour.fromJson(jsonDecode(latestHairColourResponse.body));
         return latestHairColour;
@@ -351,8 +358,7 @@ class _HomeState extends State<Home> {
     setState(() {
       _completedRoutes.add(SelectHairColour.routeName);
       _currentHairColour = newHairColour;
-      _message =
-          message ?? 'Hair colour updated to ${newHairColour.label}';
+      _message = message ?? 'Hair colour updated to ${newHairColour.label}';
     });
 
     // update current picture
@@ -524,6 +530,7 @@ class _HomeState extends State<Home> {
                                 SelectFaceShape.routeName),
                             text: "Select a hair style",
                             action: SelectHairStyle(
+                              userToken: _userToken,
                               allHairStyles: _allHairStyles,
                               allModelPictures: _allModelPictures,
                               allHairLengths: _allHairLengths,
@@ -539,6 +546,7 @@ class _HomeState extends State<Home> {
                           icon: Icon(Icons.access_time),
                           text: "Select a hair style",
                           action: SelectHairStyle(
+                            userToken: _userToken,
                             allHairStyles: _allHairStyles,
                             allModelPictures: _allModelPictures,
                             allHairLengths: _allHairLengths,

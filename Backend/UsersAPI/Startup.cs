@@ -106,10 +106,18 @@ namespace UsersAPI
                 .ServerVersion(new ServerVersion(new Version(10, 5, 4), ServerType.MariaDb))
                 ));
 
-            services.AddControllers().AddJsonOptions(
+            services.AddControllers().AddNewtonsoftJson(
                 options =>
                 {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance;
+                    DefaultContractResolver contractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy()
+                    };
+
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+
+                    options.SerializerSettings.ContractResolver = contractResolver;
+                    options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
                 });
 
             // CORS Policy

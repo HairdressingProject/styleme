@@ -41,3 +41,8 @@ class UserInDB(BaseModel):
     first_name: str
     last_name: Optional[str] = None
     user_role: UserRoles = UserRoles.USER
+
+
+class AuthenticatedUser(BaseModel):
+    id: int
+    user_role: str
