@@ -131,6 +131,21 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     }
   }
 
+  Future<HairStyle> _getHairStyleFromHistory(
+      {@required int hairStyleId}) async {
+    final historyHairStyleId = hairStyleId;
+    final hairStyleResponse =
+        await HairStyleService.getById(id: historyHairStyleId);
+
+    if (hairStyleResponse.statusCode == HttpStatus.ok &&
+        hairStyleResponse.body.isNotEmpty) {
+      final hairStyle = HairStyle.fromJson(jsonDecode(hairStyleResponse.body));
+
+      return hairStyle;
+    }
+    return null;
+  }
+
   _saveChanges() async {
     setState(() {
       _isLoading = true;
@@ -148,10 +163,14 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       final History historyEntry =
           History.fromJson(jsonDecode(hairStyleChangeResponse.body));
 
-      // TODO (optional): pass to history object back to the Home screen
+      final hairStyle =
+          await _getHairStyleFromHistory(hairStyleId: historyEntry.hairStyleId);
+
       widget.onHairStyleUpdated(
-          newHairStyle: _allHairStyles
-              .firstWhere((element) => element.id == _selectedHairStyle.id));
+          newHairStyle: _allHairStyles.firstWhere(
+        (element) => element.id == _selectedHairStyle.id,
+        orElse: () => hairStyle,
+      ));
 
       Navigator.pop(context);
     } else {
