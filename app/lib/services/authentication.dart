@@ -106,7 +106,7 @@ class Authentication {
 
       if (userToken != null && userToken.isNotEmpty) {
         final authResponse = await get(
-            Uri.encodeFull('$PICTURES_API_URL/users/authenticate'),
+            Uri.encodeFull('$USERS_API_URL/users/authenticate'),
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL

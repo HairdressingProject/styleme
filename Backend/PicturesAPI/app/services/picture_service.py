@@ -282,7 +282,7 @@ class PictureService:
         return picture_info
 
 
-    def change_hair_colour2(self, file_name, selected_colour, r, b, g, file_path=PICTURE_UPLOAD_FOLDER,
+    def change_hair_colour_RGB(self, file_name, selected_colour, r, b, g, file_path=PICTURE_UPLOAD_FOLDER,
                            save_path=HAIR_COLOUR_RESULTS_PATH):
         
         if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):

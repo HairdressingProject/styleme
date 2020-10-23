@@ -10,6 +10,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from app.database.db import SessionLocal, engine, Base
 from app.settings import API_HOST, ADMIN_PORTAL_HOST, USERS_API_URL
+from .routers import get_user_data_from_token
 
 from app.routers import pictures
 from app.routers import model_pictures
@@ -29,6 +30,32 @@ async def add_process_time_header(request: Request, call_next):
     response: Response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time-ms"] = str(process_time * 1000)
+    return response
+
+
+@app.middleware("http")
+async def authorise_user(request: Request, call_next):
+    # TODO: check request URL before running this middleware
+    # Certain routes need to access user data (such as POST /pictures)
+    # In that case, this middleware should be skipped and the logic should move to the route itself
+    print(request.url.path)
+    print(request.method)
+
+    if '/pictures' not in request.url.path and request.method != 'POST':
+        user_data = get_user_data_from_token(request=request)
+
+        if user_data:
+            response: Response = await call_next(request)
+            return response
+
+        return ORJSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "message": "Invalid credentials"
+            }
+        )
+    
+    response: Response = await call_next(request)
     return response
 
 

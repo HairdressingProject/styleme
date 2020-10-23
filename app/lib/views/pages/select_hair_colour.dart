@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:app/models/hair_colour.dart';
 import 'package:app/models/picture.dart';
+import 'package:app/models/history.dart';
 import 'package:app/services/notification.dart';
+import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/colour_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -11,13 +15,17 @@ import 'package:app/widgets/action_button.dart';
 
 class SelectHairColour extends StatefulWidget {
   static final String routeName = '/selectHairColourRoute';
-  final File currentPictureFile;
+  final Image currentPictureFile;
   final Picture currentPicture;
+  final OnHairColourUpdated onHairColourUpdated;
+  final HairColour currentHairColour;
 
   const SelectHairColour(
       {Key key,
       @required this.currentPictureFile,
-      @required this.currentPicture})
+      @required this.currentPicture,
+      @required this.onHairColourUpdated,
+      @required this.currentHairColour})
       : super(key: key);
 
   @override
@@ -25,7 +33,8 @@ class SelectHairColour extends StatefulWidget {
 }
 
 class _SelectHairColourState extends State<SelectHairColour> {
-  File _currentPictureFile;
+  HairColour _currentHairColour;
+  Image _currentPictureFile;
   Picture _currentPicture;
   List<ColourCard> _colours;
   ColourCard _selectedColourCard;
@@ -47,6 +56,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
 
   _saveChanges() {
     // TODO: Save _selectedColour
+    print('Cahnging hair colour to ${_selectedColourCard.colourLabel}');
     _changeHairColour();
   }
 
@@ -56,32 +66,32 @@ class _SelectHairColourState extends State<SelectHairColour> {
         _isLoading = true;
       });
       //final response = await PicturesService.changeHairColour(pictureId: 60, colourName: _selectedColourCard.colourName);
+      print("_currentPicture.id");
+      print(_currentPicture.id);
       final response = await PicturesService.changeHairColourRGB(
           pictureId: _currentPicture.id,
           colourName: _selectedColourCard.colourName,
           r: _r,
-          b: _b,
-          g: _g);
-      if (response != null) {
-        print(response.request);
-        print(response.request.headers);
-        print('Response from API:');
-        print('${response.body}');
-        print("Selected colour: ");
-        print(_selectedColour.red);
-        print(_selectedColour.blue);
-        print(_selectedColour.green);
+          g: _g,
+          b: _b);
+      if (response.statusCode == HttpStatus.ok &&
+          response.body.isNotEmpty) {
+        
+        final History historyEntry =
+          History.fromJson(jsonDecode(response.body));
 
-        // ToDo: Improve error messages
-        if (response.statusCode == 200) {
-          NotificationService.notify(
-              scaffoldKey: _scaffoldKey,
-              message: 'Hair colour successfully applied');
-        } else {
-          NotificationService.notify(
-              scaffoldKey: _scaffoldKey,
-              message: 'Hair colour already applied');
-        }
+        final HairColour hairColourEntry =
+          HairColour.fromJson2(jsonDecode(response.body)['hair_colour']);       
+
+
+        widget.onHairColourUpdated(
+          newHairColour: hairColourEntry
+        );
+
+        // update current colour
+        _currentHairColour = hairColourEntry;
+
+        Navigator.pop(context);
       } else {
         NotificationService.notify(
             scaffoldKey: _scaffoldKey,
@@ -141,6 +151,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
     super.initState();
     _currentPicture = widget.currentPicture;
     _currentPictureFile = widget.currentPictureFile;
+    _currentHairColour = widget.currentHairColour;
     _lightnessValue = 50.0;
     _lightnessLabel = "0%";
     _colours = [
@@ -235,9 +246,9 @@ class _SelectHairColourState extends State<SelectHairColour> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
                 ),
-                Image.file(
-                  _currentPictureFile,
+                Container(
                   height: 150.0,
+                  child: _currentPictureFile,
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 15.0),

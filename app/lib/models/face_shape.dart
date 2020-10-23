@@ -26,17 +26,17 @@ class FaceShape {
 
   FaceShape.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        shapeName = json['shapeName'],
+        shapeName = json['shape_name'],
         label = json['label'],
-        dateCreated = json['dateCreated'],
-        dateUpdated = json['dateUpdated'];
+        dateCreated = json['date_created'],
+        dateUpdated = json['date_updated'];
 
   Map<String, dynamic> toJson() => {
-        'Id': this.id,
-        'ShapeName': this.shapeName,
-        'Label': this.label,
-        'DateCreated': this.dateCreated,
-        'DateUpdated': this.dateUpdated
+        'id': this.id,
+        'shape_name': this.shapeName,
+        'label': this.label,
+        'date_created': this.dateCreated,
+        'date_updated': this.dateUpdated
       };
 }
 

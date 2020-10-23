@@ -35,23 +35,23 @@ class User {
 
   User.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        username = json['userName'],
-        email = json['userEmail'],
-        givenName = json['firstName'],
-        familyName = json['lastName'],
-        userRole = json['userRole'],
-        dateCreated = json['dateCreated'],
-        dateUpdated = json['dateUpdated'];
+        username = json['user_name'],
+        email = json['user_email'],
+        givenName = json['first_name'],
+        familyName = json['last_name'],
+        userRole = json['user_role'],
+        dateCreated = json['date_created'],
+        dateUpdated = json['date_updated'];
 
   Map<String, dynamic> toJson() => {
-        'Id': this.id,
-        'UserName': this.username,
-        'UserEmail': this.email,
-        'FirstName': this.givenName,
-        'LastName': this.familyName,
-        'UserRole': this.userRole,
-        'DateCreated': dateCreated,
-        'DateUpdated': dateUpdated
+        'id': this.id,
+        'user_name': this.username,
+        'user_email': this.email,
+        'first_name': this.givenName,
+        'last_name': this.familyName,
+        'user_role': this.userRole,
+        'date_created': dateCreated,
+        'date_updated': dateUpdated
       };
 }
 
@@ -62,11 +62,11 @@ class UserSignIn {
   const UserSignIn({@required this.usernameOrEmail, @required this.password});
 
   UserSignIn.fromJson(Map<String, String> json)
-      : usernameOrEmail = json['UserNameOrEmail'],
-        password = json['UserPassword'];
+      : usernameOrEmail = json['user_name_or_email'],
+        password = json['user_password'];
 
   Map<String, String> toJson() =>
-      {'UserNameOrEmail': usernameOrEmail, 'UserPassword': password};
+      {'user_name_or_email': usernameOrEmail, 'user_password': password};
 
   @override
   String toString() {
@@ -93,19 +93,19 @@ class UserSignUp {
   });
 
   UserSignUp.fromJson(Map<String, String> json)
-      : username = json['UserName'],
-        email = json['UserEmail'],
-        password = json['UserPassword'],
-        givenName = json['FirstName'],
-        familyName = json['LastName'];
+      : username = json['user_name'],
+        email = json['user_email'],
+        password = json['user_password'],
+        givenName = json['first_name'],
+        familyName = json['last_name'];
 
   Map<String, String> toJson() => {
-        'UserName': username,
-        'UserPassword': password,
-        'UserEmail': email,
-        'FirstName': givenName,
-        'LastName': familyName,
-        'UserRole': UserRoles.user
+        'user_name': username,
+        'user_password': password,
+        'user_email': email,
+        'first_name': givenName,
+        'last_name': familyName,
+        'user_role': UserRoles.user
       };
 
   @override
@@ -128,9 +128,9 @@ class UserAuthenticate {
 
   UserAuthenticate.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        userRole = json['userRole'];
+        userRole = json['user_role'];
 
-  Map<String, dynamic> toJson() => {'Id': id, 'UserRole': userRole};
+  Map<String, dynamic> toJson() => {'id': id, 'user_role': userRole};
 
   @override
   String toString() {

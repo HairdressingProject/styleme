@@ -20,6 +20,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using UsersAPI.Services.Context;
 using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json.Serialization;
 
 namespace UsersAPI
 {
@@ -98,16 +99,6 @@ namespace UsersAPI
             services.AddScoped<IUsersContext, UsersContext>();
 
 
-            /* if (Program.USE_PRODUCTION_SETTINGS)
-            {
-                
-            }
-            else
-            {
-                connectionString = Configuration.GetConnectionString("DefaultConnection");
-            } */
-
-
             services.AddDbContext<hairdressing_project_dbContext>(options =>
                 options
                 .UseMySql(connectionString, mySqlOptions =>
@@ -115,29 +106,19 @@ namespace UsersAPI
                 .ServerVersion(new ServerVersion(new Version(10, 5, 4), ServerType.MariaDb))
                 ));
 
-            // Register DB Context
-            /* if (Program.USE_PRODUCTION_SETTINGS)
-            {
-                services.AddDbContext<hairdressing_project_dbContext>(options =>
-                options
-                .UseMySql(Configuration.GetConnectionString("HairdressingProjectDB"), mySqlOptions =>
-                mySqlOptions
-                .ServerVersion(new ServerVersion(new Version(10, 5, 4), ServerType.MariaDb))
-                ));
-            }
-            else
-            {
-                services.AddDbContext<hairdressing_project_dbContext>(options =>
-                options
-                .UseMySql(Configuration.GetConnectionString("DefaultConnection"), mySqlOptions =>
-                mySqlOptions
-                .ServerVersion(new ServerVersion(new Version(10, 5, 4), ServerType.MariaDb))
-                ));
-            }
- */
-            services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-            );
+            services.AddControllers().AddNewtonsoftJson(
+                options =>
+                {
+                    DefaultContractResolver contractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy()
+                    };
+
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+
+                    options.SerializerSettings.ContractResolver = contractResolver;
+                    options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+                });
 
             // CORS Policy
             services.AddCors(options =>
