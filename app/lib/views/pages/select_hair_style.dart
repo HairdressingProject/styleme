@@ -5,6 +5,8 @@ import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
 import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
+import 'package:app/services/authentication.dart';
+import 'package:app/services/constants.dart';
 import 'package:app/services/hair_style.dart';
 import 'package:app/services/model_pictures.dart';
 import 'package:app/services/notification.dart';
@@ -18,6 +20,7 @@ import 'package:app/models/model_picture.dart';
 
 class SelectHairStyle extends StatefulWidget {
   static final String routeName = '/selectHairStyleRoute';
+  final String userToken;
   final List<HairStyle> allHairStyles;
   final List<ModelPicture> allModelPictures;
   final List<HairLength> allHairLengths;
@@ -26,6 +29,7 @@ class SelectHairStyle extends StatefulWidget {
 
   const SelectHairStyle(
       {Key key,
+      @required this.userToken,
       @required this.allHairStyles,
       @required this.allModelPictures,
       @required this.allHairLengths,
@@ -69,8 +73,15 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
           .map((e) => SelectableCard(
               type: 'modelPicture',
               modelPicture: e,
-              modelPictureWidget: Image.network(
-                  '${ModelPicturesService.modelPicturesUri}/file/${e.id}'),
+              modelPictureWidget: widget.userToken != null
+                  ? Image.network(
+                      '${ModelPicturesService.modelPicturesUri}/file/${e.id}',
+                      headers: {
+                        "Origin": ADMIN_PORTAL_URL,
+                        "Authorization": "Bearer ${widget.userToken}"
+                      },
+                    )
+                  : Icon(Icons.image),
               id: e.id,
               label: _allHairStyles
                   .firstWhere((element) => element.id == e.hairStyleId)

@@ -1,4 +1,4 @@
-from .user import UserRoles, UserIn, UserOut, UserInDB
+from .user import UserRoles, UserIn, UserOut, UserInDB, AuthenticatedUser
 from .account import AccountBase, Account
 from .face_shape import FaceShapeBase, FaceShapeCreateUpdate, FaceShape
 from .hair_colour import HairColourBase, HairColourCreateUpdate, HairColour

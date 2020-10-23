@@ -93,7 +93,7 @@ class _UploadPictureState extends State<UploadPicture> {
           if (faceShapeDetectedResponse.statusCode == HttpStatus.ok &&
               faceShapeDetectedResponse.body.isNotEmpty) {
             final rawFaceShapes = List.from(
-                jsonDecode(faceShapeDetectedResponse.body)['faceShapes']);
+                jsonDecode(faceShapeDetectedResponse.body)['face_shapes']);
 
             if (rawFaceShapes.isNotEmpty) {
               final faceShapeDetected = FaceShape.fromJson(rawFaceShapes[0]);

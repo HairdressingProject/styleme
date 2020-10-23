@@ -4,8 +4,10 @@ from fastapi import APIRouter, File, Depends, UploadFile, status, Request, Respo
 from sqlalchemy.orm import Session
 from app import services, actions, models, schemas
 from app.database.db import SessionLocal, engine, Base
-from app.settings import PICTURE_UPLOAD_FOLDER, MODEL_UPLOAD_FOLDER
+from app.settings import PICTURE_UPLOAD_FOLDER, MODEL_UPLOAD_FOLDER, ADMIN_PORTAL_HOST, USERS_API_URL
 from fastapi.responses import FileResponse, ORJSONResponse
+import requests
+import json
 
 router = APIRouter()
 picture_service = services.PictureService()
@@ -17,6 +19,38 @@ face_shape_actions = actions.FaceShapeActions()
 face_shape_service = services.FaceShapeService()
 
 
+def get_user_data_from_token(request: Request) -> Optional[schemas.AuthenticatedUser]:
+    if "authorization" not in request.headers.keys() and "auth" not in request.cookies.keys():
+        print(f"No authorization header or auth cookie found")
+        return None
+
+    authorization_header = request.headers.get("authorization")
+    auth_cookie = request.cookies.get("auth")
+
+    print(f"Authorization: {authorization_header}")
+    print(f"Auth cookie: {auth_cookie}")
+
+    users_api_req_headers = {
+        "origin": f"https://{ADMIN_PORTAL_HOST}"
+    }
+
+    if authorization_header:
+        users_api_req_headers["authorization"] = authorization_header
+
+    if auth_cookie:
+        users_api_req_headers["cookie"] = f"auth={auth_cookie}"
+
+    users_api_response = requests.get(f"{USERS_API_URL}/users/authenticate", headers=users_api_req_headers)
+    try:
+        if users_api_response.ok:
+            json_response = users_api_response.json()
+            return json_response
+    except json.decoder.JSONDecodeError:
+        pass
+
+    return None
+
+
 def get_db():
     db = SessionLocal()
     try:
@@ -26,50 +60,54 @@ def get_db():
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def upload_picture(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    save_path = PICTURE_UPLOAD_FOLDER
-    file_name = picture_service.save_picture(file, save_path)
-    face_detected = picture_service.detect_face(file_name, save_path)
+async def upload_picture(request: Request, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    user_data = get_user_data_from_token(request)
 
-    if face_detected is True:
-        # try to find face landmark points
-        face_landmarks = picture_service.detect_face_landmarks(file_name, save_path)
-        if face_landmarks is None:
-            raise HTTPException(status_code=422, detail="No face landmarks detected")
+    if user_data:
+        save_path = PICTURE_UPLOAD_FOLDER
+        file_name = picture_service.save_picture(file, save_path)
+        face_detected = picture_service.detect_face(file_name, save_path)
+
+        if face_detected is True:
+            # try to find face landmark points
+            face_landmarks = picture_service.detect_face_landmarks(file_name, save_path)
+            if face_landmarks is None:
+                raise HTTPException(status_code=422, detail="No face landmarks detected")
+            else:
+                picture_info = picture_service.get_picture_info(save_path, file_name)
+
+                # detect face_shape
+                face_shape = picture_service.detect_face_shape(file_name, save_path)
+                if face_shape is None:
+                    raise HTTPException(status_code=422, detail="Face shape could not be detected")
+
+                new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+                                             file_size=picture_info.file_size, height=picture_info.height,
+                                             width=picture_info.width)
+
+                orig_pic = picture_actions.add_picture(db=db, picture=new_picture)
+
+                # Testing how to create a history record after detecting a face shape
+                # create History instance
+
+                # parse face shape string to int
+                face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
+
+                face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db,
+                                                                                          face_shape_id=face_shape_id)
+
+                user_id = user_data['id']
+
+                new_history = models.History(picture_id=orig_pic.id, original_picture_id=orig_pic.id,
+                                             face_shape_id=face_shape_id, user_id=user_id)
+                new_history_entry: models.History = history_actions.add_history(db=db, history=new_history)
+
+                results = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
+                return {'picture': results[0], 'face_shape': face_shape[0], 'history_entry': new_history_entry}
         else:
-            picture_info = picture_service.get_picture_info(save_path, file_name)
-
-            # detect face_shape
-            face_shape = picture_service.detect_face_shape(file_name, save_path)
-            if face_shape is None:
-                raise HTTPException(status_code=422, detail="Face shape could not be detected")
-
-            new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
-                                         file_size=picture_info.file_size, height=picture_info.height,
-                                         width=picture_info.width)
-
-            orig_pic = picture_actions.add_picture(db=db, picture=new_picture)
-
-            # Testing how to create a history record after detecting a face shape
-            # create History instance
-
-            # parse face shape string to int
-            face_shape_id = face_shape_service.parse_face_shape(face_shape[0])
-
-            face_shape_detected: models.FaceShape = face_shape_actions.get_face_shape(db=db,
-                                                                                      face_shape_id=face_shape_id)
-
-            user_id = 1
-
-            # ToDo: redirect to POST /history/face_shape ?
-            new_history = models.History(picture_id=orig_pic.id, original_picture_id=orig_pic.id,
-                                         face_shape_id=face_shape_id, user_id=user_id)
-            new_history_entry: models.History = history_actions.add_history(db=db, history=new_history)
-
-            results = picture_actions.read_picture_by_file_name(db=db, file_name=new_picture.file_name, limit=1)
-            return {'picture': results[0], 'face_shape': face_shape[0], 'history_entry': new_history_entry}
+            raise HTTPException(status_code=422, detail="No face detected")
     else:
-        raise HTTPException(status_code=422, detail="No face detected")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
 
 @router.get("/file/{picture_id}", status_code=status.HTTP_200_OK)
@@ -169,55 +207,58 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: in
         # apply hair colour
         print(selected_picture.file_name)
         print(selected_picture.file_path)
-        picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name, selected_colour=colour,
-                                                        r=r, b=b, g=g,
-                                                        file_path=selected_picture.file_path)        
+
+        picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name,
+                                                              selected_colour=colour,
+                                                              r=r, b=b, g=g,
+                                                              file_path=selected_picture.file_path)
         print(picture_info)
 
         # create new picture and add to db
         new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
-                                    file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)        
-        
+                                     file_size=picture_info.file_size, height=picture_info.height,
+                                     width=picture_info.width)
+
         mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
 
+        # selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
+        # print(selected_picture.file_name)
+        # print(selected_picture.file_path)
 
-        
+        # apply selected colour
+        # picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name, selected_colour=colour,
+        #                                                    r=r, g=g, b=b,
+        #                                                    file_path=selected_picture.file_path)
+        # print(picture_info)
 
-    # selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
-    # print(selected_picture.file_name)
-    # print(selected_picture.file_path)
+        # create new picture and add to db
+        # new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
+        #                              file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
 
-    # apply selected colour
-    # picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name, selected_colour=colour,
-    #                                                    r=r, g=g, b=b,
-    #                                                    file_path=selected_picture.file_path)
-    # print(picture_info)
+        # mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
 
-    # create new picture and add to db
-    # new_picture = models.Picture(file_name=picture_info.file_name, file_path=picture_info.file_path,
-    #                              file_size=picture_info.file_size, height=picture_info.height, width=picture_info.width)
+        # fake user_id
+        user: models.User = history_actions.get_user_id_from_picture_id(db=db, picture_id=picture_id)
 
-    # mod_pic = picture_actions.add_picture(db=db, picture=new_picture)
+        if user:
+            hair_colour_results: List[models.HairColour] = hair_colour_actions.get_hair_colours(db=db, search=colour,
+                                                                                                limit=1)
+            if len(hair_colour_results):
+                hair_colour = hair_colour_results[0]
+                print(hair_colour.id)
+                new_history = models.History(picture_id=mod_pic.id, original_picture_id=selected_picture.id,
+                                             hair_colour_id=hair_colour.id,
+                                             user_id=user.id)
+                history_entry: models.History = history_actions.add_history(db=db, history=new_history)
 
-    # fake user_id
-    user: models.User = history_actions.get_user_id_from_picture_id(db=db, picture_id=picture_id)
+                hair_colour_entry: models.HairColour = hair_colour_actions.get_hair_colour_by_id(db=db,
+                                                                                                 hair_colour_id=hair_colour.id)
+                print(hair_colour_entry.colour_name)
 
-    if user:
-        hair_colour_results: List[models.HairColour] = hair_colour_actions.get_hair_colours(db=db, search=colour,
-                                                                                            limit=1)
-        if len(hair_colour_results):
-            hair_colour = hair_colour_results[0]
-            print(hair_colour.id)
-            new_history = models.History(picture_id=mod_pic.id, original_picture_id=selected_picture.id,
-                                         hair_colour_id=hair_colour.id,
-                                         user_id=user.id)
-            history_entry: models.History = history_actions.add_history(db=db, history=new_history)
-
-            hair_colour_entry: models.HairColour = hair_colour_actions.get_hair_colour_by_id(db=db, hair_colour_id=hair_colour.id)
-            print(hair_colour_entry.colour_name)
-            
-            return {'history_entry': history_entry, 'picture': mod_pic, 'hair_colour': hair_colour_entry}
-        raise HTTPException(status_code=404, detail='No hair colour record associated with this colour name was found')
+                return {'history_entry': history_entry, 'picture': mod_pic, 'hair_colour': hair_colour_entry}
+            raise HTTPException(status_code=404,
+                                detail='No hair colour record associated with this colour name was found')
+        raise HTTPException(status_code=404, detail='Selected picture not found')
     raise HTTPException(status_code=404, detail='No user associated with this picture ID was found')
 
 
@@ -297,12 +338,14 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
 
             if len(history):
                 latest_entry = history[-1]
+                print('Latest history entry:')
+                print(latest_entry)
                 model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db=db,
                                                                                                     model_picture_id=model_picture.id)
                 if model_picture:
                     new_history: schemas.HistoryCreate = schemas.HistoryCreate(picture_id=mod_pic.id,
-                                                                               original_picture_id=user_picture.id,
-                                                                               previous_picture_id=latest_entry.picture_id,
+                                                                               original_picture_id=latest_entry.original_picture_id,
+                                                                               previous_picture_id=user_picture.id,
                                                                                hair_colour_id=latest_entry.hair_colour_id,
                                                                                hair_style_id=model_picture.hair_style_id,
                                                                                face_shape_id=latest_entry.face_shape_id,
