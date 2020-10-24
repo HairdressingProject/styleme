@@ -55,7 +55,6 @@ class _SelectHairColourState extends State<SelectHairColour> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   _saveChanges() {
-    // TODO: Save _selectedColour
     print('Cahnging hair colour to ${_selectedColourCard.colourLabel}');
     _changeHairColour();
   }
@@ -74,19 +73,14 @@ class _SelectHairColourState extends State<SelectHairColour> {
           r: _r,
           g: _g,
           b: _b);
-      if (response.statusCode == HttpStatus.ok &&
-          response.body.isNotEmpty) {
-        
+      if (response.statusCode == HttpStatus.ok && response.body.isNotEmpty) {
         final History historyEntry =
-          History.fromJson(jsonDecode(response.body));
+            History.fromJson(jsonDecode(response.body));
 
         final HairColour hairColourEntry =
-          HairColour.fromJson2(jsonDecode(response.body)['hair_colour']);       
+            HairColour.fromJson(jsonDecode(response.body)['hair_colour']);
 
-
-        widget.onHairColourUpdated(
-          newHairColour: hairColourEntry
-        );
+        widget.onHairColourUpdated(newHairColour: hairColourEntry);
 
         // update current colour
         _currentHairColour = hairColourEntry;

@@ -17,7 +17,7 @@ class Authentication {
       final response = await post(signInUri, body: encodedUser, headers: {
         "Content-Type": "application/json",
         "Origin": ADMIN_PORTAL_URL
-      }).timeout(const Duration(seconds: 5));
+      }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
       return response;
     } catch (err) {
       print('Server connection timed out');
@@ -34,7 +34,7 @@ class Authentication {
       return await post(signUpUri, body: encodedUser, headers: {
         "Content-Type": "application/json",
         "Origin": ADMIN_PORTAL_URL
-      }).timeout(const Duration(seconds: 5));
+      }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
     } catch (err) {
       print('Server connection timed out');
       print(err);
@@ -110,7 +110,7 @@ class Authentication {
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: 5));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         final authData =
             UserAuthenticate.fromJson(jsonDecode(authResponse.body));
@@ -140,7 +140,8 @@ class Authentication {
           final response = await get(authenticationUri, headers: {
             "Authorization": "Bearer $localToken",
             "Origin": ADMIN_PORTAL_URL
-          }).timeout(Duration(seconds: 5), onTimeout: () => null);
+          }).timeout(Duration(seconds: DEFAULT_TIMEOUT_SECONDS),
+              onTimeout: () => null);
 
           if (response.statusCode == HttpStatus.ok) {
             final UserAuthenticate authenticatedUserData =
@@ -152,7 +153,8 @@ class Authentication {
             final userResponse = await get(userUri, headers: {
               "Authorization": "Bearer $localToken",
               "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: 5), onTimeout: () => null);
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS),
+                onTimeout: () => null);
 
             if (userResponse.statusCode == HttpStatus.ok) {
               final user = User.fromJson(jsonDecode(userResponse.body)['user']);

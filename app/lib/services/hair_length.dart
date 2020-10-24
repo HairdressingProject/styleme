@@ -19,7 +19,7 @@ class HairLengthService {
         final response = await http.get(uri, headers: {
           "Authorization": "Bearer $userToken",
           "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }
@@ -39,7 +39,7 @@ class HairLengthService {
         final response = await http.get('$hairLengthBaseUri/$id', headers: {
           "Authorization": "Bearer $userToken",
           "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }

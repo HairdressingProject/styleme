@@ -116,12 +116,16 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
     if (response.statusCode == HttpStatus.ok ||
         response.statusCode == HttpStatus.created) {
       _onFaceShapeUpdated(
-          newFaceShape: _faceShapes
-              .firstWhere((element) => element.id == _selectedFaceShape.id));
+          newFaceShape: _faceShapes.firstWhere(
+        (element) => element.id == _selectedFaceShape.id,
+        orElse: () => null,
+      ));
       setState(() {
         _isLoading = false;
-        _initialFaceShape = _faceShapes
-            .firstWhere((element) => element.id == _initialFaceShape.id);
+        _initialFaceShape = _faceShapes.firstWhere(
+          (element) => element.id == _initialFaceShape.id,
+          orElse: () => null,
+        );
       });
       Navigator.pop(context);
     } else {

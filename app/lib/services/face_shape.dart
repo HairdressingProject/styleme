@@ -18,7 +18,7 @@ class FaceShapeService {
         final response = await http.get(uri, headers: {
           "Authorization": "Bearer $userToken",
           "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }
@@ -38,7 +38,7 @@ class FaceShapeService {
         final response = await http.get('$faceShapeBaseUri/$id', headers: {
           "Authorization": "Bearer $userToken",
           "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }

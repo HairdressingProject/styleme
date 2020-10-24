@@ -44,7 +44,7 @@ class PicturesService {
             .get(Uri.encodeFull('$picturesUri/id/$pictureId'), headers: {
           "Authorization": "Bearer $userToken",
           "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
@@ -64,7 +64,7 @@ class PicturesService {
             .get(Uri.encodeFull('$picturesUri/file/$pictureId'), headers: {
           "Authorization": "Bearer $userToken",
           "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
@@ -87,7 +87,7 @@ class PicturesService {
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
@@ -110,7 +110,7 @@ class PicturesService {
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
@@ -132,7 +132,7 @@ class PicturesService {
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
@@ -154,7 +154,7 @@ class PicturesService {
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;

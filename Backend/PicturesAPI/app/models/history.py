@@ -37,7 +37,17 @@ class History(Base):
     user = relationship("User", back_populates="history")
 
     def __repr__(self):
-        return "<User's history entry (user_id = '%s')>" % self.user_id
+        return 'History entry:\n' + \
+               f'id: {self.id}\n' + \
+               f'picture_id: {self.picture_id}\n' + \
+               f'original_picture_id: {self.original_picture_id}\n' + \
+               f'previous_picture_id: {self.previous_picture_id}\n' + \
+               f'hair_colour_id: {self.hair_colour_id}\n' + \
+               f'hair_style_id: {self.hair_style_id}\n' + \
+               f'face_shape_id: {self.face_shape_id}\n' + \
+               f'user_id: {self.user_id}\n' + \
+               f'date_created: {self.date_created}\n' + \
+               f'date_updated: {self.date_updated}\n'
 
 
 Picture.history = relationship(

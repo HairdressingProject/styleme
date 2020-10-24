@@ -13,12 +13,16 @@ class PictureBase(BaseModel):
     width: int
 
 
-class PictureCreateUpdate(PictureBase):
+class PictureCreate(BaseModel):
     file_name: constr(max_length=255)
     file_path: constr(max_length=255)
     file_size: conint(ge=0)
     height: conint(ge=0)
     width: conint(ge=0)
+
+
+class PictureUpdate(PictureCreate):
+    id: int
 
 
 class PictureInfo(BaseModel):

@@ -19,7 +19,7 @@ class ModelPicturesService {
             headers: {
               "Origin": ADMIN_PORTAL_URL,
               "Authorization": "Bearer $userToken"
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
@@ -41,7 +41,7 @@ class ModelPicturesService {
             headers: {
               "Origin": ADMIN_PORTAL_URL,
               "Authorization": "Bearer $userToken"
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
@@ -62,7 +62,7 @@ class ModelPicturesService {
             headers: {
               "Origin": ADMIN_PORTAL_URL,
               "Authorization": "Bearer $userToken"
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
