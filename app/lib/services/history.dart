@@ -17,7 +17,7 @@ class HistoryService {
         final response = await http.get('$historyBaseUri/$historyId', headers: {
           "Authorization": "Bearer $userToken",
           "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
         return response;
       }
       return null;
@@ -41,7 +41,7 @@ class HistoryService {
                   "Origin": ADMIN_PORTAL_URL
                 },
                 body: history.toJson())
-            .timeout(const Duration(seconds: 10));
+            .timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }
@@ -62,7 +62,7 @@ class HistoryService {
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }
@@ -86,7 +86,7 @@ class HistoryService {
           headers: {
             "Authorization": "Bearer $userToken",
             "Origin": ADMIN_PORTAL_URL
-          });
+          }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
       return historyResponse;
     } catch (err) {
@@ -106,7 +106,7 @@ class HistoryService {
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }
@@ -126,7 +126,7 @@ class HistoryService {
         final response = await http.get('$historyBaseUri', headers: {
           "Authorization": "Bearer $userToken",
           "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: 10));
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }
@@ -151,7 +151,7 @@ class HistoryService {
                   "Origin": ADMIN_PORTAL_URL
                 },
                 body: jsonEncode(history.toJson()))
-            .timeout(const Duration(seconds: 10));
+            .timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }
@@ -182,7 +182,7 @@ class HistoryService {
                 },
                 body: jsonEncode(body),
                 encoding: Encoding.getByName('utf-8'))
-            .timeout(const Duration(seconds: 10));
+            .timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
         return response;
       }
