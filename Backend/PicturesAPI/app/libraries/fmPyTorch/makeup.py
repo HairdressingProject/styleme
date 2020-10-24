@@ -99,8 +99,6 @@ def hair(image, parsing, part=17, color=[ 255,0,0]):
 		# image_hsv[:, :, 0:1] = tar_hsv[:, :, 0:1]
 		image_hsv[:, :, 0:2] = tar_hsv[:, :, 0:2]
 
-	cv2.imwrite('C:/Users/StudyPC/example/test/image_hsv_2.jpg', image_hsv)
-
 	changed = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2BGR)
 
 	if part == 17:

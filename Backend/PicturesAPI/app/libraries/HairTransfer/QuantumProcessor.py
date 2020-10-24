@@ -7,6 +7,7 @@ from datetime import datetime
 from .hairSwap import FaceSwap
 # from relevancyScore import RelevancyScore
 from ...settings import HAIR_STYLE_RESULTS_PATH, PICTURE_UPLOAD_FOLDER
+import hashlib
 
 
 def ensure_dir(img_dir):
@@ -91,16 +92,23 @@ def perform_swap(request_obj):
     print(uploader, "uploader")
     print(username, "username")
 
+
+
     # The new filename format is: '{user_picture_filename}_{model_picture_filename}.jpg'
 
-    split_username = username.split('/')
-    split_uploader = uploader.split('/')
+    # split_username = username.split('/')
+    # split_uploader = uploader.split('/')
 
-    if len(split_username) == 3 & len(split_uploader) == 3:
-        new_file_name = split_username[2].split('.')[0] + '_' + split_uploader[2].split('.')[0] + '.jpg'
-    else:
-        new_file_name = username.split('.')[0] + '_' + uploader.split('.')[0] + '.jpg'
+    # if len(split_username) == 3 & len(split_uploader) == 3:
+    #     new_file_name = split_username[2].split('.')[0] + '_' + split_uploader[2].split('.')[0] + '.jpg'
+    # else:
+    #     new_file_name = username.split('.')[0] + '_' + uploader.split('.')[0] + '.jpg'
 
+
+    temp_filename = username + ' - ' + str(datetime.now())
+    hashed_filename = hashlib.md5(temp_filename.encode())
+    new_file_name = hashed_filename.hexdigest() + '.jpg'
+ 
     # save_dir = os.path.dirname(__file__) + '/pictures/trash/hairswaps/'
     save_dir = HAIR_STYLE_RESULTS_PATH
     pictures_dir = PICTURE_UPLOAD_FOLDER

@@ -315,7 +315,12 @@ class PictureService:
 
         image = hair(portrait, parsing, part, selected_colour2)
 
-        new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + 'R_' + str(r) + 'B_' + str(b) + 'G_' + str(g) + '.' + file_name.split('.')[1]
+        temp_filename = file_name + ' - ' + str(datetime.now())
+        hashed_filename = hashlib.md5(temp_filename.encode())
+        file_extension = str('.' + file_name.split('.')[1])
+        new_file_name = hashed_filename.hexdigest() + file_extension
+
+        # new_file_name = file_name.split('.')[0] + '_' + str(selected_colour) + 'R_' + str(r) + 'B_' + str(b) + 'G_' + str(g) + '.' + file_name.split('.')[1]
         full_path = save_path + new_file_name
         print(full_path)
         print(full_path, "full path")
