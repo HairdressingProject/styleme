@@ -325,10 +325,11 @@ class _HomeState extends State<Home> {
       FaceShape newFaceShape,
       String message}) {
     setState(() {
+      _currentPictureFuture = _fetchLatestPictureEntry();
+      _completedRoutes.clear();
       _completedRoutes.add(UploadPicture.routeName);
       _history.add(historyEntryAdded);
       _currentPicture = newPicture;
-      _currentPictureFuture = _fetchLatestPictureEntry();
       _currentFaceShape = newFaceShape;
       _message = message ?? 'Picture successfully uploaded';
     });
@@ -336,8 +337,14 @@ class _HomeState extends State<Home> {
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
   }
 
-  void _onFaceShapeUpdated({@required FaceShape newFaceShape, String message}) {
+  void _onFaceShapeUpdated(
+      {@required FaceShape newFaceShape,
+      @required History newHistoryEntry,
+      String message}) {
     setState(() {
+      _currentPictureFuture = _fetchLatestPictureEntry();
+      _completedRoutes.clear();
+      _completedRoutes.add(UploadPicture.routeName);
       _completedRoutes.add(SelectFaceShape.routeName);
       _currentFaceShape = newFaceShape;
       _message = message ?? 'Face shape updated to ${newFaceShape.label}';
@@ -349,10 +356,12 @@ class _HomeState extends State<Home> {
 
   void _onHairStyleUpdated({@required HairStyle newHairStyle, String message}) {
     setState(() {
+      _currentPictureFuture = _fetchLatestPictureEntry();
+      _completedRoutes.clear();
+      _completedRoutes.add(UploadPicture.routeName);
       _completedRoutes.add(SelectFaceShape.routeName);
       _completedRoutes.add(SelectHairStyle.routeName);
       _currentHairStyle = newHairStyle;
-      _currentPictureFuture = _fetchLatestPictureEntry();
       _message = message ?? 'Hair style updated to ${newHairStyle.label}';
     });
 
@@ -362,13 +371,15 @@ class _HomeState extends State<Home> {
   void _onHairColourUpdated(
       {@required HairColour newHairColour, String message}) {
     setState(() {
+      _currentPictureFuture = _fetchLatestPictureEntry();
+      _completedRoutes.clear();
+      _completedRoutes.add(UploadPicture.routeName);
+      _completedRoutes.add(SelectFaceShape.routeName);
+      _completedRoutes.add(SelectHairStyle.routeName);
       _completedRoutes.add(SelectHairColour.routeName);
       _currentHairColour = newHairColour;
       _message = message ?? 'Hair colour updated to ${newHairColour.label}';
     });
-
-    // update current picture
-    _currentPictureFuture = _fetchLatestPictureEntry();
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
   }

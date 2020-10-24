@@ -35,14 +35,6 @@ class HairColour {
         dateCreated = json['date_created'],
         dateUpdated = json['date_updated'];
 
-  HairColour.fromJson2(Map<String, dynamic> json)
-      : id = json['id'],
-        colourName = json['colour_name'],
-        colourHash = json['colour_hash'],
-        label = json['label'],
-        dateCreated = json['date_created'],
-        dateUpdated = json['date_updated'];
-
   Map<String, dynamic> toJson() => {
         'id': this.id,
         'colour_name': this.colourName,

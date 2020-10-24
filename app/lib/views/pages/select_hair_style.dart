@@ -5,7 +5,6 @@ import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
 import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
-import 'package:app/services/authentication.dart';
 import 'package:app/services/constants.dart';
 import 'package:app/services/hair_style.dart';
 import 'package:app/services/model_pictures.dart';
@@ -137,7 +136,8 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
     final hairStyleResponse =
         await HairStyleService.getById(id: historyHairStyleId);
 
-    if (hairStyleResponse.statusCode == HttpStatus.ok &&
+    if (hairStyleResponse != null &&
+        hairStyleResponse.statusCode == HttpStatus.ok &&
         hairStyleResponse.body.isNotEmpty) {
       final hairStyle = HairStyle.fromJson(jsonDecode(hairStyleResponse.body));
 
@@ -151,14 +151,12 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       _isLoading = true;
     });
 
-    print(
-        'Changing to this hair style: ${_selectedHairStyle.label} (ID = ${_selectedHairStyle.id})');
-
     final hairStyleChangeResponse = await PicturesService.changeHairStyle(
         userPictureId: widget.currentUserPicture.id,
         modelPictureId: _selectedHairStyle.id);
 
-    if (hairStyleChangeResponse.statusCode == HttpStatus.ok &&
+    if (hairStyleChangeResponse != null &&
+        hairStyleChangeResponse.statusCode == HttpStatus.ok &&
         hairStyleChangeResponse.body.isNotEmpty) {
       final History historyEntry =
           History.fromJson(jsonDecode(hairStyleChangeResponse.body));
@@ -177,7 +175,7 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       NotificationService.notify(
           scaffoldKey: _scaffoldKey,
           message:
-              "Failed to change hair style. Please try a different picture.");
+              "Failed to change hair style. Please try again or use a different picture.");
     }
 
     setState(() {
@@ -316,28 +314,26 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                 Container(
                   width: 200.0,
                   height: 40.0,
-                  child: MaterialButton(
-                    disabledColor: Colors.grey[600],
-                    disabledTextColor: Colors.white,
-                    onPressed: !_isLoading
-                        ? () async {
+                  child: !_isLoading
+                      ? MaterialButton(
+                          disabledColor: Colors.grey[600],
+                          disabledTextColor: Colors.white,
+                          onPressed: () async {
                             await _saveChanges();
-                          }
-                        : null,
-                    color: Color.fromARGB(255, 74, 169, 242),
-                    minWidth: double.infinity,
-                    child: !_isLoading
-                        ? Text(
+                          },
+                          color: Color.fromARGB(255, 74, 169, 242),
+                          minWidth: double.infinity,
+                          child: Text(
                             'Save changes',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1
                                 .copyWith(color: Colors.white),
-                          )
-                        : Center(
-                            child: CircularProgressIndicator(),
                           ),
-                  ),
+                        )
+                      : Center(
+                          child: CircularProgressIndicator(),
+                        ),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
