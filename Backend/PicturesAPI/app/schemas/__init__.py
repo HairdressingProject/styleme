@@ -9,4 +9,4 @@ from .hair_length_link import HairLengthLink, HairLengthLinkBase, HairLengthLink
 from .face_shape_link import FaceShapeLinkBase, FaceShapeLink, FaceShapeLinkCreateUpdate
 from .history import HistoryBase, History, HistoryCreate, HistoryUpdate, HistoryAddFaceShape
 from .model_picture import ModelPictureBase, ModelPicture, ModelPictureCreate, ModelPictureUpdate
-from .picture import Picture, PictureCreateUpdate, PictureBase, PictureInfo
+from .picture import Picture, PictureBase, PictureCreate, PictureUpdate, PictureInfo

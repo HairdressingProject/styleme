@@ -78,10 +78,16 @@ class HistoryActions:
         :param history: new history record to be added
         :return: History instance
         """
-        db_history = models.History(picture_id=history.picture_id, original_picture_id=history.original_picture_id,
-                                    hair_colour_id=history.hair_colour_id,
-                                    hair_style_id=history.hair_style_id, face_shape_id=history.face_shape_id,
-                                    user_id=history.user_id)
+        db_history: models.History = models.History(
+            picture_id=history.picture_id,
+            original_picture_id=history.original_picture_id,
+            previous_picture_id=history.previous_picture_id,
+            hair_colour_id=history.hair_colour_id,
+            hair_style_id=history.hair_style_id,
+            face_shape_id=history.face_shape_id,
+            user_id=history.user_id
+        )
+
         db.add(db_history)
         db.commit()
         db.refresh(db_history)
@@ -130,6 +136,7 @@ class HistoryActions:
         if latest_history_entry is not None:
             new_history_entry = models.History(picture_id=latest_history_entry.picture_id,
                                                original_picture_id=latest_history_entry.original_picture_id,
+                                               previous_picture_id=latest_history_entry.previous_picture_id,
                                                hair_colour_id=latest_history_entry.hair_colour_id,
                                                hair_style_id=latest_history_entry.hair_style_id,
                                                face_shape_id=history_record_with_new_face_shape.face_shape_id,

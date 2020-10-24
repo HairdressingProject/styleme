@@ -128,20 +128,16 @@ async def add_face_shape(history_record_with_new_face_shape: schemas.HistoryAddF
     user_entry = db.query(models.User).filter(models.User.id == history_record_with_new_face_shape.user_id).first()
 
     if face_shape_entry is None or user_entry is None:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return {
-            "message": "Face shape or user entry not found"
-        }
+        raise HTTPException(status_code=404, detail='Face shape or user entry not found')
 
     new_history_record = history_actions.add_face_shape(db=db,
                                                         history_record_with_new_face_shape=history_record_with_new_face_shape)
 
     if new_history_record is None:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "message": "There is no previous history record associated with this user. Please upload a picture first "
-                       "and then update your face shape."
-        }
+        raise HTTPException(status_code=400,
+                            detail='There is no previous history record associated with this user. Please upload a '
+                                   'picture first'
+                                   ' and then update your face shape.')
 
     return new_history_record
 
