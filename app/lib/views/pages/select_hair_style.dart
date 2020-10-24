@@ -102,7 +102,12 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                 select: _selectHairStyle,
                 modelPicture: card.modelPicture,
                 modelPictureWidget: Image.network(
-                    '${ModelPicturesService.modelPicturesUri}/file/${card.id}'),
+                  '${ModelPicturesService.modelPicturesUri}/file/${card.id}',
+                  headers: {
+                    "Origin": ADMIN_PORTAL_URL,
+                    "Authorization": "Bearer ${widget.userToken}"
+                  },
+                ),
                 selected: true,
                 type: card.type);
           } else {
@@ -112,7 +117,12 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
               select: _selectHairStyle,
               modelPicture: card.modelPicture,
               modelPictureWidget: Image.network(
-                  '${ModelPicturesService.modelPicturesUri}/file/${card.id}'),
+                '${ModelPicturesService.modelPicturesUri}/file/${card.id}',
+                headers: {
+                  "Origin": ADMIN_PORTAL_URL,
+                  "Authorization": "Bearer ${widget.userToken}"
+                },
+              ),
               selected: false,
               type: card.type,
             );

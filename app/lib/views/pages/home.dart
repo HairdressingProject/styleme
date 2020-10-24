@@ -10,6 +10,7 @@ import 'package:app/models/model_picture.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
+import 'package:app/services/constants.dart';
 import 'package:app/services/face_shape.dart';
 import 'package:app/services/hair_colour.dart';
 import 'package:app/services/hair_length.dart';
@@ -21,6 +22,7 @@ import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
+import 'package:app/widgets/preview.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
@@ -162,7 +164,7 @@ class _HomeState extends State<Home> {
 
   Future<List<Image>> _fetchAllModelPicturesFiles(
       List<ModelPicture> allModelPictures) async {
-    allModelPictures.map((e) async {
+    return Future.wait(allModelPictures.map((e) async {
       final allModelPicturesResponseFile =
           await ModelPicturesService.getFileById(modelPictureId: e.id);
 
@@ -171,7 +173,7 @@ class _HomeState extends State<Home> {
         return Image.memory(allModelPicturesResponseFile.bodyBytes);
       }
       return null;
-    }).toList();
+    }).toList());
   }
 
   Future<List<History>> _fetchUserHistory() async {
@@ -230,8 +232,6 @@ class _HomeState extends State<Home> {
           }
 
           _currentHairColour = await _fetchLatestHairColourEntry();
-          print('current hair colour #######################');
-          print(_currentHairColour);
 
           if (_currentHairColour != null) {
             _completedRoutes.add(SelectHairColour.routeName);
@@ -262,8 +262,8 @@ class _HomeState extends State<Home> {
           latestPictureFile.body.isNotEmpty) {
         return Image.memory(latestPictureFile.bodyBytes);
       }
-      return null;
     }
+    return null;
   }
 
   Future<HairStyle> _fetchLatestHairStyleEntry() async {
@@ -309,8 +309,6 @@ class _HomeState extends State<Home> {
 
       if (latestHairColourResponse.statusCode == HttpStatus.ok &&
           latestHairColourResponse.body.isNotEmpty) {
-        print(">>>>>>>>>>> latestHairColourResponse.body");
-        print(latestHairColourResponse.body);
         final latestHairColour =
             HairColour.fromJson(jsonDecode(latestHairColourResponse.body));
         return latestHairColour;
@@ -385,8 +383,29 @@ class _HomeState extends State<Home> {
   }
 
   void _onPreviewPicture() {
-    // TODO: to be implemented
-    print('Previewing picture');
+    if (_userToken == null || _userToken.isEmpty) {
+      NotificationService.notify(
+          scaffoldKey: null,
+          message: 'Invalid user token. Please sign in again.');
+      return;
+    }
+
+    if (_currentPicture == null) {
+      NotificationService.notify(
+          scaffoldKey: null,
+          message: 'Current picture not found. Please restart the app.');
+      return;
+    }
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Preview(
+            previewPictureUrl:
+                '${PicturesService.picturesUri}/file/${_currentPicture.id}',
+            userToken: _userToken,
+          ),
+        ));
   }
 
   Icon _handleButtonIcon(String currentRoute, String previousRoute) {
@@ -445,6 +464,10 @@ class _HomeState extends State<Home> {
                           onTap: _onPreviewPicture,
                           child: Image.network(
                             '${PicturesService.picturesUri}/file/${snapshot.data.id}',
+                            headers: {
+                              "Origin": ADMIN_PORTAL_URL,
+                              "Authorization": "Bearer $_userToken"
+                            },
                             height: 200.0,
                           ),
                         ));
@@ -580,8 +603,6 @@ class _HomeState extends State<Home> {
                     future: _currentPictureFuture,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        print("Home _currentPicture");
-                        print(_currentPicture);
                         return CustomButton(
                             icon: _handleButtonIcon(SelectHairColour.routeName,
                                 SelectHairStyle.routeName),
