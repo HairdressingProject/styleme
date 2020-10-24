@@ -215,6 +215,8 @@ class _HomeState extends State<Home> {
 
           if (_currentFaceShape != null) {
             _completedRoutes.add(SelectFaceShape.routeName);
+          } else {
+            _completedRoutes.remove(SelectFaceShape.routeName);
           }
 
           _currentHairStyle = await _fetchLatestHairStyleEntry();
@@ -223,6 +225,8 @@ class _HomeState extends State<Home> {
 
           if (_currentHairStyle != null) {
             _completedRoutes.add(SelectHairStyle.routeName);
+          } else {
+            _completedRoutes.remove(SelectHairStyle.routeName);
           }
 
           _currentHairColour = await _fetchLatestHairColourEntry();
@@ -231,6 +235,8 @@ class _HomeState extends State<Home> {
 
           if (_currentHairColour != null) {
             _completedRoutes.add(SelectHairColour.routeName);
+          } else {
+            _completedRoutes.remove(SelectHairColour.routeName);
           }
 
           _currentPicture = latestPicture;
