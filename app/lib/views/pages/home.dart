@@ -670,7 +670,7 @@ class _HomeState extends State<Home> {
     } else {
       NotificationService.notify(
           scaffoldKey: scaffoldKey,
-          message: 'Could not retrieve picture to be saved. Plese try again.');
+          message: 'Could not retrieve picture to be saved. Please try again.');
     }
   }
 

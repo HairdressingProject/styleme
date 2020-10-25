@@ -120,6 +120,54 @@ class UserSignUp {
   }
 }
 
+class UserUpdate {
+  final String id;
+  final String username;
+  final String email;
+  final String password;
+  final String givenName;
+  final String familyName;
+
+  const UserUpdate({
+    @required this.id,
+    @required this.username,
+    @required this.email,
+    @required this.givenName,
+    @required this.familyName,
+    @required this.password,
+  });
+
+  UserUpdate.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        username = json['user_name'],
+        email = json['user_email'],
+        password = json['user_password'],
+        givenName = json['first_name'],
+        familyName = json['last_name'];
+
+  Map<String, String> toJson() => {
+        'id': id,
+        'user_name': username,
+        'user_password': password,
+        'user_email': email,
+        'first_name': givenName,
+        'last_name': familyName,
+        'user_role': UserRoles.user
+      };
+
+  @override
+  String toString() {
+    return '''UserUpdate:
+    Id: ${this.id}
+    Username: ${this.username}
+    Email: ${this.email}
+    Password: ${this.password}
+    Given name: ${this.givenName}
+    Family name: ${this.familyName}
+    ''';
+  }
+}
+
 class UserAuthenticate {
   final int id;
   final String userRole;
