@@ -22,6 +22,7 @@ import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
+import 'package:app/widgets/action_button.dart';
 import 'package:app/widgets/compare_to_original.dart';
 import 'package:app/widgets/preview.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,8 @@ import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
 import 'package:app/views/pages/select_face_shape.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 typedef OnPictureUploaded = void Function(
     {@required Picture newPicture,
@@ -608,7 +611,7 @@ class _HomeState extends State<Home> {
                           NotificationService.notify(
                               scaffoldKey: scaffoldKey,
                               message:
-                                  'Please make changes to the current picture first.');
+                                  'Original picture has not been modified yet.');
                         } else {
                           if (await _discardChanges()) {
                             Navigator.of(context).pop();
@@ -636,6 +639,54 @@ class _HomeState extends State<Home> {
             ].where((element) => element != null).toList(),
           );
         });
+  }
+
+  _saveResults() async {
+    if (_currentPicture == null) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey, message: 'Please upload a picture first.');
+      return;
+    }
+
+    final currentPictureResponse =
+        await PicturesService.getFileById(pictureId: _currentPicture.id);
+
+    if (currentPictureResponse != null &&
+        currentPictureResponse.statusCode == HttpStatus.ok &&
+        currentPictureResponse.body.isNotEmpty) {
+      // save picture to local gallery
+      final pictureFilenameWithoutExtension = _currentPicture.fileName
+          .substring(
+              0, _currentPicture.fileName.indexOf(RegExp(r'\.[A-Za-z]{3,}$')));
+
+      final saveResult = await ImageGallerySaver.saveImage(
+          currentPictureResponse.bodyBytes,
+          quality: 100,
+          name: pictureFilenameWithoutExtension);
+
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message: 'Current picture saved to $saveResult');
+    } else {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message: 'Could not retrieve picture to be saved. Plese try again.');
+    }
+  }
+
+  _onSaveResults() async {
+    // check permissions
+    final status = await Permission.storage.status;
+
+    if (status.isGranted) {
+      await _saveResults();
+    } else {
+      final requestStatus = await Permission.storage.request();
+
+      if (requestStatus.isGranted) {
+        await _saveResults();
+      }
+    }
   }
 
   @override
@@ -888,10 +939,28 @@ class _HomeState extends State<Home> {
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
-                  child: CustomButton(
-                    icon: Icon(Icons.access_time),
-                    text: "Save your results",
-                    enabled: false,
+                  child: FutureBuilder<Picture>(
+                    future: _currentPictureFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return ActionButton(
+                          icon: Icon(Icons.save),
+                          text: "Save your results",
+                          enabled: true,
+                          colour: Color.fromARGB(255, 38, 166, 154),
+                          action: () async {
+                            await _onSaveResults();
+                          },
+                        );
+                      }
+                      return ActionButton(
+                        icon: Icon(Icons.access_time),
+                        text: "Save your results",
+                        enabled: false,
+                        colour: Color.fromARGB(255, 38, 166, 154),
+                        action: null,
+                      );
+                    },
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
