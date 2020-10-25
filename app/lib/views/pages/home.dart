@@ -73,6 +73,7 @@ class _HomeState extends State<Home> {
   bool _faceShapeAlreadyDetected = false;
   String _userToken;
   List<String> _completedRoutes = List<String>();
+  bool _isDiscardChangesLoading = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -462,6 +463,181 @@ class _HomeState extends State<Home> {
         ));
   }
 
+  Future<Picture> _fetchOriginalPicture() async {
+    final originalPictureResponse = await PicturesService.getById(
+        pictureId: _history.last.originalPictureId);
+
+    if (originalPictureResponse != null &&
+        originalPictureResponse.statusCode == HttpStatus.ok &&
+        originalPictureResponse.body.isNotEmpty) {
+      final originalPicture =
+          Picture.fromJson(jsonDecode(originalPictureResponse.body));
+      return originalPicture;
+    }
+    return null;
+  }
+
+  Future<bool> _discardChanges() async {
+    setState(() {
+      _isDiscardChangesLoading = true;
+    });
+
+    final originalPictureResponse = await PicturesService.getById(
+        pictureId: _history.last.originalPictureId);
+
+    if (originalPictureResponse != null &&
+        originalPictureResponse.statusCode == HttpStatus.ok &&
+        originalPictureResponse.body.isNotEmpty) {
+      final originalPicture =
+          Picture.fromJson(jsonDecode(originalPictureResponse.body));
+
+      final originalPictureFileResponse = await PicturesService.getFileById(
+          pictureId: _history.last.originalPictureId);
+
+      if (originalPictureFileResponse != null &&
+          originalPictureFileResponse.statusCode == HttpStatus.ok &&
+          originalPictureFileResponse.body.isNotEmpty) {
+        final originalFaceShapeResponse =
+            await FaceShapeService.getById(id: _history.last.faceShapeId);
+
+        if (originalFaceShapeResponse != null &&
+            originalFaceShapeResponse.statusCode == HttpStatus.ok &&
+            originalFaceShapeResponse.body.isNotEmpty) {
+          final originalFaceShape =
+              FaceShape.fromJson(jsonDecode(originalFaceShapeResponse.body));
+
+          bool deletedAllHistoryEntries = true;
+
+          _history
+              .where((entry) =>
+                  entry.originalPictureId == _history.last.originalPictureId &&
+                  (entry.hairStyleId != null || entry.hairColourId != null))
+              .forEach((entry) async {
+            final deleteEntryResponse =
+                await HistoryService.delete(historyId: entry.id);
+
+            if (deleteEntryResponse == null ||
+                deleteEntryResponse.statusCode != HttpStatus.ok) {
+              deletedAllHistoryEntries = false;
+              return;
+            }
+          });
+
+          if (deletedAllHistoryEntries) {
+            setState(() {
+              _currentPictureFuture = Future.value(originalPicture);
+              _currentPicture = originalPicture;
+              _currentFaceShape = originalFaceShape;
+              _currentHairColour = null;
+              _currentHairStyle = null;
+              _currentPictureFile =
+                  Image.memory(originalPictureFileResponse.bodyBytes);
+              _completedRoutes.clear();
+              _completedRoutes.add(UploadPicture.routeName);
+              _completedRoutes.add(SelectFaceShape.routeName);
+              _history.removeWhere((element) =>
+                  element.originalPictureId ==
+                      _history.last.originalPictureId &&
+                  (element.hairStyleId != null ||
+                      element.hairColourId != null));
+              _isDiscardChangesLoading = false;
+            });
+
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  _onDiscardChanges() {
+    if (_currentPicture == null || _currentPictureFile == null) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey, message: 'No images to be discarded');
+      return;
+    }
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Confirm discard changes',
+                style: TextStyle(
+                    fontFamily: 'Klavika',
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.8,
+                    color: Color.fromARGB(255, 0, 6, 64))),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Text(
+                    'Would you like to roll back your changes to the picture that you originally uploaded?',
+                    style: TextStyle(
+                        fontFamily: 'Klavika',
+                        fontSize: 14.0,
+                        letterSpacing: 0.5,
+                        color: Color.fromARGB(255, 0, 6, 64)),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              !_isDiscardChangesLoading
+                  ? TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                            fontFamily: 'Klavika',
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                            color: Color.fromARGB(255, 124, 62, 233)),
+                      ))
+                  : null,
+              !_isDiscardChangesLoading
+                  ? TextButton(
+                      onPressed: () async {
+                        if (_history.length < 2) {
+                          Navigator.of(context).pop();
+                          NotificationService.notify(
+                              scaffoldKey: scaffoldKey,
+                              message:
+                                  'Please make changes to the current picture first.');
+                        } else {
+                          if (await _discardChanges()) {
+                            Navigator.of(context).pop();
+                            NotificationService.notify(
+                                scaffoldKey: scaffoldKey,
+                                message:
+                                    'All changes were successfully discarded');
+                          } else {
+                            Navigator.of(context).pop();
+                            NotificationService.notify(
+                                scaffoldKey: scaffoldKey,
+                                message:
+                                    'Could not discard changes. Please upload a new picture instead.');
+                          }
+                        }
+                      },
+                      child: Text('Confirm',
+                          style: TextStyle(
+                            fontFamily: 'Klavika',
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                          )))
+                  : CircularProgressIndicator()
+            ].where((element) => element != null).toList(),
+          );
+        });
+  }
+
   @override
   build(BuildContext context) {
     return Layout(
@@ -530,9 +706,7 @@ class _HomeState extends State<Home> {
                                     const EdgeInsets.symmetric(vertical: 15.0),
                               ),
                               MaterialButton(
-                                  onPressed: () {
-                                    print('Discard changes');
-                                  },
+                                  onPressed: _onDiscardChanges,
                                   height:
                                       MediaQuery.of(context).size.height / 15,
                                   color: Color.fromARGB(220, 249, 9, 17),
