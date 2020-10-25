@@ -22,12 +22,16 @@ import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
+import 'package:app/widgets/action_button.dart';
+import 'package:app/widgets/compare_to_original.dart';
 import 'package:app/widgets/preview.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
 import 'package:app/views/pages/select_face_shape.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 typedef OnPictureUploaded = void Function(
     {@required Picture newPicture,
@@ -72,6 +76,7 @@ class _HomeState extends State<Home> {
   bool _faceShapeAlreadyDetected = false;
   String _userToken;
   List<String> _completedRoutes = List<String>();
+  bool _isDiscardChangesLoading = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -385,14 +390,14 @@ class _HomeState extends State<Home> {
   void _onPreviewPicture() {
     if (_userToken == null || _userToken.isEmpty) {
       NotificationService.notify(
-          scaffoldKey: null,
+          scaffoldKey: scaffoldKey,
           message: 'Invalid user token. Please sign in again.');
       return;
     }
 
     if (_currentPicture == null) {
       NotificationService.notify(
-          scaffoldKey: null,
+          scaffoldKey: scaffoldKey,
           message: 'Current picture not found. Please restart the app.');
       return;
     }
@@ -429,6 +434,261 @@ class _HomeState extends State<Home> {
         _completedRoutes.contains(previousRoute);
   }
 
+  _onCompareToOriginal() {
+    if (_userToken == null || _userToken.isEmpty) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message: 'Invalid user token. Please sign in and try again.');
+      return;
+    }
+
+    if (_history == null || _history.isEmpty) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message:
+              'Your history is empty. Please restart the app or make changes and try again.');
+      return;
+    }
+
+    final originalPictureId = _history.last.originalPictureId;
+    final currentPictureId = _currentPicture.id;
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CompareToOriginal(
+            originalPictureUrl:
+                '${PicturesService.picturesUri}/file/$originalPictureId',
+            currentPictureUrl:
+                '${PicturesService.picturesUri}/file/$currentPictureId',
+            userToken: _userToken,
+          ),
+        ));
+  }
+
+  Future<Picture> _fetchOriginalPicture() async {
+    final originalPictureResponse = await PicturesService.getById(
+        pictureId: _history.last.originalPictureId);
+
+    if (originalPictureResponse != null &&
+        originalPictureResponse.statusCode == HttpStatus.ok &&
+        originalPictureResponse.body.isNotEmpty) {
+      final originalPicture =
+          Picture.fromJson(jsonDecode(originalPictureResponse.body));
+      return originalPicture;
+    }
+    return null;
+  }
+
+  Future<bool> _discardChanges() async {
+    setState(() {
+      _isDiscardChangesLoading = true;
+    });
+
+    final originalPictureResponse = await PicturesService.getById(
+        pictureId: _history.last.originalPictureId);
+
+    if (originalPictureResponse != null &&
+        originalPictureResponse.statusCode == HttpStatus.ok &&
+        originalPictureResponse.body.isNotEmpty) {
+      final originalPicture =
+          Picture.fromJson(jsonDecode(originalPictureResponse.body));
+
+      final originalPictureFileResponse = await PicturesService.getFileById(
+          pictureId: _history.last.originalPictureId);
+
+      if (originalPictureFileResponse != null &&
+          originalPictureFileResponse.statusCode == HttpStatus.ok &&
+          originalPictureFileResponse.body.isNotEmpty) {
+        final originalFaceShapeResponse =
+            await FaceShapeService.getById(id: _history.last.faceShapeId);
+
+        if (originalFaceShapeResponse != null &&
+            originalFaceShapeResponse.statusCode == HttpStatus.ok &&
+            originalFaceShapeResponse.body.isNotEmpty) {
+          final originalFaceShape =
+              FaceShape.fromJson(jsonDecode(originalFaceShapeResponse.body));
+
+          bool deletedAllHistoryEntries = true;
+
+          _history
+              .where((entry) =>
+                  entry.originalPictureId == _history.last.originalPictureId &&
+                  (entry.hairStyleId != null || entry.hairColourId != null))
+              .forEach((entry) async {
+            final deleteEntryResponse =
+                await HistoryService.delete(historyId: entry.id);
+
+            if (deleteEntryResponse == null ||
+                deleteEntryResponse.statusCode != HttpStatus.ok) {
+              deletedAllHistoryEntries = false;
+              return;
+            }
+          });
+
+          if (deletedAllHistoryEntries) {
+            setState(() {
+              _currentPictureFuture = Future.value(originalPicture);
+              _currentPicture = originalPicture;
+              _currentFaceShape = originalFaceShape;
+              _currentHairColour = null;
+              _currentHairStyle = null;
+              _currentPictureFile =
+                  Image.memory(originalPictureFileResponse.bodyBytes);
+              _completedRoutes.clear();
+              _completedRoutes.add(UploadPicture.routeName);
+              _completedRoutes.add(SelectFaceShape.routeName);
+              _history.removeWhere((element) =>
+                  element.originalPictureId ==
+                      _history.last.originalPictureId &&
+                  (element.hairStyleId != null ||
+                      element.hairColourId != null));
+              _isDiscardChangesLoading = false;
+            });
+
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  _onDiscardChanges() {
+    if (_currentPicture == null || _currentPictureFile == null) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey, message: 'No images to be discarded');
+      return;
+    }
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Confirm discard changes',
+                style: TextStyle(
+                    fontFamily: 'Klavika',
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.8,
+                    color: Color.fromARGB(255, 0, 6, 64))),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Text(
+                    'Would you like to roll back your changes to the picture that you originally uploaded?',
+                    style: TextStyle(
+                        fontFamily: 'Klavika',
+                        fontSize: 14.0,
+                        letterSpacing: 0.5,
+                        color: Color.fromARGB(255, 0, 6, 64)),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              !_isDiscardChangesLoading
+                  ? TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                            fontFamily: 'Klavika',
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                            color: Color.fromARGB(255, 124, 62, 233)),
+                      ))
+                  : null,
+              !_isDiscardChangesLoading
+                  ? TextButton(
+                      onPressed: () async {
+                        if (_history.length < 2) {
+                          Navigator.of(context).pop();
+                          NotificationService.notify(
+                              scaffoldKey: scaffoldKey,
+                              message:
+                                  'Original picture has not been modified yet.');
+                        } else {
+                          if (await _discardChanges()) {
+                            Navigator.of(context).pop();
+                            NotificationService.notify(
+                                scaffoldKey: scaffoldKey,
+                                message:
+                                    'All changes were successfully discarded');
+                          } else {
+                            Navigator.of(context).pop();
+                            NotificationService.notify(
+                                scaffoldKey: scaffoldKey,
+                                message:
+                                    'Could not discard changes. Please upload a new picture instead.');
+                          }
+                        }
+                      },
+                      child: Text('Confirm',
+                          style: TextStyle(
+                            fontFamily: 'Klavika',
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                          )))
+                  : CircularProgressIndicator()
+            ].where((element) => element != null).toList(),
+          );
+        });
+  }
+
+  _saveResults() async {
+    if (_currentPicture == null) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey, message: 'Please upload a picture first.');
+      return;
+    }
+
+    final currentPictureResponse =
+        await PicturesService.getFileById(pictureId: _currentPicture.id);
+
+    if (currentPictureResponse != null &&
+        currentPictureResponse.statusCode == HttpStatus.ok &&
+        currentPictureResponse.body.isNotEmpty) {
+      // save picture to local gallery
+      final pictureFilenameWithoutExtension = _currentPicture.fileName
+          .substring(
+              0, _currentPicture.fileName.indexOf(RegExp(r'\.[A-Za-z]{3,}$')));
+
+      final saveResult = await ImageGallerySaver.saveImage(
+          currentPictureResponse.bodyBytes,
+          quality: 100,
+          name: pictureFilenameWithoutExtension);
+
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message: 'Current picture saved to $saveResult');
+    } else {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message: 'Could not retrieve picture to be saved. Plese try again.');
+    }
+  }
+
+  _onSaveResults() async {
+    // check permissions
+    final status = await Permission.storage.status;
+
+    if (status.isGranted) {
+      await _saveResults();
+    } else {
+      final requestStatus = await Permission.storage.request();
+
+      if (requestStatus.isGranted) {
+        await _saveResults();
+      }
+    }
+  }
+
   @override
   build(BuildContext context) {
     return Layout(
@@ -458,19 +718,63 @@ class _HomeState extends State<Home> {
                 future: _currentPictureFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData && snapshot.data.id != -1) {
-                    return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30.0),
-                        child: GestureDetector(
-                          onTap: _onPreviewPicture,
-                          child: Image.network(
-                            '${PicturesService.picturesUri}/file/${snapshot.data.id}',
-                            headers: {
-                              "Origin": ADMIN_PORTAL_URL,
-                              "Authorization": "Bearer $_userToken"
-                            },
-                            height: 200.0,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 30.0),
+                            child: GestureDetector(
+                              onTap: _onPreviewPicture,
+                              child: Image.network(
+                                '${PicturesService.picturesUri}/file/${snapshot.data.id}',
+                                headers: {
+                                  "Origin": ADMIN_PORTAL_URL,
+                                  "Authorization": "Bearer $_userToken"
+                                },
+                                height: 200.0,
+                              ),
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Column(
+                            children: [
+                              MaterialButton(
+                                  onPressed: _onCompareToOriginal,
+                                  height:
+                                      MediaQuery.of(context).size.height / 15,
+                                  color: Color.fromARGB(220, 124, 62, 233),
+                                  child: Text(
+                                    'Compare to original',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Klavika',
+                                        fontSize: 16,
+                                        letterSpacing: 0.8,
+                                        fontWeight: FontWeight.w700),
+                                  )),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15.0),
+                              ),
+                              MaterialButton(
+                                  onPressed: _onDiscardChanges,
+                                  height:
+                                      MediaQuery.of(context).size.height / 15,
+                                  color: Color.fromARGB(220, 249, 9, 17),
+                                  child: Text(
+                                    'Discard changes',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Klavika',
+                                        fontSize: 16,
+                                        letterSpacing: 0.8,
+                                        fontWeight: FontWeight.w700),
+                                  )),
+                            ],
                           ),
-                        ));
+                        )
+                      ],
+                    );
                   }
                   return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -490,7 +794,7 @@ class _HomeState extends State<Home> {
                 },
               ),
               Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
+                  padding: const EdgeInsets.only(top: 30.0),
                   child: Text(
                     "Your progress",
                     style: Theme.of(context).textTheme.headline2,
@@ -635,10 +939,28 @@ class _HomeState extends State<Home> {
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
-                  child: CustomButton(
-                    icon: Icon(Icons.access_time),
-                    text: "Save your results",
-                    enabled: false,
+                  child: FutureBuilder<Picture>(
+                    future: _currentPictureFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return ActionButton(
+                          icon: Icon(Icons.save),
+                          text: "Save your results",
+                          enabled: true,
+                          colour: Color.fromARGB(255, 38, 166, 154),
+                          action: () async {
+                            await _onSaveResults();
+                          },
+                        );
+                      }
+                      return ActionButton(
+                        icon: Icon(Icons.access_time),
+                        text: "Save your results",
+                        enabled: false,
+                        colour: Color.fromARGB(255, 38, 166, 154),
+                        action: null,
+                      );
+                    },
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 35.0),
