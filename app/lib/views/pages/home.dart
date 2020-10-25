@@ -22,6 +22,7 @@ import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
+import 'package:app/widgets/compare_to_original.dart';
 import 'package:app/widgets/preview.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
@@ -385,14 +386,14 @@ class _HomeState extends State<Home> {
   void _onPreviewPicture() {
     if (_userToken == null || _userToken.isEmpty) {
       NotificationService.notify(
-          scaffoldKey: null,
+          scaffoldKey: scaffoldKey,
           message: 'Invalid user token. Please sign in again.');
       return;
     }
 
     if (_currentPicture == null) {
       NotificationService.notify(
-          scaffoldKey: null,
+          scaffoldKey: scaffoldKey,
           message: 'Current picture not found. Please restart the app.');
       return;
     }
@@ -429,6 +430,38 @@ class _HomeState extends State<Home> {
         _completedRoutes.contains(previousRoute);
   }
 
+  _onCompareToOriginal() {
+    if (_userToken == null || _userToken.isEmpty) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message: 'Invalid user token. Please sign in and try again.');
+      return;
+    }
+
+    if (_history == null || _history.isEmpty) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message:
+              'Your history is empty. Please restart the app or make changes and try again.');
+      return;
+    }
+
+    final originalPictureId = _history.last.originalPictureId;
+    final currentPictureId = _currentPicture.id;
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CompareToOriginal(
+            originalPictureUrl:
+                '${PicturesService.picturesUri}/file/$originalPictureId',
+            currentPictureUrl:
+                '${PicturesService.picturesUri}/file/$currentPictureId',
+            userToken: _userToken,
+          ),
+        ));
+  }
+
   @override
   build(BuildContext context) {
     return Layout(
@@ -458,19 +491,65 @@ class _HomeState extends State<Home> {
                 future: _currentPictureFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData && snapshot.data.id != -1) {
-                    return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30.0),
-                        child: GestureDetector(
-                          onTap: _onPreviewPicture,
-                          child: Image.network(
-                            '${PicturesService.picturesUri}/file/${snapshot.data.id}',
-                            headers: {
-                              "Origin": ADMIN_PORTAL_URL,
-                              "Authorization": "Bearer $_userToken"
-                            },
-                            height: 200.0,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 30.0),
+                            child: GestureDetector(
+                              onTap: _onPreviewPicture,
+                              child: Image.network(
+                                '${PicturesService.picturesUri}/file/${snapshot.data.id}',
+                                headers: {
+                                  "Origin": ADMIN_PORTAL_URL,
+                                  "Authorization": "Bearer $_userToken"
+                                },
+                                height: 200.0,
+                              ),
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Column(
+                            children: [
+                              MaterialButton(
+                                  onPressed: _onCompareToOriginal,
+                                  height:
+                                      MediaQuery.of(context).size.height / 15,
+                                  color: Color.fromARGB(220, 124, 62, 233),
+                                  child: Text(
+                                    'Compare to original',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Klavika',
+                                        fontSize: 16,
+                                        letterSpacing: 0.8,
+                                        fontWeight: FontWeight.w700),
+                                  )),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15.0),
+                              ),
+                              MaterialButton(
+                                  onPressed: () {
+                                    print('Discard changes');
+                                  },
+                                  height:
+                                      MediaQuery.of(context).size.height / 15,
+                                  color: Color.fromARGB(220, 249, 9, 17),
+                                  child: Text(
+                                    'Discard changes',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Klavika',
+                                        fontSize: 16,
+                                        letterSpacing: 0.8,
+                                        fontWeight: FontWeight.w700),
+                                  )),
+                            ],
                           ),
-                        ));
+                        )
+                      ],
+                    );
                   }
                   return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -490,7 +569,7 @@ class _HomeState extends State<Home> {
                 },
               ),
               Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
+                  padding: const EdgeInsets.only(top: 30.0),
                   child: Text(
                     "Your progress",
                     style: Theme.of(context).textTheme.headline2,
