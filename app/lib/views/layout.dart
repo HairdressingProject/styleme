@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
 import 'package:app/views/pages/sign_up.dart';
+import 'package:app/views/pages/about.dart';
 
 DrawerHeader buildDrawerHeader(BuildContext context, User user) {
   return DrawerHeader(
@@ -148,7 +149,7 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
       ),
       onTap: () => {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SignIn()))
+            context, MaterialPageRoute(builder: (context) => About()))
       },
     ),
     ListTile(
