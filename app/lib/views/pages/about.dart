@@ -1,19 +1,12 @@
-import 'package:app/models/user.dart';
 import 'package:app/services/notification.dart';
-import 'package:app/widgets/my_account_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class About extends StatelessWidget {
-  final User user;
 
-  About({Key key, @required this.user}) : super(key: key);
+  About({Key key, }) : super(key: key);
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-
-  void _onNotify({@required String message}) {
-    NotificationService.notify(scaffoldKey: scaffoldKey, message: message);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,11 +33,6 @@ class About extends StatelessWidget {
             ),
             Text('About', style: Theme.of(context).textTheme.headline1),
             const Padding(padding: EdgeInsets.symmetric(vertical: 15.0)),
-            // const Center(
-            //     child: Text(
-            //       'This app was developed as a project assignment by Diploma of Software Development students at North Metropolitan TAFE',
-            //     )
-            // ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0),
             ),
@@ -72,7 +60,7 @@ class About extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 20.0),
-            ),            
+            ),
             Align(
               alignment: Alignment.centerLeft,
               child: InkWell(
@@ -80,12 +68,7 @@ class About extends StatelessWidget {
                 },
                 child: Text('Privacy Policy', style: Theme.of(context).textTheme.bodyText1.copyWith(fontWeight: FontWeight.w700, color: Color.fromARGB(255, 124, 62, 233)))
               ),
-            ),       
-            
-            // MyAccountForm(
-            //   user: user,
-            //   onNotify: _onNotify,
-            // )
+            ),
           ],
         ),
       )),
