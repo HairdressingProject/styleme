@@ -1,5 +1,6 @@
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
+import 'package:app/views/pages/my_account.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
@@ -99,7 +100,11 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
         ],
       ),
       onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => null))
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyAccount(user: user),
+            ))
       },
     ),
     ListTile(

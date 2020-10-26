@@ -239,7 +239,26 @@ namespace UsersAPI.Controllers
                     currentUser.DateCreated = currentUser?.DateCreated;
                     _context.Entry(currentUser).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
-                    return Ok();
+
+                    // Authenticate user
+                    var authenticatedUser = await _authenticationService.Authenticate(user.UserEmail, user.UserPassword);
+
+                    if (authenticatedUser == null)
+                    {
+                        // User isn't registered
+                        Response.Headers.Append("Access-Control-Allow-Origin", Request.Headers["Origin"]);
+                        return Unauthorized(new { errors = new { Authentication = new string[] { "Invalid username, email and/or password" } }, status = 401 });
+                    }
+
+                    // Return 200 OK with token in cookie
+                    var existingUser = await _context.Users.Where(u => u.Id == authenticatedUser.Id).FirstOrDefaultAsync();
+
+                    authenticatedUser.BaseUser = existingUser;
+
+                    _authorizationService.SetAuthCookie(Request, Response, authenticatedUser.Token);
+                    Response.Headers.Append("X-Authorization-Token", authenticatedUser.Token);
+
+                    return Ok(existingUser.WithoutPassword());                  
                 }
                 return NotFound();
             }
