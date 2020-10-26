@@ -48,114 +48,137 @@ class HistoryView extends StatelessWidget {
         body: Scrollbar(
           controller: _scrollController,
           child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        _onPicturePreview(
-                            context: context, pictureId: originalPicture.id);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 30.0, horizontal: 50.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Original',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Klavika',
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.8),
-                            ),
-                            const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10.0)),
-                            Image.network(
-                              originalPictureUrl,
-                              headers: {
-                                "Origin": origin,
-                                "Authorization": "Bearer $userToken"
-                              },
-                            )
-                          ],
-                        ),
-                      )),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10.0),
-                  ),
-                  Expanded(
-                    child: GridView.count(
-                        crossAxisCount: 2,
-                        padding: const EdgeInsets.all(20.0),
-                        physics: NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 5.0,
-                        children:
-                            List.generate(historyPictures.length, (index) {
-                          final currentPicture = historyPictures[index];
-                          final parsedDateCreated =
-                              DateTime.parse(currentPicture.dateCreated);
-
-                          final pictureDateCreated =
-                              '${parsedDateCreated.day}/${parsedDateCreated.month}/${parsedDateCreated.year} at ${parsedDateCreated.hour}:${parsedDateCreated.minute}:${parsedDateCreated.second}';
-                          final pictureUrl = Uri.encodeFull(
-                              '${PicturesService.picturesUri}/file/${currentPicture.id.toString()}');
-
-                          return GestureDetector(
-                              onTap: () {
-                                _onPicturePreview(
-                                    context: context,
-                                    pictureId: currentPicture.id);
-                              },
-                              child: Column(
-                                children: [
-                                  Text(
-                                    pictureDateCreated,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: 'Klavika',
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 0.5,
+              scrollDirection: Axis.vertical,
+              child: Container(
+                alignment: Alignment.center,
+                height: MediaQuery.of(context).size.height * 3,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          _onPicturePreview(
+                              context: context, pictureId: originalPicture.id);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 30.0, horizontal: 50.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Original',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Klavika',
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.8),
+                              ),
+                              const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(vertical: 10.0)),
+                              Image.network(
+                                originalPictureUrl,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress
+                                                  .expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes
+                                          : null,
                                     ),
-                                  ),
-                                  const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 10.0)),
-                                  Expanded(
-                                    child: Image.network(
-                                      pictureUrl,
-                                      headers: {
-                                        "Origin": origin,
-                                        "Authorization": "Bearer $userToken"
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ));
+                                  );
+                                },
+                                headers: {
+                                  "Origin": origin,
+                                  "Authorization": "Bearer $userToken"
+                                },
+                              )
+                            ],
+                          ),
+                        )),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10.0),
+                    ),
+                    Expanded(
+                      child: GridView.count(
+                          crossAxisCount: 2,
+                          padding: const EdgeInsets.all(20.0),
+                          physics: NeverScrollableScrollPhysics(),
+                          mainAxisSpacing: 50.0,
+                          crossAxisSpacing: 30.0,
+                          children:
+                              List.generate(historyPictures.length, (index) {
+                            final currentPicture = historyPictures[index];
+                            final parsedDateCreated =
+                                DateTime.parse(currentPicture.dateCreated);
 
-                          /* ComparisonPicture(
-                            titleStyle: TextStyle(
-                                fontFamily: 'Klavika',
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.8),
-                            title: pictureDateCreated,
-                            pictureUrl: pictureUrl,
-                            userToken: userToken,
-                            origin: origin,
-                          ); */
-                        })),
-                  )
-                ],
-              ),
-            ),
-          ),
+                            final pictureDateCreated =
+                                '${parsedDateCreated.day}/${parsedDateCreated.month}/${parsedDateCreated.year} at ${parsedDateCreated.hour}:${parsedDateCreated.minute}:${parsedDateCreated.second}';
+                            final pictureUrl = Uri.encodeFull(
+                                '${PicturesService.picturesUri}/file/${currentPicture.id.toString()}');
+
+                            return GestureDetector(
+                                onTap: () {
+                                  _onPicturePreview(
+                                      context: context,
+                                      pictureId: currentPicture.id);
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      pictureDateCreated,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Klavika',
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                    const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10.0)),
+                                    Expanded(
+                                      child: Image.network(
+                                        pictureUrl,
+                                        loadingBuilder: (BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent loadingProgress) {
+                                          if (loadingProgress == null)
+                                            return child;
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes
+                                                  : null,
+                                            ),
+                                          );
+                                        },
+                                        headers: {
+                                          "Origin": origin,
+                                          "Authorization": "Bearer $userToken"
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ));
+                          })),
+                    )
+                  ],
+                ),
+              )),
         ));
   }
 }
