@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class Preview extends StatelessWidget {
+  final String assetPath;
   final String previewPictureUrl;
   final String origin;
   final String userToken;
 
   const Preview({
     Key key,
-    @required this.previewPictureUrl,
+    this.previewPictureUrl,
     this.origin = ADMIN_PORTAL_URL,
-    @required this.userToken,
+    this.userToken,
+    this.assetPath,
   }) : super(key: key);
 
   @override
@@ -40,9 +42,11 @@ class Preview extends StatelessWidget {
                   Icons.broken_image,
                   size: 128.0,
                 )),
-                imageProvider: NetworkImage(previewPictureUrl, headers: {
-                  "Origin": origin,
-                  "Authorization": "Bearer $userToken"
-                }))));
+                imageProvider: assetPath != null
+                    ? Image.asset(assetPath).image
+                    : NetworkImage(previewPictureUrl, headers: {
+                        "Origin": origin,
+                        "Authorization": "Bearer $userToken"
+                      }))));
   }
 }

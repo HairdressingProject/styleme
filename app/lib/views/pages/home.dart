@@ -795,6 +795,22 @@ class _HomeState extends State<Home> {
                                   onTap: _onPreviewPicture,
                                   child: Image.network(
                                     '${PicturesService.picturesUri}/file/${snapshot.data.id}',
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
                                     headers: {
                                       "Origin": ADMIN_PORTAL_URL,
                                       "Authorization": "Bearer $_userToken"

@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
-import 'package:app/services/notification.dart';
 import 'package:app/services/user.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/custom_form_field.dart';

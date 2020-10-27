@@ -1,7 +1,6 @@
 import 'package:app/models/picture.dart';
 import 'package:app/services/constants.dart';
 import 'package:app/services/pictures.dart';
-import 'package:app/widgets/comparison_picture.dart';
 import 'package:app/widgets/preview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
