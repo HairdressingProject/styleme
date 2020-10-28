@@ -831,9 +831,9 @@ class _HomeState extends State<Home> {
                                 children: [
                                   MaterialButton(
                                       onPressed: _onCompareToOriginal,
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              15,
+                                      // height:
+                                      //     MediaQuery.of(context).size.height /
+                                      //         15,
                                       color: Color.fromARGB(220, 124, 62, 233),
                                       child: Text(
                                         'Compare to original',
@@ -850,9 +850,9 @@ class _HomeState extends State<Home> {
                                   ),
                                   MaterialButton(
                                       onPressed: _onDiscardChanges,
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              15,
+                                      // height:
+                                      //     MediaQuery.of(context).size.height /
+                                      //         15,
                                       color: Color.fromARGB(220, 249, 9, 17),
                                       child: Text(
                                         'Discard changes',
