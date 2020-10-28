@@ -1,5 +1,6 @@
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
+import 'package:app/services/notification.dart';
 import 'package:app/views/pages/consultation.dart';
 import 'package:app/views/pages/my_account.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,8 @@ DrawerHeader buildDrawerHeader(BuildContext context, User user) {
   ));
 }
 
-List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
+List<ListTile> buildDefaultDrawerItems(
+    BuildContext context, User user, GlobalKey<ScaffoldState> scaffoldKey) {
   return [
     ListTile(
       title: Row(
@@ -88,7 +90,9 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
         ],
       ),
       onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => null))
+        NotificationService.notify(
+            scaffoldKey: scaffoldKey,
+            message: 'Sorry, this feature is currently unavailable')
       },
     ),
     ListTile(
@@ -138,7 +142,9 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
         ],
       ),
       onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => null))
+        NotificationService.notify(
+            scaffoldKey: scaffoldKey,
+            message: 'Sorry, this feature is currently unavailable')
       },
     ),
     ListTile(
@@ -223,7 +229,7 @@ class Layout extends StatelessWidget {
           child: ListView(
             children: [
               buildDrawerHeader(context, user),
-              ...buildDefaultDrawerItems(context, user)
+              ...buildDefaultDrawerItems(context, user, scaffoldKey)
             ],
           ),
         ),

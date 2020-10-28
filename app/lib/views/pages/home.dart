@@ -26,6 +26,7 @@ import 'package:app/views/pages/upload_picture.dart';
 import 'package:app/widgets/action_button.dart';
 import 'package:app/widgets/compare_to_original.dart';
 import 'package:app/widgets/preview.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
@@ -762,7 +763,7 @@ class _HomeState extends State<Home> {
         user: _user,
         title: 'Style Me',
         header: 'Home',
-        drawerItems: buildDefaultDrawerItems(context, _user),
+        drawerItems: buildDefaultDrawerItems(context, _user, scaffoldKey),
         body: Scrollbar(
             controller: _scrollController,
             child: SingleChildScrollView(
@@ -793,29 +794,35 @@ class _HomeState extends State<Home> {
                                     const EdgeInsets.symmetric(vertical: 30.0),
                                 child: GestureDetector(
                                   onTap: _onPreviewPicture,
-                                  child: Image.network(
-                                    '${PicturesService.picturesUri}/file/${snapshot.data.id}',
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                    headers: {
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        '${PicturesService.picturesUri}/file/${snapshot.data.id}',
+                                    httpHeaders: {
                                       "Origin": ADMIN_PORTAL_URL,
                                       "Authorization": "Bearer $_userToken"
                                     },
-                                    height: 200.0,
+                                    height: 200,
+                                    progressIndicatorBuilder:
+                                        (context, url, progress) {
+                                      if (progress == null ||
+                                          progress.progress == null) {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.progress,
+                                        ),
+                                      );
+                                    },
+                                    errorWidget: (context, url, error) =>
+                                        Center(
+                                      child: Icon(
+                                        Icons.error,
+                                        size: 128,
+                                      ),
+                                    ),
                                   ),
                                 )),
                             Padding(

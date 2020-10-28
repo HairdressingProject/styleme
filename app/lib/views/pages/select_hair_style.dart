@@ -77,9 +77,16 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
                   ? CachedNetworkImage(
                       imageUrl:
                           '${ModelPicturesService.modelPicturesUri}/file/${e.id}',
-                      placeholder: (context, url) {
+                      progressIndicatorBuilder: (context, url, progress) {
+                        if (progress == null || progress.progress == null) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
                         return Center(
-                          child: CircularProgressIndicator(),
+                          child: CircularProgressIndicator(
+                            value: progress.progress,
+                          ),
                         );
                       },
                       httpHeaders: {

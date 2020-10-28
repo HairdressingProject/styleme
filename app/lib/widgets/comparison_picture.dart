@@ -1,4 +1,7 @@
 import 'package:app/services/constants.dart';
+import 'package:app/services/pictures.dart';
+import 'package:app/widgets/preview.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ComparisonPicture extends StatelessWidget {
@@ -21,6 +24,18 @@ class ComparisonPicture extends StatelessWidget {
       this.interactive = false})
       : super(key: key);
 
+  _onPicturePreview(
+      {@required BuildContext context, @required String pictureUrl}) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Preview(
+                  previewPictureUrl: pictureUrl,
+                  userToken: userToken,
+                  origin: origin,
+                )));
+  }
+
   @override
   Widget build(BuildContext context) {
     return sideBySide
@@ -40,12 +55,36 @@ class ComparisonPicture extends StatelessWidget {
                                     fontFamily: 'Klavika',
                                     letterSpacing: 1.0),
                           )),
-                      Image.network(
-                        pictureUrl,
-                        headers: {
-                          "Origin": origin,
-                          "Authorization": "Bearer $userToken"
+                      GestureDetector(
+                        onTap: () {
+                          _onPicturePreview(
+                              context: context, pictureUrl: pictureUrl);
                         },
+                        child: CachedNetworkImage(
+                          imageUrl: pictureUrl,
+                          httpHeaders: {
+                            "Origin": ADMIN_PORTAL_URL,
+                            "Authorization": "Bearer $userToken"
+                          },
+                          progressIndicatorBuilder: (context, url, progress) {
+                            if (progress == null || progress.progress == null) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: progress.progress,
+                              ),
+                            );
+                          },
+                          errorWidget: (context, url, error) => Center(
+                            child: Icon(
+                              Icons.error,
+                              size: 128,
+                            ),
+                          ),
+                        ),
                       )
                     ].where((element) => element != null).toList(),
                   )
@@ -63,12 +102,36 @@ class ComparisonPicture extends StatelessWidget {
                                     fontFamily: 'Klavika',
                                     letterSpacing: 1.0),
                           )),
-                      Image.network(
-                        pictureUrl,
-                        headers: {
-                          "Origin": origin,
-                          "Authorization": "Bearer $userToken"
+                      GestureDetector(
+                        onTap: () {
+                          _onPicturePreview(
+                              context: context, pictureUrl: pictureUrl);
                         },
+                        child: CachedNetworkImage(
+                          imageUrl: pictureUrl,
+                          httpHeaders: {
+                            "Origin": ADMIN_PORTAL_URL,
+                            "Authorization": "Bearer $userToken"
+                          },
+                          progressIndicatorBuilder: (context, url, progress) {
+                            if (progress == null || progress.progress == null) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: progress.progress,
+                              ),
+                            );
+                          },
+                          errorWidget: (context, url, error) => Center(
+                            child: Icon(
+                              Icons.error,
+                              size: 128,
+                            ),
+                          ),
+                        ),
                       )
                     ].where((element) => element != null).toList(),
                   ),
@@ -89,12 +152,36 @@ class ComparisonPicture extends StatelessWidget {
                                 letterSpacing: 1.0),
                           )),
                       Expanded(
-                          child: Image.network(
-                        pictureUrl,
-                        headers: {
-                          "Origin": origin,
-                          "Authorization": "Bearer $userToken"
+                          child: GestureDetector(
+                        onTap: () {
+                          _onPicturePreview(
+                              context: context, pictureUrl: pictureUrl);
                         },
+                        child: CachedNetworkImage(
+                          imageUrl: pictureUrl,
+                          httpHeaders: {
+                            "Origin": ADMIN_PORTAL_URL,
+                            "Authorization": "Bearer $userToken"
+                          },
+                          progressIndicatorBuilder: (context, url, progress) {
+                            if (progress == null || progress.progress == null) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: progress.progress,
+                              ),
+                            );
+                          },
+                          errorWidget: (context, url, error) => Center(
+                            child: Icon(
+                              Icons.error,
+                              size: 128,
+                            ),
+                          ),
+                        ),
                       ))
                     ].where((element) => element != null).toList(),
                   )
@@ -112,12 +199,36 @@ class ComparisonPicture extends StatelessWidget {
                                 letterSpacing: 1.0),
                           )),
                       Expanded(
-                          child: Image.network(
-                        pictureUrl,
-                        headers: {
-                          "Origin": origin,
-                          "Authorization": "Bearer $userToken"
+                          child: GestureDetector(
+                        onTap: () {
+                          _onPicturePreview(
+                              context: context, pictureUrl: pictureUrl);
                         },
+                        child: CachedNetworkImage(
+                          imageUrl: pictureUrl,
+                          httpHeaders: {
+                            "Origin": ADMIN_PORTAL_URL,
+                            "Authorization": "Bearer $userToken"
+                          },
+                          progressIndicatorBuilder: (context, url, progress) {
+                            if (progress == null || progress.progress == null) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: progress.progress,
+                              ),
+                            );
+                          },
+                          errorWidget: (context, url, error) => Center(
+                            child: Icon(
+                              Icons.error,
+                              size: 128,
+                            ),
+                          ),
+                        ),
                       ))
                     ].where((element) => element != null).toList(),
                   ),

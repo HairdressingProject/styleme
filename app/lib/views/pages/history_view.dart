@@ -2,8 +2,10 @@ import 'package:app/models/picture.dart';
 import 'package:app/services/constants.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/widgets/preview.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HistoryView extends StatelessWidget {
   final Picture originalPicture;
@@ -76,28 +78,39 @@ class HistoryView extends StatelessWidget {
                               const Padding(
                                   padding:
                                       EdgeInsets.symmetric(vertical: 10.0)),
-                              Image.network(
-                                originalPictureUrl,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
+                              GestureDetector(
+                                onTap: () {
+                                  _onPicturePreview(
+                                      context: context,
+                                      pictureId: originalPicture.id);
+                                },
+                                child: CachedNetworkImage(
+                                  imageUrl: originalPictureUrl,
+                                  httpHeaders: {
+                                    "Origin": ADMIN_PORTAL_URL,
+                                    "Authorization": "Bearer $userToken"
+                                  },
+                                  progressIndicatorBuilder:
+                                      (context, url, progress) {
+                                    if (progress == null ||
+                                        progress.progress == null) {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: progress.progress,
+                                      ),
+                                    );
+                                  },
+                                  errorWidget: (context, url, error) => Center(
+                                    child: Icon(
+                                      Icons.error,
+                                      size: 128,
                                     ),
-                                  );
-                                },
-                                headers: {
-                                  "Origin": origin,
-                                  "Authorization": "Bearer $userToken"
-                                },
+                                  ),
+                                ),
                               )
                             ],
                           ),
@@ -119,7 +132,8 @@ class HistoryView extends StatelessWidget {
                                 DateTime.parse(currentPicture.dateCreated);
 
                             final pictureDateCreated =
-                                '${parsedDateCreated.day}/${parsedDateCreated.month}/${parsedDateCreated.year} at ${parsedDateCreated.hour}:${parsedDateCreated.minute}:${parsedDateCreated.second}';
+                                DateFormat('dd/MM/yyyy HH:mm:ss')
+                                    .format(parsedDateCreated);
                             final pictureUrl = Uri.encodeFull(
                                 '${PicturesService.picturesUri}/file/${currentPicture.id.toString()}');
 
@@ -145,32 +159,42 @@ class HistoryView extends StatelessWidget {
                                         padding: EdgeInsets.symmetric(
                                             vertical: 10.0)),
                                     Expanded(
-                                      child: Image.network(
-                                        pictureUrl,
-                                        loadingBuilder: (BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent loadingProgress) {
-                                          if (loadingProgress == null)
-                                            return child;
+                                        child: GestureDetector(
+                                      onTap: () {
+                                        _onPicturePreview(
+                                            context: context,
+                                            pictureId: currentPicture.id);
+                                      },
+                                      child: CachedNetworkImage(
+                                        imageUrl: pictureUrl,
+                                        httpHeaders: {
+                                          "Origin": ADMIN_PORTAL_URL,
+                                          "Authorization": "Bearer $userToken"
+                                        },
+                                        progressIndicatorBuilder:
+                                            (context, url, progress) {
+                                          if (progress == null ||
+                                              progress.progress == null) {
+                                            return Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          }
                                           return Center(
                                             child: CircularProgressIndicator(
-                                              value: loadingProgress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      loadingProgress
-                                                          .expectedTotalBytes
-                                                  : null,
+                                              value: progress.progress,
                                             ),
                                           );
                                         },
-                                        headers: {
-                                          "Origin": origin,
-                                          "Authorization": "Bearer $userToken"
-                                        },
+                                        errorWidget: (context, url, error) =>
+                                            Center(
+                                          child: Icon(
+                                            Icons.error,
+                                            size: 128,
+                                          ),
+                                        ),
                                       ),
-                                    )
+                                    ))
                                   ],
                                 ));
                           })),
