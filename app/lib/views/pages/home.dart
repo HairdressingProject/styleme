@@ -82,6 +82,7 @@ class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
   Picture _originalPicture;
+  // Picture _currentPictureNoColour;
 
   @override
   void initState() {
@@ -235,6 +236,8 @@ class _HomeState extends State<Home> {
           _currentPictureFile = await _fetchLatestPictureFile();
 
           _originalPicture = await _fetchOriginalPicture();
+
+          // _currentPictureNoColour = _fetchCurrentPictureNoColour();
 
           if (_currentHairStyle != null) {
             _completedRoutes.add(SelectHairStyle.routeName);
@@ -834,9 +837,7 @@ class _HomeState extends State<Home> {
                                 children: [
                                   MaterialButton(
                                       onPressed: _onCompareToOriginal,
-                                      // height:
-                                      //     MediaQuery.of(context).size.height /
-                                      //         15,
+                                      height: 45.00,
                                       color: Color.fromARGB(220, 124, 62, 233),
                                       child: Text(
                                         'Compare to original',
@@ -853,9 +854,7 @@ class _HomeState extends State<Home> {
                                   ),
                                   MaterialButton(
                                       onPressed: _onDiscardChanges,
-                                      // height:
-                                      //     MediaQuery.of(context).size.height /
-                                      //         15,
+                                      height: 45.00,
                                       color: Color.fromARGB(220, 249, 9, 17),
                                       child: Text(
                                         'Discard changes',

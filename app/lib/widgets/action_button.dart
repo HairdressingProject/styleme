@@ -30,7 +30,7 @@ class ActionButton extends StatelessWidget {
       color: colour,
       disabledColor: Theme.of(context).disabledColor,
       disabledTextColor: Colors.white,
-      // height: MediaQuery.of(context).size.height / 15,
+      height: 45.00,
       minWidth: double.infinity,
       child: Row(
         children: [
