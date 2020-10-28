@@ -81,6 +81,7 @@ class _HomeState extends State<Home> {
   bool _isDiscardChangesLoading = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
+  Picture _originalPicture;
 
   @override
   void initState() {
@@ -232,6 +233,8 @@ class _HomeState extends State<Home> {
           _currentHairStyle = await _fetchLatestHairStyleEntry();
 
           _currentPictureFile = await _fetchLatestPictureFile();
+
+          _originalPicture = await _fetchOriginalPicture();
 
           if (_currentHairStyle != null) {
             _completedRoutes.add(SelectHairStyle.routeName);
@@ -977,7 +980,7 @@ class _HomeState extends State<Home> {
                                   allModelPictures: _allModelPictures,
                                   allHairLengths: _allHairLengths,
                                   onHairStyleUpdated: _onHairStyleUpdated,
-                                  currentUserPicture: _currentPicture,
+                                  currentUserPicture: _originalPicture, // before: _currentPicture
                                 ),
                                 alreadySelected: _completedRoutes
                                     .contains(SelectHairStyle.routeName),
@@ -994,7 +997,7 @@ class _HomeState extends State<Home> {
                                 allModelPictures: _allModelPictures,
                                 allHairLengths: _allHairLengths,
                                 onHairStyleUpdated: _onHairStyleUpdated,
-                                currentUserPicture: _currentPicture,
+                                currentUserPicture: _originalPicture, // before: _currentPicture
                               ),
                               alreadySelected: false,
                               enabled: false);
