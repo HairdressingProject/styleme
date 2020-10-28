@@ -19,12 +19,14 @@ import 'package:app/services/history.dart';
 import 'package:app/services/model_pictures.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
+import 'package:app/views/pages/history_view.dart';
 import 'package:app/views/pages/select_hair_colour.dart';
 import 'package:app/views/pages/select_hair_style.dart';
 import 'package:app/views/pages/upload_picture.dart';
 import 'package:app/widgets/action_button.dart';
 import 'package:app/widgets/compare_to_original.dart';
 import 'package:app/widgets/preview.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/layout.dart';
 import 'package:app/widgets/custom_button.dart';
@@ -78,6 +80,7 @@ class _HomeState extends State<Home> {
   List<String> _completedRoutes = List<String>();
   bool _isDiscardChangesLoading = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -689,6 +692,70 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> _onCompareResults() async {
+    if (_history == null || _history.length < 2) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message: 'Please make changes to the current picture first.');
+      return;
+    }
+
+    if (_userToken == null) {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message: 'User not found. Please sign in or sign up.');
+      return;
+    }
+
+    final currentOriginalPictureId = _history.last.originalPictureId;
+
+    final currentOriginalPictureResponse =
+        await PicturesService.getById(pictureId: currentOriginalPictureId);
+
+    if (currentOriginalPictureResponse != null &&
+        currentOriginalPictureResponse.statusCode == HttpStatus.ok &&
+        currentOriginalPictureResponse.body.isNotEmpty) {
+      final originalPicture =
+          Picture.fromJson(jsonDecode(currentOriginalPictureResponse.body));
+
+      final historyPictures = await Future.wait(_history
+          .where((element) {
+            return element.originalPictureId == currentOriginalPictureId &&
+                (element.hairColourId != null || element.hairStyleId != null);
+          })
+          .map((e) async {
+            final currentPictureResponse =
+                await PicturesService.getById(pictureId: e.pictureId);
+
+            if (currentPictureResponse != null &&
+                currentPictureResponse.statusCode == HttpStatus.ok &&
+                currentPictureResponse.body.isNotEmpty) {
+              return Picture.fromJson(jsonDecode(currentPictureResponse.body));
+            }
+            NotificationService.notify(
+                scaffoldKey: scaffoldKey,
+                message:
+                    'Could not retrieve picture: status code ${currentPictureResponse.statusCode}');
+            return null;
+          })
+          .where((element) => element != null)
+          .toList());
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => HistoryView(
+                  originalPicture: originalPicture,
+                  historyPictures: historyPictures,
+                  userToken: _userToken)));
+    } else {
+      NotificationService.notify(
+          scaffoldKey: scaffoldKey,
+          message:
+              'Could not retrieve original picture. Please restart the app and upload a new picture or report this issue to the developers.');
+    }
+  }
+
   @override
   build(BuildContext context) {
     return Layout(
@@ -696,288 +763,335 @@ class _HomeState extends State<Home> {
         user: _user,
         title: 'Style Me',
         header: 'Home',
-        drawerItems: buildDefaultDrawerItems(context, _user),
-        body: SingleChildScrollView(
-            child: Center(
+        drawerItems: buildDefaultDrawerItems(context, _user, scaffoldKey),
+        body: Scrollbar(
+            controller: _scrollController,
+            child: SingleChildScrollView(
                 child: Padding(
-          padding: const EdgeInsets.fromLTRB(50.0, 20.0, 50.0, 50.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/icons/home_top.svg',
-                semanticsLabel: 'Home page logo',
-              ),
-              Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-              ),
-              Text("Let's get stylish!",
-                  style: Theme.of(context).textTheme.headline1),
-              FutureBuilder<Picture>(
-                future: _currentPictureFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data.id != -1) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 30.0),
-                            child: GestureDetector(
-                              onTap: _onPreviewPicture,
-                              child: Image.network(
-                                '${PicturesService.picturesUri}/file/${snapshot.data.id}',
-                                headers: {
-                                  "Origin": ADMIN_PORTAL_URL,
-                                  "Authorization": "Bearer $_userToken"
-                                },
-                                height: 200.0,
-                              ),
-                            )),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: Column(
-                            children: [
-                              MaterialButton(
-                                  onPressed: _onCompareToOriginal,
-                                  height:
-                                      MediaQuery.of(context).size.height / 15,
-                                  color: Color.fromARGB(220, 124, 62, 233),
-                                  child: Text(
-                                    'Compare to original',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: 'Klavika',
-                                        fontSize: 16,
-                                        letterSpacing: 0.8,
-                                        fontWeight: FontWeight.w700),
-                                  )),
-                              Padding(
+              padding: const EdgeInsets.fromLTRB(50.0, 20.0, 50.0, 50.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/home_top.svg',
+                    semanticsLabel: 'Home page logo',
+                  ),
+                  Padding(padding: const EdgeInsets.symmetric(vertical: 10.0)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  ),
+                  Text("Let's get stylish!",
+                      style: Theme.of(context).textTheme.headline1),
+                  FutureBuilder<Picture>(
+                    future: _currentPictureFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data.id != -1) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 15.0),
+                                    const EdgeInsets.symmetric(vertical: 30.0),
+                                child: GestureDetector(
+                                  onTap: _onPreviewPicture,
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        '${PicturesService.picturesUri}/file/${snapshot.data.id}',
+                                    httpHeaders: {
+                                      "Origin": ADMIN_PORTAL_URL,
+                                      "Authorization": "Bearer $_userToken"
+                                    },
+                                    height: 200,
+                                    progressIndicatorBuilder:
+                                        (context, url, progress) {
+                                      if (progress == null ||
+                                          progress.progress == null) {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: progress.progress,
+                                        ),
+                                      );
+                                    },
+                                    errorWidget: (context, url, error) =>
+                                        Center(
+                                      child: Icon(
+                                        Icons.error,
+                                        size: 128,
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: Column(
+                                children: [
+                                  MaterialButton(
+                                      onPressed: _onCompareToOriginal,
+                                      height:
+                                          MediaQuery.of(context).size.height /
+                                              15,
+                                      color: Color.fromARGB(220, 124, 62, 233),
+                                      child: Text(
+                                        'Compare to original',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Klavika',
+                                            fontSize: 16,
+                                            letterSpacing: 0.8,
+                                            fontWeight: FontWeight.w700),
+                                      )),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15.0),
+                                  ),
+                                  MaterialButton(
+                                      onPressed: _onDiscardChanges,
+                                      height:
+                                          MediaQuery.of(context).size.height /
+                                              15,
+                                      color: Color.fromARGB(220, 249, 9, 17),
+                                      child: Text(
+                                        'Discard changes',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Klavika',
+                                            fontSize: 16,
+                                            letterSpacing: 0.8,
+                                            fontWeight: FontWeight.w700),
+                                      )),
+                                ],
                               ),
-                              MaterialButton(
-                                  onPressed: _onDiscardChanges,
-                                  height:
-                                      MediaQuery.of(context).size.height / 15,
-                                  color: Color.fromARGB(220, 249, 9, 17),
-                                  child: Text(
-                                    'Discard changes',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: 'Klavika',
-                                        fontSize: 16,
-                                        letterSpacing: 0.8,
-                                        fontWeight: FontWeight.w700),
-                                  )),
-                            ],
-                          ),
-                        )
-                      ],
-                    );
-                  }
-                  return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0),
-                      child: Center(
-                        child: Column(children: [
-                          Text('A preview of your results will displayed here',
-                              style: TextStyle(
-                                  fontFamily: 'Klavika',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500)),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 5.0),
-                          ),
-                          Icon(Icons.image, size: 48)
-                        ]),
-                      ));
-                },
-              ),
-              Padding(
-                  padding: const EdgeInsets.only(top: 30.0),
-                  child: Text(
-                    "Your progress",
-                    style: Theme.of(context).textTheme.headline2,
-                  )),
-              Padding(
-                  padding: const EdgeInsets.only(top: 35.0),
-                  child: FutureBuilder<Picture>(
-                    future: _currentPictureFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return CustomButton(
-                            icon: _handleButtonIcon(
-                                UploadPicture.routeName, null),
-                            text: "Select or take picture",
-                            alreadySelected: _completedRoutes
-                                .contains(UploadPicture.routeName),
-                            action: UploadPicture(
-                                onPictureUploaded: _onPictureUploaded,
-                                user: _user),
-                            enabled: true);
-                      }
-                      return CustomButton(
-                          icon: Icon(Icons.add),
-                          text: "Select or take picture",
-                          alreadySelected: false,
-                          action: UploadPicture(
-                              onPictureUploaded: _onPictureUploaded,
-                              user: _user),
-                          enabled: true);
-                    },
-                  )),
-              Padding(
-                  padding: const EdgeInsets.only(top: 35.0),
-                  child: FutureBuilder<Picture>(
-                    future: _currentPictureFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return CustomButton(
-                          icon: _handleButtonIcon(SelectFaceShape.routeName,
-                              UploadPicture.routeName),
-                          text: "Select your face shape",
-                          action: SelectFaceShape(
-                            userId: _user.id,
-                            initialFaceShape: _currentFaceShape,
-                            allFaceShapes: _allFaceShapes,
-                            onFaceShapeUpdated: _onFaceShapeUpdated,
-                            faceShapeAlreadyDetected: _faceShapeAlreadyDetected,
-                          ),
-                          alreadySelected: _completedRoutes
-                              .contains(SelectFaceShape.routeName),
-                          enabled: _isButtonEnabled(SelectFaceShape.routeName,
-                              UploadPicture.routeName),
+                            )
+                          ],
                         );
                       }
-                      return CustomButton(
-                        icon: Icon(Icons.access_time),
-                        text: "Select your face shape",
-                        action: SelectFaceShape(
-                          userId: _user.id,
-                          initialFaceShape: _currentFaceShape,
-                          onFaceShapeUpdated: _onFaceShapeUpdated,
-                          faceShapeAlreadyDetected: _faceShapeAlreadyDetected,
-                        ),
-                        alreadySelected: false,
-                        enabled: false,
-                      );
+                      return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
+                          child: Center(
+                            child: Column(children: [
+                              Text(
+                                  'A preview of your results will displayed here',
+                                  style: TextStyle(
+                                      fontFamily: 'Klavika',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500)),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 5.0),
+                              ),
+                              Icon(Icons.image, size: 48)
+                            ]),
+                          ));
                     },
-                  )),
-              Padding(
-                  padding: const EdgeInsets.only(top: 35.0),
-                  child: FutureBuilder<Picture>(
-                    future: _currentPictureFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return CustomButton(
-                            icon: _handleButtonIcon(SelectHairStyle.routeName,
-                                SelectFaceShape.routeName),
-                            text: "Select a hair style",
-                            action: SelectHairStyle(
-                              userToken: _userToken,
-                              allHairStyles: _allHairStyles,
-                              allModelPictures: _allModelPictures,
-                              allHairLengths: _allHairLengths,
-                              onHairStyleUpdated: _onHairStyleUpdated,
-                              currentUserPicture: _currentPicture,
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 30.0),
+                      child: Text(
+                        "Your progress",
+                        style: Theme.of(context).textTheme.headline2,
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: FutureBuilder<Picture>(
+                        future: _currentPictureFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return CustomButton(
+                                icon: _handleButtonIcon(
+                                    UploadPicture.routeName, null),
+                                text: "Select or take picture",
+                                alreadySelected: _completedRoutes
+                                    .contains(UploadPicture.routeName),
+                                action: UploadPicture(
+                                    onPictureUploaded: _onPictureUploaded,
+                                    user: _user),
+                                enabled: true);
+                          }
+                          return CustomButton(
+                              icon: Icon(Icons.add),
+                              text: "Select or take picture",
+                              alreadySelected: false,
+                              action: UploadPicture(
+                                  onPictureUploaded: _onPictureUploaded,
+                                  user: _user),
+                              enabled: true);
+                        },
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: FutureBuilder<Picture>(
+                        future: _currentPictureFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return CustomButton(
+                              icon: _handleButtonIcon(SelectFaceShape.routeName,
+                                  UploadPicture.routeName),
+                              text: "Select your face shape",
+                              action: SelectFaceShape(
+                                userId: _user.id,
+                                initialFaceShape: _currentFaceShape,
+                                allFaceShapes: _allFaceShapes,
+                                onFaceShapeUpdated: _onFaceShapeUpdated,
+                                faceShapeAlreadyDetected:
+                                    _faceShapeAlreadyDetected,
+                              ),
+                              alreadySelected: _completedRoutes
+                                  .contains(SelectFaceShape.routeName),
+                              enabled: _isButtonEnabled(
+                                  SelectFaceShape.routeName,
+                                  UploadPicture.routeName),
+                            );
+                          }
+                          return CustomButton(
+                            icon: Icon(Icons.access_time),
+                            text: "Select your face shape",
+                            action: SelectFaceShape(
+                              userId: _user.id,
+                              initialFaceShape: _currentFaceShape,
+                              onFaceShapeUpdated: _onFaceShapeUpdated,
+                              faceShapeAlreadyDetected:
+                                  _faceShapeAlreadyDetected,
                             ),
-                            alreadySelected: _completedRoutes
-                                .contains(SelectHairStyle.routeName),
-                            enabled: _isButtonEnabled(SelectHairStyle.routeName,
-                                SelectFaceShape.routeName));
-                      }
-                      return CustomButton(
-                          icon: Icon(Icons.access_time),
-                          text: "Select a hair style",
-                          action: SelectHairStyle(
-                            userToken: _userToken,
-                            allHairStyles: _allHairStyles,
-                            allModelPictures: _allModelPictures,
-                            allHairLengths: _allHairLengths,
-                            onHairStyleUpdated: _onHairStyleUpdated,
-                            currentUserPicture: _currentPicture,
-                          ),
-                          alreadySelected: false,
-                          enabled: false);
-                    },
-                  )),
-              Padding(
-                  padding: const EdgeInsets.only(top: 35.0),
-                  child: FutureBuilder<Picture>(
-                    future: _currentPictureFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return CustomButton(
-                            icon: _handleButtonIcon(SelectHairColour.routeName,
-                                SelectHairStyle.routeName),
-                            text: "Colour your hair",
-                            enabled: _isButtonEnabled(
-                                SelectHairColour.routeName,
-                                SelectHairStyle.routeName),
-                            alreadySelected: _completedRoutes
-                                .contains(SelectHairColour.routeName),
+                            alreadySelected: false,
+                            enabled: false,
+                          );
+                        },
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: FutureBuilder<Picture>(
+                        future: _currentPictureFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return CustomButton(
+                                icon: _handleButtonIcon(
+                                    SelectHairStyle.routeName,
+                                    SelectFaceShape.routeName),
+                                text: "Select a hair style",
+                                action: SelectHairStyle(
+                                  userToken: _userToken,
+                                  allHairStyles: _allHairStyles,
+                                  allModelPictures: _allModelPictures,
+                                  allHairLengths: _allHairLengths,
+                                  onHairStyleUpdated: _onHairStyleUpdated,
+                                  currentUserPicture: _currentPicture,
+                                ),
+                                alreadySelected: _completedRoutes
+                                    .contains(SelectHairStyle.routeName),
+                                enabled: _isButtonEnabled(
+                                    SelectHairStyle.routeName,
+                                    SelectFaceShape.routeName));
+                          }
+                          return CustomButton(
+                              icon: Icon(Icons.access_time),
+                              text: "Select a hair style",
+                              action: SelectHairStyle(
+                                userToken: _userToken,
+                                allHairStyles: _allHairStyles,
+                                allModelPictures: _allModelPictures,
+                                allHairLengths: _allHairLengths,
+                                onHairStyleUpdated: _onHairStyleUpdated,
+                                currentUserPicture: _currentPicture,
+                              ),
+                              alreadySelected: false,
+                              enabled: false);
+                        },
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: FutureBuilder<Picture>(
+                        future: _currentPictureFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return CustomButton(
+                                icon: _handleButtonIcon(
+                                    SelectHairColour.routeName,
+                                    SelectHairStyle.routeName),
+                                text: "Colour your hair",
+                                enabled: _isButtonEnabled(
+                                    SelectHairColour.routeName,
+                                    SelectHairStyle.routeName),
+                                alreadySelected: _completedRoutes
+                                    .contains(SelectHairColour.routeName),
+                                action: SelectHairColour(
+                                  currentPicture: _currentPicture,
+                                  currentPictureFile: _currentPictureFile,
+                                  onHairColourUpdated: _onHairColourUpdated,
+                                  currentHairColour: _currentHairColour,
+                                ));
+                          }
+                          return CustomButton(
+                            icon: Icon(Icons.access_time),
+                            text: "Select your hair colour",
                             action: SelectHairColour(
                               currentPicture: _currentPicture,
                               currentPictureFile: _currentPictureFile,
                               onHairColourUpdated: _onHairColourUpdated,
                               currentHairColour: _currentHairColour,
-                            ));
-                      }
-                      return CustomButton(
+                            ),
+                            alreadySelected: false,
+                            enabled: false,
+                          );
+                        },
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: FutureBuilder<Picture>(
+                        future: _currentPictureFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return ActionButton(
+                              icon: Icon(Icons.save),
+                              text: "Save your results",
+                              enabled: true,
+                              colour: Color.fromARGB(255, 38, 166, 154),
+                              action: () async {
+                                await _onSaveResults();
+                              },
+                            );
+                          }
+                          return ActionButton(
+                            icon: Icon(Icons.access_time),
+                            text: "Save your results",
+                            enabled: false,
+                            colour: Color.fromARGB(255, 38, 166, 154),
+                            action: null,
+                          );
+                        },
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: FutureBuilder<Picture>(
+                          future: _currentPictureFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return ActionButton(
+                                  icon: Icon(Icons.compare),
+                                  text: "Compare results",
+                                  colour: Color.fromARGB(255, 38, 166, 154),
+                                  action: () async {
+                                    await _onCompareResults();
+                                  },
+                                  enabled: true);
+                            }
+                            return CustomButton(
+                              icon: Icon(Icons.access_time),
+                              text: "Compare results",
+                              enabled: false,
+                            );
+                          })),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: CustomButton(
                         icon: Icon(Icons.access_time),
-                        text: "Select your hair colour",
-                        action: SelectHairColour(
-                          currentPicture: _currentPicture,
-                          currentPictureFile: _currentPictureFile,
-                          onHairColourUpdated: _onHairColourUpdated,
-                          currentHairColour: _currentHairColour,
-                        ),
-                        alreadySelected: false,
+                        text: "Upload hair style",
                         enabled: false,
-                      );
-                    },
-                  )),
-              Padding(
-                  padding: const EdgeInsets.only(top: 35.0),
-                  child: FutureBuilder<Picture>(
-                    future: _currentPictureFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return ActionButton(
-                          icon: Icon(Icons.save),
-                          text: "Save your results",
-                          enabled: true,
-                          colour: Color.fromARGB(255, 38, 166, 154),
-                          action: () async {
-                            await _onSaveResults();
-                          },
-                        );
-                      }
-                      return ActionButton(
-                        icon: Icon(Icons.access_time),
-                        text: "Save your results",
-                        enabled: false,
-                        colour: Color.fromARGB(255, 38, 166, 154),
-                        action: null,
-                      );
-                    },
-                  )),
-              Padding(
-                  padding: const EdgeInsets.only(top: 35.0),
-                  child: CustomButton(
-                    icon: Icon(Icons.access_time),
-                    text: "Compare results",
-                    enabled: false,
-                  )),
-              Padding(
-                  padding: const EdgeInsets.only(top: 35.0),
-                  child: CustomButton(
-                    icon: Icon(Icons.access_time),
-                    text: "Upload hair style",
-                    enabled: false,
-                  )),
-            ].where((element) => element != null).toList(),
-          ),
-        ))));
+                      )),
+                ].where((element) => element != null).toList(),
+              ),
+            ))));
   }
 }

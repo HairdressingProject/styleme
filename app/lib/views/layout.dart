@@ -1,5 +1,7 @@
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
+import 'package:app/services/notification.dart';
+import 'package:app/views/pages/consultation.dart';
 import 'package:app/views/pages/my_account.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/pages/home.dart';
@@ -59,7 +61,8 @@ DrawerHeader buildDrawerHeader(BuildContext context, User user) {
   ));
 }
 
-List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
+List<ListTile> buildDefaultDrawerItems(
+    BuildContext context, User user, GlobalKey<ScaffoldState> scaffoldKey) {
   return [
     ListTile(
       title: Row(
@@ -87,7 +90,9 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
         ],
       ),
       onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => null))
+        NotificationService.notify(
+            scaffoldKey: scaffoldKey,
+            message: 'Sorry, this feature is currently unavailable')
       },
     ),
     ListTile(
@@ -111,6 +116,24 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
     ListTile(
       title: Row(
         children: [
+          Icon(Icons.auto_stories),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          ),
+          Text('Consultation'),
+        ],
+      ),
+      onTap: () => {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Consultation(),
+            ))
+      },
+    ),
+    ListTile(
+      title: Row(
+        children: [
           Icon(Icons.settings),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -119,7 +142,9 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
         ],
       ),
       onTap: () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => null))
+        NotificationService.notify(
+            scaffoldKey: scaffoldKey,
+            message: 'Sorry, this feature is currently unavailable')
       },
     ),
     ListTile(
@@ -133,8 +158,7 @@ List<ListTile> buildDefaultDrawerItems(BuildContext context, User user) {
         ],
       ),
       onTap: () => {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Help()))
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Help()))
       },
     ),
     ListTile(
@@ -197,13 +221,15 @@ class Layout extends StatelessWidget {
         backgroundColor: Theme.of(context).backgroundColor,
         key: scaffoldKey,
         appBar: AppBar(
-          title: Text(title),
-        ),
+            title: Text(
+          title,
+          style: TextStyle(fontFamily: 'Klavika'),
+        )),
         drawer: Drawer(
           child: ListView(
             children: [
               buildDrawerHeader(context, user),
-              ...buildDefaultDrawerItems(context, user)
+              ...buildDefaultDrawerItems(context, user, scaffoldKey)
             ],
           ),
         ),

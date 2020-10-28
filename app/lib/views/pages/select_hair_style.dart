@@ -13,6 +13,7 @@ import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/selectable_card.dart';
 import 'package:app/widgets/cards_grid.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:app/models/model_picture.dart';
@@ -73,9 +74,22 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
               type: 'modelPicture',
               modelPicture: e,
               modelPictureWidget: widget.userToken != null
-                  ? Image.network(
-                      '${ModelPicturesService.modelPicturesUri}/file/${e.id}',
-                      headers: {
+                  ? CachedNetworkImage(
+                      imageUrl:
+                          '${ModelPicturesService.modelPicturesUri}/file/${e.id}',
+                      progressIndicatorBuilder: (context, url, progress) {
+                        if (progress == null || progress.progress == null) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: progress.progress,
+                          ),
+                        );
+                      },
+                      httpHeaders: {
                         "Origin": ADMIN_PORTAL_URL,
                         "Authorization": "Bearer ${widget.userToken}"
                       },

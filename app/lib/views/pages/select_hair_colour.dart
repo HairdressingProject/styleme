@@ -216,11 +216,10 @@ class _SelectHairColourState extends State<SelectHairColour> {
             style: TextStyle(fontFamily: 'Klavika'),
           ),
         ),
-        body: SingleChildScrollView(
+        body: Scrollbar(
           controller: _scrollController,
-          child: Scrollbar(
+          child: SingleChildScrollView(
             controller: _scrollController,
-            isAlwaysShown: true,
             child: Column(
               children: [
                 const Padding(
