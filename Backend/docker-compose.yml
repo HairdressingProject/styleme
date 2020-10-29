@@ -16,7 +16,9 @@ services:
     image: adminer
     restart: always
     ports:
-      - 9000:9000
+      - "9000:9000"
+    expose:
+      - "9000"
 
   users_api:
     image: mcr.microsoft.com/dotnet/core/sdk:3.1
@@ -26,7 +28,9 @@ services:
       - ./UsersAPI:/api
     command: sh -c "dotnet watch run"
     ports:
-      - 5050:5050
+      - "5050:5050"
+    expose:
+      - "5050"
     depends_on:
       - db
 

@@ -63,7 +63,7 @@ namespace UsersAPI
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureKestrel(serverOptions => {
-                        serverOptions.Listen(IPAddress.Loopback, 5050);
+                        // serverOptions.Listen(IPAddress.Loopback, 5050);
                         /* serverOptions.Listen(IPAddress.Loopback, 5051, listenOptions => {
                             if (settings.CertificateFilename != null && settings.CertificatePWD != null)
                             {
