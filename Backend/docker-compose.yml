@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_USER: dev_admin
+      MYSQL_PASSWORD: administrator
+      MYSQL_ROOT_PASSWORD: Secret1
+      MYSQL_DATABASE: hairdressing_project_db
+    volumes:
+      - hairdressing_project_data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9000:9000
+
+  users_api:
+    image: mcr.microsoft.com/dotnet/core/sdk:3.1
+    restart: always
+    working_dir: /api
+    volumes:
+      - ./UsersAPI:/api
+    command: sh -c "dotnet watch run"
+    ports:
+      - 5050:5050
+    depends_on:
+      - db
+
+volumes:
+  hairdressing_project_data:
