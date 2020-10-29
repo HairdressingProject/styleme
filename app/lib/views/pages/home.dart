@@ -81,6 +81,8 @@ class _HomeState extends State<Home> {
   bool _isDiscardChangesLoading = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
+  Picture _originalPicture;
+  // Picture _currentPictureNoColour;
 
   @override
   void initState() {
@@ -232,6 +234,10 @@ class _HomeState extends State<Home> {
           _currentHairStyle = await _fetchLatestHairStyleEntry();
 
           _currentPictureFile = await _fetchLatestPictureFile();
+
+          _originalPicture = await _fetchOriginalPicture();
+
+          // _currentPictureNoColour = _fetchCurrentPictureNoColour();
 
           if (_currentHairStyle != null) {
             _completedRoutes.add(SelectHairStyle.routeName);
@@ -831,9 +837,7 @@ class _HomeState extends State<Home> {
                                 children: [
                                   MaterialButton(
                                       onPressed: _onCompareToOriginal,
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              15,
+                                      height: 45.00,
                                       color: Color.fromARGB(220, 124, 62, 233),
                                       child: Text(
                                         'Compare to original',
@@ -850,9 +854,7 @@ class _HomeState extends State<Home> {
                                   ),
                                   MaterialButton(
                                       onPressed: _onDiscardChanges,
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              15,
+                                      height: 45.00,
                                       color: Color.fromARGB(220, 249, 9, 17),
                                       child: Text(
                                         'Discard changes',
@@ -977,7 +979,7 @@ class _HomeState extends State<Home> {
                                   allModelPictures: _allModelPictures,
                                   allHairLengths: _allHairLengths,
                                   onHairStyleUpdated: _onHairStyleUpdated,
-                                  currentUserPicture: _currentPicture,
+                                  currentUserPicture: _originalPicture, // before: _currentPicture
                                 ),
                                 alreadySelected: _completedRoutes
                                     .contains(SelectHairStyle.routeName),
@@ -994,7 +996,7 @@ class _HomeState extends State<Home> {
                                 allModelPictures: _allModelPictures,
                                 allHairLengths: _allHairLengths,
                                 onHairStyleUpdated: _onHairStyleUpdated,
-                                currentUserPicture: _currentPicture,
+                                currentUserPicture: _originalPicture, // before: _currentPicture
                               ),
                               alreadySelected: false,
                               enabled: false);

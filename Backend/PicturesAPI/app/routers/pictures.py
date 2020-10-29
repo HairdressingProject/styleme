@@ -328,7 +328,7 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
                         new_history: schemas.HistoryCreate = schemas.HistoryCreate(picture_id=mod_pic.id,
                                                                                    original_picture_id=latest_entry.original_picture_id,
                                                                                    previous_picture_id=latest_entry.picture_id,
-                                                                                   hair_colour_id=latest_entry.hair_colour_id,
+                                                                                #    hair_colour_id=latest_entry.hair_colour_id,
                                                                                    hair_style_id=model_picture.hair_style_id,
                                                                                    face_shape_id=latest_entry.face_shape_id,
                                                                                    user_id=user.id)
