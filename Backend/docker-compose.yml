@@ -9,16 +9,20 @@ services:
       MYSQL_PASSWORD: administrator
       MYSQL_ROOT_PASSWORD: Secret1
       MYSQL_DATABASE: hairdressing_project_db
+    ports:
+      - "3306:3306"
     volumes:
       - hairdressing_project_data:/var/lib/mysql
+      - ./Database/init:/docker-entrypoint-initdb.d
+    tty: true
 
   adminer:
     image: adminer
     restart: always
     ports:
-      - "9000:9000"
-    expose:
-      - "9000"
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
 
   users_api:
     image: mcr.microsoft.com/dotnet/core/sdk:3.1
