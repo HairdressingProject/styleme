@@ -1,0 +1,66 @@
+attrs==20.2.0
+boto3==1.16.8
+botocore==1.19.8
+certifi==2020.6.20
+chardet==3.0.4
+click==7.1.2
+cloudpickle @ file:///home/conda/feedstock_root/build_artifacts/cloudpickle_1598400192773/work
+cycler==0.10.0
+cytoolz==0.11.0
+dask @ file:///home/conda/feedstock_root/build_artifacts/dask-core_1602029610262/work
+decorator==4.4.2
+dlib @ file:///home/conda/feedstock_root/build_artifacts/dlib_1602513651851/work
+face-alignment==1.1.1
+face-recognition @ file:///home/conda/feedstock_root/build_artifacts/face_recognition_1600102073710/work
+face-recognition-models @ file:///home/conda/feedstock_root/build_artifacts/face_recognition_models_1595707436534/work
+fastapi==0.61.1
+h11==0.11.0
+idna==2.10
+imagecodecs @ file:///home/conda/feedstock_root/build_artifacts/imagecodecs_1591487870377/work
+imageio @ file:///home/conda/feedstock_root/build_artifacts/imageio_1594044661732/work
+iniconfig==1.1.1
+jmespath==0.10.0
+joblib @ file:///tmp/build/80754af9/joblib_1601912903842/work
+kiwisolver @ file:///home/conda/feedstock_root/build_artifacts/kiwisolver_1603882994700/work
+matplotlib @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-suite_1602600751051/work
+networkx @ file:///home/conda/feedstock_root/build_artifacts/networkx_1598210780226/work
+numpy @ file:///home/conda/feedstock_root/build_artifacts/numpy_1603047562340/work
+olefile==0.46
+orjson==3.4.3
+packaging==20.4
+pandas==1.1.3
+Pillow @ file:///tmp/build/80754af9/pillow_1602788711040/work
+pluggy==0.13.1
+py==1.9.0
+pydantic==1.7.1
+PyMySQL==0.10.1
+pyparsing==2.4.7
+PyQt5==5.12.3
+PyQt5-sip==4.19.18
+PyQtChart==5.12
+PyQtWebEngine==5.12.1
+pytest==6.1.2
+python-dateutil==2.8.1
+python-dotenv==0.15.0
+pytz==2020.1
+PyWavelets @ file:///home/conda/feedstock_root/build_artifacts/pywavelets_1602504439440/work
+PyYAML==5.3.1
+requests==2.24.0
+s3transfer==0.3.3
+scikit-image==0.17.2
+scikit-learn @ file:///tmp/build/80754af9/scikit-learn_1598376899566/work
+scipy @ file:///tmp/build/80754af9/scipy_1597686650319/work
+sip==4.19.13
+six @ file:///home/conda/feedstock_root/build_artifacts/six_1590081179328/work
+SQLAlchemy==1.3.20
+starlette==0.13.6
+threadpoolctl @ file:///tmp/tmp9twdgx9k/threadpoolctl-2.1.0-py3-none-any.whl
+tifffile @ file:///home/conda/feedstock_root/build_artifacts/tifffile_1601589267960/work
+toml==0.10.1
+toolz @ file:///home/conda/feedstock_root/build_artifacts/toolz_1600973991856/work
+torch==1.4.0
+torchvision==0.5.0
+tornado @ file:///home/conda/feedstock_root/build_artifacts/tornado_1602488891005/work
+tqdm @ file:///tmp/build/80754af9/tqdm_1602185206534/work
+urllib3==1.25.11
+uvicorn==0.12.2
