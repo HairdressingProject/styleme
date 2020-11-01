@@ -42,6 +42,46 @@ To stop your services, run:
 docker-compose down
 ```
 
+## Simulating a production environment
+
+If you wish to test production settings and other scenarios, follow the steps below:
+
+1. **Add production settings for Users API**
+
+   Create a file called `appsettings.Production.json` inside the `UsersAPI` folder, identical to `appsettings.json` (simply copy and paste the code).
+
+   Then, add the following section at the end of `appsettings.Production.json` (after `ConnectionStrings`):
+
+   ```json
+    "ConnectionStrings": {"..."},
+    "Kestrel": {
+        "EndPoints": {
+          "Http": {
+            "Url": "http://*:5050"
+          },
+          "HttpsDefaultCert": {
+              "Url": "https://*:5051"
+          }
+        }
+      }
+   ```
+
+2. **Start services**
+
+   Now run the command below from the `Backend` folder to start all services:
+
+   ```bash
+    $ docker-compose -f docker-compose.production.yml
+   ```
+
+   As mentioned previously, you may add the `-d` flag to the previous command to let it run in the background.
+
+   Notice in the logs that the Users API will now use production settings, which you may customise / fine tune by modifying the `appsettings.Production.json` file.
+
+   Refer to the [docs](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-3.1 "Kestrel configuration") for more information.
+
+   **NOTE**: Although the logs mention that the Users API will also be listening on `https://localhost:5051`, it will not work because no SSL certificate was configured in the container. You should use `http://localhost:5050` instead.
+
 The `docker-compose.yml` file includes the following services (for the time being):
 
 - MariaDB with user and database configured (`db`)

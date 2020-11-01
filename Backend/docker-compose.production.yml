@@ -42,39 +42,42 @@ services:
       - db
 
   users_api:
-    image: mcr.microsoft.com/dotnet/core/sdk:3.1
-    container_name: users_api
+    image: users_api_production
+    container_name: users_api_production
+    build:
+      context: ./UsersAPI
+      dockerfile: Dockerfile.production
     restart: always
+    command: sh -c "dotnet UsersAPI.dll"
     working_dir: /api
-    volumes:
-      - ./UsersAPI:/api
-    command: sh -c "dotnet watch run"
     ports:
       - "5050:5050"
+      - "5000:5000"
+      - "5001:5001"
     networks:
       glue:
         ipv4_address: 22.22.22.4
     depends_on:
       - db
 
-  pictures_api:
-    image: pictures-api
-    container_name: pictures_api
-    restart: always
-    build:
-      context: ./PicturesAPI
-    command: bash -c "uvicorn app.main:app --port 8000 --host 0.0.0.0 --reload"
-    working_dir: /api
-    volumes:
-      - ./PicturesAPI:/api
-    ports:
-      - "8000:8000"
-    networks:
-      glue:
-        ipv4_address: 22.22.22.5
-    depends_on:
-      - db
-      - users_api
+  # pictures_api:
+  #   image: pictures-api
+  #   container_name: pictures_api
+  #   restart: always
+  #   build:
+  #     context: ./PicturesAPI
+  #   command: bash -c "uvicorn app.main:app --port 8000 --host 0.0.0.0 --reload"
+  #   working_dir: /api
+  #   volumes:
+  #     - ./PicturesAPI:/api
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     glue:
+  #       ipv4_address: 22.22.22.5
+  #   depends_on:
+  #     - db
+  #     - users_api
 
   # model_pictures_uploader:
   #   image: model_pictures_uploader

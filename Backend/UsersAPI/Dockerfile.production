@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/dotnet/core/sdk AS base
+WORKDIR /app
+EXPOSE 5000
+EXPOSE 5001
+EXPOSE 5050
+
+FROM mcr.microsoft.com/dotnet/core/sdk AS build
+WORKDIR /src
+COPY ["UsersAPI.csproj", ""]
+RUN dotnet restore "./UsersAPI.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "UsersAPI.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "UsersAPI.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /api
+COPY --from=publish /app/publish .
+COPY --from=build /src/appsettings.Production.json .
