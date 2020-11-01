@@ -6,6 +6,12 @@ Before initialising your containers, update the `USERS_API_URL` variable in your
 USERS_API_URL=http://22.22.22.4:5050
 ```
 
+You should update the `DB_HOST` variable in the same file as well:
+
+```bash
+DB_HOST=db
+```
+
 To start a development environment for the backend using `docker-compose`, run from this folder:
 
 ```bash

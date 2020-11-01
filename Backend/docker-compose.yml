@@ -38,6 +38,8 @@ services:
     networks:
       glue:
         ipv4_address: 22.22.22.3
+    depends_on:
+      - db
 
   users_api:
     image: mcr.microsoft.com/dotnet/core/sdk:3.1
