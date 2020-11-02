@@ -56,7 +56,7 @@ class HistoryActions:
         return db.query(models.History).join(models.Picture,
                                              models.History.picture_id == models.Picture.id) \
             .filter(
-            models.Picture.file_name.ilike("%" + filename.strip() + "%")).first()
+            models.Picture.file_name.ilike("%" + filename.strip() + "%")).all()
 
     def get_user_id_from_picture_id(self, db: Session, picture_id: int) -> Union[models.User, None]:
         """

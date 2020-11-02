@@ -299,8 +299,14 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
     if user_picture and model_picture:
 
         try:
+            # get original picture from history based on user_picture
+            pic_history: List[models.History] = history_actions.get_picture_history(db=db,
+                                                                                    filename=user_picture.file_name)
+            original_pic_id: int = pic_history[0].original_picture_id
+            original_pic: models.Picture = picture_actions.read_picture_by_id(db=db, picture_id=original_pic_id)
+
             # apply hair transfer
-            picture_info = picture_service.change_hairstyle(user_picture=user_picture, model_picture=model_picture)
+            picture_info = picture_service.change_hairstyle(user_picture=original_pic, model_picture=model_picture)
             print(picture_info)
 
             # create new picture and add to db
@@ -328,7 +334,7 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
                         new_history: schemas.HistoryCreate = schemas.HistoryCreate(picture_id=mod_pic.id,
                                                                                    original_picture_id=latest_entry.original_picture_id,
                                                                                    previous_picture_id=latest_entry.picture_id,
-                                                                                #    hair_colour_id=latest_entry.hair_colour_id,
+                                                                                   #    hair_colour_id=latest_entry.hair_colour_id,
                                                                                    hair_style_id=model_picture.hair_style_id,
                                                                                    face_shape_id=latest_entry.face_shape_id,
                                                                                    user_id=user.id)
@@ -340,8 +346,9 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
                                     detail='No history associated with this user was found. Please upload a picture '
                                            'first.')
             raise HTTPException(status_code=404, detail='No user associated with this picture was found')
-        except:
-            raise HTTPException(status_code=422, detail='Could not apply hair style swap. Please try another image.')
+        except Exception as e:
+            raise HTTPException(status_code=422,
+                                detail=f'Could not apply hair style swap. Please try another image.\n\nException: {e}')
 
     raise HTTPException(status_code=404, detail='No user picture or model picture associated with these IDs were found')
 
