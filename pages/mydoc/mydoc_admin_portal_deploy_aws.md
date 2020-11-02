@@ -10,41 +10,31 @@ folder: mydoc
 ---
 
 ## Table of contents
-- [Cloud Service Provider](#Cloud-Service-Provider)
-- [Features](#Features)
-- [Development Stack </>](#Development-Stack)
+
 - [Deployment](#Deployment)
 
-
-## Cloud Service Provider
-The instructions below describe how to deploy this project (Admin Portal, API and adata).
-
-If there is any detail missing, check the [Digital Ocean deployment page](/mydoc_admin_portal_deploy.html "Digital Ocean - Deployment") or contact the developers.
-
-## Features:
-+ OS: Ubuntu 20.04.1 (LTS) x64
-+ CPU: 2 CPUs
-+ Memmory: 4 GB
-+ Pricing: Depends on traffic / usage / services used
-
 ## Development Stack
+
 LAMPD - Linux / Apache / MariaDB / PHP / .NET Core
 
 ## Deployment
+
 To successfuly deploy this web application, we require to follow several steps
 
 ### 1a. Create account and EC2 instance
 
-Create an account on AWS and a new EC2 instance (__t2.medium__).
+Create an account on AWS and a new EC2 instance (**t2.medium**).
 
 This [tutorial](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html "EC2 Tutorial - AWS docs") might help.
 
-### 1b. Enabling HTTP/HTTPS access 
-In your AWS EC2 console, navigate to the Security tab, click on your security group and then "Edit inbound rules". 
+### 1b. Enabling HTTP/HTTPS access
 
-Add two new rules: 
+In your AWS EC2 console, navigate to the Security tab, click on your security group and then "Edit inbound rules".
+
+Add two new rules:
 
 For HTTP:
+
 - Type: HTTP
 - Protocol: TCP
 - Port range: 80
@@ -52,6 +42,7 @@ For HTTP:
 - Origin IP: 0.0.0.0/0 (All IPs)
 
 For HTTPS:
+
 - Type: HTTPS
 - Protocol: TCP
 - Port range: 443
@@ -77,7 +68,9 @@ sudo ufw allow ssh
 ```
 
 ### 2. Install and set up tools
+
 #### 1. Install Apache
+
 ```bash
 # On remote
 sudo add-apt-repository ppa:ondrej/apache2
@@ -95,6 +88,7 @@ If Apache service is active, you should now be able to access the public IPv4 of
 {% include image.html file="/deploy/apache_page.png" alt="Default Apache page" caption="Default Apache page" %}
 
 #### 2. Install PHP
+
 PHP 7 comes by default in Ubuntu’s official repositories. Update and isntall Apache and some modules
 
 ```bash
@@ -104,11 +98,13 @@ sudo apt install php libapache2-mod-php php-mbstring php-xmlrpc php-soap php-gd 
 ```
 
 To test that PHP (and also Apache) are working correctly, create a file in Apache's root durectory `/var/www/html`
+
 ```bash
 sudo nano /var/www/html/test.php
 ```
 
 and add
+
 ```php
 <?php
 phpinfo();
@@ -118,19 +114,21 @@ phpinfo();
 Now, browse http://your_public_IPv4_address/test.php and you should see your server details.
 
 #### 3. Configure DNS
-For this step, you should allocate an elastic IP address for your EC2 instance use Route 53 to link your domain to that IP address. This is also important to avoid changing your instance's IP address every time it restarts. 
+
+For this step, you should allocate an elastic IP address for your EC2 instance use Route 53 to link your domain to that IP address. This is also important to avoid changing your instance's IP address every time it restarts.
 
 First, allocate an elastic IP address for your EC2 instance:
 
 {% include image.html file="/deploy/allocate_ip_address.png" alt="Allocate Elastic IP" caption="Allocate Elastic IP" %}
 
-Then, register a hosted zone and a new record in Route 53 pointing to your domain name of type __A__ (and an extra one as alias - `www.your_domain`). Route traffic to the elastic IP address of your EC2 instance.
+Then, register a hosted zone and a new record in Route 53 pointing to your domain name of type **A** (and an extra one as alias - `www.your_domain`). Route traffic to the elastic IP address of your EC2 instance.
 
-Do the same for the API subdomain. Register a new record named `api.your_domain` pointing to the same IP address of your EC2 instance. 
+Do the same for the API subdomain. Register a new record named `api.your_domain` pointing to the same IP address of your EC2 instance.
 
 This [tutorial](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/migrate-dns-domain-in-use.html "Route 53 tutorial - AWS docs") might come in handy.
 
 #### 4. Enable Apache modules
+
 Add the following Apache modules for proxying, rewrite rules and headers:
 
 ```bash
@@ -142,7 +140,7 @@ sudo a2enmod rewrite
 sudo a2enmod headers
 ```
 
-You should also disable `mpm_prefork` and enable `mpm_event` for __HTTP/2__ support, along with `php7.4-fpm`:
+You should also disable `mpm_prefork` and enable `mpm_event` for **HTTP/2** support, along with `php7.4-fpm`:
 
 ```bash
 # Enabling php7.4-fpm
@@ -163,6 +161,7 @@ sudo systemctl reload apache2.service
 ```
 
 #### 5. Add basic Apache configuration
+
 Create a folder for the project (under `/var/www/<your domain name>`), copy your files to that folder and add a `.conf` file to `/etc/apache2/sites-available/` (e.g. `<your domain name>.conf`).
 
 Write the following configuration to your `.conf` file:
@@ -170,7 +169,7 @@ Write the following configuration to your `.conf` file:
 ```xml
 <VirtualHost *:80>
     ServerName your_domain
-    ServerAlias www.your_domain 
+    ServerAlias www.your_domain
     ServerAdmin webmaster@localhost
     Protocols h2 http/1.1
     DocumentRoot /var/www/your_domain/Admin_Portal
@@ -198,11 +197,14 @@ sudo systemctl restart apache2.service
 ```
 
 #### 6. Install and set up RDBMS (MariaDB)
+
 ```bash
 sudo apt install mariadb-server
 sudo mysql_secure_installation
 ```
+
 then
+
 ```
 Remove anonymous users? [Y/n] y
 Disallow root login remotely? [Y/n] n
@@ -217,6 +219,7 @@ sudo mariadb < /var/www/your_domain/Backend/Database/database_v2.1.sql
 ```
 
 #### 7. Generate SSL certificate and update API settings
+
 Now that your website has been enabled, you may now generate an SSL certificate for HTTPS.
 
 First, follow the instructions described here to install `certbot`:
@@ -245,49 +248,63 @@ And then update your `appsettings.Production.json` from the `API` folder:
 
 ```json
 {
-    "AppSettings": {
-      "Secret": "your_api_secret",
-      "CertificateFilename": "certificate.pfx",
-      "CertificatePWD": "your_certificate_password",
-      "Pepper": "your_pepper"
-    },
-    "Logging": {
-      "LogLevel": {
-        "Default": "Warning",
-        "Microsoft": "Warning",
-        "Microsoft.Hosting.Lifetime": "Warning",
-        "AdminApi.Services": "Information"
-      }
-    },
-    "Debug": {
-      "LogLevel":{
-        "Default": "Warning",
-        "Microsoft": "Warning",
-        "Microsoft.Hosting.Lifetime": "Warning",
-        "AdminApi.Services": "Information"
-      }
-    },
-    "EventSource": {
-      "LogLevel": {
-        "Default": "Warning",
-        "Microsoft": "Warning",
-        "Microsoft.Hosting.Lifetime": "Warning",
-        "AdminApi.Services": "Information"
-      }
-    },
-    "Console": {
-      "LogLevel": {
-        "Default": "Warning"
-      }
-    },
-    "AllowedHosts": "*",
-    "ConnectionStrings": {
-      "HairdressingProjectDB": "your_db_connection_string"
+  "AppSettings": {
+    "Secret": "your_api_secret",
+    "CertificateFilename": "certificate.pfx",
+    "CertificatePWD": "your_certificate_password",
+    "Pepper": "your_pepper"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Warning",
+      "AdminApi.Services": "Information"
     }
+  },
+  "Debug": {
+    "LogLevel": {
+      "Default": "Warning",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Warning",
+      "AdminApi.Services": "Information"
+    }
+  },
+  "EventSource": {
+    "LogLevel": {
+      "Default": "Warning",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Warning",
+      "AdminApi.Services": "Information"
+    }
+  },
+  "Console": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "StyleMeDevDB": "your_db_connection_string"
+  },
+  "Kestrel": {
+   "EndPoints": {
+     "Http": {
+       "Url": "http://*:5050"
+     },
+     "Https": {
+     "Url": "https://*:5051",
+     "Certificate": {
+       "Path": "certificate.pfx",
+       "Password": "your_certificate_password"
+     }
+   }
+ }
 }
 ```
 
 #### 8. Install .NET Core
+
 Run the following commands to add the Microsoft package signing key to your list of trusted keys and add the package repository.
 
 ```bash
@@ -305,6 +322,7 @@ sudo apt-get update; \
 ```
 
 #### 9. Test API
+
 Run the command below to build and run the API, ensure that it is working:
 
 ```bash
@@ -324,6 +342,7 @@ sudo dotnet user-secrets set "ConnectionStrings.HairdressingProjectDB" "your_con
 ```
 
 #### 10. Install NodeJS and npm
+
 Moving on to the Admin Portal, install the necessary dependencies first:
 
 ```bash
@@ -332,6 +351,7 @@ sudo apt install npm
 ```
 
 #### 11. Install packages for the Admin Portal
+
 Then, install packages:
 
 ```bash
@@ -346,6 +366,7 @@ sudo npm run build
 ```
 
 #### 12. Update Apache configuration
+
 Now that you have set up the database, SSL certificate, API and Admin Portal, you should update your Apache `.conf` file for production (NOT the original `your_domain.conf` file that you created previously, use the `your_domain-le-ssl.conf` file that was generated by `certbot` instead).
 
 The new `.conf` file can be found at: `/etc/apache2/sites-available/your_domain-le-ssl.conf`
@@ -362,7 +383,7 @@ The new `.conf` file can be found at: `/etc/apache2/sites-available/your_domain-
 	# However, you must set it for any further virtual host explicitly.
 	#ServerName www.example.com
 	ServerName your_domain
-	
+
 	Protocols h2 http/1.1
 	ServerAdmin webmaster@localhost
 	DocumentRoot /var/www/your_domain/your_domain/Admin_Portal
@@ -383,7 +404,7 @@ The new `.conf` file can be found at: `/etc/apache2/sites-available/your_domain-
 		Deny from all
 	</Directory>
 
-	
+
 	<Directory "/var/www/your_domain/Admin_Portal/php_backup">
 		Order deny,allow
 		Deny from all
@@ -428,17 +449,17 @@ The new `.conf` file can be found at: `/etc/apache2/sites-available/your_domain-
 	Header unset Pragma
 
 #	Policies
-	Header always set Content-Security-Policy "default-src 'unsafe-inline' https://your_domain https://api.your_domain.best https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com https://www.google.com https://www.gstatic.com;"	
+	Header always set Content-Security-Policy "default-src 'unsafe-inline' https://your_domain https://api.your_domain.best https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com https://www.google.com https://www.gstatic.com;"
 
 #	Caching
 	ExpiresActive On
 	ExpiresDefault "access plus 1 month"
-	
+
 	CacheRoot "/var/cache/apache2/"
 	CacheEnable disk /
 	CacheIgnoreCacheControl on
 	CacheDirLevels 3
-	CacheDirLength 5			
+	CacheDirLength 5
 	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
 	# error, crit, alert, emerg.
 	# It is also possible to configure the loglevel for particular
@@ -485,7 +506,104 @@ After modifying and saving your `your_domain-le-ssl.conf` file, reload Apache:
 ```bash
 sudo systemctl reload apache2.service
 ```
+
 #### 13. Test the Admin Portal
-You should now be able to navigate to https://your_domain and be greeted with the Sign In page of the Admin Portal. 
+
+You should now be able to navigate to https://your_domain and be greeted with the Sign In page of the Admin Portal.
+
+## Using Docker + Nginx
+
+If you are using our Docker images with Nginx, write the following configurations:
+
+- Nginx global configuration (`/etc/nginx/nginx.conf`):
+
+```
+http {
+	...
+	log_format compression '$remote_addr - $remote_user [$time_local] '
+							'"$request" $status $body_bytes_sent '
+							'"$http_referer" "$http_user_agent" "gzip_ratio"';
+	...
+}
+```
+
+- Users API (`/etc/nginx/sites-available/api.styleme.best`):
+
+```
+server {
+
+  server_name api.styleme.best;
+  access_log /var/log/nginx/api.styleme.access.log compression;
+
+  root /home/styleme/styleme/Backend;
+
+  location / {
+    proxy_pass                  http://localhost:5050;
+    proxy_set_header            Host $host;
+    proxy_set_header            X-Real-IP $remote_addr;
+  }
+
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/api.styleme.best/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/api.styleme.best/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = api.styleme.best) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
 
 
+  listen 80;
+  listen [::]:80;
+
+  server_name api.styleme.best;
+    return 404; # managed by Certbot
+```
+
+- Admin Portal / Adminer (`/etc/nginx/sites-available/admin.styleme.best`):
+
+```
+server {
+
+        root ~/styleme/Backend;
+
+        server_name admin.styleme.best www.admin.styleme.best;
+
+        location / {
+                proxy_pass              http://localhost:8080;
+                proxy_set_header        Host $host;
+        }
+
+
+    listen [::]:443 ssl; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/admin.styleme.best/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/admin.styleme.best/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+server {
+    if ($host = www.admin.styleme.best) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = admin.styleme.best) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+        listen 80;
+        listen [::]:80;
+
+        server_name admin.styleme.best www.admin.styleme.best;
+    return 404; # managed by Certbot
+```
+
+Refer to [this link](https://github.com/HairdressingProject/styleme/blob/deploy/Backend/README.md#simulating-a-production-environment "Simulating a production environment") for instructions on how to add the certificate to the Users API configuration.

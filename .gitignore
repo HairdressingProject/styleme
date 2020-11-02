@@ -514,3 +514,10 @@ secret_constants.php
 
 # Backend folder (for gh-pages branch)
 Backend/
+
+# App files
+app/
+
+# More VSCode stuff
+launch.json
+tasks.json
