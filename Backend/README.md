@@ -71,7 +71,7 @@ If you wish to test production settings and other scenarios, follow the steps be
    Now run the command below from the `Backend` folder to start all services:
 
    ```bash
-    $ docker-compose -f docker-compose.production.yml
+    $ docker-compose -f docker-compose.production.yml up
    ```
 
    As mentioned previously, you may add the `-d` flag to the previous command to let it run in the background.
