@@ -52,6 +52,7 @@ services:
     working_dir: /api
     ports:
       - "5050:5050"
+      - "5051:5051"
       - "5000:5000"
       - "5001:5001"
     networks:
