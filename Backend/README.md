@@ -55,16 +55,40 @@ If you wish to test production settings and other scenarios, follow the steps be
    ```json
     "ConnectionStrings": {"..."},
     "Kestrel": {
-        "EndPoints": {
-          "Http": {
-            "Url": "http://*:5050"
-          },
-          "HttpsDefaultCert": {
-              "Url": "https://*:5051"
-          }
+      "EndPoints": {
+        "Http": {
+          "Url": "http://*:5050"
+        },
+        "HttpsDefaultCert": {
+          "Url": "https://*:5051"
+       }
+     }
+    }
+   ```
+
+   If you already have an SSL certificate, then use the configuration below instead:
+
+   ```json
+   "ConnectionStrings": {"..."},
+    "Kestrel": {
+      "EndPoints": {
+        "Http": {
+          "Url": "http://*:5050"
+        },
+        "Https": {
+        "Url": "https://*:5051",
+        "Certificate": {
+          "Path": "certificate.pfx",
+          "Password": "<your certificate password>"
         }
       }
+    }
+   }
    ```
+
+Refer to [our documentation](https://hairdressingproject.github.io/styleme/mydoc_admin_portal_deploy_aws.html#7-generate-ssl-certificate-and-update-api-settings "Generate SSL certificate") for more information on how to generate a `certificate.pfx` file.
+
+You may also check out [this link](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04 "Securing Nginx with Let's Encrypt") for instructions on how to create a Let's Encrypt SSL certificate and link it to your Nginx configuration using [certbot](https://certbot.eff.org/ "Certbot").
 
 2. **Start services**
 

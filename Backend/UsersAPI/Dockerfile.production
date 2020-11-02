@@ -20,3 +20,5 @@ FROM base AS final
 WORKDIR /api
 COPY --from=publish /app/publish .
 COPY --from=build /src/appsettings.Production.json .
+# Uncomment the line below if you already have generated an SSL certificate
+# COPY --from=build /src/certificate.pfx .
