@@ -105,7 +105,19 @@ You may also check out [this link](https://www.digitalocean.com/community/tutori
    Refer to the [docs](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-3.1 "Kestrel configuration") for more information.
 
    **NOTE**: Although the logs mention that the Users API will also be listening on `https://localhost:5051`, it will not work because no SSL certificate was configured in the container. You should use `http://localhost:5050` instead.
+   
+ 3. **Start Pictures API**
+   
+   Using [gunicorn](https://gunicorn.org/ "Gunicorn website") is recommended to run FastAPI applications in production. 
+   
+   Run this command to start it from the `PicturesAPI` folder (instead of the usual `uvicorn app.main:app --reload`):
 
+   ```bash
+   gunicorn -w 4 -k uvicorn.workers.UvicornWorker --bind="0.0.0.0:8000" app.main:app
+   ```
+   
+   You may adjust the `-w` option (number of workers) as needed. Refer to the [docs](https://docs.gunicorn.org/en/latest/design.html?highlight=workers#how-many-workers "How many workers?") for more information on this.
+   
 The `docker-compose.yml` file includes the following services (for the time being):
 
 - MariaDB with user and database configured (`db`)
