@@ -1,0 +1,6 @@
+[mysqld]
+max_connections=10000
+read_buffer_size=1048576
+max_allowed_packet=209715200
+wait_timeout=31536000
+net_read_timeout=600

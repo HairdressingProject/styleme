@@ -19,7 +19,7 @@ WORKDIR ${workdir}
 # .env
 # App depedencies
 # AWS
-RUN pip install --upgrade pip python-dotenv fastapi uvicorn orjson requests SQLAlchemy PyMySQL pytest boto3 python-multipart aiofiles
+RUN pip install --upgrade pip python-dotenv fastapi uvicorn gunicorn orjson requests SQLAlchemy PyMySQL pytest boto3 python-multipart aiofiles uvloop httptools
 
 # Install conda packages
 # CMAKE + DLIB
