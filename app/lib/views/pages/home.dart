@@ -431,7 +431,9 @@ class _HomeState extends State<Home> {
       return Icon(Icons.add);
     }
 
-    if (_completedRoutes.contains(previousRoute)) {
+    if (_completedRoutes.contains(previousRoute) ||
+        currentRoute == SelectHairColour.routeName &&
+            _isButtonEnabled(currentRoute, SelectHairStyle.routeName)) {
       return Icon(Icons.add);
     } else {
       return Icon(Icons.access_time);
@@ -439,6 +441,9 @@ class _HomeState extends State<Home> {
   }
 
   bool _isButtonEnabled(String currentRoute, String previousRoute) {
+    if (currentRoute == SelectHairColour.routeName) {
+      return _completedRoutes.contains(SelectFaceShape.routeName);
+    }
     return _completedRoutes.contains(currentRoute) ||
         _completedRoutes.contains(previousRoute);
   }
@@ -979,7 +984,8 @@ class _HomeState extends State<Home> {
                                   allModelPictures: _allModelPictures,
                                   allHairLengths: _allHairLengths,
                                   onHairStyleUpdated: _onHairStyleUpdated,
-                                  currentUserPicture: _originalPicture, // before: _currentPicture
+                                  currentUserPicture:
+                                      _originalPicture, // before: _currentPicture
                                 ),
                                 alreadySelected: _completedRoutes
                                     .contains(SelectHairStyle.routeName),
@@ -996,7 +1002,8 @@ class _HomeState extends State<Home> {
                                 allModelPictures: _allModelPictures,
                                 allHairLengths: _allHairLengths,
                                 onHairStyleUpdated: _onHairStyleUpdated,
-                                currentUserPicture: _originalPicture, // before: _currentPicture
+                                currentUserPicture:
+                                    _originalPicture, // before: _currentPicture
                               ),
                               alreadySelected: false,
                               enabled: false);
