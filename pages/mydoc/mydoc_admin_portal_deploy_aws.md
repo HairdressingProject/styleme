@@ -527,24 +527,35 @@ http {
 }
 ```
 
-- Users API (`/etc/nginx/sites-available/api.styleme.best`):
+- Users API + Pictures API (`/etc/nginx/sites-available/api.styleme.best`):
 
 ```
 server {
-
   server_name api.styleme.best;
   access_log /var/log/nginx/api.styleme.access.log compression;
 
   root /home/styleme/styleme/Backend;
 
-  location / {
+  keepalive_timeout 30;
+
+  location ~* ^\/(users|colours|hair_styles|face_shapes|hair_lengths) {
     proxy_pass                  http://localhost:5050;
     proxy_set_header            Host $host;
     proxy_set_header            X-Real-IP $remote_addr;
   }
 
-    listen [::]:443 ssl ipv6only=on; # managed by Certbot
-    listen 443 ssl; # managed by Certbot
+  location ~* \/(pictures|history|models) {
+    proxy_pass                  http://127.0.0.1:8000;
+    proxy_set_header            Host $host;
+    proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header            X-Forwarded-Proto $scheme;
+    proxy_set_header            Connection keep-alive;
+    proxy_redirect              off;
+    proxy_buffering             off;
+  }
+
+    listen [::]:443 ssl ipv6only=on http2; # managed by Certbot
+    listen 443 ssl http2; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/api.styleme.best/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/api.styleme.best/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
@@ -554,56 +565,59 @@ server {
 server {
     if ($host = api.styleme.best) {
         return 301 https://$host$request_uri;
-    } # managed by Certbot
+   } # managed by Certbot
 
 
-  listen 80;
-  listen [::]:80;
+  listen 80 deferred;
+  listen [::]:80 deferred;
+  client_max_body_size 4G;
 
   server_name api.styleme.best;
+  keepalive_timeout 30;
+
     return 404; # managed by Certbot
+}
 ```
 
 - Admin Portal / Adminer (`/etc/nginx/sites-available/admin.styleme.best`):
 
 ```
 server {
+  root ~/styleme/Backend;
 
-        root ~/styleme/Backend;
+  server_name admin.styleme.best www.admin.styleme.best;
 
-        server_name admin.styleme.best www.admin.styleme.best;
-
-        location / {
-                proxy_pass              http://localhost:8080;
-                proxy_set_header        Host $host;
-        }
-
-
-    listen [::]:443 ssl; # managed by Certbot
-    listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/admin.styleme.best/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/admin.styleme.best/privkey.pem; # managed by Certbot
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+  location / {
+          proxy_pass              http://localhost:8080;
+          proxy_set_header        Host $host;
+  }
 
 
+  listen [::]:443 ssl http2; # managed by Certbot
+  listen 443 ssl http2; # managed by Certbot
+  ssl_certificate /etc/letsencrypt/live/admin.styleme.best/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/admin.styleme.best/privkey.pem; # managed by Certbot
+  include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 }
+
 server {
-    if ($host = www.admin.styleme.best) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
+  if ($host = www.admin.styleme.best) {
+      return 301 https://$host$request_uri;
+  } # managed by Certbot
 
 
-    if ($host = admin.styleme.best) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
+  if ($host = admin.styleme.best) {
+      return 301 https://$host$request_uri;
+  } # managed by Certbot
 
 
-        listen 80;
-        listen [::]:80;
+      listen 80;
+      listen [::]:80;
 
-        server_name admin.styleme.best www.admin.styleme.best;
-    return 404; # managed by Certbot
+      server_name admin.styleme.best www.admin.styleme.best;
+  return 404; # managed by Certbot
+}
 ```
 
 Refer to [this link](https://github.com/HairdressingProject/styleme/blob/deploy/Backend/README.md#simulating-a-production-environment "Simulating a production environment") for instructions on how to add the certificate to the Users API configuration.
