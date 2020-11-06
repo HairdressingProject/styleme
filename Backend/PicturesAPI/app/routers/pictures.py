@@ -262,13 +262,16 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: in
                                                                                                      hair_colour_id=hair_colour.id)
 
                     # get new picture with modified hair colour
-                    new_pic: models.Picture = picture_actions.read_picture_by_id(db=db, picture_id=history_entry.picture_id)
+                    new_pic: models.Picture = picture_actions.read_picture_by_id(db=db,
+                                                                                 picture_id=history_entry.picture_id)
 
                     return {'history_entry': history_entry, 'picture': new_pic, 'hair_colour': hair_colour_entry}
                 raise HTTPException(status_code=404,
                                     detail='No hair colour record associated with this colour name was found')
-        except:
-            raise HTTPException(status_code=422, detail='Could not change hair colour. Please try a different picture.')
+        except Exception as ex:
+            print(ex)
+            raise HTTPException(status_code=422,
+                                detail='Could not change hair colour. Please try a different picture. Exception: ' + ex)
         raise HTTPException(status_code=404, detail='Selected picture not found')
     raise HTTPException(status_code=404, detail='No user associated with this picture ID was found')
 
