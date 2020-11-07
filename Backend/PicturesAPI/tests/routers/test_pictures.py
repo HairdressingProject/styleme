@@ -38,7 +38,12 @@ def test_read_picture():
     assert response.status_code == 401
 
 def test_read_pictures():
-    response = client.get("")
+    response = client.get("",
+                          headers={
+                              "Origin": "https://styleme.best",
+                              "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEiLCJuYmYiOjE2MDQ2NjY4OTIsImV4cCI6MTYwNTI3MTY5MiwiaWF0IjoxNjA0NjY2ODkyLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1NTAwIn0.bqUCaKYES1nK4uqFe0Dz_yQJZC3afx6VNr4KtQ8TYNM"
+                          }
+                          )
     assert response.status_code == 200
 
 
