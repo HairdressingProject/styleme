@@ -1,6 +1,7 @@
+import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
-class User {
+class User extends BaseModel {
   final int id;
   final String username;
   final String email;
@@ -10,7 +11,7 @@ class User {
   final String dateCreated;
   final String dateUpdated;
 
-  const User(
+  User(
       {@required this.id,
       @required this.username,
       @required this.email,
@@ -18,7 +19,8 @@ class User {
       this.familyName,
       @required this.userRole,
       this.dateCreated,
-      this.dateUpdated});
+      this.dateUpdated})
+      : super(id: id, dateCreated: dateCreated, dateUpdated: dateUpdated);
 
   @override
   String toString() {

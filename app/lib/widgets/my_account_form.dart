@@ -345,7 +345,9 @@ class MyAccountFormState extends State<MyAccountForm> {
         familyName: familyNameInput,
         password: passwordInput);
 
-    final response = await UserService.update(userId: _user.id, user: user);
+    final userService = UserService();
+
+    final response = await userService.put(obj: user);
 
     if (response != null) {
       if (response.statusCode == HttpStatus.ok) {
@@ -364,19 +366,24 @@ class MyAccountFormState extends State<MyAccountForm> {
               message:
                   'Could not process response from server. Please report this issue to developers.');
         }
-      }
-    } else {
-      if (response.statusCode == HttpStatus.conflict) {
-        widget.onNotify(message: 'Username / email are unavailable');
-      } else if (response.statusCode == HttpStatus.notFound) {
-        widget.onNotify(message: 'User not found. Please sign in or sign up.');
+        return false;
       } else {
-        widget.onNotify(
-            message:
-                'Could not update your account details. Please try again later.');
+        if (response.statusCode == HttpStatus.conflict) {
+          widget.onNotify(message: 'Username / email are unavailable');
+        } else if (response.statusCode == HttpStatus.notFound) {
+          widget.onNotify(
+              message: 'User not found. Please sign in or sign up.');
+        } else {
+          widget.onNotify(
+              message:
+                  'Could not update your account details. Please try again later.');
+        }
+        return false;
       }
     }
 
+    widget.onNotify(
+        message: 'Could not get a response from the server. Please try again.');
     return false;
   }
 

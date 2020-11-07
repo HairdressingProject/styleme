@@ -157,8 +157,10 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
   Future<HairStyle> _getHairStyleFromHistory(
       {@required int hairStyleId}) async {
     final historyHairStyleId = hairStyleId;
+    final hairStyleService = HairStyleService();
+
     final hairStyleResponse =
-        await HairStyleService.getById(id: historyHairStyleId);
+        await hairStyleService.getById(id: historyHairStyleId);
 
     if (hairStyleResponse != null &&
         hairStyleResponse.statusCode == HttpStatus.ok &&
@@ -175,7 +177,8 @@ class _SelectHairStyleState extends State<SelectHairStyle> {
       _isLoading = true;
     });
 
-    final hairStyleChangeResponse = await PicturesService.changeHairStyle(
+    final picturesService = PicturesService();
+    final hairStyleChangeResponse = await picturesService.changeHairStyle(
         userPictureId: widget.currentUserPicture.id,
         modelPictureId: _selectedHairStyle.id);
 

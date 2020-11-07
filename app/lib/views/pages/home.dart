@@ -97,7 +97,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<List<HairColour>> _fetchAllHairColours() async {
-    final allHairColoursResponse = await HairColourService.getAll();
+    final hairColourService = HairColourService();
+
+    final allHairColoursResponse = await hairColourService.getAll();
 
     if (allHairColoursResponse.statusCode == HttpStatus.ok &&
         allHairColoursResponse.body.isNotEmpty) {
@@ -111,7 +113,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<List<FaceShape>> _fetchAllFaceShapes() async {
-    final allFaceShapesResponse = await FaceShapeService.getAll();
+    final faceShapeService = FaceShapeService();
+
+    final allFaceShapesResponse = await faceShapeService.getAll();
 
     if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
         allFaceShapesResponse.body.isNotEmpty) {
@@ -126,7 +130,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<List<HairStyle>> _fetchAllHairStyles() async {
-    final allHairStylesResponse = await HairStyleService.getAll();
+    final hairStyleService = HairStyleService();
+
+    final allHairStylesResponse = await hairStyleService.getAll();
 
     if (allHairStylesResponse.statusCode == HttpStatus.ok &&
         allHairStylesResponse.body.isNotEmpty) {
@@ -141,7 +147,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<List<HairLength>> _fetchAllHairLengths() async {
-    final allHairLengthsResponse = await HairLengthService.getAll();
+    final hairLengthService = HairLengthService();
+
+    final allHairLengthsResponse = await hairLengthService.getAll();
 
     if (allHairLengthsResponse.statusCode == HttpStatus.ok &&
         allHairLengthsResponse.body.isNotEmpty) {
@@ -156,7 +164,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<List<ModelPicture>> _fetchAllModelPictures() async {
-    final allModelPicturesResponse = await ModelPicturesService.getAll();
+    final modelPicturesService = ModelPicturesService();
+
+    final allModelPicturesResponse = await modelPicturesService.getAll();
 
     if (allModelPicturesResponse.statusCode == HttpStatus.ok &&
         allModelPicturesResponse.body.isNotEmpty) {
@@ -175,8 +185,10 @@ class _HomeState extends State<Home> {
   Future<List<Image>> _fetchAllModelPicturesFiles(
       List<ModelPicture> allModelPictures) async {
     return Future.wait(allModelPictures.map((e) async {
+      final modelPicturesService = ModelPicturesService();
+
       final allModelPicturesResponseFile =
-          await ModelPicturesService.getFileById(modelPictureId: e.id);
+          await modelPicturesService.getFileById(modelPictureId: e.id);
 
       if (allModelPicturesResponseFile.statusCode == HttpStatus.ok &&
           allModelPicturesResponseFile.body.isNotEmpty) {
@@ -213,8 +225,10 @@ class _HomeState extends State<Home> {
       _allModelPictures = await _fetchAllModelPictures();
 
       if (_history != null && _history.isNotEmpty) {
+        final picturesService = PicturesService();
+
         final latestPictureEntry =
-            await PicturesService.getById(pictureId: _history.last.pictureId);
+            await picturesService.getById(id: _history.last.pictureId);
 
         if (latestPictureEntry.statusCode == HttpStatus.ok &&
             latestPictureEntry.body.isNotEmpty) {
@@ -269,8 +283,10 @@ class _HomeState extends State<Home> {
     if (_history != null &&
         _history.isNotEmpty &&
         _history.last.pictureId != null) {
+      final picturesService = PicturesService();
+
       final latestPictureFile =
-          await PicturesService.getFileById(pictureId: _history.last.pictureId);
+          await picturesService.getFileById(pictureId: _history.last.pictureId);
 
       if (latestPictureFile.statusCode == HttpStatus.ok &&
           latestPictureFile.body.isNotEmpty) {
@@ -284,8 +300,10 @@ class _HomeState extends State<Home> {
     if (_history != null &&
         _history.isNotEmpty &&
         _history.last.hairStyleId != null) {
+      final hairStyleService = HairStyleService();
+
       final latestHairStyleResponse =
-          await HairStyleService.getById(id: _history.last.hairStyleId);
+          await hairStyleService.getById(id: _history.last.hairStyleId);
 
       if (latestHairStyleResponse.statusCode == HttpStatus.ok &&
           latestHairStyleResponse.body.isNotEmpty) {
@@ -298,11 +316,13 @@ class _HomeState extends State<Home> {
   }
 
   Future<FaceShape> _fetchLatestFaceShapeEntry() async {
+    final faceShapeService = FaceShapeService();
+
     if (_history != null &&
         _history.isNotEmpty &&
         _history.last.faceShapeId != null) {
       final latestFaceShapeResponse =
-          await FaceShapeService.getById(id: _history.last.faceShapeId);
+          await faceShapeService.getById(id: _history.last.faceShapeId);
 
       if (latestFaceShapeResponse.statusCode == HttpStatus.ok &&
           latestFaceShapeResponse.body.isNotEmpty) {
@@ -318,8 +338,10 @@ class _HomeState extends State<Home> {
     if (_history != null &&
         _history.isNotEmpty &&
         _history.last.hairColourId != null) {
+      final hairColourService = HairColourService();
+
       final latestHairColourResponse =
-          await HairColourService.getById(id: _history.last.hairColourId);
+          await hairColourService.getById(id: _history.last.hairColourId);
 
       if (latestHairColourResponse.statusCode == HttpStatus.ok &&
           latestHairColourResponse.body.isNotEmpty) {
@@ -481,8 +503,10 @@ class _HomeState extends State<Home> {
   }
 
   Future<Picture> _fetchOriginalPicture() async {
-    final originalPictureResponse = await PicturesService.getById(
-        pictureId: _history.last.originalPictureId);
+    final picturesService = PicturesService();
+
+    final originalPictureResponse =
+        await picturesService.getById(id: _history.last.originalPictureId);
 
     if (originalPictureResponse != null &&
         originalPictureResponse.statusCode == HttpStatus.ok &&
@@ -499,8 +523,10 @@ class _HomeState extends State<Home> {
       _isDiscardChangesLoading = true;
     });
 
-    final originalPictureResponse = await PicturesService.getById(
-        pictureId: _history.last.originalPictureId);
+    final picturesService = PicturesService();
+
+    final originalPictureResponse =
+        await picturesService.getById(id: _history.last.originalPictureId);
 
     if (originalPictureResponse != null &&
         originalPictureResponse.statusCode == HttpStatus.ok &&
@@ -508,14 +534,16 @@ class _HomeState extends State<Home> {
       final originalPicture =
           Picture.fromJson(jsonDecode(originalPictureResponse.body));
 
-      final originalPictureFileResponse = await PicturesService.getFileById(
+      final originalPictureFileResponse = await picturesService.getFileById(
           pictureId: _history.last.originalPictureId);
 
       if (originalPictureFileResponse != null &&
           originalPictureFileResponse.statusCode == HttpStatus.ok &&
           originalPictureFileResponse.body.isNotEmpty) {
+        final faceShapeService = FaceShapeService();
+
         final originalFaceShapeResponse =
-            await FaceShapeService.getById(id: _history.last.faceShapeId);
+            await faceShapeService.getById(id: _history.last.faceShapeId);
 
         if (originalFaceShapeResponse != null &&
             originalFaceShapeResponse.statusCode == HttpStatus.ok &&
@@ -530,8 +558,10 @@ class _HomeState extends State<Home> {
                   entry.originalPictureId == _history.last.originalPictureId &&
                   (entry.hairStyleId != null || entry.hairColourId != null))
               .forEach((entry) async {
+            final historyService = HistoryService();
+
             final deleteEntryResponse =
-                await HistoryService.delete(historyId: entry.id);
+                await historyService.delete(resourceId: entry.id);
 
             if (deleteEntryResponse == null ||
                 deleteEntryResponse.statusCode != HttpStatus.ok) {
@@ -662,8 +692,9 @@ class _HomeState extends State<Home> {
       return;
     }
 
+    final picturesService = PicturesService();
     final currentPictureResponse =
-        await PicturesService.getFileById(pictureId: _currentPicture.id);
+        await picturesService.getFileById(pictureId: _currentPicture.id);
 
     if (currentPictureResponse != null &&
         currentPictureResponse.statusCode == HttpStatus.ok &&
@@ -720,8 +751,9 @@ class _HomeState extends State<Home> {
 
     final currentOriginalPictureId = _history.last.originalPictureId;
 
+    final picturesService = PicturesService();
     final currentOriginalPictureResponse =
-        await PicturesService.getById(pictureId: currentOriginalPictureId);
+        await picturesService.getById(id: currentOriginalPictureId);
 
     if (currentOriginalPictureResponse != null &&
         currentOriginalPictureResponse.statusCode == HttpStatus.ok &&
@@ -736,7 +768,7 @@ class _HomeState extends State<Home> {
           })
           .map((e) async {
             final currentPictureResponse =
-                await PicturesService.getById(pictureId: e.pictureId);
+                await picturesService.getById(id: e.pictureId);
 
             if (currentPictureResponse != null &&
                 currentPictureResponse.statusCode == HttpStatus.ok &&

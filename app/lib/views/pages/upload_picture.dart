@@ -75,7 +75,8 @@ class _UploadPictureState extends State<UploadPicture> {
       _isUploading = true;
     });
     if (_imagePicked && _image != null) {
-      final response = await PicturesService.upload(picture: _image);
+      final picturesService = PicturesService();
+      final response = await picturesService.upload(picture: _image);
       if (response.statusCode == HttpStatus.created ||
           response.statusCode == HttpStatus.ok) {
         final rawAPIResponse = await response.stream.bytesToString();
@@ -87,8 +88,10 @@ class _UploadPictureState extends State<UploadPicture> {
           final History historyEntry =
               History.fromJson(parsedAPIResponse['history_entry']);
 
-          final faceShapeDetectedResponse = await FaceShapeService.getAll(
-              faceShapeName: parsedAPIResponse['face_shape']);
+          final faceShapeService = FaceShapeService();
+
+          final faceShapeDetectedResponse = await faceShapeService.getAll(
+              resourceName: parsedAPIResponse['face_shape']);
 
           if (faceShapeDetectedResponse.statusCode == HttpStatus.ok &&
               faceShapeDetectedResponse.body.isNotEmpty) {

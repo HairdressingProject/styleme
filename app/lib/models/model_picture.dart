@@ -1,4 +1,6 @@
-class ModelPicture {
+import 'package:app/models/base_model.dart';
+
+class ModelPicture extends BaseModel {
   final int id;
   final String fileName;
   final String filePath;
@@ -12,36 +14,49 @@ class ModelPicture {
   final String dateCreated;
   final String dateUpdated;
 
-  ModelPicture({this.id, this.fileName, this.filePath, this.fileSize, this.width, this.height, this.faceShapeId, this.hairLengthId, this.hairStyleId, this.hairColourId, this.dateCreated, this.dateUpdated});
+  ModelPicture(
+      {this.id,
+      this.fileName,
+      this.filePath,
+      this.fileSize,
+      this.width,
+      this.height,
+      this.faceShapeId,
+      this.hairLengthId,
+      this.hairStyleId,
+      this.hairColourId,
+      this.dateCreated,
+      this.dateUpdated})
+      : super(id: id, dateCreated: dateCreated, dateUpdated: dateUpdated);
 
-  ModelPicture.fromJson(Map<String, dynamic> json):
-    id = json['id'],
-    fileName = json['file_name'],
-    filePath = json['file_path'],
-    fileSize = json['file_size'],
-    width = json['width'],
-    height = json['height'],
-    faceShapeId = json['face_shape_id'],
-    hairLengthId = json['hair_length_id'],
-    hairStyleId = json['hair_style_id'],
-    hairColourId = json['haor_colour_id'],
-    dateCreated = json['date_created'],
-    dateUpdated = json['date_updated'];
+  ModelPicture.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        fileName = json['file_name'],
+        filePath = json['file_path'],
+        fileSize = json['file_size'],
+        width = json['width'],
+        height = json['height'],
+        faceShapeId = json['face_shape_id'],
+        hairLengthId = json['hair_length_id'],
+        hairStyleId = json['hair_style_id'],
+        hairColourId = json['hair_colour_id'],
+        dateCreated = json['date_created'],
+        dateUpdated = json['date_updated'];
 
   Map<String, dynamic> toJson() => {
-    'id': this.id,
-    'file_name': this.fileName,
-    'file_path': this.filePath,
-    'file_size': this.fileSize,
-    'width': this.width,
-    'height': this.height,
-    'face_shape_id': this.faceShapeId,
-    'hair_length_id': this.hairLengthId,
-    'hair_style_id': this.hairStyleId,
-    'hair_colour_id': this.hairColourId,
-    'date_created': this.dateCreated,
-    'date_updated': this.dateUpdated
-  };
+        'id': this.id,
+        'file_name': this.fileName,
+        'file_path': this.filePath,
+        'file_size': this.fileSize,
+        'width': this.width,
+        'height': this.height,
+        'face_shape_id': this.faceShapeId,
+        'hair_length_id': this.hairLengthId,
+        'hair_style_id': this.hairStyleId,
+        'hair_colour_id': this.hairColourId,
+        'date_created': this.dateCreated,
+        'date_updated': this.dateUpdated
+      };
 
   @override
   String toString() {
@@ -58,6 +73,5 @@ class ModelPicture {
     Date created: ${this.dateCreated}
     Date updated: ${this.dateUpdated}
     ''';
-  }  
-
+  }
 }

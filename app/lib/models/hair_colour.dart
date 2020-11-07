@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-class HairColour {
+import 'base_model.dart';
+
+class HairColour extends BaseModel {
   final int id;
   final String colourName;
   final String colourHash;
@@ -8,13 +10,14 @@ class HairColour {
   final String dateCreated;
   final String dateUpdated;
 
-  const HairColour(
+  HairColour(
       {this.id,
       @required this.colourName,
       @required this.colourHash,
       this.label,
       this.dateCreated,
-      this.dateUpdated});
+      this.dateUpdated})
+      : super(id: id, dateCreated: dateCreated, dateUpdated: dateUpdated);
 
   @override
   String toString() {

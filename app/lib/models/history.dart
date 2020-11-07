@@ -1,6 +1,7 @@
+import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
-class History {
+class History extends BaseModel {
   final int id;
   final int pictureId;
   final int originalPictureId;
@@ -22,7 +23,8 @@ class History {
       this.faceShapeId,
       this.userId,
       this.dateCreated,
-      this.dateUpdated});
+      this.dateUpdated})
+      : super(id: id, dateCreated: dateCreated, dateUpdated: dateUpdated);
 
   @override
   String toString() {
