@@ -205,7 +205,7 @@ def make_face_df_save(file_path, file_name, save_path, filenum, df):
                     #d.line(face_landmarks[facial_feature], width=5)
                     d.point(face_landmarks[facial_feature], fill=(255,255,255))
 
-            pil_image.save(str(save_path + file_name.split('.')[0]) + '_rotated_pts.jpg', 'JPEG', quality=100)
+            # pil_image.save(str(save_path + file_name.split('.')[0]) + '_rotated_pts.jpg', 'JPEG', quality=100)
 
             # take_measurements width & height measurements
         msmt = []
@@ -303,7 +303,7 @@ def find_face_shape(df,file_num):
     best_mlp = MLPClassifier(activation='relu', alpha=0.0001, batch_size='auto', beta_1=0.9,
            beta_2=0.999, early_stopping=False, epsilon=1e-08,
            hidden_layer_sizes=(60, 100, 30, 100), learning_rate='constant',
-           learning_rate_init=0.01, max_iter=100, momentum=0.9,
+           learning_rate_init=0.01, max_iter=200, momentum=0.9,
            nesterovs_momentum=True, power_t=0.5, random_state=525,
            shuffle=True, solver='sgd', tol=0.0001, validation_fraction=0.1,
            verbose=False, warm_start=False)

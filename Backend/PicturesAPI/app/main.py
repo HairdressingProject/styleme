@@ -18,9 +18,28 @@ from app.routers import history
 from app.routers import test
 import time
 
+from starlette_exporter import PrometheusMiddleware, handle_metrics 
+from timing_asgi import TimingMiddleware, TimingClient
+from timing_asgi.integrations import StarletteScopeToName
+
 Base.metadata.create_all(bind=engine)
 
+class PrintTimings(TimingClient):
+    def timing(self, metric_name, timing, tags):
+        print(metric_name, timing, tags)
+
 app = FastAPI()
+
+
+app.add_middleware(PrometheusMiddleware)
+
+app.add_route("/metrics", handle_metrics)
+
+app.add_middleware(
+    TimingMiddleware,
+    client=PrintTimings(),
+    metric_namer=StarletteScopeToName(prefix="myapp", starlette_app=app)
+)
 
 
 # Middleware
@@ -33,30 +52,30 @@ async def add_process_time_header(request: Request, call_next):
     return response
 
 
-@app.middleware("http")
-async def authorise_user(request: Request, call_next):
-    # TODO: check request URL before running this middleware
-    # Certain routes need to access user data (such as POST /pictures)
-    # In that case, this middleware should be skipped and the logic should move to the route itself
-    print(request.url.path)
-    print(request.method)
+# @app.middleware("http")
+# async def authorise_user(request: Request, call_next):
+#     # TODO: check request URL before running this middleware
+#     # Certain routes need to access user data (such as POST /pictures)
+#     # In that case, this middleware should be skipped and the logic should move to the route itself
+#     print(request.url.path)
+#     print(request.method)
 
-    if '/pictures' not in request.url.path and request.method != 'POST':
-        user_data = get_user_data_from_token(request=request)
+#     if '/pictures' not in request.url.path and request.method != 'POST':
+#         user_data = get_user_data_from_token(request=request)
 
-        if user_data:
-            response: Response = await call_next(request)
-            return response
+#         if user_data:
+#             response: Response = await call_next(request)
+#             return response
 
-        return ORJSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={
-                "message": "Invalid credentials"
-            }
-        )
+#         return ORJSONResponse(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             content={
+#                 "message": "Invalid credentials"
+#             }
+#         )
     
-    response: Response = await call_next(request)
-    return response
+#     response: Response = await call_next(request)
+#     return response
 
 
 # Use the ones below in a production environment
