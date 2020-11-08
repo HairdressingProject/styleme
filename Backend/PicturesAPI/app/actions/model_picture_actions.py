@@ -8,7 +8,16 @@ from app.schemas.model_picture import ModelPictureCreate, ModelPictureUpdate
 
 
 class ModelPictureActions:
+    """
+    CRUD operations related to ModelPicture class
+    """
     def add_model_picture(self, db: Session, picture: ModelPictureCreate):
+        """
+        Add a model picture record to database
+        :param db: db session instance
+        :param picture: ModelPictureCreate schema
+        :return: ModelPicture class instance of the created record
+        """
         db_picture = ModelPicture(file_name=picture.file_name, file_path=picture.file_path,
                                   file_size=picture.file_size, height=picture.height, width=picture.width,
                                   face_shape_id=picture.face_shape_id)
@@ -19,14 +28,36 @@ class ModelPictureActions:
 
     def read_model_picture_by_file_name(self, db: Session, file_name: str, skip: int = 0, limit: int = 100) -> List[
         ModelPicture]:
+        """
+        Read a model picture record identified by it's ID from the database
+        :param db: db session instance
+        :param file_name: file name string
+        :param skip:
+        :param limit:
+        :return: List of ModelPicture class instances
+        """
         return db.query(ModelPicture) \
             .filter(ModelPicture.file_name.ilike("%" + file_name.strip() + "%")) \
             .offset(skip).limit(limit).all()
 
     def read_model_picture_by_id(self, db: Session, model_picture_id: int):
+        """
+        Read a model picture record identified by it's ID from the database
+        :param db: db session instance
+        :param model_picture_id: ID of the selected model picture
+        :return: ModelPicture class instance that match the selected ID
+        """
         return db.query(ModelPicture).filter(ModelPicture.id == model_picture_id).first()
 
     def read_model_pictures(self, db: Session, skip: int = 0, limit: int = 100, search: str = ""):
+        """
+        Read all model picture records from database
+        :param db: db session instance
+        :param skip:
+        :param limit:
+        :param search:
+        :return: List of ModelPicture class instances
+        """
         if not search.strip():
             return db.query(ModelPicture).offset(skip).limit(limit).all()
         return self.read_model_picture_by_file_name(db=db, file_name=search, skip=skip, limit=limit)
