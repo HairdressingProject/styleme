@@ -4,8 +4,7 @@ from datetime import datetime
 import face_recognition
 from app.models import Picture
 from app.models import ModelPicture
-from app.settings import PICTURE_UPLOAD_FOLDER, PICTURE_PROCESSED_FOLDER, FACE_SHAPE_RESULTS_PATH, \
-    HAIR_COLOUR_RESULTS_PATH
+from app.settings import PICTURE_UPLOAD_FOLDER, FACE_SHAPE_RESULTS_PATH, HAIR_COLOUR_RESULTS_PATH
 import pathlib
 import shutil
 import cv2
@@ -195,18 +194,24 @@ class PictureService:
         cv2.imwrite(file_name.as_posix() + "_NEW_cropped.jpg", picture_crop)
 
     def delete_picture(self, path, file_name):
+        """
+        Delete a picture file
+        :param path: path to selected file
+        :param file_name: selected file name
+        :return: void
+        """
         if os.path.exists(os.path.join(path, file_name)):
             os.remove(path + file_name)
 
     def get_picture_info(self, path, file_name) -> schemas.PictureInfo:
         """
         Retrieve information about file
-        :param file_name:
-        :param path:
+        :param file_name: selected file name
+        :param path: path to selected file
         :return: tuple: (path, file_name, file_size, height, width, created_at)
         """
-        file_name2 = os.path.splitext(path + file_name)[0]
-        file_extension = os.path.splitext(path + file_name)[1]
+        # file_name2 = os.path.splitext(path + file_name)[0]
+        # file_extension = os.path.splitext(path + file_name)[1]
         stats = os.stat(path + file_name)
         file_size = stats.st_size
         # created_at = datetime.fromtimestamp(stats.st_mtime)
@@ -234,7 +239,15 @@ class PictureService:
 
     def change_hair_colour(self, file_name, selected_colour, file_path=PICTURE_UPLOAD_FOLDER,
                            save_path=HAIR_COLOUR_RESULTS_PATH):
-        
+        """
+        Currently this function is not used
+        :param file_name:
+        :param selected_colour:
+        :param file_path:
+        :param save_path:
+        :return:
+        """
+
         if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
             os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
 
@@ -281,14 +294,24 @@ class PictureService:
 
         return picture_info
 
+    def change_hair_colour_RGB(self, file_name, r, b, g, file_path=PICTURE_UPLOAD_FOLDER,
+                               save_path=HAIR_COLOUR_RESULTS_PATH):
+        """
+        Change hair colour of a selected picture
+        :param file_name: selected file name
+        :param r: Red value of RGB color model
+        :param b: Blue value of RGB color model
+        :param g: Green value of RGB color model
+        :param file_path: path to selected picture to apply colour
+        :param save_path: path to where the changed colour file should be saved
+        :return: new picture file information
+        """
 
-    def change_hair_colour_RGB(self, file_name, selected_colour, r, b, g, file_path=PICTURE_UPLOAD_FOLDER,
-                           save_path=HAIR_COLOUR_RESULTS_PATH):
-        
         if not os.path.exists(os.path.join(pathlib.Path().absolute() / save_path)):
             os.makedirs(os.path.join(pathlib.Path().absolute() / save_path))
 
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
+        # ToDo: on a Linux OS, the path to this file must be a full path, not a relative path
         cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
 
         img_url = file_path + file_name  # @param {type: "string"}
@@ -328,9 +351,15 @@ class PictureService:
         picture_info = PictureService.get_picture_info(self, save_path, new_file_name)
         print(picture_info)
 
-        return picture_info        
+        return picture_info
 
     def change_hairstyle(self, user_picture: Picture, model_picture: ModelPicture):
+        """
+        Change a user hairstyle depending on the selected model hairstyle
+        :param user_picture: selected user Picture class instance
+        :param model_picture: selected ModelPicture class instance
+        :return: picture information of the generated file
+        """
 
         print(user_picture.file_path + user_picture.file_name, "User picture")
         print(model_picture.file_path + model_picture.file_name, "Model picture")
@@ -352,6 +381,12 @@ class PictureService:
         return picture_info
 
     def change_hairstyle_str(self, user_picture: str, model_picture: str):
+        """
+        Currently this function is not being used
+        :param user_picture:
+        :param model_picture:
+        :return:
+        """
 
         class hair_transfer_request(object):
             def __init__(self, user_picture, model_picture):
@@ -367,6 +402,12 @@ class PictureService:
         perform_swap(request_obj)
 
     def change_hairstyle_str_path(self, user_picture: str, model_picture: str):
+        """
+        Currently this function is not being used
+        :param user_picture:
+        :param model_picture:
+        :return:
+        """
 
         class hair_transfer_request(object):
             def __init__(self, user_picture, model_picture):
