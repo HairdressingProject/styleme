@@ -32,8 +32,8 @@ class ModelPictureActions:
         Read a model picture record identified by it's ID from the database
         :param db: db session instance
         :param file_name: file name string
-        :param skip:
-        :param limit:
+        :param skip: optionally skip a number of records (default = 0)
+        :param limit: optionally limit the number of results retrieved (default = 1000)
         :return: List of ModelPicture class instances
         """
         return db.query(ModelPicture) \
@@ -53,9 +53,9 @@ class ModelPictureActions:
         """
         Read all model picture records from database
         :param db: db session instance
-        :param skip:
-        :param limit:
-        :param search:
+        :param skip: optionally skip a number of records (default = 0)
+        :param limit: optionally limit the number of results retrieved (default = 1000)
+        :param search: optionally search history records by username (default = "")
         :return: List of ModelPicture class instances
         """
         if not search.strip():

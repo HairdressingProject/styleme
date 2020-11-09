@@ -171,9 +171,9 @@ async def read_picture_by_filename(picture_filename: str, response: Response, db
 @router.get("", response_model=List[schemas.Picture])
 def read_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
     """ Read all pictures from db
-    :param skip: skip the first n results
-    :param limit: limit the number of results
-    :param search: include a search string
+    :param skip: optionally skip a number of records (default = 0)
+    :param limit: optionally limit the number of results retrieved (default = 1000)
+    :param search: optionally search history records by username (default = "") include a search string
     :param db: db session instance
     :return: List of pictures
     """

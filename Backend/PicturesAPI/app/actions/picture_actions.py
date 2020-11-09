@@ -39,8 +39,8 @@ class PictureActions:
         Read a picture record identified by it's filename from database
         :param db: db session instance
         :param file_name: string or substring of filename
-        :param skip:
-        :param limit:
+        :param skip: optionally skip a number of records (default = 0)
+        :param limit: optionally limit the number of results retrieved (default = 1000)
         :return: List of picture class instances that matches the file_name query string
         """
         return db.query(Picture).filter(Picture.file_name.ilike("%" + file_name.strip() + "%")).offset(skip).limit(
@@ -50,9 +50,9 @@ class PictureActions:
         """
         Read all picture records from database
         :param db: db session instance
-        :param skip:
-        :param limit:
-        :param search: Optional: filename
+        :param skip: optionally skip a number of records (default = 0)
+        :param limit: optionally limit the number of results retrieved (default = 1000)
+        :param search: optionally search history records by username (default = "")
         :return: List of picture class instances
         """
         if not search.strip():
@@ -63,8 +63,8 @@ class PictureActions:
         """
         Read all model pictures from database
         :param db: db session instance
-        :param skip:
-        :param limit:
+        :param skip: optionally skip a number of records (default = 0)
+        :param limit: optionally limit the number of results retrieved (default = 1000)
         :return: List of picture instance class of model pictures
         """
         search_results = db.query(models.Picture).filter(models.Picture.file_path.ilike("%pictures/models%")).offset(

@@ -164,9 +164,9 @@ async def update_model_picture(model_picture_id: int, model_picture: schemas.Mod
 def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
     """
     Read all model pictures from db
-    :param skip:
-    :param limit:
-    :param search:
+    :param skip: optionally skip a number of records (default = 0)
+    :param limit: optionally limit the number of results retrieved (default = 1000)
+    :param search: optionally search history records by username (default = "")
     :param db: db session instance
     :return: List of ModelPicture class instances
     """
