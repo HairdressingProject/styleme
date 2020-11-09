@@ -238,7 +238,6 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: in
         # apply hair colour
         try:
             picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name,
-                                                                  selected_colour=colour,
                                                                   r=r, b=b, g=g,
                                                                   file_path=selected_picture.file_path)
             # create new picture and add to db
