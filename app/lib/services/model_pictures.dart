@@ -10,19 +10,37 @@ class ModelPicturesService extends BaseService {
 
   ModelPicturesService() : super(ModelPicturesService.modelPicturesUri);
 
-  Future<http.Response> getFileById({@required int modelPictureId}) async {
-    try {
-      final userToken = await Authentication.retrieveToken();
+  Future<http.Response> getFileById(
+      {@required int modelPictureId,
+      http.Client client,
+      bool authenticate = true}) async {
+    if (client == null) {
+      client = http.Client();
+    }
 
-      if (userToken != null && userToken.isNotEmpty) {
+    try {
+      if (authenticate) {
+        final userToken = await Authentication.retrieveToken();
+
+        if (userToken != null && userToken.isNotEmpty) {
+          final response = await http.get(
+              Uri.encodeFull('$modelPicturesUri/file/$modelPictureId'),
+              headers: {
+                "Origin": ADMIN_PORTAL_URL,
+                "Authorization": "Bearer $userToken"
+              }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
+          return response;
+        }
+      } else {
         final response = await http.get(
             Uri.encodeFull('$modelPicturesUri/file/$modelPictureId'),
             headers: {
-              "Origin": ADMIN_PORTAL_URL,
-              "Authorization": "Bearer $userToken"
+              "Origin": ADMIN_PORTAL_URL
             }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
+
         return response;
       }
+
       return null;
     } catch (err) {
       print('Failed to get model picture file by id');
@@ -35,14 +53,23 @@ class ModelPicturesService extends BaseService {
   Future<http.Response> getById(
       {@required int id, http.Client client, bool authenticate = true}) async {
     try {
-      final userToken = await Authentication.retrieveToken();
+      if (authenticate) {
+        final userToken = await Authentication.retrieveToken();
 
-      if (userToken != null && userToken.isNotEmpty) {
+        if (userToken != null && userToken.isNotEmpty) {
+          final response = await http
+              .get(Uri.encodeFull('$modelPicturesUri/id/$id'), headers: {
+            "Origin": ADMIN_PORTAL_URL,
+            "Authorization": "Bearer $userToken"
+          }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
+          return response;
+        }
+      } else {
         final response = await http
             .get(Uri.encodeFull('$modelPicturesUri/id/$id'), headers: {
-          "Origin": ADMIN_PORTAL_URL,
-          "Authorization": "Bearer $userToken"
+          "Origin": ADMIN_PORTAL_URL
         }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
+
         return response;
       }
       return null;

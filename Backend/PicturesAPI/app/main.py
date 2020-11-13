@@ -32,7 +32,7 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time-ms"] = str(process_time * 1000)
     return response
 
-
+"""
 @app.middleware("http")
 async def authorise_user(request: Request, call_next):
     # TODO: check request URL before running this middleware
@@ -57,7 +57,7 @@ async def authorise_user(request: Request, call_next):
     
     response: Response = await call_next(request)
     return response
-
+"""
 
 # Use the ones below in a production environment
 """

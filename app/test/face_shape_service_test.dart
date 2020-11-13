@@ -13,7 +13,7 @@ class MockClient extends Mock implements http.Client {}
 class MockFaceShapesService extends Mock implements FaceShapeService {}
 
 main() {
-  group('getAllFaceShapes', () {
+  group('getAll', () {
     test('returns all face shapes after calling FaceShapeService.getAll',
         () async {
       final client = MockClient();
