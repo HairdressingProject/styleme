@@ -19,11 +19,19 @@ from app.libraries.HairTransfer.QuantumProcessor import perform_swap
 from app import schemas
 
 from prometheus_client import Summary
-HAIR_COLOUR_REQUEST_TIME = Summary('hair_colour_request_processing_seconds', 'Time spent processing hair colour request')
+
+# Metrics related to Upload Picture (POST /pictures)
 SAVE_PICTURE_REQUEST_TIME = Summary('save_picture_request_processing_seconds', 'Time spent saving picture')
 DETECT_FACE_REQUEST_TIME = Summary('detect_face_request_processing_seconds', 'Time spent detecting faces')
 DETECT_FACE_LANDMARKS_REQUEST_TIME = Summary('detect_face_landmarks_request_processing_seconds', 'Time spent detecting face lanmarks')
 DETECT_FACE_SHAPE_REQUEST_TIME = Summary('detect_face_shape_request_processing_seconds', 'Time spent detecting face shapes')
+GET_PICTURE_INFO_REQUEST_TIME = Summary('get_picture_info_request_processing_seconds', 'Time spent saving picture')
+
+# Metrics related to change hair colour (GET /pictures/change_hair_colour)
+HAIR_COLOUR_REQUEST_TIME = Summary('hair_colour_request_processing_seconds', 'Time spent processing hair colour request')
+
+# Metrics related to Change hair style (GET /pictures/change_hair_style)
+CHANGE_HAIR_STYLE_REQUEST_TIME = Summary('change_hair_style_request_processing_seconds', 'Time spent processing change hair style request')
 
 
 class PictureService:
@@ -214,6 +222,7 @@ class PictureService:
         if os.path.exists(os.path.join(path, file_name)):
             os.remove(path + file_name)
 
+    @GET_PICTURE_INFO_REQUEST_TIME.time()
     def get_picture_info(self, path, file_name) -> schemas.PictureInfo:
         """
         Retrieve information about file
@@ -365,6 +374,7 @@ class PictureService:
 
         return picture_info
 
+    @CHANGE_HAIR_STYLE_REQUEST_TIME.time()
     def change_hairstyle(self, user_picture: Picture, model_picture: ModelPicture):
         """
         Change a user hairstyle depending on the selected model hairstyle
