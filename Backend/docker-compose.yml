@@ -40,6 +40,29 @@ services:
         ipv4_address: 22.22.22.3
     depends_on:
       - db
+  
+  grafana:
+    image: grafana/grafana
+    restart: always
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      glue:
+        ipv4_address: 22.22.22.6
+
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    container_name: prometheus
+    build:
+      context: ./Prometheus
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    networks:
+      glue:
+        ipv4_address: 22.22.22.7
 
   users_api:
     image: mcr.microsoft.com/dotnet/core/sdk:3.1
@@ -57,24 +80,24 @@ services:
     depends_on:
       - db
 
-  pictures_api:
-    image: pictures-api
-    container_name: pictures_api
-    restart: always
-    build:
-      context: ./PicturesAPI
-    command: bash -c "uvicorn app.main:app --port 8000 --host 0.0.0.0 --reload"
-    working_dir: /api
-    volumes:
-      - ./PicturesAPI:/api
-    ports:
-      - "8000:8000"
-    networks:
-      glue:
-        ipv4_address: 22.22.22.5
-    depends_on:
-      - db
-      - users_api
+  # pictures_api:
+  #   image: pictures-api
+  #   container_name: pictures_api
+  #   restart: always
+  #   build:
+  #     context: ./PicturesAPI
+  #   command: bash -c "uvicorn app.main:app --port 8000 --host 0.0.0.0 --reload"
+  #   working_dir: /api
+  #   volumes:
+  #     - ./PicturesAPI:/api
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     glue:
+  #       ipv4_address: 22.22.22.5
+  #   depends_on:
+  #     - db
+  #     - users_api
 
   # model_pictures_uploader:
   #   image: model_pictures_uploader
