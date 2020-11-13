@@ -1,6 +1,7 @@
 import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
+/// User model class
 class User extends BaseModel {
   final int id;
   final String username;
@@ -57,6 +58,7 @@ class User extends BaseModel {
       };
 }
 
+/// Model class to be used in request bodies when signing in users
 class UserSignIn {
   final String usernameOrEmail;
   final String password;
@@ -79,6 +81,7 @@ class UserSignIn {
   }
 }
 
+/// Model class to be used in request bodies when signing up users
 class UserSignUp {
   final String username;
   final String email;
@@ -122,6 +125,7 @@ class UserSignUp {
   }
 }
 
+/// Model class to be used in request bodies when updating user information
 class UserUpdate {
   final String id;
   final String username;
@@ -170,6 +174,7 @@ class UserUpdate {
   }
 }
 
+/// Model class to be used in request bodies when authenticating users
 class UserAuthenticate {
   final int id;
   final String userRole;
@@ -191,6 +196,7 @@ class UserAuthenticate {
   }
 }
 
+/// Base user roles
 class UserRoles {
   static const admin = 'admin';
   static const user = 'user';

@@ -5,6 +5,9 @@ import 'package:app/services/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+/// Contains CRUD methods for /pictures routes
+///
+/// Also contains specific methods related to changing hair styles and hair colours
 class PicturesService extends BaseService {
   static String picturesUri = Uri.encodeFull('$PICTURES_API_URL/pictures');
 

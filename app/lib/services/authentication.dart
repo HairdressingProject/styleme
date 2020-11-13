@@ -8,7 +8,14 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 
+/// Handles authentication (sign in, sign up) and manages the current user's
+/// token, which is saved locally to a text file
 class Authentication {
+  /// Sends a request to /users/sign_in with the appropriate headers
+  ///
+  /// The [user] object will be encoded as json and sent in the request body
+  ///
+  /// Returns the `Response` received from the API or `null` if the connects times out
   static Future<Response> signIn({@required UserSignIn user}) async {
     final String signInUri = Uri.encodeFull('$USERS_API_URL/users/sign_in');
     final String encodedUser = jsonEncode(user);
@@ -26,6 +33,11 @@ class Authentication {
     }
   }
 
+  /// Sends a request to /users/sign_up with the appropriate headers
+  ///
+  /// The [user] object will be encoded as json and sent in the request body
+  ///
+  /// Returns the `Response` received from the API or `null` if the connects times out
   static Future<Response> signUp({@required UserSignUp user}) async {
     final String signUpUri = Uri.encodeFull('$USERS_API_URL/users/sign_up');
     final String encodedUser = jsonEncode(user);
@@ -42,6 +54,11 @@ class Authentication {
     }
   }
 
+  /// Extracts the `auth` cookie from [response] from the _set-cookie_ header
+  ///
+  /// The [response] object should contain a _set-cookie_ header
+  ///
+  /// Returns the `auth` section of the cookie or `null` if not found
   static String getAuthCookie({@required Response response}) {
     final String rawCookie = response.headers['set-cookie'];
 
@@ -68,6 +85,9 @@ class Authentication {
     }
   }
 
+  /// Saves the current user's [token] to a text file
+  ///
+  /// Returns the `File` that was saved locally or `null` if it was not possible to save the file
   static Future<File> saveToken({@required String token}) async {
     try {
       final tokenFile = await _localTokenFile;
@@ -79,6 +99,9 @@ class Authentication {
     }
   }
 
+  /// Retrieves the current user's `token` from a text file that was previously saved through `saveToken`
+  ///
+  /// Returns the `token` present in the file or `null` if the file cannot be found or read
   static Future<String> retrieveToken() async {
     try {
       final tokenFile = await _localTokenFile;
@@ -100,6 +123,12 @@ class Authentication {
     }
   }
 
+  /// Retrieves the current user's ID from their `token`, which was previously saved through `saveToken`
+  ///
+  /// A request is sent to /users/authenticate with the `token` in the headers in the process
+  ///
+  /// Returns the current user's ID or `null` if it was not possible to retrieve their `token`,
+  /// the user could not be found or the connection timed out
   static Future<int> retrieveIdFromToken() async {
     try {
       final userToken = await Authentication.retrieveToken();
@@ -125,6 +154,16 @@ class Authentication {
     return null;
   }
 
+  /// Authenticates the current user
+  ///
+  /// A request is sent to /users/authenticate with the `token` in the headers (retrieved locally)
+  ///
+  /// The current user's object is then retrieved by making another request to /users/id
+  ///
+  /// The current `user` object is returned if found. Otherwise, a "dummy" user object
+  /// with ID = -1 is returned.
+  ///
+  /// This is a workaround to deal with `FutureBuilder` widgets used throughout the app
   static Future<User> authenticate() async {
     User nullUser = User(
         id: -1, username: null, email: null, givenName: null, userRole: null);
@@ -176,6 +215,10 @@ class Authentication {
     }
   }
 
+  /// Signs out the current user
+  ///
+  /// It simply deletes the file containing the current user's `token`
+  /// so that they must sign in again
   static Future<void> signOut() async {
     // delete locally stored token file
     await _deleteToken();

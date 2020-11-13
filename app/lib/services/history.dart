@@ -7,6 +7,7 @@ import 'package:app/services/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+/// Contains CRUD methods for /history routes for the current user
 class HistoryService extends BaseService {
   static String historyBaseUri = Uri.encodeFull('$PICTURES_API_URL/history');
 

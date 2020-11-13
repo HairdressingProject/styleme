@@ -4,6 +4,7 @@ import 'package:app/services/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+/// Contains CRUD methods for /models routes
 class ModelPicturesService extends BaseService {
   static final String modelPicturesUri =
       Uri.encodeFull('$PICTURES_API_URL/models');

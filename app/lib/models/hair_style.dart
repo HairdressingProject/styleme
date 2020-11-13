@@ -1,6 +1,7 @@
 import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
+/// Hair style model class
 class HairStyle extends BaseModel {
   final int id;
   final String hairStyleName;

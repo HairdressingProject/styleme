@@ -1,5 +1,6 @@
 import 'package:app/models/base_model.dart';
 
+/// Picture model class
 class Picture extends BaseModel {
   final int id;
   final String fileName;

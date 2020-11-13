@@ -1,3 +1,4 @@
+/// Base model class containing properties common to all other model classes
 class BaseModel {
   final int id;
   final String dateCreated;

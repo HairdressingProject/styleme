@@ -1,6 +1,7 @@
 import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
+/// Face shape model class
 class FaceShape extends BaseModel {
   final int id;
   final String shapeName;

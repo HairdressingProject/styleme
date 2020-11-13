@@ -1,6 +1,7 @@
 import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
+/// History model class
 class History extends BaseModel {
   final int id;
   final int pictureId;
@@ -75,6 +76,8 @@ class History extends BaseModel {
   int get hashCode => id.hashCode;
 }
 
+/// Model class to be used in request bodies when adding a new history entry with
+/// an updated face shape
 class HistoryAddFaceShape {
   final int userId;
   final int faceShapeId;

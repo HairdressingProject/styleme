@@ -6,11 +6,24 @@ import 'package:app/services/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+/// Base service class with methods common to all other services
 class BaseService {
+  /// Base URI that corresponds to the routes related to this service
   final String baseUri;
 
   BaseService(this.baseUri);
 
+  /// Retrieves all resources related to this service
+  ///
+  /// [resourceName], [skip] and [limit] are appended as optional query parameters
+  /// when filtering results
+  ///
+  /// An optional [client] object may also be used (useful for mocking)
+  ///
+  /// This method sends authentication headers in the requests by default,
+  /// which can be changed by setting [authenticate] to `false`
+  ///
+  /// The `Response` sent by API is returned
   Future<http.Response> getAll(
       {String resourceName,
       int skip,
@@ -58,6 +71,14 @@ class BaseService {
     }
   }
 
+  /// Retrieves a resource related to this service by its [id]
+  ///
+  /// An optional [client] object may also be used (useful for mocking)
+  ///
+  /// This method sends authentication headers in the requests by default,
+  /// which can be changed by setting [authenticate] to `false`
+  ///
+  /// The `Response` sent by API is returned
   Future<http.Response> getById(
       {@required int id, http.Client client, bool authenticate = true}) async {
     if (client == null) {
@@ -92,6 +113,15 @@ class BaseService {
     }
   }
 
+  /// Updates a resource [obj] related to this service by sending a PUT request
+  /// to the appropriate route
+  ///
+  /// An optional [client] object may also be used (useful for mocking)
+  ///
+  /// This method sends authentication headers in the requests by default,
+  /// which can be changed by setting [authenticate] to `false`
+  ///
+  /// The `Response` sent by API is returned
   Future<http.Response> put(
       {@required dynamic obj,
       http.Client client,
@@ -136,8 +166,19 @@ class BaseService {
     }
   }
 
+  /// Deletes a resource related to this service (identified by its [resourceId])
+  /// by sending a DELETE request to the appropriate route
+  ///
+  /// An optional [client] object may also be used (useful for mocking)
+  ///
+  /// This method sends authentication headers in the requests by default,
+  /// which can be changed by setting [authenticate] to `false`
+  ///
+  /// The `Response` sent by API is returned
   Future<http.Response> delete(
-      {@required int resourceId, http.Client client, bool authenticate = true}) async {
+      {@required int resourceId,
+      http.Client client,
+      bool authenticate = true}) async {
     if (client == null) {
       client = http.Client();
     }
@@ -171,6 +212,15 @@ class BaseService {
     }
   }
 
+  /// Creates a new [resource] related to this service by sending a POST request
+  /// to the appropriate route
+  ///
+  /// An optional [client] object may also be used (useful for mocking)
+  ///
+  /// This method sends authentication headers in the requests by default,
+  /// which can be changed by setting [authenticate] to `false`
+  ///
+  /// The `Response` sent by API is returned
   Future<http.Response> post(
       {@required BaseModel resource,
       http.Client client,

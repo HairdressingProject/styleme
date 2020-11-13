@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import 'base_model.dart';
 
+/// Hair colour model class
 class HairColour extends BaseModel {
   final int id;
   final String colourName;
