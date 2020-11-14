@@ -30,6 +30,19 @@ def get_db():
 async def upload_model_picture(hair_length: Optional[str] = None, hair_length_id: Optional[int] = None,
                                hair_style_id: Optional[int] = None, hair_style: Optional[str] = None,
                                file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """
+    Upload a model picture. IF picture is valid, the face shape is detected, a new record is added to the model
+    pictures table and the picture file is saved
+    :param hair_length: hair length name of model picture
+    :param hair_length_id: hair length id of the model picture
+    :param hair_style_id: hair style id of the model picture
+    :param hair_style: hair style name of the model picture
+    :param file: model picture file to be uploaded
+    :param db: db session instance
+    :return: json object that contains the model picture information, the detected face shape, hair length and hair
+    style information
+
+    """
     if not hair_length_id and not hair_length:
         raise HTTPException(status_code=400, detail='Please provide either a valid hair_length or hair_length_id')
     if not hair_style_id and not hair_style:
@@ -149,12 +162,26 @@ async def update_model_picture(model_picture_id: int, model_picture: schemas.Mod
 
 @router.get("", response_model=List[schemas.ModelPicture])
 def get_model_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
+    """
+    Read all model pictures from db
+    :param skip: optionally skip a number of records (default = 0)
+    :param limit: optionally limit the number of results retrieved (default = 1000)
+    :param search: optionally search history records by username (default = "")
+    :param db: db session instance
+    :return: List of ModelPicture class instances
+    """
     model_pictures = model_picture_actions.read_model_pictures(db, skip=skip, limit=limit, search=search)
     return model_pictures
 
 
 @router.get("/id/{model_picture_id}", response_model=schemas.ModelPicture)
 def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
+    """
+    Get a model picture identified by it's id
+    :param model_picture_id: ID of the model picture
+    :param db: db session instance
+    :return: instance of ModelPicture class that matches the ID
+    """
     model_picture: models.ModelPicture = model_picture_actions.read_model_picture_by_id(db=db,
                                                                                         model_picture_id=model_picture_id)
 
@@ -165,6 +192,12 @@ def get_model_picture(model_picture_id: int, db: Session = Depends(get_db)):
 
 @router.get("/file/{model_picture_id}", status_code=status.HTTP_200_OK)
 async def read_model_picture_file(model_picture_id: int, db: Session = Depends(get_db)):
+    """
+    Get a model picture File object identified by it's picture ID
+    :param model_picture_id: ID of the picture
+    :param db: db session instance
+    :return: Binary File
+    """
     selected_picture = model_picture_actions.read_model_picture_by_id(model_picture_id=model_picture_id, db=db)
     if selected_picture:
         file_path = selected_picture.file_path + selected_picture.file_name

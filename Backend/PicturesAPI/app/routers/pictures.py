@@ -22,6 +22,11 @@ face_shape_service = services.FaceShapeService()
 
 
 def get_user_data_from_token(request: Request) -> Optional[schemas.AuthenticatedUser]:
+    """
+    Retrieve user information from token
+    :param request:
+    :return: User information in json object
+    """
     if "authorization" not in request.headers.keys() and "auth" not in request.cookies.keys():
         print(f"No authorization header or auth cookie found")
         return None
@@ -60,6 +65,14 @@ def get_db():
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_picture(request: Request, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """
+    Upload a user picture. IF picture is valid, the face shape is detected, a new record is added to the pictures and
+    history table, and the picture file is saved
+    :param request:
+    :param file: Selected binary picture file to be uploaded
+    :param db: db session instance
+    :return: Json response that contains the picture information, the detected face shape and the history record
+    """
     user_data = get_user_data_from_token(request)
 
     if user_data:
@@ -116,6 +129,12 @@ async def upload_picture(request: Request, file: UploadFile = File(...), db: Ses
 
 @router.get("/file/{picture_id}", status_code=status.HTTP_200_OK)
 async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
+    """
+    Get a picture File object identified by it's picture ID
+    :param picture_id: ID of the picture
+    :param db: db session instance
+    :return: Binary File
+    """
     selected_picture = picture_actions.read_picture_by_id(picture_id=picture_id, db=db)
     if selected_picture:
         file_path = selected_picture.file_path + selected_picture.file_name
@@ -126,6 +145,11 @@ async def read_picture_file(picture_id: int, db: Session = Depends(get_db)):
 
 @router.get("/id/{picture_id}", response_model=schemas.Picture)
 async def read_picture(picture_id: int, db: Session = Depends(get_db)):
+    """Get a picture identified by it's id
+    :param picture_id: ID of the picture
+    :param db: db session instance
+    :return: instance of Picture class that matches the ID
+    """
     return picture_actions.read_picture_by_id(db, picture_id=picture_id)
 
 
@@ -146,6 +170,13 @@ async def read_picture_by_filename(picture_filename: str, response: Response, db
 
 @router.get("", response_model=List[schemas.Picture])
 def read_pictures(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
+    """ Read all pictures from db
+    :param skip: optionally skip a number of records (default = 0)
+    :param limit: optionally limit the number of results retrieved (default = 1000)
+    :param search: optionally search history records by username (default = "") include a search string
+    :param db: db session instance
+    :return: List of pictures
+    """
     pictures = picture_actions.read_pictures(db, skip=skip, limit=limit, search=search)
     return pictures
 
@@ -207,7 +238,6 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: in
         # apply hair colour
         try:
             picture_info = picture_service.change_hair_colour_RGB(file_name=selected_picture.file_name,
-                                                                  selected_colour=colour,
                                                                   r=r, b=b, g=g,
                                                                   file_path=selected_picture.file_path)
             # create new picture and add to db
@@ -280,6 +310,16 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: in
 async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_id: Optional[int] = None,
                            user_picture_file_name: Optional[str] = None, model_picture_file_name: Optional[str] = None,
                            db: Session = Depends(get_db)):
+    """
+    Change user's picture hairstyle based on the selected model picture hairstyle, add record to pictures table and
+    history table
+    :param user_picture_id: The ID of the user picture to be modified
+    :param model_picture_id: the ID of the model picture hairstyle
+    :param user_picture_file_name: the user picture filename
+    :param model_picture_file_name: the model picture filename
+    :param db: db session instance
+    :return: history record
+    """
     user_picture: Union[models.Picture, None] = None
     model_picture: Union[models.ModelPicture, None] = None
 

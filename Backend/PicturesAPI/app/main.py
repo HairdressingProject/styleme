@@ -18,9 +18,18 @@ from app.routers import history
 from app.routers import test
 import time
 
+# from starlette_exporter import PrometheusMiddleware, handle_metrics
+from starlette_prometheus import metrics, PrometheusMiddleware
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+# app.add_middleware(PrometheusMiddleware, app_name="PicturesAPI", group_paths=True, buckets=[1.0, 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0])
+# app.add_route("/metrics", handle_metrics)
+
+app.add_middleware(PrometheusMiddleware)
+app.add_route("/metrics/", metrics)
 
 
 # Middleware
@@ -32,32 +41,30 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time-ms"] = str(process_time * 1000)
     return response
 
-"""
-@app.middleware("http")
-async def authorise_user(request: Request, call_next):
-    # TODO: check request URL before running this middleware
-    # Certain routes need to access user data (such as POST /pictures)
-    # In that case, this middleware should be skipped and the logic should move to the route itself
-    print(request.url.path)
-    print(request.method)
-
-    if '/pictures' not in request.url.path and request.method != 'POST':
-        user_data = get_user_data_from_token(request=request)
-
-        if user_data:
-            response: Response = await call_next(request)
-            return response
-
-        return ORJSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={
-                "message": "Invalid credentials"
-            }
-        )
-    
-    response: Response = await call_next(request)
-    return response
-"""
+# @app.middleware("http")
+# async def authorise_user(request: Request, call_next):
+#     # TODO: check request URL before running this middleware
+#     # Certain routes need to access user data (such as POST /pictures)
+#     # In that case, this middleware should be skipped and the logic should move to the route itself
+#     print(request.url.path)
+#     print(request.method)
+#
+#     if '/pictures' not in request.url.path and request.method != 'POST':
+#         user_data = get_user_data_from_token(request=request)
+#
+#         if user_data:
+#             response: Response = await call_next(request)
+#             return response
+#
+#         return ORJSONResponse(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             content={
+#                 "message": "Invalid credentials"
+#             }
+#         )
+#
+#     response: Response = await call_next(request)
+#     return response
 
 # Use the ones below in a production environment
 """
