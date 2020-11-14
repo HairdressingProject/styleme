@@ -80,7 +80,14 @@ uvicorn app.main:app --reload
 
 You may now navigate to http://localhost:8000/docs to test the routes available.
 
-#### Running unit tests
+### API profiling and metrics
+To measure http request processing time statistics and resources usage, we are going to use [Prometheus](https://prometheus.io). Two pip packages are required:
+```shell script
+pip install pip install prometheus-client starlette-prometheus
+```
+
+
+### Running unit tests
 From the project root directory, execute:
 ```shell script
 pytest
