@@ -11,6 +11,14 @@ class ModelPicturesService extends BaseService {
 
   ModelPicturesService() : super(ModelPicturesService.modelPicturesUri);
 
+  /// Retrieves a picture file from the backend (identified by its ID)
+  ///
+  /// An optional [client] object may also be used (useful for mocking)
+  ///
+  /// This method sends authentication headers in the requests by default,
+  /// which can be changed by setting [authenticate] to `false`
+  ///
+  /// The `Response` object is returned
   Future<http.Response> getFileById(
       {@required int modelPictureId,
       http.Client client,
@@ -50,6 +58,14 @@ class ModelPicturesService extends BaseService {
     }
   }
 
+  /// Retrieves a model picture object by its ID
+  ///
+  /// An optional [client] object may also be used (useful for mocking)
+  ///
+  /// This method sends authentication headers in the requests by default,
+  /// which can be changed by setting [authenticate] to `false`
+  ///
+  /// The `Response` object is returned
   @override
   Future<http.Response> getById(
       {@required int id, http.Client client, bool authenticate = true}) async {

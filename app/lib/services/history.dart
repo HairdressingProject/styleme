@@ -13,6 +13,9 @@ class HistoryService extends BaseService {
 
   HistoryService() : super(HistoryService.historyBaseUri);
 
+  /// Retrieves a `User` object identified by its ID
+  ///
+  /// The `Response` sent by API is returned
   static Future<http.Response> getByUserId({@required int userId}) async {
     var id = userId ?? await Authentication.retrieveIdFromToken();
     if (id == null) return null;
@@ -35,13 +38,16 @@ class HistoryService extends BaseService {
     }
   }
 
+  /// Retrieves a picture identified by its [filename]
+  ///
+  /// The `Response` sent by API is returned
   static Future<http.Response> getByPictureFilename(
       {@required String filename}) async {
     try {
       final userToken = await Authentication.retrieveToken();
 
       if (userToken != null && userToken.isNotEmpty) {
-        final response = await http.delete('$historyBaseUri/pictures/$filename',
+        final response = await http.get('$historyBaseUri/pictures/$filename',
             headers: {
               "Authorization": "Bearer $userToken",
               "Origin": ADMIN_PORTAL_URL
@@ -57,6 +63,9 @@ class HistoryService extends BaseService {
     }
   }
 
+  /// Retrieves all history entries associated with the current `User`
+  ///
+  /// The `Response` sent by API is returned
   static Future<http.Response> getAllEntries() async {
     try {
       final userToken = await Authentication.retrieveToken();
@@ -77,6 +86,9 @@ class HistoryService extends BaseService {
     }
   }
 
+  /// Adds a new history entry with an updated [faceShapeEntry]
+  ///
+  /// The `Response` sent by API is returned
   static Future<http.Response> postFaceShapeEntry(
       {@required HistoryAddFaceShape faceShapeEntry}) async {
     print('Sending this request body:');

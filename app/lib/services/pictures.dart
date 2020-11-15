@@ -13,6 +13,9 @@ class PicturesService extends BaseService {
 
   PicturesService() : super(PicturesService.picturesUri);
 
+  /// Uploads a [picture] file as `multipart/form-data`
+  ///
+  /// The `Response` sent by API is returned
   Future<http.StreamedResponse> upload({@required File picture}) async {
     final userToken = await Authentication.retrieveToken();
 
@@ -40,6 +43,14 @@ class PicturesService extends BaseService {
     return null;
   }
 
+  /// Retrieves a `Picture` object by its ID
+  ///
+  /// An optional [client] object may also be used (useful for mocking)
+  ///
+  /// This method sends authentication headers in the requests by default,
+  /// which can be changed by setting [authenticate] to `false`
+  ///
+  /// The `Response` sent by API is returned
   @override
   Future<http.Response> getById(
       {@required int id, http.Client client, bool authenticate = true}) async {
@@ -66,6 +77,9 @@ class PicturesService extends BaseService {
     }
   }
 
+  /// Retrieves a `Picture` file by its ID
+  ///
+  /// The `Response` sent by API is returned
   Future<http.Response> getFileById({@required int pictureId}) async {
     final userToken = await Authentication.retrieveToken();
 
@@ -86,6 +100,14 @@ class PicturesService extends BaseService {
     }
   }
 
+  /// Changes hair colour in a picture identified by its [pictureId]
+  ///
+  /// [colourName] must be one of the pre-defined base colours available in the database
+  ///
+  /// Prefer using `changeHairColourRGB` instead of this method
+  ///
+  /// The `Response` sent by API is returned
+  @deprecated
   Future<http.Response> changeHairColour(
       {int pictureId, String colourName}) async {
     final userToken = await Authentication.retrieveToken();
@@ -109,6 +131,13 @@ class PicturesService extends BaseService {
     }
   }
 
+  /// Changes hair colour in a picture identified by its [pictureId]
+  ///
+  /// [colourName] must be one of the pre-defined base colours available in the database
+  ///
+  /// [r], [g], [b] values specify the exact colour to be used
+  ///
+  /// The `Response` sent by API is returned
   Future<http.Response> changeHairColourRGB(
       {int pictureId, String colourName, int r, int g, int b}) async {
     final userToken = await Authentication.retrieveToken();
@@ -131,6 +160,11 @@ class PicturesService extends BaseService {
     }
   }
 
+  /// Changes hair style in a picture identified by its [userPictureId]
+  ///
+  /// [modelPictureId] must correspond to one of the pre-defined model pictures registered in the database
+  ///
+  /// The `Response` sent by API is returned
   Future<http.Response> changeHairStyle(
       {@required int userPictureId, @required int modelPictureId}) async {
     final userToken = await Authentication.retrieveToken();
