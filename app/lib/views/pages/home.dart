@@ -74,6 +74,7 @@ class _HomeState extends State<Home> {
   HairStyle _currentHairStyle;
   HairColour _currentHairColour;
   List<History> _history = List<History>();
+  History _latestHistoryEntry;
   String _message;
   bool _faceShapeAlreadyDetected = false;
   String _userToken;
@@ -198,7 +199,7 @@ class _HomeState extends State<Home> {
     }).toList());
   }
 
-  Future<List<History>> _fetchUserHistory() async {
+  /* Future<List<History>> _fetchUserHistory() async {
     if (_user != null) {
       final historyResponse =
           await HistoryService.getByUserId(userId: _user.id);
@@ -212,65 +213,68 @@ class _HomeState extends State<Home> {
       }
     }
     return List<History>();
+  } */
+
+  Future<History> _fetchLatestUserHistoryEntry() async {
+    if (_user != null) {
+      final historyService = HistoryService();
+      final latestEntryResponse =
+          await historyService.getLatestUserHistoryEntry(userId: _user.id);
+
+      if (latestEntryResponse.statusCode == 200 &&
+          latestEntryResponse.body.isNotEmpty) {
+        return History.fromJson(jsonDecode(latestEntryResponse.body));
+      }
+    }
+    return null;
   }
 
+  /// Retrieves the latest history entry for the user signed in,
+  /// then retrieves the latest picture uploaded by said user
   Future<Picture> _fetchLatestPictureEntry() async {
-    return _fetchUserHistory().then((value) async {
-      _userToken = await _getUserToken();
-      _history = value;
-      _allHairColours = await _fetchAllHairColours();
-      _allHairLengths = await _fetchAllHairLengths();
-      _allFaceShapes = await _fetchAllFaceShapes();
-      _allHairStyles = await _fetchAllHairStyles();
-      _allModelPictures = await _fetchAllModelPictures();
+    return _fetchLatestUserHistoryEntry().then((history) async {
+      _latestHistoryEntry = history;
 
-      if (_history != null && _history.isNotEmpty) {
-        final picturesService = PicturesService();
+      setState(() {
+        if (_latestHistoryEntry != null) {
+          _completedRoutes.add(SelectFaceShape.routeName);
 
-        final latestPictureEntry =
-            await picturesService.getById(id: _history.last.pictureId);
-
-        if (latestPictureEntry.statusCode == HttpStatus.ok &&
-            latestPictureEntry.body.isNotEmpty) {
-          final latestPicture =
-              Picture.fromJson(jsonDecode(latestPictureEntry.body));
-
-          _completedRoutes.add(UploadPicture.routeName);
-          // load latest face shape, hair style and hair colour entries here
-          _currentFaceShape = await _fetchLatestFaceShapeEntry();
-
-          if (_currentFaceShape != null) {
-            _completedRoutes.add(SelectFaceShape.routeName);
-          } else {
-            _completedRoutes.remove(SelectFaceShape.routeName);
-          }
-
-          _currentHairStyle = await _fetchLatestHairStyleEntry();
-
-          _currentPictureFile = await _fetchLatestPictureFile();
-
-          _originalPicture = await _fetchOriginalPicture();
-
-          // _currentPictureNoColour = _fetchCurrentPictureNoColour();
-
-          if (_currentHairStyle != null) {
+          if (_latestHistoryEntry.hairStyleId != null) {
             _completedRoutes.add(SelectHairStyle.routeName);
           } else {
             _completedRoutes.remove(SelectHairStyle.routeName);
           }
 
-          _currentHairColour = await _fetchLatestHairColourEntry();
-
-          if (_currentHairColour != null) {
+          if (_latestHistoryEntry.hairColourId != null) {
             _completedRoutes.add(SelectHairColour.routeName);
           } else {
             _completedRoutes.remove(SelectHairColour.routeName);
           }
-
-          _currentPicture = latestPicture;
-          return latestPicture;
+        } else {
+          _completedRoutes.remove(SelectFaceShape.routeName);
+          _completedRoutes.remove(SelectHairColour.routeName);
+          _completedRoutes.remove(SelectHairStyle.routeName);
         }
+      });
+
+      final picturesService = PicturesService();
+
+      final latestPictureResponse =
+          await picturesService.getById(id: _latestHistoryEntry.pictureId);
+
+      if (latestPictureResponse != null &&
+          latestPictureResponse.statusCode == 200 &&
+          latestPictureResponse.body.isNotEmpty) {
+        final latestPicture =
+            Picture.fromJson(jsonDecode(latestPictureResponse.body));
+
+        setState(() {
+          _currentPicture = latestPicture;
+        });
+
+        return latestPicture;
       }
+
       return Picture(id: -1);
     }).catchError((err) {
       print('Could not fetch user history');
@@ -280,19 +284,18 @@ class _HomeState extends State<Home> {
   }
 
   Future<Image> _fetchLatestPictureFile() async {
-    if (_history != null &&
-        _history.isNotEmpty &&
-        _history.last.pictureId != null) {
-      final picturesService = PicturesService();
+    final picturesService = PicturesService();
 
+    if (_user != null) {
       final latestPictureFile =
-          await picturesService.getFileById(pictureId: _history.last.pictureId);
+          await picturesService.getLatestFileByUserId(userId: _user.id);
 
       if (latestPictureFile.statusCode == HttpStatus.ok &&
           latestPictureFile.body.isNotEmpty) {
         return Image.memory(latestPictureFile.bodyBytes);
       }
     }
+
     return null;
   }
 

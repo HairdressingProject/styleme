@@ -1,17 +1,22 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:app/services/authentication.dart';
 import 'package:app/services/base_service.dart';
 import 'package:app/services/constants.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 /// Contains CRUD methods for /pictures routes
 ///
 /// Also contains specific methods related to changing hair styles and hair colours
 class PicturesService extends BaseService {
   static String picturesUri = Uri.encodeFull('$PICTURES_API_URL/pictures');
+  String picturesCacheDir;
 
-  PicturesService() : super(PicturesService.picturesUri);
+  PicturesService({String picturesCacheDir = 'pictures'})
+      : super(PicturesService.picturesUri);
 
   /// Uploads a [picture] file as `multipart/form-data`
   ///
@@ -95,6 +100,26 @@ class PicturesService extends BaseService {
       return null;
     } catch (err) {
       print('Failed to get picture file by id');
+      print(err);
+      return null;
+    }
+  }
+
+  Future<http.Response> getLatestFileByUserId({@required int userId}) async {
+    final userToken = await Authentication.retrieveToken();
+
+    try {
+      if (userToken != null && userToken.isNotEmpty) {
+        final response = await http
+            .get(Uri.encodeFull('$picturesUri/users/$userId/latest'), headers: {
+          "Authorization": "Bearer $userToken",
+          "Origin": ADMIN_PORTAL_URL
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
+        return response;
+      }
+      return null;
+    } catch (err) {
+      print('Failed to get latest picture file by id');
       print(err);
       return null;
     }
@@ -185,5 +210,38 @@ class PicturesService extends BaseService {
       print(err);
       return null;
     }
+  }
+
+  Future<File> savePictureToCache(
+      {@required Uint8List picture, @required String filename}) async {
+    final cacheDir = await getTemporaryDirectory();
+    final picturesDir = Directory('${cacheDir.path}/test');
+
+    print('Pictures cache dir: ${cacheDir.path}/test');
+
+    final pic = File('${picturesDir.path}/$filename');
+
+    if (await pic.exists()) {
+      // do nothing, picture is already in the cache
+      return pic;
+    }
+
+    print('File path: ${picturesDir.path}/$filename');
+
+    final savedPic = await pic.writeAsBytes(picture);
+    return savedPic;
+  }
+
+  Future<File> retrievePictureFromCache({@required String filename}) async {
+    final cacheDir = await getTemporaryDirectory();
+    final picturesDir = Directory('${cacheDir.path}/$filename');
+
+    final picture = File('${picturesDir.path}/$filename');
+
+    if (await picture.exists()) {
+      return picture;
+    }
+
+    return null;
   }
 }

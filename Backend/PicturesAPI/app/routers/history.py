@@ -13,6 +13,8 @@ from app.database.db import SessionLocal
 
 router = APIRouter()
 history_actions = actions.HistoryActions()
+picture_actions = actions.PictureActions()
+user_actions = actions.UserActions()
 
 
 def get_db():
@@ -27,6 +29,7 @@ def get_db():
 async def get_history(history_id: int, response: Response, db: Session = Depends(get_db)):
     """
     GET /history/{history_id}
+
     :param history_id: ID of the history record to be retrieved
     :param response: response object
     :param db: db session instance
@@ -42,6 +45,7 @@ async def get_history(history_id: int, response: Response, db: Session = Depends
 async def get_user_history(user_id: int, db: Session = Depends(get_db)):
     """
     GET /history/users/{user_id}
+
     :param db: db session instance
     :param user_id: ID of the user to retrieve their history records
     """
@@ -52,12 +56,35 @@ async def get_user_history(user_id: int, db: Session = Depends(get_db)):
     return history_actions.get_user_history(db=db, user_id=user_id)
 
 
+@router.get("/users/{user_id}/latest", status_code=status.HTTP_200_OK)
+async def get_latest_user_history_entry(user_id: int, db: Session = Depends(get_db)):
+    """
+    GET /history/users/{user_id}/latest
+
+    Retrieves the latest history entry associated with the user identified by `user_id`
+
+    :param db: db session instance
+    :param user_id: User ID whose latest history entry is to be retrieved
+    :returns: Latest history entry associated with this user
+    :raise HTTPException: 404 if user or latest history entry are not found
+    """
+    if user_actions.get_user(user_id=user_id, db=db):
+        latest_entry = history_actions.get_latest_user_history_entry(db=db, user_id=user_id)
+        if latest_entry:
+            return latest_entry
+        raise HTTPException(status_code=404, detail='History entry not found')
+    raise HTTPException(status_code=404, detail='User not found')
+
+
 @router.get("/pictures/{filename}", status_code=status.HTTP_200_OK)
 async def get_picture_history(filename: str, response: Response, db: Session = Depends(get_db)):
     """
     GET /history/pictures/{filename}
+
     Gets all history records associated with a picture identified by its filename
+
     The filename can be linked to the original picture, previous one or current one
+
     :param filename: Picture filename
     :param response: response object
     :param db: db session instance
@@ -84,6 +111,7 @@ async def get_picture_history(filename: str, response: Response, db: Session = D
 async def get_entire_history(skip: int = 0, limit: int = 1000, search: str = "", db: Session = Depends(get_db)):
     """
     GET /history[?skip=0&limit=1000&search=""]
+
     :param db: db session instance
     :param skip: optionally skip a number of records (default = 0)
     :param limit: optionally limit the number of results retrieved (default = 1000)
@@ -96,6 +124,7 @@ async def get_entire_history(skip: int = 0, limit: int = 1000, search: str = "",
 async def add_history(history: schemas.HistoryCreate, response: Response, db: Session = Depends(get_db)):
     """
     POST /history
+
     :param db: db session instance
     :param response: response object
     :param history: HistoryCreate instance to be added to the database
@@ -116,8 +145,11 @@ async def add_face_shape(history_record_with_new_face_shape: schemas.HistoryAddF
                          db: Session = Depends(get_db)):
     """
     POST /history/add_face_shape
+
     This route is similar to POST /history, except that it only takes face_shape_id into consideration.
+
     The new history record will be based on the latest one, with the new face shape added to face_shape_id
+
     :param db: db session instance
     :param response: response object
     :param history_record_with_new_face_shape: A history record that only contains face_shape_id
@@ -147,6 +179,7 @@ async def update_history(history_id: int, history: schemas.HistoryUpdate, respon
                          db: Session = Depends(get_db)):
     """
     PUT /history/{history_id}
+
     :param db: db session instance
     :param history: HistoryCreateUpdate instance to be updated in the database
     :param response: response object
@@ -178,6 +211,7 @@ async def update_history(history_id: int, history: schemas.HistoryUpdate, respon
 async def delete_history(history_id: int, response: Response, db: Session = Depends(get_db)):
     """
     DELETE /history/{history_id}
+
     :param db: db session instance
     :param response: response object
     :param history_id: ID of the history record to be deleted from the database

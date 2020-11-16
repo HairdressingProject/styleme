@@ -110,8 +110,10 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
     final faceShapeEntry = HistoryAddFaceShape(
         userId: _userId, faceShapeId: _selectedFaceShape.id);
 
+    final historyService = HistoryService();
+
     final response =
-        await HistoryService.postFaceShapeEntry(faceShapeEntry: faceShapeEntry);
+        await historyService.postFaceShapeEntry(faceShapeEntry: faceShapeEntry);
 
     if (response.statusCode == HttpStatus.ok ||
         response.statusCode == HttpStatus.created) {
