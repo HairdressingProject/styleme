@@ -59,7 +59,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static final String routeName = '/homeRoute';
+  // static final String routeName = '/homeRoute';
 
   User _user;
   Image _currentPictureFile;
@@ -113,7 +113,7 @@ class _HomeState extends State<Home> {
     return List<HairColour>();
   }
 
-  Future<List<FaceShape>> _fetchAllFaceShapes() async {
+  /* Future<List<FaceShape>> _fetchAllFaceShapes() async {
     final faceShapeService = FaceShapeService();
 
     final allFaceShapesResponse = await faceShapeService.getAll();
@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
       }
     }
     return List<FaceShape>();
-  }
+  } */
 
   Future<List<HairStyle>> _fetchAllHairStyles() async {
     final hairStyleService = HairStyleService();

@@ -16,7 +16,7 @@ class PicturesService extends BaseService {
   String picturesCacheDir;
 
   PicturesService({String picturesCacheDir = 'pictures'})
-      : super(PicturesService.picturesUri);
+      : super(baseUri: PicturesService.picturesUri, tableName: 'pictures');
 
   /// Uploads a [picture] file as `multipart/form-data`
   ///

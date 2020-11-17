@@ -7,6 +7,7 @@ import 'package:app/services/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:app/services/db.dart';
 
 /// Handles authentication (sign in, sign up) and manages the current user's
 /// token, which is saved locally to a text file
@@ -169,6 +170,11 @@ class Authentication {
         id: -1, username: null, email: null, givenName: null, userRole: null);
 
     try {
+      // check for locally stored tokens before calling the API
+      // final db = await getDb();
+
+      //final localUser = db.query('users', )
+
       final localToken = await retrieveToken();
 
       if (localToken != null && localToken.isNotEmpty) {

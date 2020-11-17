@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/models/face_shape.dart';
 import 'package:app/models/history.dart';
+import 'package:app/services/face_shape.dart';
 import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/views/pages/home.dart';
@@ -60,6 +62,23 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
                 'Your face shape has been detected as ${_initialFaceShape.label}');
       });
     }
+  }
+
+  Future<List<FaceShape>> _fetchAllFaceShapes() async {
+    final faceShapeService = FaceShapeService();
+
+    final allFaceShapesResponse = await faceShapeService.getAll();
+
+    if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
+        allFaceShapesResponse.body.isNotEmpty) {
+      final rawFaceShapes =
+          jsonDecode(allFaceShapesResponse.body)['face_shapes'];
+      final rawFaceShapesList = List.from(rawFaceShapes);
+      if (rawFaceShapesList.isNotEmpty) {
+        return rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
+      }
+    }
+    return List<FaceShape>();
   }
 
   List<SelectableCard> _buildFaceShapeCards(List<FaceShape> faceShapes) {

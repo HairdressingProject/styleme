@@ -3,15 +3,34 @@ import 'dart:convert';
 import 'package:app/models/base_model.dart';
 import 'package:app/services/authentication.dart';
 import 'package:app/services/constants.dart';
+import 'package:app/services/db.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:sqflite/sqflite.dart';
 
 /// Base service class with methods common to all other services
-class BaseService {
+abstract class BaseService {
   /// Base URI that corresponds to the routes related to this service
   final String baseUri;
+  final String tableName;
 
-  BaseService(this.baseUri);
+  BaseService({@required this.baseUri, @required this.tableName});
+
+  /// Retrieves all resources related to this service (locally)
+  ///
+  /// [skip] and [limit] can be passed to OFFSET and LIMIT the select query, respectively
+  ///
+  /// Returns a raw list of mapped items from the database.
+  ///
+  /// It is the caller's responsibility to parse each item in a suitable form.
+  Future<List<Map<String, dynamic>>> getAllLocal(
+      {int skip = 0, int limit = 1000}) async {
+    final db = await getDb();
+
+    final items = await db.query(tableName, offset: skip, limit: limit);
+
+    return items;
+  }
 
   /// Retrieves all resources related to this service
   ///
@@ -71,6 +90,22 @@ class BaseService {
     }
   }
 
+  /// Retrieves a resource related to this service by its [id] (locally)
+  ///
+  /// Returns a raw item map from the database or null if not found.
+  ///
+  /// It is the caller's responsibility to parse the item in a suitable form.
+  Future<Map<String, dynamic>> getByIdLocal({@required int id}) async {
+    final db = await getDb();
+
+    final items = await db.query(tableName, where: 'id = ?', whereArgs: [id]);
+
+    if (items.isNotEmpty) {
+      return items[0];
+    }
+    return null;
+  }
+
   /// Retrieves a resource related to this service by its [id]
   ///
   /// An optional [client] object may also be used (useful for mocking)
@@ -111,6 +146,22 @@ class BaseService {
       print(err);
       return null;
     }
+  }
+
+  /// Updates a resource [obj] related to this service in the local database.
+  ///
+  /// [obj] should be a mappped representation of such item as a `Map<String, dynamic>`.
+  ///
+  /// For instance, your [obj] might be `Item.toJson()`.
+  ///
+  /// Returns the number of rows affected by the UPDATE statement.
+  Future<int> putLocal({@required dynamic obj}) async {
+    final db = await getDb();
+
+    final rowsAffected =
+        await db.update(tableName, obj, where: 'id = ?', whereArgs: [obj.id]);
+
+    return rowsAffected;
   }
 
   /// Updates a resource [obj] related to this service by sending a PUT request
@@ -166,6 +217,19 @@ class BaseService {
     }
   }
 
+  /// Deletes a resource related to this service from the local database
+  ///  (identified by its [id])
+  ///
+  /// Returns the number of rows affected by the DELETE statement.
+  Future<int> deleteLocal({@required int id}) async {
+    final db = await getDb();
+
+    final affectedRows =
+        await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
+
+    return affectedRows;
+  }
+
   /// Deletes a resource related to this service (identified by its [resourceId])
   /// by sending a DELETE request to the appropriate route
   ///
@@ -210,6 +274,22 @@ class BaseService {
       print(err);
       return null;
     }
+  }
+
+  /// Inserts a new item related to this service into the local database.
+  ///
+  /// [obj] should be a mappped representation of such item as a `Map<String, dynamic>`.
+  ///
+  /// For instance, your [obj] might be `Item.toJson()`.
+  ///
+  /// Returns the number of rows affected by the INSERT statement.
+  Future<int> postLocal({@required dynamic obj}) async {
+    final db = await getDb();
+
+    final rowsAffected = await db.insert(tableName, obj,
+        conflictAlgorithm: ConflictAlgorithm.replace);
+
+    return rowsAffected;
   }
 
   /// Creates a new [resource] related to this service by sending a POST request

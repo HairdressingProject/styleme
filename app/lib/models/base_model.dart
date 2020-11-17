@@ -1,5 +1,5 @@
 /// Base model class containing properties common to all other model classes
-class BaseModel {
+abstract class BaseModel {
   final int id;
   final String dateCreated;
   final String dateUpdated;

@@ -11,7 +11,8 @@ import 'package:http/http.dart' as http;
 class HistoryService extends BaseService {
   static String historyBaseUri = Uri.encodeFull('$PICTURES_API_URL/history');
 
-  HistoryService() : super(HistoryService.historyBaseUri);
+  HistoryService()
+      : super(baseUri: HistoryService.historyBaseUri, tableName: 'history');
 
   /// Retrieves a `User` object identified by its ID
   ///

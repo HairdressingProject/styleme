@@ -6,5 +6,8 @@ import 'constants.dart';
 class HairStyleService extends BaseService {
   static String hairStyleBaseUri = Uri.encodeFull('$USERS_API_URL/hair_styles');
 
-  HairStyleService() : super(HairStyleService.hairStyleBaseUri);
+  HairStyleService()
+      : super(
+            baseUri: HairStyleService.hairStyleBaseUri,
+            tableName: 'hair_styles');
 }

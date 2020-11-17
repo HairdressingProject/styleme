@@ -5,5 +5,5 @@ import 'package:app/services/constants.dart';
 class UserService extends BaseService {
   static String usersUri = Uri.encodeFull('$USERS_API_URL/users');
 
-  UserService() : super(UserService.usersUri);
+  UserService() : super(baseUri: UserService.usersUri, tableName: 'users');
 }

@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:app/models/model_picture.dart';
 import 'package:app/services/model_pictures.dart';
 import 'package:flutter_test/flutter_test.dart';

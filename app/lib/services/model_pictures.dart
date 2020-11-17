@@ -9,7 +9,10 @@ class ModelPicturesService extends BaseService {
   static final String modelPicturesUri =
       Uri.encodeFull('$PICTURES_API_URL/models');
 
-  ModelPicturesService() : super(ModelPicturesService.modelPicturesUri);
+  ModelPicturesService()
+      : super(
+            baseUri: ModelPicturesService.modelPicturesUri,
+            tableName: 'model_pictures');
 
   /// Retrieves a picture file from the backend (identified by its ID)
   ///

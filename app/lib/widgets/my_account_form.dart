@@ -48,7 +48,7 @@ class MyAccountFormState extends State<MyAccountForm> {
   TextEditingController _confirmPasswordController;
 
   bool _isProcessing = false;
-  String _errorMsg;
+  // String _errorMsg;
 
   @override
   void dispose() {

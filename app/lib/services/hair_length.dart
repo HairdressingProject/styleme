@@ -6,5 +6,8 @@ class HairLengthService extends BaseService {
   static String hairLengthBaseUri =
       Uri.encodeFull('$USERS_API_URL/hair_lengths');
 
-  HairLengthService() : super(HairLengthService.hairLengthBaseUri);
+  HairLengthService()
+      : super(
+            baseUri: HairLengthService.hairLengthBaseUri,
+            tableName: 'hair_lengths');
 }

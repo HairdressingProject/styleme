@@ -36,14 +36,14 @@ class _UploadPictureState extends State<UploadPicture> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final picker = ImagePicker();
   OnPictureUploaded _onPictureUploaded;
-  User _user;
+  // User _user;
 
   @override
   void initState() {
     super.initState();
     _imagePicked = false;
     _onPictureUploaded = widget.onPictureUploaded;
-    _user = widget.user;
+    // _user = widget.user;
   }
 
   Future<void> getImageFromCamera() async {

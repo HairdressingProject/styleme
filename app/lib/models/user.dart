@@ -202,3 +202,64 @@ class UserRoles {
   static const user = 'user';
   static const dev = 'developer';
 }
+
+// LocalUser model for SQLite
+class LocalUser {
+  final int id;
+  final String username;
+  final String email;
+  final String givenName;
+  final String familyName;
+  final String userRole;
+  final String dateCreated;
+  final String dateUpdated;
+  final String token;
+
+  const LocalUser(
+      {@required this.id,
+      @required this.username,
+      @required this.email,
+      @required this.givenName,
+      this.familyName,
+      @required this.userRole,
+      this.dateCreated,
+      this.dateUpdated,
+      this.token});
+
+  @override
+  String toString() {
+    return '''Local user with ID: ${this.id}:
+    Username: ${this.username}
+    Email: ${this.email}
+    Given name: ${this.givenName}
+    Family name: ${this.familyName}
+    User role: ${this.userRole}
+    Date created: ${this.dateCreated}
+    Date updated: ${this.dateUpdated}
+    Token: $token
+    ''';
+  }
+
+  LocalUser.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        token = json['token'],
+        username = json['user_name'],
+        email = json['user_email'],
+        givenName = json['first_name'],
+        familyName = json['last_name'],
+        userRole = json['user_role'],
+        dateCreated = json['date_created'],
+        dateUpdated = json['date_updated'];
+
+  Map<String, dynamic> toJson() => {
+        'id': this.id,
+        'token': this.token,
+        'user_name': this.username,
+        'user_email': this.email,
+        'first_name': this.givenName,
+        'last_name': this.familyName,
+        'user_role': this.userRole,
+        'date_created': dateCreated,
+        'date_updated': dateUpdated
+      };
+}
