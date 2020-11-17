@@ -67,6 +67,15 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
   Future<List<FaceShape>> _fetchAllFaceShapes() async {
     final faceShapeService = FaceShapeService();
 
+    // try to retrieve locally first
+    final allfaceShapes = await faceShapeService.getAllLocal();
+
+    if (allfaceShapes.isNotEmpty) {
+      // got face shapes
+      return List.generate(allfaceShapes.length,
+          (index) => FaceShape.fromJson(allfaceShapes[index]));
+    }
+
     final allFaceShapesResponse = await faceShapeService.getAll();
 
     if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
@@ -75,7 +84,17 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
           jsonDecode(allFaceShapesResponse.body)['face_shapes'];
       final rawFaceShapesList = List.from(rawFaceShapes);
       if (rawFaceShapesList.isNotEmpty) {
-        return rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
+        final faceShapes =
+            rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
+
+        if (faceShapes.isNotEmpty) {
+          // insert into local db
+          faceShapes.forEach((element) {
+            faceShapeService.postLocal(obj: element.toJson());
+          });
+        }
+
+        return faceShapes;
       }
     }
     return List<FaceShape>();

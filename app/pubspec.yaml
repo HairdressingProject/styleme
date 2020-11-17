@@ -28,6 +28,7 @@ dependencies:
   path_provider: ^1.6.18
   image_picker: ^0.6.7+12
   cached_network_image: ^2.3.3
+  flutter_cache_manager: ^2.0.0
   hexcolor: ^1.0.6
   photo_view: ^0.10.2
   permission_handler: ^5.0.1+1

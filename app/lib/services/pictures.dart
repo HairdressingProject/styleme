@@ -212,6 +212,7 @@ class PicturesService extends BaseService {
     }
   }
 
+  /// NOT WORKING: try using flutter_cache_manager for this
   Future<File> savePictureToCache(
       {@required Uint8List picture, @required String filename}) async {
     final cacheDir = await getTemporaryDirectory();
@@ -232,6 +233,7 @@ class PicturesService extends BaseService {
     return savedPic;
   }
 
+  /// NOT WORKING: try using flutter_cache_manager for this
   Future<File> retrievePictureFromCache({@required String filename}) async {
     final cacheDir = await getTemporaryDirectory();
     final picturesDir = Directory('${cacheDir.path}/$filename');
