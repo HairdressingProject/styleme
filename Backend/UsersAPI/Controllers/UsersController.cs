@@ -571,7 +571,7 @@ namespace UsersAPI.Controllers
             _authorizationService.SetAuthCookie(Request, Response, authenticatedUser.Token);
             Response.Headers.Append("X-Authorization-Token", authenticatedUser.Token);
 
-            return Ok();
+            return Ok(authenticatedUser.BaseUser.WithoutPassword());
         }
 
         // POST: users/authenticate

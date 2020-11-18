@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:app/models/user.dart';
 import 'package:app/services/constants.dart';
+import 'package:app/services/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
@@ -70,88 +71,68 @@ class Authentication {
     return null;
   }
 
-  static Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  static Future<File> get _localTokenFile async {
-    try {
-      final path = await _localPath;
-      return File('$path/$TOKEN_FILENAME');
-    } catch (err) {
-      print('Could not retrieve local token file');
-      print(err);
-      return null;
-    }
-  }
-
-  /// Saves the current user's [token] to a text file
+  /// Saves the current [user] and their [token] to the local database.
   ///
-  /// Returns the `File` that was saved locally or `null` if it was not possible to save the file
-  static Future<File> saveToken({@required String token}) async {
-    try {
-      final tokenFile = await _localTokenFile;
-      return tokenFile.writeAsString(token);
-    } catch (err) {
-      print('Could not save token to file');
-      print(err);
-      return null;
-    }
+  /// If another user with the same ID already exists in the database,
+  /// it is replaced by the current one.
+  static Future<void> saveToken(
+      {@required String token, @required User user}) async {
+    // save user with token locally
+
+    final localUser = LocalUser(
+        id: user.id,
+        token: token,
+        email: user.email,
+        givenName: user.givenName,
+        familyName: user.familyName,
+        userRole: user.userRole,
+        username: user.username,
+        dateCreated: user.dateCreated,
+        dateUpdated: user.dateUpdated);
+
+    final userService = UserService();
+    await userService.postLocal(obj: localUser.toJson());
   }
 
-  /// Retrieves the current user's `token` from a text file that was previously saved through `saveToken`
+  /// Retrieves the current user's `token` from the local database.
   ///
-  /// Returns the `token` present in the file or `null` if the file cannot be found or read
+  /// Returns the `token` present in the file or `null` if no local user is found.
   static Future<String> retrieveToken() async {
-    try {
-      final tokenFile = await _localTokenFile;
-      return tokenFile.readAsString();
-    } catch (err) {
-      print('Could not retrieve token from file');
-      print(err);
-      return null;
+    final db = await getDb();
+
+    // retrieve the first user available
+    final localUserMap = await db.query('users', limit: 1);
+
+    if (localUserMap.isNotEmpty) {
+      final localUser = LocalUser.fromJson(localUserMap[0]);
+      return localUser.token;
     }
+
+    return null;
   }
 
   static Future<void> _deleteToken() async {
-    try {
-      final tokenFile = await _localTokenFile;
-      await tokenFile.delete();
-    } catch (err) {
-      print('Could not delete token file');
-      print(err);
-    }
+    final db = await getDb();
+
+    // delete all local users
+    await db.delete('users');
   }
 
-  /// Retrieves the current user's ID from their `token`, which was previously saved through `saveToken`
+  /// Retrieves the current user's ID from their `token`, which was previously
+  /// saved through `saveToken`.
   ///
-  /// A request is sent to /users/authenticate with the `token` in the headers in the process
-  ///
-  /// Returns the current user's ID or `null` if it was not possible to retrieve their `token`,
-  /// the user could not be found or the connection timed out
+  /// Returns the current user's ID or `null` if no local user is found.
   static Future<int> retrieveIdFromToken() async {
-    try {
-      final userToken = await Authentication.retrieveToken();
+    final db = await getDb();
 
-      if (userToken != null && userToken.isNotEmpty) {
-        final authResponse = await get(
-            Uri.encodeFull('$USERS_API_URL/users/authenticate'),
-            headers: {
-              "Authorization": "Bearer $userToken",
-              "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
+    final localUsersMap = await db.query('users', limit: 1);
 
-        final authData =
-            UserAuthenticate.fromJson(jsonDecode(authResponse.body));
-
-        return authData.id;
-      }
-    } catch (err) {
-      print('Failed to authenticate user in order to retrieve history');
-      print(err);
-      return null;
+    if (localUsersMap.isNotEmpty) {
+      final localUser = LocalUser.fromJson(localUsersMap[0]);
+      return localUser.id;
     }
+
+    // local users not found, user is not authenticated
     return null;
   }
 
@@ -169,56 +150,26 @@ class Authentication {
     User nullUser = User(
         id: -1, username: null, email: null, givenName: null, userRole: null);
 
-    try {
-      // check for locally stored tokens before calling the API
-      // final db = await getDb();
+    // check local users
+    final db = await getDb();
 
-      //final localUser = db.query('users', )
+    final localUsers = await db.query('users', limit: 1);
 
-      final localToken = await retrieveToken();
-
-      if (localToken != null && localToken.isNotEmpty) {
-        final authenticationUri =
-            Uri.encodeFull('$USERS_API_URL/users/authenticate');
-
-        try {
-          final response = await get(authenticationUri, headers: {
-            "Authorization": "Bearer $localToken",
-            "Origin": ADMIN_PORTAL_URL
-          }).timeout(Duration(seconds: DEFAULT_TIMEOUT_SECONDS),
-              onTimeout: () => null);
-
-          if (response.statusCode == HttpStatus.ok) {
-            final UserAuthenticate authenticatedUserData =
-                UserAuthenticate.fromJson(jsonDecode(response.body));
-
-            final userUri = Uri.encodeFull(
-                '$USERS_API_URL/users/${authenticatedUserData.id}');
-
-            final userResponse = await get(userUri, headers: {
-              "Authorization": "Bearer $localToken",
-              "Origin": ADMIN_PORTAL_URL
-            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS),
-                onTimeout: () => null);
-
-            if (userResponse.statusCode == HttpStatus.ok) {
-              final user = User.fromJson(jsonDecode(userResponse.body)['user']);
-              return user;
-            }
-          }
-          return nullUser;
-        } catch (err) {
-          print('Authentication attempt timed out');
-          print(err);
-          return nullUser;
-        }
-      }
-      return nullUser;
-    } catch (err) {
-      print('Authentication failed');
-      print(err);
-      return nullUser;
+    if (localUsers.isNotEmpty) {
+      final localUser = LocalUser.fromJson(localUsers[0]);
+      return User(
+          id: localUser.id,
+          email: localUser.email,
+          userRole: localUser.userRole,
+          givenName: localUser.givenName,
+          username: localUser.username,
+          dateCreated: localUser.dateCreated,
+          dateUpdated: localUser.dateUpdated,
+          familyName: localUser.familyName);
     }
+
+    // local users not found, user is not authenticated
+    return nullUser;
   }
 
   /// Signs out the current user

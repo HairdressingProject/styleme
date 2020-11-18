@@ -354,7 +354,7 @@ class MyAccountFormState extends State<MyAccountForm> {
         if (response.body.isNotEmpty) {
           final updatedUser = User.fromJson(jsonDecode(response.body));
           final token = Authentication.getAuthCookie(response: response);
-          await Authentication.saveToken(token: token);
+          await Authentication.saveToken(token: token, user: updatedUser);
 
           setState(() {
             _user = updatedUser;

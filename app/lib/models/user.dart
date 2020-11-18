@@ -213,9 +213,9 @@ class LocalUser {
   final String userRole;
   final String dateCreated;
   final String dateUpdated;
-  final String token;
+  String token;
 
-  const LocalUser(
+  LocalUser(
       {@required this.id,
       @required this.username,
       @required this.email,

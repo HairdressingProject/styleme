@@ -248,9 +248,9 @@ class _HomeState extends State<Home> {
   /// then retrieves the latest picture uploaded by said user
   Future<Picture> _fetchLatestPictureEntry() async {
     return _fetchLatestUserHistoryEntry().then((history) async {
-      _latestHistoryEntry = history;
-
       setState(() {
+        _latestHistoryEntry = history;
+
         if (_latestHistoryEntry != null) {
           _completedRoutes.add(SelectFaceShape.routeName);
 
@@ -275,24 +275,26 @@ class _HomeState extends State<Home> {
       final picturesService = PicturesService();
       Picture latestPicture = Picture(id: -1);
 
-      // try to retrieve latest picture locally first
-      final latestPictureRaw =
-          await picturesService.getByIdLocal(id: _latestHistoryEntry.pictureId);
+      if (_latestHistoryEntry != null) {
+        // try to retrieve latest picture locally first
+        final latestPictureRaw = await picturesService.getByIdLocal(
+            id: _latestHistoryEntry.pictureId);
 
-      if (latestPictureRaw != null) {
-        latestPicture = Picture.fromJson(latestPictureRaw);
-      } else {
-        final latestPictureResponse =
-            await picturesService.getById(id: _latestHistoryEntry.pictureId);
+        if (latestPictureRaw != null) {
+          latestPicture = Picture.fromJson(latestPictureRaw);
+        } else {
+          final latestPictureResponse =
+              await picturesService.getById(id: _latestHistoryEntry.pictureId);
 
-        if (latestPictureResponse != null &&
-            latestPictureResponse.statusCode == 200 &&
-            latestPictureResponse.body.isNotEmpty) {
-          latestPicture =
-              Picture.fromJson(jsonDecode(latestPictureResponse.body));
+          if (latestPictureResponse != null &&
+              latestPictureResponse.statusCode == 200 &&
+              latestPictureResponse.body.isNotEmpty) {
+            latestPicture =
+                Picture.fromJson(jsonDecode(latestPictureResponse.body));
 
-          // save latest picture locally
-          await picturesService.postLocal(obj: latestPicture.toJson());
+            // save latest picture locally
+            await picturesService.postLocal(obj: latestPicture.toJson());
+          }
         }
       }
 
@@ -997,12 +999,16 @@ class _HomeState extends State<Home> {
                               icon: _handleButtonIcon(SelectFaceShape.routeName,
                                   UploadPicture.routeName),
                               text: "Select your face shape",
-                              action: SelectFaceShape(
-                                userId: _user.id,
-                                initialFaceShapeId:
-                                    _latestHistoryEntry.faceShapeId,
-                                onFaceShapeUpdated: _onFaceShapeUpdated,
-                              ),
+                              action: _latestHistoryEntry != null
+                                  ? SelectFaceShape(
+                                      userId: _user.id,
+                                      initialFaceShapeId:
+                                          _latestHistoryEntry.faceShapeId,
+                                      onFaceShapeUpdated: _onFaceShapeUpdated,
+                                    )
+                                  : SelectFaceShape(
+                                      onFaceShapeUpdated: _onFaceShapeUpdated,
+                                      userId: _user.id),
                               alreadySelected: _completedRoutes
                                   .contains(SelectFaceShape.routeName),
                               enabled: _isButtonEnabled(

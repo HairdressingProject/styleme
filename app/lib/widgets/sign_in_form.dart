@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/models/user.dart';
@@ -140,21 +141,20 @@ class SignInFormState extends State<SignInForm> {
         return false;
       }
 
-      if (response.statusCode == HttpStatus.ok) {
+      if (response != null &&
+          response.statusCode == HttpStatus.ok &&
+          response.body.isNotEmpty) {
         // all good, save token to file
-        final tokenFile = await Authentication.saveToken(
-            token: Authentication.getAuthCookie(response: response));
+        final user = User.fromJson(jsonDecode(response.body));
 
-        if (tokenFile != null) {
-          final user = await Authentication.authenticate();
+        await Authentication.saveToken(
+            token: Authentication.getAuthCookie(response: response),
+            user: user);
 
-          if (user.id != -1) {
-            setState(() {
-              _user = user;
-            });
-            return true;
-          }
-        }
+        setState(() {
+          _user = user;
+        });
+        return true;
       } else {
         setState(() {
           _errorMsg = "Invalid username, email or password";

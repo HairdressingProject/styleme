@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/models/user.dart';
@@ -343,34 +344,35 @@ class SignUpFormState extends State<SignUpForm> {
         return false;
       }
 
-      if (response.statusCode == HttpStatus.created ||
-          response.statusCode == HttpStatus.ok) {
-        // all good, save token to file
-        final tokenFile = await Authentication.saveToken(
-            token: Authentication.getAuthCookie(response: response));
+      if (response != null) {
+        if (response.statusCode == HttpStatus.created ||
+            response.statusCode == HttpStatus.ok) {
+          // all good, save user with token
+          final user = User.fromJson(jsonDecode(response.body));
 
-        if (tokenFile != null) {
-          final user = await Authentication.authenticate();
-          if (user.id != -1) {
-            setState(() {
-              _user = user;
-            });
-            return true;
-          }
+          await Authentication.saveToken(
+              token: Authentication.getAuthCookie(response: response),
+              user: user);
+
+          setState(() {
+            _user = user;
+          });
+          return true;
+        } else if (response.statusCode == HttpStatus.conflict) {
+          setState(() {
+            _errorMsg = "User is already registered";
+          });
+        } else if (response.statusCode == HttpStatus.notFound) {
+          setState(() {
+            _errorMsg = "Our servers are currently unavailable";
+          });
+        } else {
+          setState(() {
+            _errorMsg = "Invalid fields. Please try again.";
+          });
         }
-      } else if (response.statusCode == HttpStatus.conflict) {
-        setState(() {
-          _errorMsg = "User is already registered";
-        });
-      } else if (response.statusCode == HttpStatus.notFound) {
-        setState(() {
-          _errorMsg = "Our servers are currently unavailable";
-        });
-      } else {
-        setState(() {
-          _errorMsg = "Invalid fields. Please try again.";
-        });
       }
+
       return false;
     } catch (err) {
       print('Could not process sign up request');
