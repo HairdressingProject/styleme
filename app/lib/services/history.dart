@@ -6,6 +6,7 @@ import 'package:app/services/base_service.dart';
 import 'package:app/services/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:app/services/db.dart';
 
 /// Contains CRUD methods for /history routes for the current user
 class HistoryService extends BaseService {
@@ -87,6 +88,29 @@ class HistoryService extends BaseService {
     }
   }
 
+  /// Retrieves the latest user history entry (locally) identified by [userId].
+  ///
+  /// Returns the latest `History` entry or null if not found.
+  Future<History> getLatestUserHistoryEntryLocal({@required int userId}) async {
+    final db = await getDb();
+
+    final latestEntryList = await db.query(tableName,
+        where: 'user_id = ?',
+        whereArgs: [userId],
+        orderBy: 'id DESC',
+        limit: 1);
+
+    if (latestEntryList.isNotEmpty) {
+      final latestEntry = History.fromJson(latestEntryList[0]);
+      return latestEntry;
+    }
+
+    return null;
+  }
+
+  /// Retrieves the latest user history entry (from the API) identified by [userId].
+  ///
+  /// Returns the `Response` from the API or null if the request fails.
   Future<http.Response> getLatestUserHistoryEntry(
       {@required int userId}) async {
     try {

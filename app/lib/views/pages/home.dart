@@ -218,12 +218,27 @@ class _HomeState extends State<Home> {
   Future<History> _fetchLatestUserHistoryEntry() async {
     if (_user != null) {
       final historyService = HistoryService();
-      final latestEntryResponse =
-          await historyService.getLatestUserHistoryEntry(userId: _user.id);
 
-      if (latestEntryResponse.statusCode == 200 &&
-          latestEntryResponse.body.isNotEmpty) {
-        return History.fromJson(jsonDecode(latestEntryResponse.body));
+      // try to retrieve latest history entry locally first
+      History latestHistoryEntry =
+          await historyService.getLatestUserHistoryEntryLocal(userId: _user.id);
+
+      if (latestHistoryEntry != null) {
+        return latestHistoryEntry;
+      } else {
+        // could not retrieve history entry locally, try to retrieve it from the API
+        final latestEntryResponse =
+            await historyService.getLatestUserHistoryEntry(userId: _user.id);
+
+        if (latestEntryResponse.statusCode == 200 &&
+            latestEntryResponse.body.isNotEmpty) {
+          latestHistoryEntry =
+              History.fromJson(jsonDecode(latestEntryResponse.body));
+
+          // save it locally
+          await historyService.postLocal(obj: latestHistoryEntry.toJson());
+          return latestHistoryEntry;
+        }
       }
     }
     return null;
@@ -258,24 +273,34 @@ class _HomeState extends State<Home> {
       });
 
       final picturesService = PicturesService();
+      Picture latestPicture = Picture(id: -1);
 
-      final latestPictureResponse =
-          await picturesService.getById(id: _latestHistoryEntry.pictureId);
+      // try to retrieve latest picture locally first
+      final latestPictureRaw =
+          await picturesService.getByIdLocal(id: _latestHistoryEntry.pictureId);
 
-      if (latestPictureResponse != null &&
-          latestPictureResponse.statusCode == 200 &&
-          latestPictureResponse.body.isNotEmpty) {
-        final latestPicture =
-            Picture.fromJson(jsonDecode(latestPictureResponse.body));
+      if (latestPictureRaw != null) {
+        latestPicture = Picture.fromJson(latestPictureRaw);
+      } else {
+        final latestPictureResponse =
+            await picturesService.getById(id: _latestHistoryEntry.pictureId);
 
-        setState(() {
-          _currentPicture = latestPicture;
-        });
+        if (latestPictureResponse != null &&
+            latestPictureResponse.statusCode == 200 &&
+            latestPictureResponse.body.isNotEmpty) {
+          latestPicture =
+              Picture.fromJson(jsonDecode(latestPictureResponse.body));
 
-        return latestPicture;
+          // save latest picture locally
+          await picturesService.postLocal(obj: latestPicture.toJson());
+        }
       }
 
-      return Picture(id: -1);
+      setState(() {
+        _currentPicture = latestPicture;
+      });
+
+      return latestPicture;
     }).catchError((err) {
       print('Could not fetch user history');
       print(err);
@@ -974,11 +999,9 @@ class _HomeState extends State<Home> {
                               text: "Select your face shape",
                               action: SelectFaceShape(
                                 userId: _user.id,
-                                initialFaceShape: _currentFaceShape,
-                                allFaceShapes: _allFaceShapes,
+                                initialFaceShapeId:
+                                    _latestHistoryEntry.faceShapeId,
                                 onFaceShapeUpdated: _onFaceShapeUpdated,
-                                faceShapeAlreadyDetected:
-                                    _faceShapeAlreadyDetected,
                               ),
                               alreadySelected: _completedRoutes
                                   .contains(SelectFaceShape.routeName),
@@ -992,10 +1015,7 @@ class _HomeState extends State<Home> {
                             text: "Select your face shape",
                             action: SelectFaceShape(
                               userId: _user.id,
-                              initialFaceShape: _currentFaceShape,
                               onFaceShapeUpdated: _onFaceShapeUpdated,
-                              faceShapeAlreadyDetected:
-                                  _faceShapeAlreadyDetected,
                             ),
                             alreadySelected: false,
                             enabled: false,

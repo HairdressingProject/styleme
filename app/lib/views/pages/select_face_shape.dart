@@ -14,20 +14,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class SelectFaceShape extends StatefulWidget {
   static final String routeName = '/selectFaceShapeRoute';
-  final FaceShape initialFaceShape;
+  final int initialFaceShapeId;
   final OnFaceShapeUpdated onFaceShapeUpdated;
-  final List<FaceShape> allFaceShapes;
+  // final List<FaceShape> allFaceShapes;
   final int userId;
-  final bool faceShapeAlreadyDetected;
+  // final bool faceShapeAlreadyDetected;
 
-  SelectFaceShape(
-      {Key key,
-      this.initialFaceShape,
-      @required this.onFaceShapeUpdated,
-      @required this.userId,
-      this.allFaceShapes,
-      this.faceShapeAlreadyDetected})
-      : super(key: key);
+  SelectFaceShape({
+    Key key,
+    this.initialFaceShapeId,
+    @required this.onFaceShapeUpdated,
+    @required this.userId,
+    // this.allFaceShapes,
+    // this.faceShapeAlreadyDetected
+  }) : super(key: key);
 
   @override
   _SelectFaceShapeState createState() => _SelectFaceShapeState();
@@ -36,30 +36,34 @@ class SelectFaceShape extends StatefulWidget {
 class _SelectFaceShapeState extends State<SelectFaceShape> {
   int _userId;
   bool _isLoading = false;
+  Future<List<FaceShape>> _faceShapesFuture;
   List<FaceShape> _faceShapes;
   List<SelectableCard> _faceShapeCards;
   SelectableCard _selectedFaceShape;
   FaceShape _initialFaceShape;
   OnFaceShapeUpdated _onFaceShapeUpdated;
+  bool _alreadyNotified;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    _faceShapes = widget.allFaceShapes;
     _onFaceShapeUpdated = widget.onFaceShapeUpdated;
-    _initialFaceShape = widget.initialFaceShape;
+    _alreadyNotified = false;
     _userId = widget.userId;
-    _faceShapeCards = _buildFaceShapeCards(_faceShapes);
-    _selectedFaceShape = _faceShapeCards
-        .firstWhere((element) => element.id == _initialFaceShape.id);
+    _faceShapesFuture = _fetchAllFaceShapes();
+  }
 
-    if (!widget.faceShapeAlreadyDetected) {
-      Future.delayed(const Duration(seconds: 2), () {
+  void _notifyInitialFaceShape(FaceShape fs) {
+    if (!_alreadyNotified) {
+      Future.delayed(const Duration(seconds: 1), () {
         NotificationService.notify(
             scaffoldKey: _scaffoldKey,
-            message:
-                'Your face shape has been detected as ${_initialFaceShape.label}');
+            message: 'Your face shape has been detected as ${fs.label}');
+      }).then((value) {
+        setState(() {
+          _alreadyNotified = true;
+        });
       });
     }
   }
@@ -69,35 +73,46 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
 
     // try to retrieve locally first
     final allfaceShapes = await faceShapeService.getAllLocal();
+    List<FaceShape> faceShapes = List<FaceShape>();
 
     if (allfaceShapes.isNotEmpty) {
       // got face shapes
-      return List.generate(allfaceShapes.length,
+      faceShapes = List.generate(allfaceShapes.length,
           (index) => FaceShape.fromJson(allfaceShapes[index]));
-    }
+    } else {
+      final allFaceShapesResponse = await faceShapeService.getAll();
 
-    final allFaceShapesResponse = await faceShapeService.getAll();
+      if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
+          allFaceShapesResponse.body.isNotEmpty) {
+        final rawFaceShapes =
+            jsonDecode(allFaceShapesResponse.body)['face_shapes'];
+        final rawFaceShapesList = List.from(rawFaceShapes);
+        if (rawFaceShapesList.isNotEmpty) {
+          faceShapes =
+              rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
 
-    if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
-        allFaceShapesResponse.body.isNotEmpty) {
-      final rawFaceShapes =
-          jsonDecode(allFaceShapesResponse.body)['face_shapes'];
-      final rawFaceShapesList = List.from(rawFaceShapes);
-      if (rawFaceShapesList.isNotEmpty) {
-        final faceShapes =
-            rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
-
-        if (faceShapes.isNotEmpty) {
-          // insert into local db
-          faceShapes.forEach((element) {
-            faceShapeService.postLocal(obj: element.toJson());
-          });
+          if (faceShapes.isNotEmpty) {
+            // insert into local db
+            faceShapes.forEach((element) {
+              faceShapeService.postLocal(obj: element.toJson());
+            });
+          }
         }
-
-        return faceShapes;
       }
     }
-    return List<FaceShape>();
+
+    setState(() {
+      if (widget.initialFaceShapeId != null) {
+        _initialFaceShape = faceShapes
+            .firstWhere((element) => element.id == widget.initialFaceShapeId);
+
+        _notifyInitialFaceShape(_initialFaceShape);
+      }
+
+      _faceShapeCards = _buildFaceShapeCards(faceShapes);
+    });
+
+    return faceShapes;
   }
 
   List<SelectableCard> _buildFaceShapeCards(List<FaceShape> faceShapes) {
@@ -107,7 +122,9 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
               imgPath: 'assets/icons/${e.shapeName.toLowerCase()}.jpg',
               label: e.label,
               select: _selectFaceShape,
-              selected: e.id == _initialFaceShape.id,
+              selected: _initialFaceShape != null
+                  ? e.id == _initialFaceShape.id
+                  : false,
             ))
         .toList();
   }
@@ -189,65 +206,93 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
         ),
         body: Scrollbar(
           child: Container(
-            alignment: Alignment.center,
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5.0),
-                ),
-                SvgPicture.asset(
-                  'assets/icons/select_face_shape_top.svg',
-                  semanticsLabel: 'Select face shape',
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                ),
-                Text(
-                  'Select your face shape',
-                  style: Theme.of(context).textTheme.headline1,
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20.0),
-                ),
-                Expanded(
-                    child: CardsGrid(
-                  cards: _faceShapeCards,
-                )),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                ),
-                Container(
-                  width: 200.0,
-                  height: 40.0,
-                  child: MaterialButton(
-                    disabledColor: Colors.grey[600],
-                    disabledTextColor: Colors.white,
-                    onPressed: !_isLoading
-                        ? () async {
-                            await _saveChanges();
-                          }
-                        : null,
-                    color: Color.fromARGB(255, 74, 169, 242),
-                    minWidth: double.infinity,
-                    child: !_isLoading
-                        ? Text(
-                            'Save changes',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1
-                                .copyWith(color: Colors.white),
-                          )
-                        : Center(
-                            child: CircularProgressIndicator(),
+              alignment: Alignment.center,
+              child: FutureBuilder(
+                future: _faceShapesFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 5.0),
+                        ),
+                        SvgPicture.asset(
+                          'assets/icons/select_face_shape_top.svg',
+                          semanticsLabel: 'Select face shape',
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10.0),
+                        ),
+                        Text(
+                          'Select your face shape',
+                          style: Theme.of(context).textTheme.headline1,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.0),
+                        ),
+                        Expanded(
+                            child: CardsGrid(
+                          cards: _faceShapeCards,
+                        )),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10.0),
+                        ),
+                        Container(
+                          width: 200.0,
+                          height: 40.0,
+                          child: MaterialButton(
+                            disabledColor: Colors.grey[600],
+                            disabledTextColor: Colors.white,
+                            onPressed: !_isLoading
+                                ? () async {
+                                    await _saveChanges();
+                                  }
+                                : null,
+                            color: Color.fromARGB(255, 74, 169, 242),
+                            minWidth: double.infinity,
+                            child: !_isLoading
+                                ? Text(
+                                    'Save changes',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        .copyWith(color: Colors.white),
+                                  )
+                                : Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
                           ),
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                ),
-              ],
-            ),
-          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10.0),
+                        ),
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Column(
+                      children: [
+                        const Icon(
+                          Icons.error,
+                          size: 128,
+                        ),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10)),
+                        Text(
+                          snapshot.error.toString(),
+                          style: TextStyle(
+                              fontFamily: 'Klavika',
+                              fontSize: 14,
+                              letterSpacing: .05),
+                        )
+                      ],
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              )),
         ));
   }
 }
