@@ -1,23 +1,21 @@
 
-import requests
-from matplotlib.pyplot import imshow
-import time
 from PIL import Image, ImageDraw
 import face_recognition
 import pandas as pd
 import numpy as np
-from os.path import basename
 import math
-import pathlib
-from pathlib import Path
-import os
-import random
 from sklearn.preprocessing import normalize
 from sklearn.preprocessing import StandardScaler 
 from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
 
 from app import services
+
+from prometheus_client import Summary
+
+# Metrics
+MAKE_FACE_DF = Summary('lib_make_face_processing_seconds', 'Time spent in make face df')
+FIND_FACE_SHAPE = Summary('lib_find_face_shape_processing_seconds', 'Time spent in find face shape')
 
 image_dir = "data/pics"   #celebrity search version
 
@@ -72,15 +70,22 @@ def crop_face(image, eye_left=(0,0), eye_right=(0,0), offset_pct=(0.3,0.3), dest
     image = image.resize(dest_sz, Image.ANTIALIAS)
     return image
 
-def make_face_df_save(file_path, file_name, save_path, filenum, df):
+@MAKE_FACE_DF.time()
+def make_face_df_save(face_landmarks, file_path, file_name, save_path, filenum, df):
     image_select = file_path + file_name
     
     # This function looks at one image, draws points and saves points to DF
     pts = []
    # filenum = 0   # need this to iterate through the dataframe to append rows
     face = 0
+
+    """
+    Initial face landmarks are now passed as an argument, so the process does not runs again
+    
     image = face_recognition.load_image_file(image_select)
     face_landmarks_list = face_recognition.face_landmarks(image)
+    """
+    face_landmarks_list = face_landmarks
 
     for face_landmarks in face_landmarks_list:
         face += 1
@@ -106,8 +111,8 @@ def make_face_df_save(file_path, file_name, save_path, filenum, df):
                     for pix in point:
                         pts.append(pix)
                
-        pil_image = Image.fromarray(image)
-        d = ImageDraw.Draw(pil_image)
+        # pil_image = Image.fromarray(image)
+        # d = ImageDraw.Draw(pil_image)
         
         eyes = []
         lex = pts[72]
@@ -147,6 +152,9 @@ def make_face_df_save(file_path, file_name, save_path, filenum, df):
         nn = str(save_path + new_file_name + "_cropped." + new_file_extension)
         pts = []
         face = 0
+        """
+        The cropped and rotated image is read again to detect the face landmarks 
+        """
         image = face_recognition.load_image_file(nn)
         face_landmarks_list = face_recognition.face_landmarks(image)
 
@@ -205,7 +213,11 @@ def make_face_df_save(file_path, file_name, save_path, filenum, df):
                     #d.line(face_landmarks[facial_feature], width=5)
                     d.point(face_landmarks[facial_feature], fill=(255,255,255))
 
+            """
+            we can omit saving the picture with the points drawn to save processing time and disk space
+            
             pil_image.save(str(save_path + file_name.split('.')[0]) + '_rotated_pts.jpg', 'JPEG', quality=100)
+            """
 
             # take_measurements width & height measurements
         msmt = []
@@ -257,7 +269,8 @@ def make_face_df_save(file_path, file_name, save_path, filenum, df):
 
         df.loc[filenum] = np.array(pts)
         #imshow(pil_image, cmap='gray')
-            
+
+@FIND_FACE_SHAPE.time()
 def find_face_shape(df,file_num):
     # data = pd.read_csv('all_features_orig.csv',index_col = None)
     data = pd.read_csv('app/libraries/Hair_Style_Recommendation/all_features_new.csv',index_col = None)
@@ -266,7 +279,7 @@ def find_face_shape(df,file_num):
     data_clean = data.dropna(axis=0, how='any')
     X = data_clean
     X = X.drop(['filenum','filename','classified_shape'] , axis = 1)
-    X_norm = normalize(X)
+    # X_norm = normalize(X)
     Y = data_clean['classified_shape']
 
     scaler = StandardScaler()  
@@ -283,16 +296,16 @@ def find_face_shape(df,file_num):
 
     ### Apply PCA for dimension reduction
 
-    n_components = 18
-    pca = PCA(n_components=n_components, svd_solver='randomized',
-              whiten=True).fit(X)
+    # n_components = 18
+    # pca = PCA(n_components=n_components, svd_solver='randomized',
+    #           whiten=True).fit(X)
 
-    X_train_pca = pca.transform(X_train)
-    X_test_pca = pca.transform(X_test)
+    # X_train_pca = pca.transform(X_train)
+    # X_test_pca = pca.transform(X_test)
 
     # #Remove PCA 
     X_train_pca = X_train
-    X_test_pca = X_test
+    # X_test_pca = X_test
 
     ## Neural Network (MLP)
 
@@ -303,17 +316,17 @@ def find_face_shape(df,file_num):
     best_mlp = MLPClassifier(activation='relu', alpha=0.0001, batch_size='auto', beta_1=0.9,
            beta_2=0.999, early_stopping=False, epsilon=1e-08,
            hidden_layer_sizes=(60, 100, 30, 100), learning_rate='constant',
-           learning_rate_init=0.01, max_iter=100, momentum=0.9,
+           learning_rate_init=0.01, max_iter=150, momentum=0.9,
            nesterovs_momentum=True, power_t=0.5, random_state=525,
            shuffle=True, solver='sgd', tol=0.0001, validation_fraction=0.1,
            verbose=False, warm_start=False)
     best_mlp.fit(X_train_pca, Y_train)
 
-    mlp_score = best_mlp.score(X_test_pca,Y_test)
+    # mlp_score = best_mlp.score(X_test_pca,Y_test)
 
-    y_pred = best_mlp.predict(X_test_pca)
+    # y_pred = best_mlp.predict(X_test_pca)
 
-    mlp_crosstab = pd.crosstab(Y_test, y_pred, margins=True)
+    # mlp_crosstab = pd.crosstab(Y_test, y_pred, margins=True)
     
     # test_row = df.ix[file_num].values.reshape(1,-1)
     test_row = df.loc[file_num].values.reshape(1,-1)
