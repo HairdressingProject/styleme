@@ -89,7 +89,7 @@ async def upload_model_picture(hair_length: Optional[str] = None, hair_length_id
                 picture_info = picture_service.get_picture_info(save_path, file_name)
 
                 # detect face_shape
-                face_shape = picture_service.detect_face_shape(file_name, save_path)
+                face_shape = picture_service.detect_face_shape(face_landmarks, file_name, save_path)
                 if face_shape is None:
                     raise HTTPException(status_code=422, detail='Face shape could not be detected')
 

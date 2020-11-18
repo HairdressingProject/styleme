@@ -201,10 +201,10 @@ async def get_picture_face_shape(picture_id: int, db: Session = Depends(get_db))
             if face_landmarks is None:
                 raise HTTPException(status_code=422, detail="Could not detect face landmarks from picture")
             else:
-                picture_info = picture_service.get_picture_info(picture.file_path, picture.file_name)
+                # picture_info = picture_service.get_picture_info(picture.file_path, picture.file_name)
 
                 # detect face_shape
-                face_shape = picture_service.detect_face_shape(picture.file_name, picture.file_path)
+                face_shape = picture_service.detect_face_shape(face_landmarks, picture.file_name, picture.file_path)
                 if face_shape is None:
                     return {"face shape detected"}
             try:
