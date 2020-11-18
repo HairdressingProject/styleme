@@ -138,10 +138,7 @@ class HistoryService extends BaseService {
   /// The `Response` sent by API is returned
   Future<http.Response> postFaceShapeEntry(
       {@required HistoryAddFaceShape faceShapeEntry}) async {
-    print('Sending this request body:');
     final body = faceShapeEntry.toJson();
-
-    print(body);
     try {
       final userToken = await Authentication.retrieveToken();
 

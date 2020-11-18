@@ -102,6 +102,7 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
     }
 
     setState(() {
+      _faceShapes = faceShapes;
       if (widget.initialFaceShapeId != null) {
         _initialFaceShape = faceShapes
             .firstWhere((element) => element.id == widget.initialFaceShapeId);
@@ -172,6 +173,11 @@ class _SelectFaceShapeState extends State<SelectFaceShape> {
 
     if (response.statusCode == HttpStatus.ok ||
         response.statusCode == HttpStatus.created) {
+      // get history entry added and insert into local database
+      if (response.body.isNotEmpty) {
+        await historyService.postLocal(obj: jsonDecode(response.body));
+      }
+
       _onFaceShapeUpdated(
           newFaceShape: _faceShapes.firstWhere(
         (element) => element.id == _selectedFaceShape.id,

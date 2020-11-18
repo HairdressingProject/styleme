@@ -3,13 +3,13 @@ import 'package:flutter/foundation.dart';
 
 /// History model class
 class History extends BaseModel {
-  final int id;
+  int id;
   final int pictureId;
   final int originalPictureId;
   final int previousPictureId;
   final int hairColourId;
   final int hairStyleId;
-  final int faceShapeId;
+  int faceShapeId;
   final int userId;
   final String dateCreated;
   final String dateUpdated;

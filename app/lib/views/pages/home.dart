@@ -65,9 +65,7 @@ class _HomeState extends State<Home> {
   Image _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
-  List<HairColour> _allHairColours;
   List<HairLength> _allHairLengths;
-  List<FaceShape> _allFaceShapes;
   List<HairStyle> _allHairStyles;
   List<ModelPicture> _allModelPictures;
   FaceShape _currentFaceShape;
@@ -1086,21 +1084,27 @@ class _HomeState extends State<Home> {
                                     SelectHairStyle.routeName),
                                 alreadySelected: _completedRoutes
                                     .contains(SelectHairColour.routeName),
-                                action: SelectHairColour(
-                                  currentPicture: _currentPicture,
-                                  currentPictureFile: _currentPictureFile,
-                                  onHairColourUpdated: _onHairColourUpdated,
-                                  currentHairColour: _currentHairColour,
-                                ));
+                                action: snapshot.data.id != -1
+                                    ? SelectHairColour(
+                                        userToken: _userToken,
+                                        currentPicture: snapshot.data,
+                                        onHairColourUpdated:
+                                            _onHairColourUpdated,
+                                      )
+                                    : SelectHairColour(
+                                        userToken: _userToken,
+                                        onHairColourUpdated:
+                                            _onHairColourUpdated,
+                                        currentPicture: snapshot.data,
+                                      ));
                           }
                           return CustomButton(
                             icon: Icon(Icons.access_time),
                             text: "Select your hair colour",
                             action: SelectHairColour(
+                              userToken: _userToken,
                               currentPicture: _currentPicture,
-                              currentPictureFile: _currentPictureFile,
                               onHairColourUpdated: _onHairColourUpdated,
-                              currentHairColour: _currentHairColour,
                             ),
                             alreadySelected: false,
                             enabled: false,
