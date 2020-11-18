@@ -364,7 +364,10 @@ class PictureService:
 
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
         # ToDo: on a Linux OS, the path to this file must be a full path, not a relative path
-        cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
+        if os.name == 'posix':
+            cp = str(os.path.abspath("app/libraries/fmPyTorch/cp/79999_iter.pth"))
+        else:
+            cp = 'app/libraries/fmPyTorch/cp/79999_iter.pth'
 
         img_url = file_path + file_name  # @param {type: "string"}
         print(img_url)
