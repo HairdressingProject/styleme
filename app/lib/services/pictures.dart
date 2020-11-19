@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:app/models/history.dart';
 import 'package:app/services/authentication.dart';
 import 'package:app/services/base_service.dart';
@@ -9,7 +8,6 @@ import 'package:app/services/history.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 /// Contains CRUD methods for /pictures routes
 ///

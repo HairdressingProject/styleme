@@ -3,20 +3,13 @@ import 'dart:io';
 
 import 'package:app/models/face_shape.dart';
 import 'package:app/models/hair_colour.dart';
-import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
 import 'package:app/models/history.dart';
-import 'package:app/models/model_picture.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
 import 'package:app/services/constants.dart';
-import 'package:app/services/face_shape.dart';
-import 'package:app/services/hair_colour.dart';
-import 'package:app/services/hair_length.dart';
-import 'package:app/services/hair_style.dart';
 import 'package:app/services/history.dart';
-import 'package:app/services/model_pictures.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/history_view.dart';
@@ -62,7 +55,6 @@ class _HomeState extends State<Home> {
   // static final String routeName = '/homeRoute';
 
   User _user;
-  Image _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
   FaceShape _currentFaceShape;
@@ -392,79 +384,6 @@ class _HomeState extends State<Home> {
       });
       return false;
     }
-
-    // _currentPicture becomes _originalPicture
-
-    /* final originalPictureResponse =
-        await picturesService.getById(id: _history.last.originalPictureId);
-
-    if (originalPictureResponse != null &&
-        originalPictureResponse.statusCode == HttpStatus.ok &&
-        originalPictureResponse.body.isNotEmpty) {
-      final originalPicture =
-          Picture.fromJson(jsonDecode(originalPictureResponse.body));
-
-      final originalPictureFileResponse = await picturesService.getFileById(
-          pictureId: _history.last.originalPictureId);
-
-      if (originalPictureFileResponse != null &&
-          originalPictureFileResponse.statusCode == HttpStatus.ok &&
-          originalPictureFileResponse.body.isNotEmpty) {
-        final faceShapeService = FaceShapeService();
-
-        final originalFaceShapeResponse =
-            await faceShapeService.getById(id: _history.last.faceShapeId);
-
-        if (originalFaceShapeResponse != null &&
-            originalFaceShapeResponse.statusCode == HttpStatus.ok &&
-            originalFaceShapeResponse.body.isNotEmpty) {
-          final originalFaceShape =
-              FaceShape.fromJson(jsonDecode(originalFaceShapeResponse.body));
-
-          bool deletedAllHistoryEntries = true;
-
-          _history
-              .where((entry) =>
-                  entry.originalPictureId == _history.last.originalPictureId &&
-                  (entry.hairStyleId != null || entry.hairColourId != null))
-              .forEach((entry) async {
-            final historyService = HistoryService();
-
-            final deleteEntryResponse =
-                await historyService.delete(resourceId: entry.id);
-
-            if (deleteEntryResponse == null ||
-                deleteEntryResponse.statusCode != HttpStatus.ok) {
-              deletedAllHistoryEntries = false;
-              return;
-            }
-          });
-
-          if (deletedAllHistoryEntries) {
-            setState(() {
-              _currentPictureFuture = Future.value(originalPicture);
-              _currentPicture = originalPicture;
-              _currentFaceShape = originalFaceShape;
-              _currentHairColour = null;
-              _currentHairStyle = null;
-              _currentPictureFile =
-                  Image.memory(originalPictureFileResponse.bodyBytes);
-              _completedRoutes.clear();
-              _completedRoutes.add(UploadPicture.routeName);
-              _completedRoutes.add(SelectFaceShape.routeName);
-              _history.removeWhere((element) =>
-                  element.originalPictureId ==
-                      _history.last.originalPictureId &&
-                  (element.hairStyleId != null ||
-                      element.hairColourId != null));
-              _isDiscardChangesLoading = false;
-            });
-
-            return true;
-          }
-        }
-      }
-    } */
   }
 
   _onDiscardChanges() {
@@ -599,68 +518,19 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _onCompareResults() async {
-    if (_history == null || _history.length < 2) {
+    if (_currentPicture == null ||
+        _originalPicture == null ||
+        _latestHistoryEntry == null) {
       NotificationService.notify(
-          scaffoldKey: scaffoldKey,
-          message: 'Please make changes to the current picture first.');
+          scaffoldKey: scaffoldKey, message: 'No pictures to compare.');
       return;
     }
 
-    if (_userToken == null) {
-      NotificationService.notify(
-          scaffoldKey: scaffoldKey,
-          message: 'User not found. Please sign in or sign up.');
-      return;
-    }
-
-    final currentOriginalPictureId = _history.last.originalPictureId;
-
-    final picturesService = PicturesService();
-    final currentOriginalPictureResponse =
-        await picturesService.getById(id: currentOriginalPictureId);
-
-    if (currentOriginalPictureResponse != null &&
-        currentOriginalPictureResponse.statusCode == HttpStatus.ok &&
-        currentOriginalPictureResponse.body.isNotEmpty) {
-      final originalPicture =
-          Picture.fromJson(jsonDecode(currentOriginalPictureResponse.body));
-
-      final historyPictures = await Future.wait(_history
-          .where((element) {
-            return element.originalPictureId == currentOriginalPictureId &&
-                (element.hairColourId != null || element.hairStyleId != null);
-          })
-          .map((e) async {
-            final currentPictureResponse =
-                await picturesService.getById(id: e.pictureId);
-
-            if (currentPictureResponse != null &&
-                currentPictureResponse.statusCode == HttpStatus.ok &&
-                currentPictureResponse.body.isNotEmpty) {
-              return Picture.fromJson(jsonDecode(currentPictureResponse.body));
-            }
-            NotificationService.notify(
-                scaffoldKey: scaffoldKey,
-                message:
-                    'Could not retrieve picture: status code ${currentPictureResponse.statusCode}');
-            return null;
-          })
-          .where((element) => element != null)
-          .toList());
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HistoryView(
-                  originalPicture: originalPicture,
-                  historyPictures: historyPictures,
-                  userToken: _userToken)));
-    } else {
-      NotificationService.notify(
-          scaffoldKey: scaffoldKey,
-          message:
-              'Could not retrieve original picture. Please restart the app and upload a new picture or report this issue to the developers.');
-    }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HistoryView(
+                originalPicture: _originalPicture, userToken: _userToken)));
   }
 
   @override

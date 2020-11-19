@@ -15,6 +15,21 @@ class HistoryService extends BaseService {
   HistoryService()
       : super(baseUri: HistoryService.historyBaseUri, tableName: 'history');
 
+  /// Retrieves local history records associated with this [userId].
+  Future<List<History>> getByUserIdLocal({@required int userId}) async {
+    final db = await getDb();
+    List<History> userHistory = List<History>();
+
+    final localHistoryMap =
+        await db.query(tableName, where: 'user_id = ?', whereArgs: [userId]);
+
+    if (localHistoryMap.isNotEmpty) {
+      userHistory = localHistoryMap.map((e) => History.fromJson(e)).toList();
+    }
+
+    return userHistory;
+  }
+
   /// Retrieves a `User` object identified by its ID
   ///
   /// The `Response` sent by API is returned
@@ -40,7 +55,45 @@ class HistoryService extends BaseService {
     }
   }
 
-  /// Retrieves a picture identified by its [filename]
+  /// Retrieves all history records (locally) associated with this [originalPictureId]
+  Future<List<History>> getByPictureIdLocal(
+      {@required int originalPictureId}) async {
+    final db = await getDb();
+
+    final localHistoryMap = await db.query(tableName,
+        where: 'original_picture_id = ?', whereArgs: [originalPictureId]);
+
+    final history = localHistoryMap.map((e) => History.fromJson(e)).toList();
+
+    return history;
+  }
+
+  /// Retrieves all history records (from the API) associated with this [originalPictureId]
+  ///
+  /// The `Response` sent by API is returned
+  Future<http.Response> getByPictureId(
+      {@required int originalPictureId}) async {
+    try {
+      final userToken = await Authentication.retrieveToken();
+
+      if (userToken != null && userToken.isNotEmpty) {
+        final response = await http
+            .get('$historyBaseUri/pictures/id/$originalPictureId', headers: {
+          "Authorization": "Bearer $userToken",
+          "Origin": ADMIN_PORTAL_URL
+        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
+
+        return response;
+      }
+      return null;
+    } catch (err) {
+      print('Could not retrieve history entries by picture id');
+      print(err);
+      return null;
+    }
+  }
+
+  /// Retrieves history records of the picture associated with this [filename]
   ///
   /// The `Response` sent by API is returned
   Future<http.Response> getByPictureFilename(
@@ -60,29 +113,6 @@ class HistoryService extends BaseService {
       return null;
     } catch (err) {
       print('Could not retrieve history entries by picture filename');
-      print(err);
-      return null;
-    }
-  }
-
-  /// Retrieves all history entries associated with the current `User`
-  ///
-  /// The `Response` sent by API is returned
-  Future<http.Response> getAllEntries() async {
-    try {
-      final userToken = await Authentication.retrieveToken();
-
-      if (userToken != null && userToken.isNotEmpty) {
-        final response = await http.get('$historyBaseUri', headers: {
-          "Authorization": "Bearer $userToken",
-          "Origin": ADMIN_PORTAL_URL
-        }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
-
-        return response;
-      }
-      return null;
-    } catch (err) {
-      print('Could not retrieve all history entries');
       print(err);
       return null;
     }

@@ -114,6 +114,11 @@ async def get_picture_history(filename: str, response: Response, db: Session = D
     return history_actions.get_picture_history(db=db, filename=filename)
 
 
+@router.get("/pictures/id/{original_picture_id}", status_code=status.HTTP_200_OK)
+async def get_picture_history_by_id(original_picture_id: int, db: Session = Depends(get_db)):
+    return history_actions.get_picture_history_by_id(db=db, original_picture_id=original_picture_id)
+
+
 @router.get("", status_code=status.HTTP_200_OK)
 async def get_entire_history(skip: int = 0, limit: int = 1000, search: str = "", db: Session = Depends(get_db)):
     """
