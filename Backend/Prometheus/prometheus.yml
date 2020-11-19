@@ -26,5 +26,9 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     static_configs:
-    - targets: ['localhost:9090', '10.1.1.7:9091', '10.1.1.7:8000']
+    - targets: ['localhost:9090', '10.1.1.7:9091', '172.21.184.36:8000']
     # Note: If Pictures API is not running on a docker container, then the Ipv4 address must be specified, else is just localhost
+
+  - job_name: 'node'
+    static_configs:
+    - targets: ['172.21.184.36:9100']
