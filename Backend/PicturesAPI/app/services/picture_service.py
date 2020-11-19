@@ -20,6 +20,8 @@ from app import schemas
 
 from prometheus_client import Summary
 
+from app.libraries.fmPyTorch.utils.face_detect import FaceDetect
+
 # Metrics related to Upload Picture (POST /pictures)
 SAVE_PICTURE_REQUEST_TIME = Summary('save_picture_request_processing_seconds', 'Time spent saving picture')
 DETECT_FACE_REQUEST_TIME = Summary('detect_face_request_processing_seconds', 'Time spent detecting faces')
@@ -74,7 +76,21 @@ class PictureService:
         # height = int(dimensions[0])
         # width = int(dimensions[1])
 
-        return (new_file_name)
+        """
+        if dimensions are "too big" (>600) resize image
+        """
+
+        img = cv2.imread(save_file_path + new_file_name, cv2.IMREAD_UNCHANGED)
+        max_value = max(img.shape[0], img.shape[1])
+        if max_value > 600:
+            scale_percent = int(600 / max_value * 100)
+            width = int(img.shape[1] * scale_percent / 100)
+            height = int(img.shape[0] * scale_percent / 100)
+            dim = (width, height)
+            resized_img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+            cv2.imwrite(save_file_path + new_file_name, resized_img)
+
+        return new_file_name
 
     @DETECT_FACE_REQUEST_TIME.time()
     def detect_face(self, file_name, file_path=PICTURE_UPLOAD_FOLDER):
@@ -85,7 +101,8 @@ class PictureService:
         :return: boolean
         """
 
-        pre = Preprocess()
+        detect = FaceDetect('cpu', 'sfd') # device = 'cpu' or 'cuda', detector = 'dlib' or 'sfd'
+        # pre = Preprocess()
         # img = cv2.imread(path_to_file)
         try:
             img = cv2.cvtColor(cv2.imread(file_path + file_name), cv2.COLOR_BGR2RGB)
@@ -93,8 +110,11 @@ class PictureService:
             print("Could not process image")
             self.delete_picture(file_path, file_name)
             return False
-        face_rgba = pre.process(img)
-        if face_rgba is None:
+
+        #face_rgba = pre.process(img)
+        #if face_rgba is None:
+        face_info = detect.align(img)
+        if face_info is None:
             # delete picture from original folder
             self.delete_picture(file_path, file_name)
             return False
@@ -121,9 +141,10 @@ class PictureService:
             return face_landmarks_list
 
     @DETECT_FACE_SHAPE_REQUEST_TIME.time()
-    def detect_face_shape(self, file_name, file_path=PICTURE_UPLOAD_FOLDER, save_path=PICTURE_UPLOAD_FOLDER):
+    def detect_face_shape(self, face_landmarks, file_name, file_path=PICTURE_UPLOAD_FOLDER, save_path=PICTURE_UPLOAD_FOLDER):
         """
         Predicts face shape from a picture
+        :param face_landmarks: (initial) face landmarks are now passed as an argument, so we dont repeat the reading
         :param file_name: str: hashed_file_name ('23Dc9498897c27c1a1778fb41ce680aS.jpg')
         :param file_path: str: 'foo/bar', DEFAULT=PICTURE_UPLOAD_FOLDER
         :param save_path: str: (optional) 'foo/bar', DEFAULT=PICTURE_UPLOAD_FOLDER
@@ -155,6 +176,10 @@ class PictureService:
         # print(file_name, "file_name")
         # print(save_path, "save_path")
 
+        """
+        The next block is commented to try to improve performance.
+        face landmarks already checked before, no need to run again
+
         face_landmarks_list = self.detect_face_landmarks(file_name, file_path)
         # print(face_landmarks_list)
         if face_landmarks_list is None:
@@ -163,12 +188,18 @@ class PictureService:
             print("No landmarks found")
             return None
 
+        """
+
         file_num = 2035
 
         # generate data frame with the new picture information
         file_url = file_path + file_name
         # make_face_df_save(file_url, file_num, df)
-        make_face_df_save(file_path, file_name, save_path, file_num, df)
+
+        """
+        (initial) face_landmarks passed as an argument
+        """
+        make_face_df_save(face_landmarks, file_path, file_name, save_path, file_num, df)
 
         # run model to predict the face shape
         face_shape = find_face_shape(df, file_num)
@@ -333,7 +364,10 @@ class PictureService:
 
         table = {'hair': 17, 'upper_lip': 12, 'lower_lip': 13}
         # ToDo: on a Linux OS, the path to this file must be a full path, not a relative path
-        cp = 'app/libraries/fmPytorch/cp/79999_iter.pth'
+        if os.name == 'posix':
+            cp = str(os.path.abspath("app/libraries/fmPyTorch/cp/79999_iter.pth"))
+        else:
+            cp = 'app/libraries/fmPyTorch/cp/79999_iter.pth'
 
         img_url = file_path + file_name  # @param {type: "string"}
         print(img_url)

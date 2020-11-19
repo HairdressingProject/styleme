@@ -1,0 +1,48 @@
+name: Flutter CI
+on: 
+  push:
+  pull_request:
+    branches: 
+      - master
+      - app-tests
+      - dev-g
+      - dev-d
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      workdir: ./app
+    
+    steps:    
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      - name: Setup Java
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: '11.x'
+      - name: Flutter action
+        uses: subosito/flutter-action@v1.4.0
+      - name: Run flutter doctor
+        working-directory: ${{env.workdir}}
+        run: flutter doctor -v
+      - name: Install dependencies
+        working-directory: ${{env.workdir}}
+        run: flutter pub get 
+      - name: Format code
+        working-directory: ${{env.workdir}}
+        run: flutter format --set-exit-if-changed .
+      - name: Analyse code
+        working-directory: ${{env.workdir}}
+        run: flutter analyze .
+      - name: Run tests
+        working-directory: ${{env.workdir}}
+        run: flutter test
+      - name: Build apk
+        working-directory: ${{env.workdir}}
+        run: flutter build apk
+      - name: Upload release apk
+        uses: actions/upload-artifact@master
+        with:
+          name: apk-release
+          path: ./app/build/app/outputs/flutter-apk/app-release.apk   
