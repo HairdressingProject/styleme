@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: 
       - master
+      - app-tests
+      - dev-g
+      - dev-d
 
 jobs:
   build:
@@ -12,6 +15,8 @@ jobs:
       workdir: ./app
     
     steps:
+      - name: Pre-commit
+        uses: pre-commit/action@v2.0.0        
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Setup Java
