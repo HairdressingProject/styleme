@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Help extends StatelessWidget {
-
-  Help({Key key, }) : super(key: key);
+  Help({
+    Key key,
+  }) : super(key: key);
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -39,23 +40,25 @@ class Help extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Wrap(
                 runSpacing: 5.0,
-    
                 children: [
-                  Text('See the official',
+                  Text(
+                    'See the official',
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 3.0),
                   ),
                   InkWell(
-                    onTap: () {
-                    },
-                    child: Text('website', style: Theme.of(context).textTheme.bodyText1.copyWith(fontWeight: FontWeight.w700, color: Color.fromARGB(255, 124, 62, 233)))
-                  ),
+                      onTap: () {},
+                      child: Text('website',
+                          style: Theme.of(context).textTheme.bodyText1.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: Color.fromARGB(255, 124, 62, 233)))),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 3.0),
                   ),
-                  Text('of this app find tutorials and more information about it.',
+                  Text(
+                    'of this app find tutorials and more information about it.',
                     style: Theme.of(context).textTheme.headline2,
                   ),
                 ],

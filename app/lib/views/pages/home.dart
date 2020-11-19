@@ -57,13 +57,9 @@ class _HomeState extends State<Home> {
   User _user;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
-  FaceShape _currentFaceShape;
-  HairStyle _currentHairStyle;
-  HairColour _currentHairColour;
   List<History> _history = List<History>();
   History _latestHistoryEntry;
   String _message;
-  bool _faceShapeAlreadyDetected = false;
   String _userToken;
   List<String> _completedRoutes = List<String>();
   bool _isDiscardChangesLoading = false;
@@ -197,7 +193,7 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(UploadPicture.routeName);
       _history.add(historyEntryAdded);
       _currentPicture = newPicture;
-      _currentFaceShape = newFaceShape;
+      // _currentFaceShape = newFaceShape;
       _message = message ?? 'Picture successfully uploaded';
     });
 
@@ -213,9 +209,8 @@ class _HomeState extends State<Home> {
       _completedRoutes.clear();
       _completedRoutes.add(UploadPicture.routeName);
       _completedRoutes.add(SelectFaceShape.routeName);
-      _currentFaceShape = newFaceShape;
+      // _currentFaceShape = newFaceShape;
       _message = message ?? 'Face shape updated to ${newFaceShape.label}';
-      _faceShapeAlreadyDetected = true;
     });
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
@@ -228,7 +223,7 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(UploadPicture.routeName);
       _completedRoutes.add(SelectFaceShape.routeName);
       _completedRoutes.add(SelectHairStyle.routeName);
-      _currentHairStyle = newHairStyle;
+      // _currentHairStyle = newHairStyle;
       _message = message ?? 'Hair style updated to ${newHairStyle.label}';
     });
 
@@ -244,7 +239,7 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(SelectFaceShape.routeName);
       _completedRoutes.add(SelectHairStyle.routeName);
       _completedRoutes.add(SelectHairColour.routeName);
-      _currentHairColour = newHairColour;
+      // _currentHairColour = newHairColour;
       _message = message ?? 'Hair colour updated to ${newHairColour.label}';
     });
 

@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:app/models/user.dart';
 import 'package:app/services/constants.dart';
 import 'package:app/services/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:app/services/db.dart';
 
 /// Handles authentication (sign in, sign up) and manages the current user's

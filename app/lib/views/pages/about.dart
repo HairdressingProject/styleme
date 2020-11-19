@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class About extends StatelessWidget {
-
-  About({Key key, }) : super(key: key);
+  About({
+    Key key,
+  }) : super(key: key);
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -37,25 +38,19 @@ class About extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.centerLeft,
-              child: Text('This app was developed as a project assignment by Diploma of Software Development students at North Metropolitan TAFE', style: Theme.of(context).textTheme.headline2, textAlign: TextAlign.left),
+              child: Text(
+                  'This app was developed as a project assignment by Diploma of Software Development students at North Metropolitan TAFE',
+                  style: Theme.of(context).textTheme.headline2,
+                  textAlign: TextAlign.left),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 20.0),
             ),
             Align(
               alignment: Alignment.centerLeft,
-              child: Text('License: GPL - 3.0', style: Theme.of(context).textTheme.headline2, textAlign: TextAlign.left),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 20.0),
-            ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: InkWell(
-                onTap: () {
-                },
-                child: Text('Provide feedback', style: Theme.of(context).textTheme.bodyText1.copyWith(fontWeight: FontWeight.w700, color: Color.fromARGB(255, 124, 62, 233)))
-              ),
+              child: Text('License: GPL - 3.0',
+                  style: Theme.of(context).textTheme.headline2,
+                  textAlign: TextAlign.left),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -63,10 +58,23 @@ class About extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: InkWell(
-                onTap: () {
-                },
-                child: Text('Privacy Policy', style: Theme.of(context).textTheme.bodyText1.copyWith(fontWeight: FontWeight.w700, color: Color.fromARGB(255, 124, 62, 233)))
-              ),
+                  onTap: () {},
+                  child: Text('Provide feedback',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Color.fromARGB(255, 124, 62, 233)))),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20.0),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: InkWell(
+                  onTap: () {},
+                  child: Text('Privacy Policy',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Color.fromARGB(255, 124, 62, 233)))),
             ),
           ],
         ),

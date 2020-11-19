@@ -48,7 +48,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
   double _alpha;
   double _h;
   double _s;
-  double _l;
+  // double _l;
   Color _rgb;
   Color _selectedColour;
   final ScrollController _scrollController = ScrollController();
@@ -183,7 +183,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
       _alpha = _hsl.alpha;
       _h = _hsl.hue;
       _s = _hsl.saturation;
-      _l = _hsl.lightness;
+      // _l = _hsl.lightness;
       _selectedColour =
           HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue / 100).toColor();
     });
