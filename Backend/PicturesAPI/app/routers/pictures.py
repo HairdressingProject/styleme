@@ -233,7 +233,17 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: in
     selected_picture: Union[models.Picture, None] = None
 
     if picture_id:
-        selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
+        # get latest entry from history where hair_colour_id == None
+        first_history_entry = history_actions.get_first_picture_history_by_id(db=db, picture_id=picture_id)
+
+        if first_history_entry:
+            pic_history = history_actions.get_picture_history_by_original_picture_id(db=db,
+                                                                                     original_picture_id=first_history_entry.original_picture_id)
+
+            if len(pic_history):
+                latest_entry_no_colour = list(filter(lambda h: not h.hair_colour_id, pic_history))[-1]
+                selected_picture = picture_actions.read_picture_by_id(db=db,
+                                                                      picture_id=latest_entry_no_colour.picture_id)
     else:
         raise HTTPException(status_code=400, detail='Picture ID not found')
 
@@ -481,7 +491,8 @@ async def delete_picture(picture_id: int, response: Response, db: Session = Depe
 
 @router.delete("/discard_changes/{original_picture_id}", status_code=status.HTTP_200_OK)
 async def discard_changes(original_picture_id: int, db: Session = Depends(get_db)):
-    picture_history = history_actions.get_picture_history_by_id(db=db, original_picture_id=original_picture_id)
+    picture_history = history_actions.get_picture_history_by_original_picture_id(db=db,
+                                                                                 original_picture_id=original_picture_id)
 
     if len(picture_history):
         # select all entries except the very first one (where original picture id == picture id)
@@ -492,7 +503,8 @@ async def discard_changes(original_picture_id: int, db: Session = Depends(get_db
             history_actions.delete_history(db=db, history_id=entry.id)
 
         # return first history entry along with picture
-        entries = history_actions.get_picture_history_by_id(db=db, original_picture_id=original_picture_id)
+        entries = history_actions.get_picture_history_by_original_picture_id(db=db,
+                                                                             original_picture_id=original_picture_id)
 
         if len(entries):
             first_entry = entries[0]
