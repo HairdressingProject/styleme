@@ -22,9 +22,9 @@ jobs:
       - name: Install dependencies
         working-directory: ${{env.workdir}}
         run: flutter pub get 
-      - name: Format code
-        working-directory: ${{env.workdir}}
-        run: flutter format --set-exit-if-changed .
+      # - name: Format code
+      #  working-directory: ${{env.workdir}}
+      #  run: flutter format --set-exit-if-changed .
       - name: Analyse code
         working-directory: ${{env.workdir}}
         run: flutter analyze .
