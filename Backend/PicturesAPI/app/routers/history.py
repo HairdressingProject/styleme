@@ -71,7 +71,14 @@ async def get_latest_user_history_entry(user_id: int, db: Session = Depends(get_
     if user_actions.get_user(user_id=user_id, db=db):
         latest_entry = history_actions.get_latest_user_history_entry(db=db, user_id=user_id)
         if latest_entry:
-            return latest_entry
+            current_pic = picture_actions.read_picture_by_id(db=db, picture_id=latest_entry.picture_id)
+            original_pic = picture_actions.read_picture_by_id(db=db, picture_id=latest_entry.original_picture_id)
+
+            return {
+                "history_entry": latest_entry,
+                "current_picture": current_pic,
+                "original_picture": original_pic
+            }
         raise HTTPException(status_code=404, detail='History entry not found')
     raise HTTPException(status_code=404, detail='User not found')
 

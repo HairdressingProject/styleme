@@ -17,6 +17,7 @@ picture_actions = actions.PictureActions()
 history_actions = actions.HistoryActions()
 user_actions = actions.UserActions()
 hair_colour_actions = actions.HairColourActions()
+hair_style_actions = actions.HairStyleActions()
 model_picture_actions = actions.ModelPictureActions()
 face_shape_actions = actions.FaceShapeActions()
 face_shape_service = services.FaceShapeService()
@@ -391,7 +392,19 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
                                                                                    user_id=user.id)
 
                         history_entry = history_actions.add_history(db=db, history=new_history)
-                        return history_entry
+                        new_hair_style = hair_style_actions.get_hair_style(db=db,
+                                                                           hair_style_id=history_entry.hair_style_id)
+
+                        current_picture = picture_actions.read_picture_by_id(db=db, picture_id=history_entry.picture_id)
+                        original_picture = picture_actions.read_picture_by_id(db=db,
+                                                                              picture_id=history_entry.original_picture_id)
+
+                        return {
+                            "history_entry": history_entry,
+                            "hair_style": new_hair_style,
+                            "current_picture": current_picture,
+                            "original_picture": original_picture
+                        }
                     raise HTTPException(status_code=404, detail='Model picture not found')
                 raise HTTPException(status_code=404,
                                     detail='No history associated with this user was found. Please upload a picture '

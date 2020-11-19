@@ -95,146 +95,60 @@ class _HomeState extends State<Home> {
     return token;
   }
 
-  Future<List<HairColour>> _fetchAllHairColours() async {
-    final hairColourService = HairColourService();
-
-    final allHairColoursResponse = await hairColourService.getAll();
-
-    if (allHairColoursResponse.statusCode == HttpStatus.ok &&
-        allHairColoursResponse.body.isNotEmpty) {
-      final rawHairColours = jsonDecode(allHairColoursResponse.body)['colours'];
-      final rawHairColoursList = List.from(rawHairColours);
-      if (rawHairColoursList.isNotEmpty) {
-        return rawHairColoursList.map((e) => HairColour.fromJson(e)).toList();
-      }
-    }
-    return List<HairColour>();
-  }
-
-  /* Future<List<FaceShape>> _fetchAllFaceShapes() async {
-    final faceShapeService = FaceShapeService();
-
-    final allFaceShapesResponse = await faceShapeService.getAll();
-
-    if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
-        allFaceShapesResponse.body.isNotEmpty) {
-      final rawFaceShapes =
-          jsonDecode(allFaceShapesResponse.body)['face_shapes'];
-      final rawFaceShapesList = List.from(rawFaceShapes);
-      if (rawFaceShapesList.isNotEmpty) {
-        return rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
-      }
-    }
-    return List<FaceShape>();
-  } */
-
-  Future<List<HairStyle>> _fetchAllHairStyles() async {
-    final hairStyleService = HairStyleService();
-
-    final allHairStylesResponse = await hairStyleService.getAll();
-
-    if (allHairStylesResponse.statusCode == HttpStatus.ok &&
-        allHairStylesResponse.body.isNotEmpty) {
-      final rawHairStyles =
-          jsonDecode(allHairStylesResponse.body)['hair_styles'];
-      final rawHairStylesList = List.from(rawHairStyles);
-      if (rawHairStylesList.isNotEmpty) {
-        return rawHairStylesList.map((e) => HairStyle.fromJson(e)).toList();
-      }
-    }
-    return List<HairStyle>();
-  }
-
-  Future<List<HairLength>> _fetchAllHairLengths() async {
-    final hairLengthService = HairLengthService();
-
-    final allHairLengthsResponse = await hairLengthService.getAll();
-
-    if (allHairLengthsResponse.statusCode == HttpStatus.ok &&
-        allHairLengthsResponse.body.isNotEmpty) {
-      final rawHairLengths =
-          jsonDecode(allHairLengthsResponse.body)['hair_lengths'];
-      final rawHairLengthsList = List.from(rawHairLengths);
-      if (rawHairLengthsList.isNotEmpty) {
-        return rawHairLengthsList.map((e) => HairLength.fromJson(e)).toList();
-      }
-    }
-    return List<HairLength>();
-  }
-
-  Future<List<ModelPicture>> _fetchAllModelPictures() async {
-    final modelPicturesService = ModelPicturesService();
-
-    final allModelPicturesResponse = await modelPicturesService.getAll();
-
-    if (allModelPicturesResponse.statusCode == HttpStatus.ok &&
-        allModelPicturesResponse.body.isNotEmpty) {
-      final rawModelPictures = jsonDecode(allModelPicturesResponse.body);
-      final rawModelPicturesList = List.from(rawModelPictures);
-
-      if (rawModelPicturesList.isNotEmpty) {
-        return rawModelPicturesList
-            .map((e) => ModelPicture.fromJson(e))
-            .toList();
-      }
-    }
-    return List<ModelPicture>();
-  }
-
-  Future<List<Image>> _fetchAllModelPicturesFiles(
-      List<ModelPicture> allModelPictures) async {
-    return Future.wait(allModelPictures.map((e) async {
-      final modelPicturesService = ModelPicturesService();
-
-      final allModelPicturesResponseFile =
-          await modelPicturesService.getFileById(modelPictureId: e.id);
-
-      if (allModelPicturesResponseFile.statusCode == HttpStatus.ok &&
-          allModelPicturesResponseFile.body.isNotEmpty) {
-        return Image.memory(allModelPicturesResponseFile.bodyBytes);
-      }
-      return null;
-    }).toList());
-  }
-
-  /* Future<List<History>> _fetchUserHistory() async {
-    if (_user != null) {
-      final historyResponse =
-          await HistoryService.getByUserId(userId: _user.id);
-      if (historyResponse.statusCode == HttpStatus.ok &&
-          historyResponse.body.isNotEmpty) {
-        final rawHistory = List.from(jsonDecode(historyResponse.body));
-        if (rawHistory != null && rawHistory.isNotEmpty) {
-          return rawHistory.map((e) => History.fromJson(e)).toList();
-        }
-        return List<History>();
-      }
-    }
-    return List<History>();
-  } */
-
   Future<History> _fetchLatestUserHistoryEntry() async {
     if (_user != null) {
       final historyService = HistoryService();
+      final pictureService = PicturesService();
 
       // try to retrieve latest history entry locally first
       History latestHistoryEntry =
           await historyService.getLatestUserHistoryEntryLocal(userId: _user.id);
 
       if (latestHistoryEntry != null) {
+        final currentPictureMap =
+            await pictureService.getByIdLocal(id: latestHistoryEntry.pictureId);
+        final originalPictureMap = await pictureService.getByIdLocal(
+            id: latestHistoryEntry.originalPictureId);
+
+        setState(() {
+          _currentPicture = Picture.fromJson(currentPictureMap);
+          _originalPicture = Picture.fromJson(originalPictureMap);
+        });
+
         return latestHistoryEntry;
       } else {
         // could not retrieve history entry locally, try to retrieve it from the API
         final latestEntryResponse =
             await historyService.getLatestUserHistoryEntry(userId: _user.id);
 
-        if (latestEntryResponse.statusCode == 200 &&
+        if (latestEntryResponse != null &&
+            latestEntryResponse.statusCode == 200 &&
             latestEntryResponse.body.isNotEmpty) {
-          latestHistoryEntry =
-              History.fromJson(jsonDecode(latestEntryResponse.body));
+          final body = jsonDecode(latestEntryResponse.body);
+
+          latestHistoryEntry = History.fromJson(body['history_entry']);
+
+          setState(() {
+            if (body['current_picture'] != null) {
+              _currentPicture = Picture.fromJson(body['current_picture']);
+            }
+
+            if (body['original_picture'] != null) {
+              _originalPicture = Picture.fromJson(body['original_picture']);
+            }
+          });
 
           // save it locally
           await historyService.postLocal(obj: latestHistoryEntry.toJson());
+
+          if (_currentPicture != null) {
+            await pictureService.postLocal(obj: _currentPicture.toJson());
+          }
+
+          if (_originalPicture != null) {
+            await pictureService.postLocal(obj: _originalPicture.toJson());
+          }
+
           return latestHistoryEntry;
         }
       }
@@ -245,9 +159,12 @@ class _HomeState extends State<Home> {
   /// Retrieves the latest history entry for the user signed in,
   /// then retrieves the latest picture uploaded by said user
   Future<Picture> _fetchLatestPictureEntry() async {
+    final userToken = await _getUserToken();
+
     return _fetchLatestUserHistoryEntry().then((history) async {
       setState(() {
         _latestHistoryEntry = history;
+        _userToken = userToken;
 
         if (_latestHistoryEntry != null) {
           _completedRoutes.add(SelectFaceShape.routeName);
@@ -270,115 +187,17 @@ class _HomeState extends State<Home> {
         }
       });
 
-      final picturesService = PicturesService();
-      Picture latestPicture = Picture(id: -1);
+      print('Current picture: $_currentPicture');
 
-      if (_latestHistoryEntry != null) {
-        // try to retrieve latest picture locally first
-        final latestPictureRaw = await picturesService.getByIdLocal(
-            id: _latestHistoryEntry.pictureId);
-
-        if (latestPictureRaw != null) {
-          latestPicture = Picture.fromJson(latestPictureRaw);
-        } else {
-          final latestPictureResponse =
-              await picturesService.getById(id: _latestHistoryEntry.pictureId);
-
-          if (latestPictureResponse != null &&
-              latestPictureResponse.statusCode == 200 &&
-              latestPictureResponse.body.isNotEmpty) {
-            latestPicture =
-                Picture.fromJson(jsonDecode(latestPictureResponse.body));
-
-            // save latest picture locally
-            await picturesService.postLocal(obj: latestPicture.toJson());
-          }
-        }
+      if (_currentPicture == null) {
+        return Picture(id: -1);
       }
-
-      setState(() {
-        _currentPicture = latestPicture;
-      });
-
-      return latestPicture;
+      return _currentPicture;
     }).catchError((err) {
       print('Could not fetch user history');
       print(err);
       return Picture(id: -1);
     });
-  }
-
-  Future<Image> _fetchLatestPictureFile() async {
-    final picturesService = PicturesService();
-
-    if (_user != null) {
-      final latestPictureFile =
-          await picturesService.getLatestFileByUserId(userId: _user.id);
-
-      if (latestPictureFile.statusCode == HttpStatus.ok &&
-          latestPictureFile.body.isNotEmpty) {
-        return Image.memory(latestPictureFile.bodyBytes);
-      }
-    }
-
-    return null;
-  }
-
-  Future<HairStyle> _fetchLatestHairStyleEntry() async {
-    if (_history != null &&
-        _history.isNotEmpty &&
-        _history.last.hairStyleId != null) {
-      final hairStyleService = HairStyleService();
-
-      final latestHairStyleResponse =
-          await hairStyleService.getById(id: _history.last.hairStyleId);
-
-      if (latestHairStyleResponse.statusCode == HttpStatus.ok &&
-          latestHairStyleResponse.body.isNotEmpty) {
-        final latestHairStyle =
-            HairStyle.fromJson(jsonDecode(latestHairStyleResponse.body));
-        return latestHairStyle;
-      }
-    }
-    return null;
-  }
-
-  Future<FaceShape> _fetchLatestFaceShapeEntry() async {
-    final faceShapeService = FaceShapeService();
-
-    if (_history != null &&
-        _history.isNotEmpty &&
-        _history.last.faceShapeId != null) {
-      final latestFaceShapeResponse =
-          await faceShapeService.getById(id: _history.last.faceShapeId);
-
-      if (latestFaceShapeResponse.statusCode == HttpStatus.ok &&
-          latestFaceShapeResponse.body.isNotEmpty) {
-        final latestFaceShape =
-            FaceShape.fromJson(jsonDecode(latestFaceShapeResponse.body));
-        return latestFaceShape;
-      }
-    }
-    return null;
-  }
-
-  Future<HairColour> _fetchLatestHairColourEntry() async {
-    if (_history != null &&
-        _history.isNotEmpty &&
-        _history.last.hairColourId != null) {
-      final hairColourService = HairColourService();
-
-      final latestHairColourResponse =
-          await hairColourService.getById(id: _history.last.hairColourId);
-
-      if (latestHairColourResponse.statusCode == HttpStatus.ok &&
-          latestHairColourResponse.body.isNotEmpty) {
-        final latestHairColour =
-            HairColour.fromJson(jsonDecode(latestHairColourResponse.body));
-        return latestHairColour;
-      }
-    }
-    return null;
   }
 
   void _onPictureUploaded(
@@ -1039,9 +858,6 @@ class _HomeState extends State<Home> {
                                 text: "Select a hair style",
                                 action: SelectHairStyle(
                                   userToken: _userToken,
-                                  allHairStyles: _allHairStyles,
-                                  allModelPictures: _allModelPictures,
-                                  allHairLengths: _allHairLengths,
                                   onHairStyleUpdated: _onHairStyleUpdated,
                                   currentUserPicture:
                                       _originalPicture, // before: _currentPicture
@@ -1057,9 +873,6 @@ class _HomeState extends State<Home> {
                               text: "Select a hair style",
                               action: SelectHairStyle(
                                 userToken: _userToken,
-                                allHairStyles: _allHairStyles,
-                                allModelPictures: _allModelPictures,
-                                allHairLengths: _allHairLengths,
                                 onHairStyleUpdated: _onHairStyleUpdated,
                                 currentUserPicture:
                                     _originalPicture, // before: _currentPicture
