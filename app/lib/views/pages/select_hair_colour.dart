@@ -175,7 +175,6 @@ class _SelectHairColourState extends State<SelectHairColour> {
 
       _selectedColourCard = card;
       Color myColor = HexColor(_selectedColourCard.colourHash);
-      print(myColor);
       _r = myColor.red;
       _g = myColor.green;
       _b = myColor.blue;

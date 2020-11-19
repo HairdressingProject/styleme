@@ -69,6 +69,9 @@ class HistoryActions:
             .filter(
             models.Picture.file_name.ilike("%" + filename.strip() + "%")).all()
 
+    def get_picture_history_by_id(self, db: Session, original_picture_id: int) -> List[models.History]:
+        return db.query(models.History).filter(models.History.original_picture_id == original_picture_id).all()
+
     def get_user_id_from_picture_id(self, db: Session, picture_id: int) -> Union[models.User, None]:
         """
         Retrieve a user from a picture_id, if available in history

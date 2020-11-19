@@ -65,9 +65,6 @@ class _HomeState extends State<Home> {
   Image _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
-  List<HairLength> _allHairLengths;
-  List<HairStyle> _allHairStyles;
-  List<ModelPicture> _allModelPictures;
   FaceShape _currentFaceShape;
   HairStyle _currentHairStyle;
   HairColour _currentHairColour;
@@ -81,7 +78,6 @@ class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
   Picture _originalPicture;
-  // Picture _currentPictureNoColour;
 
   @override
   void initState() {
@@ -186,8 +182,6 @@ class _HomeState extends State<Home> {
           _completedRoutes.remove(SelectHairStyle.routeName);
         }
       });
-
-      print('Current picture: $_currentPicture');
 
       if (_currentPicture == null) {
         return Picture(id: -1);
@@ -325,15 +319,13 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    if (_history == null || _history.isEmpty) {
+    if (_originalPicture == null || _currentPicture == null) {
       NotificationService.notify(
-          scaffoldKey: scaffoldKey,
-          message:
-              'Your history is empty. Please restart the app or make changes and try again.');
+          scaffoldKey: scaffoldKey, message: 'No pictures to be compared.');
       return;
     }
 
-    final originalPictureId = _history.last.originalPictureId;
+    final originalPictureId = _originalPicture.id;
     final currentPictureId = _currentPicture.id;
 
     Navigator.push(
@@ -349,22 +341,6 @@ class _HomeState extends State<Home> {
         ));
   }
 
-  Future<Picture> _fetchOriginalPicture() async {
-    final picturesService = PicturesService();
-
-    final originalPictureResponse =
-        await picturesService.getById(id: _history.last.originalPictureId);
-
-    if (originalPictureResponse != null &&
-        originalPictureResponse.statusCode == HttpStatus.ok &&
-        originalPictureResponse.body.isNotEmpty) {
-      final originalPicture =
-          Picture.fromJson(jsonDecode(originalPictureResponse.body));
-      return originalPicture;
-    }
-    return null;
-  }
-
   Future<bool> _discardChanges() async {
     setState(() {
       _isDiscardChangesLoading = true;
@@ -372,7 +348,54 @@ class _HomeState extends State<Home> {
 
     final picturesService = PicturesService();
 
-    final originalPictureResponse =
+    if (_currentPicture == null || _originalPicture == null) {
+      return false;
+    }
+
+    // delete all history entries related to _currentPicture from the API
+    final response = await picturesService.discardChanges(
+        originalPictureId: _originalPicture.id);
+
+    if (response != null &&
+        response.statusCode == 200 &&
+        response.body.isNotEmpty) {
+      final body = jsonDecode(response.body);
+
+      final firstHistoryEntry = History.fromJson(body['history']);
+      final currentPicture = Picture.fromJson(body['current_picture']);
+
+      // also delete local records
+      await picturesService.discardChangesLocal(
+          originalPictureId: _originalPicture.id);
+
+      // update state
+      setState(() {
+        _currentPictureFuture = Future.value(currentPicture);
+        _currentPicture = currentPicture;
+        _originalPicture = currentPicture;
+        _latestHistoryEntry = firstHistoryEntry;
+        _completedRoutes.clear();
+        _completedRoutes.add(UploadPicture.routeName);
+        _completedRoutes.add(SelectFaceShape.routeName);
+        _isDiscardChangesLoading = false;
+      });
+
+      return true;
+    } else if (response.statusCode == 204) {
+      setState(() {
+        _isDiscardChangesLoading = false;
+      });
+      return true;
+    } else {
+      setState(() {
+        _isDiscardChangesLoading = false;
+      });
+      return false;
+    }
+
+    // _currentPicture becomes _originalPicture
+
+    /* final originalPictureResponse =
         await picturesService.getById(id: _history.last.originalPictureId);
 
     if (originalPictureResponse != null &&
@@ -441,13 +464,11 @@ class _HomeState extends State<Home> {
           }
         }
       }
-    }
-
-    return false;
+    } */
   }
 
   _onDiscardChanges() {
-    if (_currentPicture == null || _currentPictureFile == null) {
+    if (_currentPicture == null) {
       NotificationService.notify(
           scaffoldKey: scaffoldKey, message: 'No images to be discarded');
       return;
@@ -464,20 +485,24 @@ class _HomeState extends State<Home> {
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,
                     color: Color.fromARGB(255, 0, 6, 64))),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: [
-                  Text(
-                    'Would you like to roll back your changes to the picture that you originally uploaded?',
-                    style: TextStyle(
-                        fontFamily: 'Klavika',
-                        fontSize: 14.0,
-                        letterSpacing: 0.5,
-                        color: Color.fromARGB(255, 0, 6, 64)),
+            content: !_isDiscardChangesLoading
+                ? SingleChildScrollView(
+                    child: ListBody(
+                      children: [
+                        Text(
+                          'Would you like to roll back your changes to the picture that you originally uploaded?',
+                          style: TextStyle(
+                              fontFamily: 'Klavika',
+                              fontSize: 14.0,
+                              letterSpacing: 0.5,
+                              color: Color.fromARGB(255, 0, 6, 64)),
+                        ),
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
                   ),
-                ],
-              ),
-            ),
             actions: [
               !_isDiscardChangesLoading
                   ? TextButton(
@@ -497,26 +522,18 @@ class _HomeState extends State<Home> {
               !_isDiscardChangesLoading
                   ? TextButton(
                       onPressed: () async {
-                        if (_history.length < 2) {
+                        if (await _discardChanges()) {
                           Navigator.of(context).pop();
                           NotificationService.notify(
                               scaffoldKey: scaffoldKey,
                               message:
-                                  'Original picture has not been modified yet.');
+                                  'All changes were successfully discarded');
                         } else {
-                          if (await _discardChanges()) {
-                            Navigator.of(context).pop();
-                            NotificationService.notify(
-                                scaffoldKey: scaffoldKey,
-                                message:
-                                    'All changes were successfully discarded');
-                          } else {
-                            Navigator.of(context).pop();
-                            NotificationService.notify(
-                                scaffoldKey: scaffoldKey,
-                                message:
-                                    'Could not discard changes. Please upload a new picture instead.');
-                          }
+                          Navigator.of(context).pop();
+                          NotificationService.notify(
+                              scaffoldKey: scaffoldKey,
+                              message:
+                                  'Could not discard changes. Please upload a new picture instead.');
                         }
                       },
                       child: Text('Confirm',

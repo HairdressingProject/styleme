@@ -477,3 +477,33 @@ async def delete_picture(picture_id: int, response: Response, db: Session = Depe
 
     # return picture_actions.delete_picture(db=db, picture_id=picture_id)
     return selected_pictures
+
+
+@router.delete("/discard_changes/{original_picture_id}", status_code=status.HTTP_200_OK)
+async def discard_changes(original_picture_id: int, db: Session = Depends(get_db)):
+    picture_history = history_actions.get_picture_history_by_id(db=db, original_picture_id=original_picture_id)
+
+    if len(picture_history):
+        # select all entries except the very first one (where original picture id == picture id)
+        to_be_deleted = filter(lambda h: h.picture_id != h.original_picture_id, picture_history)
+
+        for entry in to_be_deleted:
+            picture_actions.delete_picture(db=db, picture_id=entry.picture_id)
+            history_actions.delete_history(db=db, history_id=entry.id)
+
+        # return first history entry along with picture
+        entries = history_actions.get_picture_history_by_id(db=db, original_picture_id=original_picture_id)
+
+        if len(entries):
+            first_entry = entries[0]
+            current_picture = picture_actions.read_picture_by_id(db=db, picture_id=first_entry.original_picture_id)
+
+            return {
+                "history": first_entry,
+                "current_picture": current_picture
+            }
+
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail='Sorry, all history entries associated with this picture were deleted')
+
+    raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)

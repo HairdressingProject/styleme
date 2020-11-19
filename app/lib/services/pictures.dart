@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:app/models/history.dart';
 import 'package:app/services/authentication.dart';
 import 'package:app/services/base_service.dart';
 import 'package:app/services/constants.dart';
+import 'package:app/services/db.dart';
+import 'package:app/services/history.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -212,38 +215,44 @@ class PicturesService extends BaseService {
     }
   }
 
-  /// NOT WORKING: try using flutter_cache_manager for this
-  Future<File> savePictureToCache(
-      {@required Uint8List picture, @required String filename}) async {
-    final cacheDir = await getTemporaryDirectory();
-    final picturesDir = Directory('${cacheDir.path}/test');
+  Future<void> discardChangesLocal({@required int originalPictureId}) async {
+    final db = await getDb();
 
-    print('Pictures cache dir: ${cacheDir.path}/test');
+    // get all history entries associated with pictureId
+    final associatedEntries = await db.query('history',
+        where: 'NOT picture_id = ?', whereArgs: [originalPictureId]);
 
-    final pic = File('${picturesDir.path}/$filename');
+    if (associatedEntries.isNotEmpty) {
+      final historyService = HistoryService();
 
-    if (await pic.exists()) {
-      // do nothing, picture is already in the cache
-      return pic;
+      for (var rawEntry in associatedEntries) {
+        final entry = History.fromJson(rawEntry);
+        await this.deleteLocal(id: entry.pictureId);
+        await historyService.deleteLocal(id: entry.id);
+      }
     }
-
-    print('File path: ${picturesDir.path}/$filename');
-
-    final savedPic = await pic.writeAsBytes(picture);
-    return savedPic;
   }
 
-  /// NOT WORKING: try using flutter_cache_manager for this
-  Future<File> retrievePictureFromCache({@required String filename}) async {
-    final cacheDir = await getTemporaryDirectory();
-    final picturesDir = Directory('${cacheDir.path}/$filename');
+  Future<http.Response> discardChanges(
+      {@required int originalPictureId}) async {
+    final userToken = await Authentication.retrieveToken();
 
-    final picture = File('${picturesDir.path}/$filename');
+    try {
+      if (userToken != null && userToken.isNotEmpty) {
+        final response = await http.delete(
+            Uri.encodeFull('$picturesUri/discard_changes/$originalPictureId'),
+            headers: {
+              "Authorization": "Bearer $userToken",
+              "Origin": ADMIN_PORTAL_URL
+            }).timeout(const Duration(seconds: DEFAULT_TIMEOUT_SECONDS));
 
-    if (await picture.exists()) {
-      return picture;
+        return response;
+      }
+    } catch (err) {
+      print('Failed to discard changes');
+      print(err);
+      return null;
     }
-
     return null;
   }
 }
