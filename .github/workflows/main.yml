@@ -38,9 +38,15 @@ jobs:
       - name: Run tests
         working-directory: ${{env.workdir}}
         run: flutter test
-      - name: Build apk
+      - name: Build apk (debug mode)
         working-directory: ${{env.workdir}}
-        run: flutter build apk
+        run: flutter build apk --debug
+      - name: Build apk (profile mode)
+        working-directory: ${{env.workdir}}
+        run: flutter build apk --profile
+      - name: Build apk (release mode)
+        working-directory: ${{env.workdir}}
+        run: flutter build apk --release
       - name: Upload release apk
         uses: actions/upload-artifact@master
         with:
