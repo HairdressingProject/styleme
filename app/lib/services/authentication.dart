@@ -54,19 +54,15 @@ class Authentication {
     }
   }
 
-  /// Extracts the `auth` cookie from [response] from the _set-cookie_ header
+  /// Extracts the `auth` token from [response] from the _X-Authorization-Token_ header
   ///
-  /// The [response] object should contain a _set-cookie_ header
+  /// The [response] object should contain a _X-Authorization-Token_ header
   ///
-  /// Returns the `auth` section of the cookie or `null` if not found
-  static String getAuthCookie({@required Response response}) {
-    final String rawCookie = response.headers['set-cookie'];
+  /// Returns the `auth` token or `null` if not found
+  static String getAuthToken({@required Response response}) {
+    final String token = response.headers['x-authorization-token'];
 
-    if (rawCookie != null) {
-      final int end = rawCookie.indexOf(';');
-      return (end == -1) ? null : rawCookie.substring(5, end);
-    }
-    return null;
+    return token;
   }
 
   /// Saves the current [user] and their [token] to the local database.

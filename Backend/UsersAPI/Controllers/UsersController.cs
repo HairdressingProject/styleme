@@ -520,6 +520,7 @@ namespace UsersAPI.Controllers
                 authenticatedUser.BaseUser = savedUser.WithoutPassword();
 
                 // Send cookie with fresh token
+                Response.Headers.Append("X-Authorization-Token", authenticatedUser.Token);
                 _authorizationService.SetAuthCookie(Request, Response, authenticatedUser.Token);
 
                 authenticatedUser.Token = null;

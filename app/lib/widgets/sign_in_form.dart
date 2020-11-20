@@ -147,9 +147,9 @@ class SignInFormState extends State<SignInForm> {
         // all good, save token to file
         final user = User.fromJson(jsonDecode(response.body));
 
-        await Authentication.saveToken(
-            token: Authentication.getAuthCookie(response: response),
-            user: user);
+        final token = Authentication.getAuthToken(response: response);
+
+        await Authentication.saveToken(token: token, user: user);
 
         setState(() {
           _user = user;
