@@ -4,9 +4,7 @@ on:
   pull_request:
     branches: 
       - master
-      - app-tests
-      - dev-g
-      - dev-d
+      - app-release
 
 jobs:
   build:
@@ -55,31 +53,31 @@ jobs:
           name: apks
           path: ./app/build/app/outputs/flutter-apk
           
-      - name: Create draft Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: latest
-          release_name: latest
-          draft: true
-          prerelease: false
+#       - name: Create draft Release
+#         id: create_release
+#         uses: actions/create-release@v1
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           tag_name: latest
+#           release_name: latest
+#           draft: true
+#           prerelease: false
       
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./app/build/app/outputs/flutter-apk
-          asset_name: apks.zip
-          asset_content_type: application/zip
+#       - name: Upload release asset
+#         uses: actions/upload-release-asset@v1.0.1
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           upload_url: ${{ steps.create_release.outputs.upload_url }}
+#           asset_path: ./app/build/app/outputs/flutter-apk
+#           asset_name: apks.zip
+#           asset_content_type: application/zip
         
-      - name: Publish release
-        uses: eregon/publish-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ steps.create_release.outputs.id }}
+#       - name: Publish release
+#         uses: eregon/publish-release@v1
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           release_id: ${{ steps.create_release.outputs.id }}
         
