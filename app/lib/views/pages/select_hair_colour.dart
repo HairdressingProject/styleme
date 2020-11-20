@@ -305,7 +305,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
                             shrinkWrap: true,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
+                                    crossAxisCount: 2,
                                     childAspectRatio: 1.0,
                                     mainAxisSpacing: 10.0,
                                     crossAxisSpacing: 5.0),
