@@ -5,6 +5,7 @@ import 'package:app/models/history.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/face_shape.dart';
+import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/home.dart';
@@ -36,14 +37,14 @@ class _UploadPictureState extends State<UploadPicture> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final picker = ImagePicker();
   OnPictureUploaded _onPictureUploaded;
-  User _user;
+  // User _user;
 
   @override
   void initState() {
     super.initState();
     _imagePicked = false;
     _onPictureUploaded = widget.onPictureUploaded;
-    _user = widget.user;
+    // _user = widget.user;
   }
 
   Future<void> getImageFromCamera() async {
@@ -75,7 +76,8 @@ class _UploadPictureState extends State<UploadPicture> {
       _isUploading = true;
     });
     if (_imagePicked && _image != null) {
-      final response = await PicturesService.upload(picture: _image);
+      final picturesService = PicturesService();
+      final response = await picturesService.upload(picture: _image);
       if (response.statusCode == HttpStatus.created ||
           response.statusCode == HttpStatus.ok) {
         final rawAPIResponse = await response.stream.bytesToString();
@@ -87,8 +89,10 @@ class _UploadPictureState extends State<UploadPicture> {
           final History historyEntry =
               History.fromJson(parsedAPIResponse['history_entry']);
 
-          final faceShapeDetectedResponse = await FaceShapeService.getAll(
-              faceShapeName: parsedAPIResponse['face_shape']);
+          final faceShapeService = FaceShapeService();
+
+          final faceShapeDetectedResponse = await faceShapeService.getAll(
+              resourceName: parsedAPIResponse['face_shape']);
 
           if (faceShapeDetectedResponse.statusCode == HttpStatus.ok &&
               faceShapeDetectedResponse.body.isNotEmpty) {
@@ -97,6 +101,13 @@ class _UploadPictureState extends State<UploadPicture> {
 
             if (rawFaceShapes.isNotEmpty) {
               final faceShapeDetected = FaceShape.fromJson(rawFaceShapes[0]);
+
+              // save history entry to local db
+              final historyService = HistoryService();
+              await historyService.postLocal(obj: historyEntry.toJson());
+
+              // save new picture to local db
+              await picturesService.postLocal(obj: pictureUploaded.toJson());
 
               _onPictureUploaded(
                   newPicture: pictureUploaded,

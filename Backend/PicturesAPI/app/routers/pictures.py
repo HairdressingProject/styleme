@@ -15,7 +15,9 @@ router = APIRouter()
 picture_service = services.PictureService()
 picture_actions = actions.PictureActions()
 history_actions = actions.HistoryActions()
+user_actions = actions.UserActions()
 hair_colour_actions = actions.HairColourActions()
+hair_style_actions = actions.HairStyleActions()
 model_picture_actions = actions.ModelPictureActions()
 face_shape_actions = actions.FaceShapeActions()
 face_shape_service = services.FaceShapeService()
@@ -218,6 +220,7 @@ async def get_picture_face_shape(picture_id: int, db: Session = Depends(get_db))
 @router.get("/change_hair_colour/{picture_id}", status_code=status.HTTP_200_OK)
 async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: int, db: Session = Depends(get_db)):
     """Applies changes to hair colour based on a base colour name (e.g. hot pink) and RGB values, which vary by lightness
+
     :param picture_id: ID of the picture to be processed
     :param db: db session instance
     :param colour: Base hair colour name
@@ -230,7 +233,17 @@ async def change_hair_colour(picture_id: int, colour: str, r: int, b: int, g: in
     selected_picture: Union[models.Picture, None] = None
 
     if picture_id:
-        selected_picture = picture_actions.read_picture_by_id(db, picture_id=picture_id)
+        # get latest entry from history where hair_colour_id == None
+        first_history_entry = history_actions.get_first_picture_history_by_id(db=db, picture_id=picture_id)
+
+        if first_history_entry:
+            pic_history = history_actions.get_picture_history_by_original_picture_id(db=db,
+                                                                                     original_picture_id=first_history_entry.original_picture_id)
+
+            if len(pic_history):
+                latest_entry_no_colour = list(filter(lambda h: not h.hair_colour_id, pic_history))[-1]
+                selected_picture = picture_actions.read_picture_by_id(db=db,
+                                                                      picture_id=latest_entry_no_colour.picture_id)
     else:
         raise HTTPException(status_code=400, detail='Picture ID not found')
 
@@ -313,6 +326,7 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
     """
     Change user's picture hairstyle based on the selected model picture hairstyle, add record to pictures table and
     history table
+
     :param user_picture_id: The ID of the user picture to be modified
     :param model_picture_id: the ID of the model picture hairstyle
     :param user_picture_file_name: the user picture filename
@@ -388,7 +402,19 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
                                                                                    user_id=user.id)
 
                         history_entry = history_actions.add_history(db=db, history=new_history)
-                        return history_entry
+                        new_hair_style = hair_style_actions.get_hair_style(db=db,
+                                                                           hair_style_id=history_entry.hair_style_id)
+
+                        current_picture = picture_actions.read_picture_by_id(db=db, picture_id=history_entry.picture_id)
+                        original_picture = picture_actions.read_picture_by_id(db=db,
+                                                                              picture_id=history_entry.original_picture_id)
+
+                        return {
+                            "history_entry": history_entry,
+                            "hair_style": new_hair_style,
+                            "current_picture": current_picture,
+                            "original_picture": original_picture
+                        }
                     raise HTTPException(status_code=404, detail='Model picture not found')
                 raise HTTPException(status_code=404,
                                     detail='No history associated with this user was found. Please upload a picture '
@@ -401,15 +427,36 @@ async def change_hairstyle(user_picture_id: Optional[int] = None, model_picture_
     raise HTTPException(status_code=404, detail='No user picture or model picture associated with these IDs were found')
 
 
-"""
-@router.post("_test/{picture_url}/change_hairstyle/{model_url}")
-async def change_hairstyle_str_path(picture_url: str, model_url: str,
-                                    db: Session = Depends(get_db)):
-    # user_picture = picture_actions.read_picture_by_id(db, picture_id=user_picture_id)
-    # model_picture = picture_actions.read_picture_by_id(db, picture_id=model_picture_id)
+@router.get("/users/{user_id}/latest", status_code=status.HTTP_200_OK)
+async def get_latest_user_picture_file(user_id: int, db: Session = Depends(get_db)):
+    """
+    GET /pictures/users/{user_id}/latest
 
-    picture_service.change_hairstyle_str_path(user_picture=picture_url, model_picture=model_url)
-"""
+    Retrieves the latest picture file uploaded by the user identified by `user_id`
+
+    :param user_id: User ID associated with the picture to be retrieved
+    :param db: db session instance
+    :returns: Picture file found
+    :raise HTTPException: 404 if the picture is not found
+    """
+    # check whether user exists first
+    user = user_actions.get_user(user_id=user_id, db=db)
+
+    if user:
+        latest_history_entry = history_actions.get_latest_user_history_entry(db=db, user_id=user_id)
+
+        if latest_history_entry:
+            # get picture file
+            pic = picture_actions.read_picture_by_id(db=db, picture_id=latest_history_entry.picture_id)
+
+            if pic:
+                file_path = pic.file_path + pic.file_name
+                if os.path.exists(file_path):
+                    return FileResponse(file_path)
+                raise HTTPException(status_code=404, detail='Picture file not found')
+            raise HTTPException(status_code=404, detail='Picture entry not found in the database')
+        raise HTTPException(status_code=404, detail='No history entry associated with this user was found')
+    raise HTTPException(status_code=404, detail='User not found')
 
 
 @router.delete("/{picture_id}", status_code=status.HTTP_200_OK, response_model=List[schemas.Picture])
@@ -440,3 +487,35 @@ async def delete_picture(picture_id: int, response: Response, db: Session = Depe
 
     # return picture_actions.delete_picture(db=db, picture_id=picture_id)
     return selected_pictures
+
+
+@router.delete("/discard_changes/{original_picture_id}", status_code=status.HTTP_200_OK)
+async def discard_changes(original_picture_id: int, db: Session = Depends(get_db)):
+    picture_history = history_actions.get_picture_history_by_original_picture_id(db=db,
+                                                                                 original_picture_id=original_picture_id)
+
+    if len(picture_history):
+        # select all entries except the very first one (where original picture id == picture id)
+        to_be_deleted = filter(lambda h: h.picture_id != h.original_picture_id, picture_history)
+
+        for entry in to_be_deleted:
+            picture_actions.delete_picture(db=db, picture_id=entry.picture_id)
+            history_actions.delete_history(db=db, history_id=entry.id)
+
+        # return first history entry along with picture
+        entries = history_actions.get_picture_history_by_original_picture_id(db=db,
+                                                                             original_picture_id=original_picture_id)
+
+        if len(entries):
+            first_entry = entries[0]
+            current_picture = picture_actions.read_picture_by_id(db=db, picture_id=first_entry.original_picture_id)
+
+            return {
+                "history": first_entry,
+                "current_picture": current_picture
+            }
+
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail='Sorry, all history entries associated with this picture were deleted')
+
+    raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)

@@ -3,20 +3,13 @@ import 'dart:io';
 
 import 'package:app/models/face_shape.dart';
 import 'package:app/models/hair_colour.dart';
-import 'package:app/models/hair_length.dart';
 import 'package:app/models/hair_style.dart';
 import 'package:app/models/history.dart';
-import 'package:app/models/model_picture.dart';
 import 'package:app/models/picture.dart';
 import 'package:app/models/user.dart';
 import 'package:app/services/authentication.dart';
 import 'package:app/services/constants.dart';
-import 'package:app/services/face_shape.dart';
-import 'package:app/services/hair_colour.dart';
-import 'package:app/services/hair_length.dart';
-import 'package:app/services/hair_style.dart';
 import 'package:app/services/history.dart';
-import 'package:app/services/model_pictures.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/services/pictures.dart';
 import 'package:app/views/pages/history_view.dart';
@@ -59,30 +52,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static final String routeName = '/homeRoute';
+  // static final String routeName = '/homeRoute';
 
   User _user;
-  Image _currentPictureFile;
   Future<Picture> _currentPictureFuture;
   Picture _currentPicture;
-  List<HairColour> _allHairColours;
-  List<HairLength> _allHairLengths;
-  List<FaceShape> _allFaceShapes;
-  List<HairStyle> _allHairStyles;
-  List<ModelPicture> _allModelPictures;
-  FaceShape _currentFaceShape;
-  HairStyle _currentHairStyle;
-  HairColour _currentHairColour;
   List<History> _history = List<History>();
+  History _latestHistoryEntry;
   String _message;
-  bool _faceShapeAlreadyDetected = false;
   String _userToken;
   List<String> _completedRoutes = List<String>();
   bool _isDiscardChangesLoading = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
   Picture _originalPicture;
-  // Picture _currentPictureNoColour;
 
   @override
   void initState() {
@@ -96,239 +79,107 @@ class _HomeState extends State<Home> {
     return token;
   }
 
-  Future<List<HairColour>> _fetchAllHairColours() async {
-    final allHairColoursResponse = await HairColourService.getAll();
-
-    if (allHairColoursResponse.statusCode == HttpStatus.ok &&
-        allHairColoursResponse.body.isNotEmpty) {
-      final rawHairColours = jsonDecode(allHairColoursResponse.body)['colours'];
-      final rawHairColoursList = List.from(rawHairColours);
-      if (rawHairColoursList.isNotEmpty) {
-        return rawHairColoursList.map((e) => HairColour.fromJson(e)).toList();
-      }
-    }
-    return List<HairColour>();
-  }
-
-  Future<List<FaceShape>> _fetchAllFaceShapes() async {
-    final allFaceShapesResponse = await FaceShapeService.getAll();
-
-    if (allFaceShapesResponse.statusCode == HttpStatus.ok &&
-        allFaceShapesResponse.body.isNotEmpty) {
-      final rawFaceShapes =
-          jsonDecode(allFaceShapesResponse.body)['face_shapes'];
-      final rawFaceShapesList = List.from(rawFaceShapes);
-      if (rawFaceShapesList.isNotEmpty) {
-        return rawFaceShapesList.map((e) => FaceShape.fromJson(e)).toList();
-      }
-    }
-    return List<FaceShape>();
-  }
-
-  Future<List<HairStyle>> _fetchAllHairStyles() async {
-    final allHairStylesResponse = await HairStyleService.getAll();
-
-    if (allHairStylesResponse.statusCode == HttpStatus.ok &&
-        allHairStylesResponse.body.isNotEmpty) {
-      final rawHairStyles =
-          jsonDecode(allHairStylesResponse.body)['hair_styles'];
-      final rawHairStylesList = List.from(rawHairStyles);
-      if (rawHairStylesList.isNotEmpty) {
-        return rawHairStylesList.map((e) => HairStyle.fromJson(e)).toList();
-      }
-    }
-    return List<HairStyle>();
-  }
-
-  Future<List<HairLength>> _fetchAllHairLengths() async {
-    final allHairLengthsResponse = await HairLengthService.getAll();
-
-    if (allHairLengthsResponse.statusCode == HttpStatus.ok &&
-        allHairLengthsResponse.body.isNotEmpty) {
-      final rawHairLengths =
-          jsonDecode(allHairLengthsResponse.body)['hair_lengths'];
-      final rawHairLengthsList = List.from(rawHairLengths);
-      if (rawHairLengthsList.isNotEmpty) {
-        return rawHairLengthsList.map((e) => HairLength.fromJson(e)).toList();
-      }
-    }
-    return List<HairLength>();
-  }
-
-  Future<List<ModelPicture>> _fetchAllModelPictures() async {
-    final allModelPicturesResponse = await ModelPicturesService.getAll();
-
-    if (allModelPicturesResponse.statusCode == HttpStatus.ok &&
-        allModelPicturesResponse.body.isNotEmpty) {
-      final rawModelPictures = jsonDecode(allModelPicturesResponse.body);
-      final rawModelPicturesList = List.from(rawModelPictures);
-
-      if (rawModelPicturesList.isNotEmpty) {
-        return rawModelPicturesList
-            .map((e) => ModelPicture.fromJson(e))
-            .toList();
-      }
-    }
-    return List<ModelPicture>();
-  }
-
-  Future<List<Image>> _fetchAllModelPicturesFiles(
-      List<ModelPicture> allModelPictures) async {
-    return Future.wait(allModelPictures.map((e) async {
-      final allModelPicturesResponseFile =
-          await ModelPicturesService.getFileById(modelPictureId: e.id);
-
-      if (allModelPicturesResponseFile.statusCode == HttpStatus.ok &&
-          allModelPicturesResponseFile.body.isNotEmpty) {
-        return Image.memory(allModelPicturesResponseFile.bodyBytes);
-      }
-      return null;
-    }).toList());
-  }
-
-  Future<List<History>> _fetchUserHistory() async {
+  Future<History> _fetchLatestUserHistoryEntry() async {
     if (_user != null) {
-      final historyResponse =
-          await HistoryService.getByUserId(userId: _user.id);
-      if (historyResponse.statusCode == HttpStatus.ok &&
-          historyResponse.body.isNotEmpty) {
-        final rawHistory = List.from(jsonDecode(historyResponse.body));
-        if (rawHistory != null && rawHistory.isNotEmpty) {
-          return rawHistory.map((e) => History.fromJson(e)).toList();
-        }
-        return List<History>();
-      }
-    }
-    return List<History>();
-  }
+      final historyService = HistoryService();
+      final pictureService = PicturesService();
 
-  Future<Picture> _fetchLatestPictureEntry() async {
-    return _fetchUserHistory().then((value) async {
-      _userToken = await _getUserToken();
-      _history = value;
-      _allHairColours = await _fetchAllHairColours();
-      _allHairLengths = await _fetchAllHairLengths();
-      _allFaceShapes = await _fetchAllFaceShapes();
-      _allHairStyles = await _fetchAllHairStyles();
-      _allModelPictures = await _fetchAllModelPictures();
+      // try to retrieve latest history entry locally first
+      History latestHistoryEntry =
+          await historyService.getLatestUserHistoryEntryLocal(userId: _user.id);
 
-      if (_history != null && _history.isNotEmpty) {
-        final latestPictureEntry =
-            await PicturesService.getById(pictureId: _history.last.pictureId);
+      if (latestHistoryEntry != null) {
+        final currentPictureMap =
+            await pictureService.getByIdLocal(id: latestHistoryEntry.pictureId);
+        final originalPictureMap = await pictureService.getByIdLocal(
+            id: latestHistoryEntry.originalPictureId);
 
-        if (latestPictureEntry.statusCode == HttpStatus.ok &&
-            latestPictureEntry.body.isNotEmpty) {
-          final latestPicture =
-              Picture.fromJson(jsonDecode(latestPictureEntry.body));
+        setState(() {
+          _currentPicture = Picture.fromJson(currentPictureMap);
+          _originalPicture = Picture.fromJson(originalPictureMap);
+        });
 
-          _completedRoutes.add(UploadPicture.routeName);
-          // load latest face shape, hair style and hair colour entries here
-          _currentFaceShape = await _fetchLatestFaceShapeEntry();
+        return latestHistoryEntry;
+      } else {
+        // could not retrieve history entry locally, try to retrieve it from the API
+        final latestEntryResponse =
+            await historyService.getLatestUserHistoryEntry(userId: _user.id);
 
-          if (_currentFaceShape != null) {
-            _completedRoutes.add(SelectFaceShape.routeName);
-          } else {
-            _completedRoutes.remove(SelectFaceShape.routeName);
+        if (latestEntryResponse != null &&
+            latestEntryResponse.statusCode == 200 &&
+            latestEntryResponse.body.isNotEmpty) {
+          final body = jsonDecode(latestEntryResponse.body);
+
+          latestHistoryEntry = History.fromJson(body['history_entry']);
+
+          setState(() {
+            if (body['current_picture'] != null) {
+              _currentPicture = Picture.fromJson(body['current_picture']);
+            }
+
+            if (body['original_picture'] != null) {
+              _originalPicture = Picture.fromJson(body['original_picture']);
+            }
+          });
+
+          // save it locally
+          await historyService.postLocal(obj: latestHistoryEntry.toJson());
+
+          if (_currentPicture != null) {
+            await pictureService.postLocal(obj: _currentPicture.toJson());
           }
 
-          _currentHairStyle = await _fetchLatestHairStyleEntry();
+          if (_originalPicture != null) {
+            await pictureService.postLocal(obj: _originalPicture.toJson());
+          }
 
-          _currentPictureFile = await _fetchLatestPictureFile();
+          return latestHistoryEntry;
+        }
+      }
+    }
+    return null;
+  }
 
-          _originalPicture = await _fetchOriginalPicture();
+  /// Retrieves the latest history entry for the user signed in,
+  /// then retrieves the latest picture uploaded by said user
+  Future<Picture> _fetchLatestPictureEntry() async {
+    final userToken = await _getUserToken();
 
-          // _currentPictureNoColour = _fetchCurrentPictureNoColour();
+    return _fetchLatestUserHistoryEntry().then((history) async {
+      setState(() {
+        _latestHistoryEntry = history;
+        _userToken = userToken;
 
-          if (_currentHairStyle != null) {
+        if (_latestHistoryEntry != null) {
+          _completedRoutes.add(SelectFaceShape.routeName);
+
+          if (_latestHistoryEntry.hairStyleId != null) {
             _completedRoutes.add(SelectHairStyle.routeName);
           } else {
             _completedRoutes.remove(SelectHairStyle.routeName);
           }
 
-          _currentHairColour = await _fetchLatestHairColourEntry();
-
-          if (_currentHairColour != null) {
+          if (_latestHistoryEntry.hairColourId != null) {
             _completedRoutes.add(SelectHairColour.routeName);
           } else {
             _completedRoutes.remove(SelectHairColour.routeName);
           }
-
-          _currentPicture = latestPicture;
-          return latestPicture;
+        } else {
+          _completedRoutes.remove(SelectFaceShape.routeName);
+          _completedRoutes.remove(SelectHairColour.routeName);
+          _completedRoutes.remove(SelectHairStyle.routeName);
         }
+      });
+
+      if (_currentPicture == null) {
+        return Picture(id: -1);
       }
-      return Picture(id: -1);
+      return _currentPicture;
     }).catchError((err) {
       print('Could not fetch user history');
       print(err);
       return Picture(id: -1);
     });
-  }
-
-  Future<Image> _fetchLatestPictureFile() async {
-    if (_history != null &&
-        _history.isNotEmpty &&
-        _history.last.pictureId != null) {
-      final latestPictureFile =
-          await PicturesService.getFileById(pictureId: _history.last.pictureId);
-
-      if (latestPictureFile.statusCode == HttpStatus.ok &&
-          latestPictureFile.body.isNotEmpty) {
-        return Image.memory(latestPictureFile.bodyBytes);
-      }
-    }
-    return null;
-  }
-
-  Future<HairStyle> _fetchLatestHairStyleEntry() async {
-    if (_history != null &&
-        _history.isNotEmpty &&
-        _history.last.hairStyleId != null) {
-      final latestHairStyleResponse =
-          await HairStyleService.getById(id: _history.last.hairStyleId);
-
-      if (latestHairStyleResponse.statusCode == HttpStatus.ok &&
-          latestHairStyleResponse.body.isNotEmpty) {
-        final latestHairStyle =
-            HairStyle.fromJson(jsonDecode(latestHairStyleResponse.body));
-        return latestHairStyle;
-      }
-    }
-    return null;
-  }
-
-  Future<FaceShape> _fetchLatestFaceShapeEntry() async {
-    if (_history != null &&
-        _history.isNotEmpty &&
-        _history.last.faceShapeId != null) {
-      final latestFaceShapeResponse =
-          await FaceShapeService.getById(id: _history.last.faceShapeId);
-
-      if (latestFaceShapeResponse.statusCode == HttpStatus.ok &&
-          latestFaceShapeResponse.body.isNotEmpty) {
-        final latestFaceShape =
-            FaceShape.fromJson(jsonDecode(latestFaceShapeResponse.body));
-        return latestFaceShape;
-      }
-    }
-    return null;
-  }
-
-  Future<HairColour> _fetchLatestHairColourEntry() async {
-    if (_history != null &&
-        _history.isNotEmpty &&
-        _history.last.hairColourId != null) {
-      final latestHairColourResponse =
-          await HairColourService.getById(id: _history.last.hairColourId);
-
-      if (latestHairColourResponse.statusCode == HttpStatus.ok &&
-          latestHairColourResponse.body.isNotEmpty) {
-        final latestHairColour =
-            HairColour.fromJson(jsonDecode(latestHairColourResponse.body));
-        return latestHairColour;
-      }
-    }
-    return null;
   }
 
   void _onPictureUploaded(
@@ -342,7 +193,7 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(UploadPicture.routeName);
       _history.add(historyEntryAdded);
       _currentPicture = newPicture;
-      _currentFaceShape = newFaceShape;
+      // _currentFaceShape = newFaceShape;
       _message = message ?? 'Picture successfully uploaded';
     });
 
@@ -358,9 +209,8 @@ class _HomeState extends State<Home> {
       _completedRoutes.clear();
       _completedRoutes.add(UploadPicture.routeName);
       _completedRoutes.add(SelectFaceShape.routeName);
-      _currentFaceShape = newFaceShape;
+      // _currentFaceShape = newFaceShape;
       _message = message ?? 'Face shape updated to ${newFaceShape.label}';
-      _faceShapeAlreadyDetected = true;
     });
 
     NotificationService.notify(scaffoldKey: scaffoldKey, message: _message);
@@ -373,7 +223,7 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(UploadPicture.routeName);
       _completedRoutes.add(SelectFaceShape.routeName);
       _completedRoutes.add(SelectHairStyle.routeName);
-      _currentHairStyle = newHairStyle;
+      // _currentHairStyle = newHairStyle;
       _message = message ?? 'Hair style updated to ${newHairStyle.label}';
     });
 
@@ -389,7 +239,7 @@ class _HomeState extends State<Home> {
       _completedRoutes.add(SelectFaceShape.routeName);
       _completedRoutes.add(SelectHairStyle.routeName);
       _completedRoutes.add(SelectHairColour.routeName);
-      _currentHairColour = newHairColour;
+      // _currentHairColour = newHairColour;
       _message = message ?? 'Hair colour updated to ${newHairColour.label}';
     });
 
@@ -456,15 +306,13 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    if (_history == null || _history.isEmpty) {
+    if (_originalPicture == null || _currentPicture == null) {
       NotificationService.notify(
-          scaffoldKey: scaffoldKey,
-          message:
-              'Your history is empty. Please restart the app or make changes and try again.');
+          scaffoldKey: scaffoldKey, message: 'No pictures to be compared.');
       return;
     }
 
-    final originalPictureId = _history.last.originalPictureId;
+    final originalPictureId = _originalPicture.id;
     final currentPictureId = _currentPicture.id;
 
     Navigator.push(
@@ -480,97 +328,61 @@ class _HomeState extends State<Home> {
         ));
   }
 
-  Future<Picture> _fetchOriginalPicture() async {
-    final originalPictureResponse = await PicturesService.getById(
-        pictureId: _history.last.originalPictureId);
-
-    if (originalPictureResponse != null &&
-        originalPictureResponse.statusCode == HttpStatus.ok &&
-        originalPictureResponse.body.isNotEmpty) {
-      final originalPicture =
-          Picture.fromJson(jsonDecode(originalPictureResponse.body));
-      return originalPicture;
-    }
-    return null;
-  }
-
   Future<bool> _discardChanges() async {
     setState(() {
       _isDiscardChangesLoading = true;
     });
 
-    final originalPictureResponse = await PicturesService.getById(
-        pictureId: _history.last.originalPictureId);
+    final picturesService = PicturesService();
 
-    if (originalPictureResponse != null &&
-        originalPictureResponse.statusCode == HttpStatus.ok &&
-        originalPictureResponse.body.isNotEmpty) {
-      final originalPicture =
-          Picture.fromJson(jsonDecode(originalPictureResponse.body));
-
-      final originalPictureFileResponse = await PicturesService.getFileById(
-          pictureId: _history.last.originalPictureId);
-
-      if (originalPictureFileResponse != null &&
-          originalPictureFileResponse.statusCode == HttpStatus.ok &&
-          originalPictureFileResponse.body.isNotEmpty) {
-        final originalFaceShapeResponse =
-            await FaceShapeService.getById(id: _history.last.faceShapeId);
-
-        if (originalFaceShapeResponse != null &&
-            originalFaceShapeResponse.statusCode == HttpStatus.ok &&
-            originalFaceShapeResponse.body.isNotEmpty) {
-          final originalFaceShape =
-              FaceShape.fromJson(jsonDecode(originalFaceShapeResponse.body));
-
-          bool deletedAllHistoryEntries = true;
-
-          _history
-              .where((entry) =>
-                  entry.originalPictureId == _history.last.originalPictureId &&
-                  (entry.hairStyleId != null || entry.hairColourId != null))
-              .forEach((entry) async {
-            final deleteEntryResponse =
-                await HistoryService.delete(historyId: entry.id);
-
-            if (deleteEntryResponse == null ||
-                deleteEntryResponse.statusCode != HttpStatus.ok) {
-              deletedAllHistoryEntries = false;
-              return;
-            }
-          });
-
-          if (deletedAllHistoryEntries) {
-            setState(() {
-              _currentPictureFuture = Future.value(originalPicture);
-              _currentPicture = originalPicture;
-              _currentFaceShape = originalFaceShape;
-              _currentHairColour = null;
-              _currentHairStyle = null;
-              _currentPictureFile =
-                  Image.memory(originalPictureFileResponse.bodyBytes);
-              _completedRoutes.clear();
-              _completedRoutes.add(UploadPicture.routeName);
-              _completedRoutes.add(SelectFaceShape.routeName);
-              _history.removeWhere((element) =>
-                  element.originalPictureId ==
-                      _history.last.originalPictureId &&
-                  (element.hairStyleId != null ||
-                      element.hairColourId != null));
-              _isDiscardChangesLoading = false;
-            });
-
-            return true;
-          }
-        }
-      }
+    if (_currentPicture == null || _originalPicture == null) {
+      return false;
     }
 
-    return false;
+    // delete all history entries related to _currentPicture from the API
+    final response = await picturesService.discardChanges(
+        originalPictureId: _originalPicture.id);
+
+    if (response != null &&
+        response.statusCode == 200 &&
+        response.body.isNotEmpty) {
+      final body = jsonDecode(response.body);
+
+      final firstHistoryEntry = History.fromJson(body['history']);
+      final currentPicture = Picture.fromJson(body['current_picture']);
+
+      // also delete local records
+      await picturesService.discardChangesLocal(
+          originalPictureId: _originalPicture.id);
+
+      // update state
+      setState(() {
+        _currentPictureFuture = Future.value(currentPicture);
+        _currentPicture = currentPicture;
+        _originalPicture = currentPicture;
+        _latestHistoryEntry = firstHistoryEntry;
+        _completedRoutes.clear();
+        _completedRoutes.add(UploadPicture.routeName);
+        _completedRoutes.add(SelectFaceShape.routeName);
+        _isDiscardChangesLoading = false;
+      });
+
+      return true;
+    } else if (response.statusCode == 204) {
+      setState(() {
+        _isDiscardChangesLoading = false;
+      });
+      return true;
+    } else {
+      setState(() {
+        _isDiscardChangesLoading = false;
+      });
+      return false;
+    }
   }
 
   _onDiscardChanges() {
-    if (_currentPicture == null || _currentPictureFile == null) {
+    if (_currentPicture == null) {
       NotificationService.notify(
           scaffoldKey: scaffoldKey, message: 'No images to be discarded');
       return;
@@ -587,20 +399,24 @@ class _HomeState extends State<Home> {
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,
                     color: Color.fromARGB(255, 0, 6, 64))),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: [
-                  Text(
-                    'Would you like to roll back your changes to the picture that you originally uploaded?',
-                    style: TextStyle(
-                        fontFamily: 'Klavika',
-                        fontSize: 14.0,
-                        letterSpacing: 0.5,
-                        color: Color.fromARGB(255, 0, 6, 64)),
+            content: !_isDiscardChangesLoading
+                ? SingleChildScrollView(
+                    child: ListBody(
+                      children: [
+                        Text(
+                          'Would you like to roll back your changes to the picture that you originally uploaded?',
+                          style: TextStyle(
+                              fontFamily: 'Klavika',
+                              fontSize: 14.0,
+                              letterSpacing: 0.5,
+                              color: Color.fromARGB(255, 0, 6, 64)),
+                        ),
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
                   ),
-                ],
-              ),
-            ),
             actions: [
               !_isDiscardChangesLoading
                   ? TextButton(
@@ -620,26 +436,18 @@ class _HomeState extends State<Home> {
               !_isDiscardChangesLoading
                   ? TextButton(
                       onPressed: () async {
-                        if (_history.length < 2) {
+                        if (await _discardChanges()) {
                           Navigator.of(context).pop();
                           NotificationService.notify(
                               scaffoldKey: scaffoldKey,
                               message:
-                                  'Original picture has not been modified yet.');
+                                  'All changes were successfully discarded');
                         } else {
-                          if (await _discardChanges()) {
-                            Navigator.of(context).pop();
-                            NotificationService.notify(
-                                scaffoldKey: scaffoldKey,
-                                message:
-                                    'All changes were successfully discarded');
-                          } else {
-                            Navigator.of(context).pop();
-                            NotificationService.notify(
-                                scaffoldKey: scaffoldKey,
-                                message:
-                                    'Could not discard changes. Please upload a new picture instead.');
-                          }
+                          Navigator.of(context).pop();
+                          NotificationService.notify(
+                              scaffoldKey: scaffoldKey,
+                              message:
+                                  'Could not discard changes. Please upload a new picture instead.');
                         }
                       },
                       child: Text('Confirm',
@@ -662,8 +470,9 @@ class _HomeState extends State<Home> {
       return;
     }
 
+    final picturesService = PicturesService();
     final currentPictureResponse =
-        await PicturesService.getFileById(pictureId: _currentPicture.id);
+        await picturesService.getFileById(pictureId: _currentPicture.id);
 
     if (currentPictureResponse != null &&
         currentPictureResponse.statusCode == HttpStatus.ok &&
@@ -704,67 +513,19 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _onCompareResults() async {
-    if (_history == null || _history.length < 2) {
+    if (_currentPicture == null ||
+        _originalPicture == null ||
+        _latestHistoryEntry == null) {
       NotificationService.notify(
-          scaffoldKey: scaffoldKey,
-          message: 'Please make changes to the current picture first.');
+          scaffoldKey: scaffoldKey, message: 'No pictures to compare.');
       return;
     }
 
-    if (_userToken == null) {
-      NotificationService.notify(
-          scaffoldKey: scaffoldKey,
-          message: 'User not found. Please sign in or sign up.');
-      return;
-    }
-
-    final currentOriginalPictureId = _history.last.originalPictureId;
-
-    final currentOriginalPictureResponse =
-        await PicturesService.getById(pictureId: currentOriginalPictureId);
-
-    if (currentOriginalPictureResponse != null &&
-        currentOriginalPictureResponse.statusCode == HttpStatus.ok &&
-        currentOriginalPictureResponse.body.isNotEmpty) {
-      final originalPicture =
-          Picture.fromJson(jsonDecode(currentOriginalPictureResponse.body));
-
-      final historyPictures = await Future.wait(_history
-          .where((element) {
-            return element.originalPictureId == currentOriginalPictureId &&
-                (element.hairColourId != null || element.hairStyleId != null);
-          })
-          .map((e) async {
-            final currentPictureResponse =
-                await PicturesService.getById(pictureId: e.pictureId);
-
-            if (currentPictureResponse != null &&
-                currentPictureResponse.statusCode == HttpStatus.ok &&
-                currentPictureResponse.body.isNotEmpty) {
-              return Picture.fromJson(jsonDecode(currentPictureResponse.body));
-            }
-            NotificationService.notify(
-                scaffoldKey: scaffoldKey,
-                message:
-                    'Could not retrieve picture: status code ${currentPictureResponse.statusCode}');
-            return null;
-          })
-          .where((element) => element != null)
-          .toList());
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HistoryView(
-                  originalPicture: originalPicture,
-                  historyPictures: historyPictures,
-                  userToken: _userToken)));
-    } else {
-      NotificationService.notify(
-          scaffoldKey: scaffoldKey,
-          message:
-              'Could not retrieve original picture. Please restart the app and upload a new picture or report this issue to the developers.');
-    }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HistoryView(
+                originalPicture: _originalPicture, userToken: _userToken)));
   }
 
   @override
@@ -937,14 +698,16 @@ class _HomeState extends State<Home> {
                               icon: _handleButtonIcon(SelectFaceShape.routeName,
                                   UploadPicture.routeName),
                               text: "Select your face shape",
-                              action: SelectFaceShape(
-                                userId: _user.id,
-                                initialFaceShape: _currentFaceShape,
-                                allFaceShapes: _allFaceShapes,
-                                onFaceShapeUpdated: _onFaceShapeUpdated,
-                                faceShapeAlreadyDetected:
-                                    _faceShapeAlreadyDetected,
-                              ),
+                              action: _latestHistoryEntry != null
+                                  ? SelectFaceShape(
+                                      userId: _user.id,
+                                      initialFaceShapeId:
+                                          _latestHistoryEntry.faceShapeId,
+                                      onFaceShapeUpdated: _onFaceShapeUpdated,
+                                    )
+                                  : SelectFaceShape(
+                                      onFaceShapeUpdated: _onFaceShapeUpdated,
+                                      userId: _user.id),
                               alreadySelected: _completedRoutes
                                   .contains(SelectFaceShape.routeName),
                               enabled: _isButtonEnabled(
@@ -957,10 +720,7 @@ class _HomeState extends State<Home> {
                             text: "Select your face shape",
                             action: SelectFaceShape(
                               userId: _user.id,
-                              initialFaceShape: _currentFaceShape,
                               onFaceShapeUpdated: _onFaceShapeUpdated,
-                              faceShapeAlreadyDetected:
-                                  _faceShapeAlreadyDetected,
                             ),
                             alreadySelected: false,
                             enabled: false,
@@ -980,9 +740,6 @@ class _HomeState extends State<Home> {
                                 text: "Select a hair style",
                                 action: SelectHairStyle(
                                   userToken: _userToken,
-                                  allHairStyles: _allHairStyles,
-                                  allModelPictures: _allModelPictures,
-                                  allHairLengths: _allHairLengths,
                                   onHairStyleUpdated: _onHairStyleUpdated,
                                   currentUserPicture:
                                       _originalPicture, // before: _currentPicture
@@ -998,9 +755,6 @@ class _HomeState extends State<Home> {
                               text: "Select a hair style",
                               action: SelectHairStyle(
                                 userToken: _userToken,
-                                allHairStyles: _allHairStyles,
-                                allModelPictures: _allModelPictures,
-                                allHairLengths: _allHairLengths,
                                 onHairStyleUpdated: _onHairStyleUpdated,
                                 currentUserPicture:
                                     _originalPicture, // before: _currentPicture
@@ -1025,21 +779,27 @@ class _HomeState extends State<Home> {
                                     SelectHairStyle.routeName),
                                 alreadySelected: _completedRoutes
                                     .contains(SelectHairColour.routeName),
-                                action: SelectHairColour(
-                                  currentPicture: _currentPicture,
-                                  currentPictureFile: _currentPictureFile,
-                                  onHairColourUpdated: _onHairColourUpdated,
-                                  currentHairColour: _currentHairColour,
-                                ));
+                                action: snapshot.data.id != -1
+                                    ? SelectHairColour(
+                                        userToken: _userToken,
+                                        currentPicture: snapshot.data,
+                                        onHairColourUpdated:
+                                            _onHairColourUpdated,
+                                      )
+                                    : SelectHairColour(
+                                        userToken: _userToken,
+                                        onHairColourUpdated:
+                                            _onHairColourUpdated,
+                                        currentPicture: snapshot.data,
+                                      ));
                           }
                           return CustomButton(
                             icon: Icon(Icons.access_time),
                             text: "Select your hair colour",
                             action: SelectHairColour(
+                              userToken: _userToken,
                               currentPicture: _currentPicture,
-                              currentPictureFile: _currentPictureFile,
                               onHairColourUpdated: _onHairColourUpdated,
-                              currentHairColour: _currentHairColour,
                             ),
                             alreadySelected: false,
                             enabled: false,

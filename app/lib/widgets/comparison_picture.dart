@@ -1,5 +1,4 @@
 import 'package:app/services/constants.dart';
-import 'package:app/services/pictures.dart';
 import 'package:app/widgets/preview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

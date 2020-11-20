@@ -5,15 +5,15 @@ import 'package:app/views/pages/home.dart';
 import 'package:app/views/pages/sign_in.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(StyleMe());
 }
 
-class MyApp extends StatefulWidget {
+class StyleMe extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => MyAppState();
+  State<StatefulWidget> createState() => StyleMeState();
 }
 
-class MyAppState extends State<MyApp> {
+class StyleMeState extends State<StyleMe> {
   Future<User> _authenticatedUser;
 
   @override
