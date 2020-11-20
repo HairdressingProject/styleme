@@ -33,7 +33,7 @@ class Preview extends StatelessWidget {
             )),
         body: Container(
             child: PhotoView(
-                enableRotation: true,
+                enableRotation: false,
                 loadingBuilder: (context, event) => Center(
                       child: CircularProgressIndicator(),
                     ),
