@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       workdir: ./app
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
     
     steps:    
       - name: Checkout
@@ -47,8 +48,38 @@ jobs:
       - name: Build apk (release mode)
         working-directory: ${{env.workdir}}
         run: flutter build apk --release
-      - name: Upload release apk
+        
+      - name: Upload apk artifacts
         uses: actions/upload-artifact@master
         with:
-          name: apk-release
-          path: ./app/build/app/outputs/flutter-apk/app-release.apk   
+          name: apks
+          path: ./app/build/app/outputs/flutter-apk
+          
+      - name: Create draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: latest
+          release_name: latest
+          draft: true
+          prerelease: false
+      
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./apks.zip
+          asset_name: apks.zip
+          asset_content_type: application/zip
+        
+      - name: Publish release
+        uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
+        
