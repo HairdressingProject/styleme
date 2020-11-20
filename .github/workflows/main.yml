@@ -50,8 +50,8 @@ jobs:
       - name: Upload apk artifacts
         uses: actions/upload-artifact@master
         with:
-          name: apks
-          path: ./app/build/app/outputs/flutter-apk
+          name: apk
+          path: ./app/build/app/outputs/flutter-apk/app-release.apk
           
 #       - name: Create draft Release
 #         id: create_release
