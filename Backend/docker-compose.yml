@@ -45,8 +45,13 @@ services:
     image: grafana/grafana
     restart: always
     container_name: grafana
+    build:
+      context: ./Prometheus/grafana
+      dockerfile: Dockerfile    
     ports:
       - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
     networks:
       glue:
         ipv4_address: 22.22.22.6
@@ -64,15 +69,15 @@ services:
       glue:
         ipv4_address: 22.22.22.7
 
-  pushgateway:
-    image: prom/pushgateway
-    restart: always
-    container_name: pushgateway
-    ports:
-      - "9091:9091"
-    networks:
-      glue:
-        ipv4_address: 22.22.22.8
+  # pushgateway:
+  #   image: prom/pushgateway
+  #   restart: always
+  #   container_name: pushgateway
+  #   ports:
+  #     - "9091:9091"
+  #   networks:
+  #     glue:
+  #       ipv4_address: 22.22.22.8
 
   users_api:
     image: mcr.microsoft.com/dotnet/core/sdk:3.1
@@ -128,3 +133,4 @@ services:
 
 volumes:
   hairdressing_project_data:
+  grafana-storage:

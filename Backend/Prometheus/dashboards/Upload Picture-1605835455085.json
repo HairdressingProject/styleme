@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 4,
   "links": [],
   "panels": [
     {
@@ -61,7 +61,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "detect_face_landmarks_request_processing_seconds_sum / detect_face_landmarks_request_processing_seconds_count",
@@ -118,7 +118,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "detect_face_request_processing_seconds_sum / detect_face_request_processing_seconds_count",
@@ -130,67 +130,6 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Detect Face (average time)",
-      "type": "stat"
-    },
-    {
-      "datasource": "PicturesAPI",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 8,
-        "y": 0
-      },
-      "id": 10,
-      "interval": "",
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.3.1",
-      "targets": [
-        {
-          "expr": "detect_face_shape_request_processing_seconds_sum / detect_face_shape_request_processing_seconds_count",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Detect Face Shape (average)",
       "type": "stat"
     },
     {
@@ -218,7 +157,7 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 12,
+        "x": 8,
         "y": 0
       },
       "id": 18,
@@ -236,7 +175,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "save_picture_request_processing_seconds_sum / save_picture_request_processing_seconds_count",
@@ -275,7 +214,7 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 16,
+        "x": 12,
         "y": 0
       },
       "id": 22,
@@ -293,7 +232,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "get_picture_info_request_processing_seconds_sum / get_picture_info_request_processing_seconds_count",
@@ -305,6 +244,189 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Picture Info (average)",
+      "type": "stat"
+    },
+    {
+      "datasource": "PicturesAPI",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 0
+      },
+      "id": 10,
+      "interval": "",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.2",
+      "targets": [
+        {
+          "expr": "detect_face_shape_request_processing_seconds_sum / detect_face_shape_request_processing_seconds_count",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Detect Face Shape (average)",
+      "type": "stat"
+    },
+    {
+      "datasource": "PicturesAPI",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 29,
+      "interval": "",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.2",
+      "targets": [
+        {
+          "expr": "lib_find_face_shape_processing_seconds_sum / lib_find_face_shape_processing_seconds_count",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Detect Face Shape (average) - Find face shape",
+      "type": "stat"
+    },
+    {
+      "datasource": "PicturesAPI",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 4,
+        "x": 20,
+        "y": 2
+      },
+      "id": 30,
+      "interval": "",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.2",
+      "targets": [
+        {
+          "expr": "lib_make_face_processing_seconds_sum / lib_make_face_processing_seconds_count",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Detect Face Shape (average) - Make Data Frame",
       "type": "stat"
     },
     {
@@ -345,7 +467,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -442,7 +564,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -522,103 +644,6 @@
         "y": 5
       },
       "hiddenSeries": false,
-      "id": 25,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.3.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "detect_face_shape_request_processing_seconds_count",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Detect Face Shape (count)",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:997",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:998",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 12,
-        "y": 5
-      },
-      "hiddenSeries": false,
       "id": 26,
       "legend": {
         "avg": false,
@@ -636,7 +661,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -712,7 +737,7 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 16,
+        "x": 12,
         "y": 5
       },
       "hiddenSeries": false,
@@ -733,7 +758,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -793,6 +818,103 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 5
+      },
+      "hiddenSeries": false,
+      "id": 25,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "detect_face_shape_request_processing_seconds_count",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Detect Face Shape (count)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:997",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:998",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "datasource": "PicturesAPI",
       "fieldConfig": {
         "defaults": {
@@ -835,7 +957,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "detect_face_landmarks_request_processing_seconds_sum",
@@ -895,7 +1017,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "detect_face_request_processing_seconds_sum",
@@ -907,66 +1029,6 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Detect Face (sum)",
-      "type": "stat"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null,
-            "filterable": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 8,
-        "y": 10
-      },
-      "id": 28,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.3.1",
-      "targets": [
-        {
-          "expr": "detect_face_shape_request_processing_seconds_sum",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Detect Face Shape (sum)",
       "type": "stat"
     },
     {
@@ -994,7 +1056,7 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 12,
+        "x": 8,
         "y": 10
       },
       "id": 20,
@@ -1012,7 +1074,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "save_picture_request_processing_seconds_sum",
@@ -1051,7 +1113,7 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 16,
+        "x": 12,
         "y": 10
       },
       "id": 27,
@@ -1069,7 +1131,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "get_picture_info_request_processing_seconds_sum",
@@ -1081,6 +1143,66 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Picture Info (sum)",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 10
+      },
+      "id": 28,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.2",
+      "targets": [
+        {
+          "expr": "detect_face_shape_request_processing_seconds_sum",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Detect Face Shape (sum)",
       "type": "stat"
     },
     {
@@ -1126,7 +1248,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.3.1",
+      "pluginVersion": "7.3.2",
       "targets": [
         {
           "expr": "(detect_face_landmarks_request_processing_seconds_sum / detect_face_landmarks_request_processing_seconds_count) + (detect_face_request_processing_seconds_sum / detect_face_request_processing_seconds_count) + (detect_face_shape_request_processing_seconds_sum / detect_face_shape_request_processing_seconds_count) + (get_picture_info_request_processing_seconds_sum / get_picture_info_request_processing_seconds_count) + (save_picture_request_processing_seconds_sum / save_picture_request_processing_seconds_sum)",
@@ -1141,7 +1263,7 @@
       "type": "stat"
     }
   ],
-  "refresh": false,
+  "refresh": "5s",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
@@ -1149,12 +1271,12 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Upload Picture",
   "uid": "G47hVQhMz",
-  "version": 7
+  "version": 4
 }
