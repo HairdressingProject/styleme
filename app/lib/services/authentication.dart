@@ -60,7 +60,7 @@ class Authentication {
   ///
   /// Returns the `auth` token or `null` if not found
   static String getAuthToken({@required Response response}) {
-    final String token = response.headers['X-Authorization-Token'];
+    final String token = response.headers['x-authorization-token'];
 
     return token;
   }
