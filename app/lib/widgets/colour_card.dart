@@ -24,7 +24,7 @@ class ColourCard extends StatelessWidget {
         onTap: () {
           select(this);
         },
-        child: Expanded(
+        child: Container(
           child: Card(
             shadowColor: selected ? Colors.green[100] : null,
             color: selected ? Colors.green[50] : null,
