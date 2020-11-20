@@ -72,7 +72,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./apks.zip
+          asset_path: ./app/build/app/outputs/flutter-apk
           asset_name: apks.zip
           asset_content_type: application/zip
         
