@@ -512,3 +512,9 @@ secret_constants.php
 
 # Hair transfer data set
 79999_iter.pth
+
+# Unnecessary folders
+Documentation/
+Backend/
+Admin_Portal/
+Design/
