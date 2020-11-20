@@ -162,6 +162,10 @@ class SignInFormState extends State<SignInForm> {
     } catch (err) {
       print('Could not process sign in request');
       print(err);
+
+      setState(() {
+        _errorMsg = err.toString();
+      });
       return false;
     }
     return false;

@@ -1,8 +1,8 @@
 name: Flutter CI
-on: 
+on:
   push:
   pull_request:
-    branches: 
+    branches:
       - master
       - app-release
 
@@ -12,14 +12,14 @@ jobs:
     env:
       workdir: ./app
       gh_token: ${{ secrets.GITHUB_TOKEN }}
-    
-    steps:    
+
+    steps:
       - name: Checkout
         uses: actions/checkout@v2.3.4
       - name: Setup Java
         uses: actions/setup-java@v1.4.3
         with:
-          java-version: '11.x'
+          java-version: "11.x"
       - name: Flutter action
         uses: subosito/flutter-action@v1.4.0
       - name: Run flutter doctor
@@ -27,7 +27,7 @@ jobs:
         run: flutter doctor -v
       - name: Install dependencies
         working-directory: ${{env.workdir}}
-        run: flutter pub get 
+        run: flutter pub get
       - name: Format code
         working-directory: ${{env.workdir}}
         run: flutter format --set-exit-if-changed .
@@ -45,14 +45,13 @@ jobs:
         run: flutter build apk --profile
       - name: Build apk (release mode)
         working-directory: ${{env.workdir}}
-        run: flutter build apk --release
-        
+        run: flutter build apk --release --no-shrink
+
       - name: Upload apk artifacts
         uses: actions/upload-artifact@master
         with:
           name: apk
           path: ./app/build/app/outputs/flutter-apk/app-release.apk
-          
 #       - name: Create draft Release
 #         id: create_release
 #         uses: actions/create-release@v1
@@ -63,7 +62,7 @@ jobs:
 #           release_name: latest
 #           draft: true
 #           prerelease: false
-      
+
 #       - name: Upload release asset
 #         uses: actions/upload-release-asset@v1.0.1
 #         env:
@@ -73,11 +72,11 @@ jobs:
 #           asset_path: ./app/build/app/outputs/flutter-apk
 #           asset_name: apks.zip
 #           asset_content_type: application/zip
-        
+
 #       - name: Publish release
 #         uses: eregon/publish-release@v1
 #         env:
 #           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #         with:
 #           release_id: ${{ steps.create_release.outputs.id }}
-        
+
