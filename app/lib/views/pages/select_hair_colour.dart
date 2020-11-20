@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:app/models/hair_colour.dart';
 import 'package:app/models/picture.dart';
-import 'package:app/models/history.dart';
+import 'package:app/services/constants.dart';
+import 'package:app/services/hair_colour.dart';
+import 'package:app/services/history.dart';
 import 'package:app/services/notification.dart';
 import 'package:app/views/pages/home.dart';
 import 'package:app/widgets/colour_card.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -15,17 +18,15 @@ import 'package:app/widgets/action_button.dart';
 
 class SelectHairColour extends StatefulWidget {
   static final String routeName = '/selectHairColourRoute';
-  final Image currentPictureFile;
   final Picture currentPicture;
   final OnHairColourUpdated onHairColourUpdated;
-  final HairColour currentHairColour;
+  final String userToken;
 
   const SelectHairColour(
       {Key key,
-      @required this.currentPictureFile,
-      @required this.currentPicture,
+      this.currentPicture,
       @required this.onHairColourUpdated,
-      @required this.currentHairColour})
+      @required this.userToken})
       : super(key: key);
 
   @override
@@ -33,10 +34,9 @@ class SelectHairColour extends StatefulWidget {
 }
 
 class _SelectHairColourState extends State<SelectHairColour> {
-  HairColour _currentHairColour;
-  Image _currentPictureFile;
   Picture _currentPicture;
-  List<ColourCard> _colours;
+  Future<List<HairColour>> _coloursFuture;
+  List<ColourCard> _coloursCard;
   ColourCard _selectedColourCard;
   double _lightnessValue;
   String _lightnessLabel;
@@ -48,15 +48,65 @@ class _SelectHairColourState extends State<SelectHairColour> {
   double _alpha;
   double _h;
   double _s;
-  double _l;
+  // double _l;
   Color _rgb;
   Color _selectedColour;
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   _saveChanges() {
-    print('Cahnging hair colour to ${_selectedColourCard.colourLabel}');
     _changeHairColour();
+  }
+
+  List<ColourCard> _buildColourCards(List<HairColour> hairColours) {
+    final colourCards = List.generate(hairColours.length, (index) {
+      final currentColour = hairColours[index];
+      return ColourCard(
+          select: _selectColour,
+          colourHash: currentColour.colourHash,
+          colourName: currentColour.colourName,
+          colourLabel: currentColour.label);
+    });
+
+    return colourCards;
+  }
+
+  Future<List<HairColour>> _fetchAllHairColours() async {
+    List<HairColour> allColours = List<HairColour>();
+
+    final hairColourService = HairColourService();
+
+    // try to retrieve hair colours locally first
+    final hairColoursMap = await hairColourService.getAllLocal();
+
+    if (hairColoursMap.isNotEmpty) {
+      allColours = List.generate(hairColoursMap.length,
+          (index) => HairColour.fromJson(hairColoursMap[index]));
+    } else {
+      // could not retrieve hair colours locally, request them from the API instead
+      final response = await hairColourService.getAll();
+
+      if (response != null &&
+          response.statusCode == 200 &&
+          response.body.isNotEmpty) {
+        final coloursListRaw = jsonDecode(response.body)['colours'];
+
+        allColours = List.from(coloursListRaw)
+            .map((e) => HairColour.fromJson(e))
+            .toList();
+
+        // save to local db
+        allColours.forEach((element) async {
+          await hairColourService.postLocal(obj: element.toJson());
+        });
+      }
+    }
+
+    setState(() {
+      _coloursCard = _buildColourCards(allColours);
+    });
+
+    return allColours;
   }
 
   Future<void> _changeHairColour() async {
@@ -64,26 +114,26 @@ class _SelectHairColourState extends State<SelectHairColour> {
       setState(() {
         _isLoading = true;
       });
-      //final response = await PicturesService.changeHairColour(pictureId: 60, colourName: _selectedColourCard.colourName);
-      print("_currentPicture.id");
-      print(_currentPicture.id);
-      final response = await PicturesService.changeHairColourRGB(
+
+      final picturesService = PicturesService();
+      final response = await picturesService.changeHairColourRGB(
           pictureId: _currentPicture.id,
           colourName: _selectedColourCard.colourName,
           r: _r,
           g: _g,
           b: _b);
       if (response.statusCode == HttpStatus.ok && response.body.isNotEmpty) {
-        final History historyEntry =
-            History.fromJson(jsonDecode(response.body));
+        final body = jsonDecode(response.body);
 
-        final HairColour hairColourEntry =
-            HairColour.fromJson(jsonDecode(response.body)['hair_colour']);
+        // add new history entry to local db
+        final historyService = HistoryService();
+        await historyService.postLocal(obj: body['history_entry']);
 
-        widget.onHairColourUpdated(newHairColour: hairColourEntry);
+        // add new picture to local db
+        await picturesService.postLocal(obj: body['picture']);
 
-        // update current colour
-        _currentHairColour = hairColourEntry;
+        widget.onHairColourUpdated(
+            newHairColour: HairColour.fromJson(body['hair_colour']));
 
         Navigator.pop(context);
       } else {
@@ -102,7 +152,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
 
   _selectColour(ColourCard card) {
     setState(() {
-      _colours = _colours.map((c) {
+      _coloursCard = _coloursCard.map((c) {
         if (c.colourHash == card.colourHash) {
           c = ColourCard(
             select: _selectColour,
@@ -125,7 +175,6 @@ class _SelectHairColourState extends State<SelectHairColour> {
 
       _selectedColourCard = card;
       Color myColor = HexColor(_selectedColourCard.colourHash);
-      print(myColor);
       _r = myColor.red;
       _g = myColor.green;
       _b = myColor.blue;
@@ -134,7 +183,7 @@ class _SelectHairColourState extends State<SelectHairColour> {
       _alpha = _hsl.alpha;
       _h = _hsl.hue;
       _s = _hsl.saturation;
-      _l = _hsl.lightness;
+      // _l = _hsl.lightness;
       _selectedColour =
           HSLColor.fromAHSL(_alpha, _h, _s, _lightnessValue / 100).toColor();
     });
@@ -144,52 +193,9 @@ class _SelectHairColourState extends State<SelectHairColour> {
   void initState() {
     super.initState();
     _currentPicture = widget.currentPicture;
-    _currentPictureFile = widget.currentPictureFile;
-    _currentHairColour = widget.currentHairColour;
+    _coloursFuture = _fetchAllHairColours();
     _lightnessValue = 50.0;
     _lightnessLabel = "0%";
-    _colours = [
-      ColourCard(
-          select: _selectColour,
-          colourHash: '#F9E726',
-          colourName: 'sunny_yellow',
-          colourLabel: 'Sunny yellow'),
-      ColourCard(
-          select: _selectColour,
-          colourHash: '#EC6126',
-          colourName: 'juicy_orange',
-          colourLabel: 'Juicy orange'),
-      ColourCard(
-          select: _selectColour,
-          colourHash: '#B80C44',
-          colourName: 'fiery_red',
-          colourLabel: 'Fiery red'),
-      ColourCard(
-          select: _selectColour,
-          colourHash: '#CF34B1',
-          colourName: 'hot_pink',
-          colourLabel: 'Hot pink'),
-      ColourCard(
-          select: _selectColour,
-          colourHash: '#402D87',
-          colourName: 'mysterious_violet',
-          colourLabel: 'Mysterious violet'),
-      ColourCard(
-          select: _selectColour,
-          colourHash: '#013C7A',
-          colourName: 'ocean_blue',
-          colourLabel: 'Ocean blue'),
-      ColourCard(
-          select: _selectColour,
-          colourHash: '#255638',
-          colourName: 'tropical_green',
-          colourLabel: 'Tropical green'),
-      ColourCard(
-          select: _selectColour,
-          colourHash: '#27221C',
-          colourName: 'jet_black',
-          colourLabel: 'Jet black')
-    ];
   }
 
   _onChangeLightness(double value) {
@@ -241,7 +247,39 @@ class _SelectHairColourState extends State<SelectHairColour> {
                 ),
                 Container(
                   height: 150.0,
-                  child: _currentPictureFile,
+                  child: _currentPicture != null
+                      ? CachedNetworkImage(
+                          imageUrl:
+                              '${PicturesService.picturesUri}/file/${_currentPicture.id}',
+                          httpHeaders: {
+                            "Origin": ADMIN_PORTAL_URL,
+                            "Authorization": "Bearer ${widget.userToken}"
+                          },
+                          progressIndicatorBuilder: (context, url, progress) {
+                            if (progress == null || progress.progress == null) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: progress.progress,
+                              ),
+                            );
+                          },
+                          errorWidget: (context, url, error) => Center(
+                            child: Icon(
+                              Icons.error,
+                              size: 128,
+                            ),
+                          ),
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.image,
+                            size: 128,
+                          ),
+                        ),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 15.0),
@@ -258,23 +296,48 @@ class _SelectHairColourState extends State<SelectHairColour> {
                 ),
                 Container(
                     padding: const EdgeInsets.all(10.0),
-                    child: GridView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 1.0,
-                          mainAxisSpacing: 10.0,
-                          crossAxisSpacing: 5.0),
-                      itemCount: _colours.length,
-                      itemBuilder: (context, index) {
-                        return ColourCard(
-                          select: _selectColour,
-                          colourHash: _colours[index].colourHash,
-                          colourLabel: _colours[index].colourLabel,
-                          colourName: _colours[index].colourName,
-                          selected: _colours[index].selected,
-                        );
+                    child: FutureBuilder(
+                      future: _coloursFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return GridView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    childAspectRatio: 1.0,
+                                    mainAxisSpacing: 10.0,
+                                    crossAxisSpacing: 5.0),
+                            itemCount: _coloursCard.length,
+                            itemBuilder: (context, index) {
+                              return ColourCard(
+                                select: _selectColour,
+                                colourHash: _coloursCard[index].colourHash,
+                                colourLabel: _coloursCard[index].colourLabel,
+                                colourName: _coloursCard[index].colourName,
+                                selected: _coloursCard[index].selected,
+                              );
+                            },
+                          );
+                        } else if (snapshot.hasError) {
+                          return Column(
+                            children: [
+                              const Icon(
+                                Icons.error,
+                                size: 128,
+                              ),
+                              const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(vertical: 10.0)),
+                              Text(snapshot.error.toString())
+                            ],
+                          );
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
                       },
                     )),
                 const Padding(

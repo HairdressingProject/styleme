@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 
 from fastapi import Response, status
 from sqlalchemy import desc
@@ -11,6 +11,7 @@ class HistoryActions:
     def get_history(self, db: Session, history_id: int) -> models.History:
         """
         Retrieves a history record from the database
+
         :param db: db session instance
         :param history_id: ID of the history record to be retrieved
         :return: History instance
@@ -21,6 +22,7 @@ class HistoryActions:
         models.History]:
         """
         Retrieves all history records from the database
+
         :param db: db session instance
         :param skip: optionally skip a number of records (default = 0)
         :param limit: optionally limit the number of results retrieved (default = 1000)
@@ -39,6 +41,7 @@ class HistoryActions:
     def get_user_history(self, db: Session, user_id: int) -> List[models.History]:
         """
         Retrieves all history records associated with a user
+
         :param db: db session instance
         :param user_id: ID of the user to retrieve history records
         :return: History records of the user
@@ -46,9 +49,17 @@ class HistoryActions:
         user_history = db.query(models.History).filter(models.History.user_id == user_id).all()
         return user_history
 
+    def get_latest_user_history_entry(self, db: Session, user_id: int) -> Optional[models.History]:
+        latest_user_history_entry: models.History = db.query(models.History).filter(
+            models.History.user_id == user_id).order_by(
+            models.History.id.desc()).limit(1).first()
+
+        return latest_user_history_entry
+
     def get_picture_history(self, db: Session, filename: str) -> List[models.History]:
         """
         Retrieves all history records associated with a picture identified by its filename
+
         :param db: db session instance
         :param filename: file name of the picture
         :return: history records containing picture_id that correspond to the picture identified by its filename
@@ -58,9 +69,16 @@ class HistoryActions:
             .filter(
             models.Picture.file_name.ilike("%" + filename.strip() + "%")).all()
 
+    def get_picture_history_by_original_picture_id(self, db: Session, original_picture_id: int) -> List[models.History]:
+        return db.query(models.History).filter(models.History.original_picture_id == original_picture_id).all()
+
+    def get_first_picture_history_by_id(self, db: Session, picture_id: int) -> models.History:
+        return db.query(models.History).filter(models.History.picture_id == picture_id).first()
+
     def get_user_id_from_picture_id(self, db: Session, picture_id: int) -> Union[models.User, None]:
         """
         Retrieve a user from a picture_id, if available in history
+
         :param db: db session instance
         :param picture_id: file name of the picture
         :return: user that uploaded the picture identified by picture_id
@@ -74,6 +92,7 @@ class HistoryActions:
     def add_history(self, db: Session, history: schemas.HistoryCreate) -> models.History:
         """
         Adds history entry to db
+
         :param db: db session instance
         :param history: new history record to be added
         :return: History instance
@@ -96,6 +115,7 @@ class HistoryActions:
     def update_history(self, db: Session, history_id: int, history: schemas.HistoryUpdate) -> models.History:
         """
         Updates a history record in the database
+
         :param db: db session instance
         :param history_id: ID of the history entry to be updated
         :param history: new history record to be added
@@ -123,6 +143,7 @@ class HistoryActions:
         """
         Similar to add_history, this method adds a new history record to the database based on the latest one,
         with a new face_shape_id
+
         :param db: db session instance
         :param history_record_with_new_face_shape: history
         record with user_id and face_shape_id to be added
@@ -150,6 +171,7 @@ class HistoryActions:
     def delete_history(self, db: Session, history_id: int) -> models.History:
         """
         Deletes a history record from the database
+
         :param db: db session instance
         :param history_id: ID of the history entry to be updated
         :return: History instance
@@ -166,6 +188,7 @@ class HistoryActions:
             bool, str):
         """
         Validates HistoryCreate and HistoryUpdate instances, checking for existing entries in the database
+
         :param db: db session instance
         :param history: HistoryCreate instance to be validated
         :return: Validation result in the format (result, message)

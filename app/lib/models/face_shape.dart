@@ -1,18 +1,21 @@
+import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
-class FaceShape {
+/// Face shape model class
+class FaceShape extends BaseModel {
   final int id;
   final String shapeName;
   final String label;
   final String dateCreated;
   final String dateUpdated;
 
-  const FaceShape(
+  FaceShape(
       {this.id,
       @required this.shapeName,
       this.label,
       this.dateCreated,
-      this.dateUpdated});
+      this.dateUpdated})
+      : super(id: id, dateCreated: dateCreated, dateUpdated: dateUpdated);
 
   @override
   String toString() {

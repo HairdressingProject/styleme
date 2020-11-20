@@ -1,13 +1,15 @@
+import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
-class History {
-  final int id;
+/// History model class
+class History extends BaseModel {
+  int id;
   final int pictureId;
   final int originalPictureId;
   final int previousPictureId;
   final int hairColourId;
   final int hairStyleId;
-  final int faceShapeId;
+  int faceShapeId;
   final int userId;
   final String dateCreated;
   final String dateUpdated;
@@ -22,7 +24,8 @@ class History {
       this.faceShapeId,
       this.userId,
       this.dateCreated,
-      this.dateUpdated});
+      this.dateUpdated})
+      : super(id: id, dateCreated: dateCreated, dateUpdated: dateUpdated);
 
   @override
   String toString() {
@@ -73,6 +76,8 @@ class History {
   int get hashCode => id.hashCode;
 }
 
+/// Model class to be used in request bodies when adding a new history entry with
+/// an updated face shape
 class HistoryAddFaceShape {
   final int userId;
   final int faceShapeId;

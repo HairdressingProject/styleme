@@ -1,18 +1,21 @@
+import 'package:app/models/base_model.dart';
 import 'package:flutter/foundation.dart';
 
-class HairLength {
+/// Hair length model class
+class HairLength extends BaseModel {
   final int id;
   final String hairLengthName;
   final String label;
   final String dateCreated;
   final String dateUpdated;
 
-  const HairLength(
+  HairLength(
       {this.id,
       @required this.hairLengthName,
       this.label,
       this.dateCreated,
-      this.dateUpdated});
+      this.dateUpdated})
+      : super(id: id, dateCreated: dateCreated, dateUpdated: dateUpdated);
 
   @override
   String toString() {

@@ -1,4 +1,7 @@
-class Picture {
+import 'package:app/models/base_model.dart';
+
+/// Picture model class
+class Picture extends BaseModel {
   final int id;
   final String fileName;
   final String filePath;
@@ -16,7 +19,8 @@ class Picture {
       this.width,
       this.height,
       this.dateCreated,
-      this.dateUpdated});
+      this.dateUpdated})
+      : super(id: id, dateCreated: dateCreated, dateUpdated: dateUpdated);
 
   Picture.fromJson(Map<String, dynamic> json)
       : id = json['id'],
