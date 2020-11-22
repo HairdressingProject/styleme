@@ -1,3 +1,9 @@
+![Flutter CI](https://github.com/HairdressingProject/styleme/workflows/Flutter%20CI/badge.svg?branch=master)
+![License](https://img.shields.io/github/license/HairdressingProject/styleme)
+![Issues](https://img.shields.io/github/issues/HairdressingProject/styleme)
+![PRs](https://img.shields.io/github/issues-pr/HairdressingProject/styleme)
+![Commit activity](https://img.shields.io/github/commit-activity/w/HairdressingProject/styleme)
+
 # Hairdressing Project - Style Me App
 
 Building upon the previously built database, API and Admin Portal of our project, this repository will contain the previous three components plus the documentation, design (mockups, wireframes, etc.) and implementation required for the Style Me App. 
