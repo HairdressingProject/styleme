@@ -83,7 +83,7 @@ You may now navigate to http://localhost:8000/docs to test the routes available.
 ### API profiling and metrics
 To measure http request processing time statistics and resources usage, we are going to use [Prometheus](https://prometheus.io). Two pip packages are required:
 ```shell script
-pip install pip install prometheus-client starlette-prometheus
+pip install prometheus-client starlette-prometheus
 ```
 
 
