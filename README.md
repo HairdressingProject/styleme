@@ -6,6 +6,10 @@
 
 # Hairdressing Project - Style Me App
 
+An Android app that enables users to apply different hair colours and hair styles to their pictures. Such operations are handled in the backend by various CV Python libraries, such as [HairTransfer](https://github.com/Emmanuel-Ezenwere/HairTransfer "HairTransfer") and [faceswap](https://github.com/matthewearl/faceswap "faceswap").
+
+![Changing hair colour (sample)](https://files.catbox.moe/u8wx4t.gif) 
+
 Building upon the previously built database, API and Admin Portal of our project, this repository will contain the previous three components plus the documentation, design (mockups, wireframes, etc.) and implementation required for the Style Me App. 
 
 ## Getting started
