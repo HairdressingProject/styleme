@@ -71,6 +71,15 @@ cd app/libraries/HairTransfer
 wget https://github.com/Emmanuel-Ezenwere/HairTransfer/raw/master/shape_predictor_68_face_landmarks.dat
 ```
 
+* API profiling and metrics
+
+To measure http request processing time statistics and resources usage, we are going to use [Prometheus](https://prometheus.io). Two pip packages are required:
+
+```shell script
+pip install prometheus-client starlette-prometheus
+```
+
+
 ### Run the application
 From your Anaconda Prompt (with the __StyleMe__ environment activated), run the command below from the project root directory (one level above the `app` directory):
 
@@ -78,14 +87,14 @@ From your Anaconda Prompt (with the __StyleMe__ environment activated), run the 
 uvicorn app.main:app --reload
 ```
 
-You may now navigate to http://localhost:8000/docs to test the routes available.
+### Seed model pictures
+After the Pictures API is up and running, model pictures used as reference to change hair styles need to be seeded into the database. 
 
-### API profiling and metrics
-To measure http request processing time statistics and resources usage, we are going to use [Prometheus](https://prometheus.io). Two pip packages are required:
+You can do so simply by running the [`init_models.py`](https://github.com/HairdressingProject/styleme/blob/master/Backend/PicturesAPI/init_models.py "Seed model pictures script") script from the [`PicturesAPI`](https://github.com/HairdressingProject/styleme/tree/master/Backend/PicturesAPI "PicturesAPI directory") directory (do this in another terminal window in order to leave the API running):
+
 ```shell script
-pip install prometheus-client starlette-prometheus
+python init_models.py
 ```
-
 
 ### Running unit tests
 From the project root directory, execute:
