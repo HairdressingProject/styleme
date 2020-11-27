@@ -22,6 +22,8 @@ from prometheus_client import Summary
 
 from app.libraries.fmPyTorch.utils.face_detect import FaceDetect
 
+from fastapi import HTTPException
+
 # Metrics related to Upload Picture (POST /pictures)
 SAVE_PICTURE_REQUEST_TIME = Summary('save_picture_request_processing_seconds', 'Time spent saving picture')
 DETECT_FACE_REQUEST_TIME = Summary('detect_face_request_processing_seconds', 'Time spent detecting faces')
@@ -81,14 +83,17 @@ class PictureService:
         """
 
         img = cv2.imread(save_file_path + new_file_name, cv2.IMREAD_UNCHANGED)
-        max_value = max(img.shape[0], img.shape[1])
-        if max_value > 600:
-            scale_percent = int(600 / max_value * 100)
-            width = int(img.shape[1] * scale_percent / 100)
-            height = int(img.shape[0] * scale_percent / 100)
-            dim = (width, height)
-            resized_img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
-            cv2.imwrite(save_file_path + new_file_name, resized_img)
+        if img is not None:
+            max_value = max(img.shape[0], img.shape[1])
+            if max_value > 600:
+                scale_percent = int(600 / max_value * 100)
+                width = int(img.shape[1] * scale_percent / 100)
+                height = int(img.shape[0] * scale_percent / 100)
+                dim = (width, height)
+                resized_img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+                cv2.imwrite(save_file_path + new_file_name, resized_img)
+        else:
+            raise HTTPException(status_code=422, detail='Selected picture can not be read.')
 
         return new_file_name
 
