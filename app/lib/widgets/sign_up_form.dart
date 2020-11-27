@@ -373,10 +373,18 @@ class SignUpFormState extends State<SignUpForm> {
         }
       }
 
+      setState(() {
+        _errorMsg = 'Could not process sign up request. Please try again later';
+      });
+
       return false;
     } catch (err) {
       print('Could not process sign up request');
       print(err);
+
+      setState(() {
+        _errorMsg = err.toString();
+      });
       return false;
     }
   }

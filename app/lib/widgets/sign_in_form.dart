@@ -147,9 +147,8 @@ class SignInFormState extends State<SignInForm> {
         // all good, save token to file
         final user = User.fromJson(jsonDecode(response.body));
 
-        final token = Authentication.getAuthToken(response: response);
-
-        await Authentication.saveToken(token: token, user: user);
+        await Authentication.saveToken(
+            token: Authentication.getAuthToken(response: response), user: user);
 
         setState(() {
           _user = user;
@@ -163,6 +162,10 @@ class SignInFormState extends State<SignInForm> {
     } catch (err) {
       print('Could not process sign in request');
       print(err);
+
+      setState(() {
+        _errorMsg = err.toString();
+      });
       return false;
     }
     return false;

@@ -1,5 +1,6 @@
 import json
 
+import uvicorn
 from fastapi import FastAPI, APIRouter, Request, Response, status
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.responses import ORJSONResponse
@@ -10,7 +11,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from app.database.db import SessionLocal, engine, Base
 from app.settings import API_HOST, ADMIN_PORTAL_HOST, USERS_API_URL
-from .routers import get_user_data_from_token
+from app.routers import get_user_data_from_token
 
 from app.routers import pictures
 from app.routers import model_pictures
@@ -142,3 +143,6 @@ api_router.include_router(history.router, prefix="/history", tags=["History"],
 api_router.include_router(test.router, tags=["test"])
 
 app.include_router(api_router)
+
+if __name__ == '__main__':
+    uvicorn.run(app=app, host='0.0.0.0', port=8000)

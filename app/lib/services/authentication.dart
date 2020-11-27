@@ -56,7 +56,7 @@ class Authentication {
 
   /// Extracts the `auth` token from [response] from the _X-Authorization-Token_ header
   ///
-  /// The [response] object should contain a _X-Authorization-Token_ header
+  /// The [response] object should contain an _X-Authorization_ header
   ///
   /// Returns the `auth` token or `null` if not found
   static String getAuthToken({@required Response response}) {

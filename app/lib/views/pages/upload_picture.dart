@@ -55,6 +55,11 @@ class _UploadPictureState extends State<UploadPicture> {
       if (pickedImg != null) {
         _image = File(pickedImg.path);
         _imagePicked = true;
+      } else {
+        NotificationService.notify(
+            scaffoldKey: _scaffoldKey,
+            message:
+                'This picture could not be uploaded. Please try another one.');
       }
     });
   }
@@ -67,6 +72,11 @@ class _UploadPictureState extends State<UploadPicture> {
       if (pickedImg != null) {
         _image = File(pickedImg.path);
         _imagePicked = true;
+      } else {
+        NotificationService.notify(
+            scaffoldKey: _scaffoldKey,
+            message:
+                'This picture could not be uploaded. Please try another one.');
       }
     });
   }

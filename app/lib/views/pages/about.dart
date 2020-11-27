@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatelessWidget {
   About({
@@ -58,7 +59,10 @@ class About extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    launch(
+                        'https://github.com/HairdressingProject/styleme/issues/new');
+                  },
                   child: Text('Provide feedback',
                       style: Theme.of(context).textTheme.bodyText1.copyWith(
                           fontWeight: FontWeight.w700,

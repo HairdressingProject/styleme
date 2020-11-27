@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Help extends StatelessWidget {
   Help({
@@ -49,7 +50,9 @@ class Help extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 3.0),
                   ),
                   InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        launch('https://stylemeapp.github.io/');
+                      },
                       child: Text('website',
                           style: Theme.of(context).textTheme.bodyText1.copyWith(
                               fontWeight: FontWeight.w700,
